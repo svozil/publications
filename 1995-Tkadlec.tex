@@ -1,0 +1,2442 @@
+\documentstyle [12pt,pslatex]{article}
+
+\hyphenation{or-tho-atom-istic or-tho-rep-re-sent-able}
+
+\addtolength{\topmargin}{-20mm}
+\addtolength{\textheight}{ 30mm}
+
+\newcommand{\N}{{\bf N}}       % natural numbers
+\newcommand{\R}{{\bf R}}       % real numbers
+\newcommand{\HL}{H_3}          % Hilbert logic
+\newcommand{\dist}{{\rm d}}    % distance function
+\newcommand{\Sp}{{\rm Sp}}     % span
+
+\let\charmi=A\let\charmii=B      % abbr. of coord.: A=-1, B=-2
+\newcommand{\ex}[1]%
+  {\let\char#1\ifx\char\charmi-1\else\ifx\char\charmii-2\else#1\fi\fi}
+
+\unitlength .5mm
+\newcommand{\emline}[4]%
+  {\put(#1,#2){\special{em:moveto}}\put(#3,#4){\special{em:lineto}}}
+
+\newsavebox{\vertex}\savebox{\vertex}{%      % vertex in diagrams
+  {\unitlength1mm\begin{picture}(0,0)\put(0,0){\circle*{1}}\end{picture}}}
+  \newcommand{\disc}{\usebox{\vertex}}
+  \newcommand{\point}[2]{\put(#1,#2){\disc}}
+\newsavebox{\subdiagram}\savebox{\subdiagram}{%   % circle in diagrams
+  {\unitlength1mm\begin{picture}(0,0)\put(0,0){\circle{2}}\end{picture}}}
+  \newcommand{\discbig}{\usebox{\subdiagram}}
+\newcommand{\place}[6]%
+  {\put(#1,#2){\hspace{#3pt}\raisebox{#4pt}{\makebox(0,0)[#5]{$#6$}}}}
+\newsavebox{\shortdiagram}           % abbr. for the main logic
+\savebox{\shortdiagram}{\raisebox{.25\baselineskip}{\begin{picture}(12,0)(-1,0)
+  \put(0,0){\disc}\put(10,0){\disc}\put(5,0){\discbig}\put(0,0){\line(1,0){10}}
+  \end{picture}}}
+\newcommand{\edges}{       % of the main logic
+  \put (-20,  0){\line( 1, 1){10}}  \put (-10,-10){\line(1,0){20}}
+  \put (-20,  0){\line( 1,-1){10}}  \put (-10, 10){\line(1,0){20}}
+  \put ( 20,  0){\line(-1,-1){10}}  \put (  0,-10){\line(0,1){20}}
+  \put ( 20,  0){\line(-1, 1){10}}
+  }
+\newcommand{\vertices}{    % of the main logic
+  \put (-15,-5){\disc}  \multiput (-10, 10)(10,0){3}{\disc}
+  \put (-15, 5){\disc}  \multiput (-10,-10)(10,0){3}{\disc}
+  \put ( 15, 5){\disc}  \multiput (-20,  0)(20,0){3}{\disc}
+  \put ( 15,-5){\disc}
+  }
+
+\newcounter{cislo}
+\newenvironment{conditions}%
+  {\begin{list}{\rm(\arabic{cislo})}{\usecounter{cislo}
+    \itemsep0pt\topsep5pt\parsep\parskip
+    \settowidth{\labelwidth}{(1)}\labelsep 1ex
+    \leftmargin\labelwidth\addtolength{\leftmargin}{\labelsep}
+    \addtolength{\leftmargin}{\parindent}}}%
+  {\end{list}}
+
+\newcounter{oftheorem}[section]
+\newenvironment{mytheorem}[1]%
+{\begin{trivlist}
+  \renewcommand{\theoftheorem}{#1~\arabic{section}.\arabic{oftheorem}}
+  \refstepcounter{oftheorem}
+  \item[\hspace{\labelsep}\bf\thesection.\arabic{oftheorem}.\,#1.]}%
+{\end{trivlist}}
+
+\newenvironment{definition}{\begin{mytheorem}{Definition}}{\end{mytheorem}}
+\newenvironment{lemma}{\begin{mytheorem}{Lemma}\sl}{\end{mytheorem}}
+\newenvironment{proposition}{\begin{mytheorem}{Proposition}\sl}{\end{mytheorem}}
+\newenvironment{theorem}{\begin{mytheorem}{Theorem}\sl}{\end{mytheorem}}
+\newenvironment{corollary}{\begin{mytheorem}{Corollary}\sl}{\end{mytheorem}}
+\newenvironment{remark}{\begin{mytheorem}{Remark}}{\end{mytheorem}}
+\newenvironment{problem}{\begin{mytheorem}{Problem}}{\end{mytheorem}}
+\newenvironment{example}{\begin{mytheorem}{Example}}{\end{mytheorem}}
+\newenvironment{question}{\begin{mytheorem}{Question}}{\end{mytheorem}}
+
+\newenvironment{proof}%
+  {\begin{trivlist}
+  \item[\hspace{\labelsep}\bf Proof.]}%
+  {\end{trivlist}}
+
+
+
+\begin{document}
+
+\title {Greechie diagrams, nonexistence of measures in quantum logics and
+Kochen--Specker type constructions}
+
+\author {K. Svozil%
+\thanks {Institut f\"ur Theoretische Physik, University of Technology
+Vienna, Wiedner Hauptstra\ss{}e 8-10/136, A-1040 Vienna, Austria; e-mail:
+svozil@tph.tuwien.ac.at}
+\and
+J. Tkadlec%
+\thanks{Department of Mathematics, Faculty of Electrical Engineering,
+Czech Technical University, CZ-166~27 Prague, Czech Republic;
+e-mail: tkadlec@math.feld.cvut.cz}}
+
+\maketitle
+
+\begin {abstract}
+We use Greechie diagrams to construct finite orthomodular lattices
+`realizable' in the orthomodular lattice of subspaces in a threedimensional
+Hilbert space such that the set of two-valued states is not `large' (i.e.,
+full, separating, unital, nonempty, resp.). We discuss the number of
+elements
+of such orthomodular lattices, of their sets of (ortho)generators and of their
+subsets which do not admit `large' set of two-valued states. We show
+connections with other results of this type.
+\end {abstract}
+
+
+
+
+\section {Introduction}
+
+
+Quantum logic, as it has been pioneered by Birkhoff and von Neumann
+\cite{birk-vonneu}, is usually derived from Hilbert space. There, the
+logical primitives, such as propositions and the logical operators ``and'',
+``or'' and ``not'' are defined by Hilbert space entities. For instance,
+consider the threedimensional, real Hilbert space $\R^3$ with the usual
+scalar product $(v,w):=\sum_{i=1}^3v_iw_i$, $v,w\in \R^3$. There, any
+proposition is identified with a subspace of $\R^3$. For instance, the zero
+vector corresponds to a false statement. Any line spanned by a nonzero
+vector corresponds to the statement that the physical system is in the pure
+state associated with the vector. Any plain formed by the linear combination
+of two (non-colinear) vectors $v,w$ corresponds to the statement that the
+physical system is either in the pure state $v$ {\em or\/} in the pure state
+$w$. The whole Hilbert space $\R^3$ corresponds to the tautology (true
+propositions). The logical ``and''-operation is identified with the set
+theoretical intersection of two propositions; e.g., with the intersection of
+two lines. The logical ``not''-operation, or the ``complement'', is
+identified with taking the orthogonal subspace; e.g., the complement of a
+line is the plain orthogonal to that line.
+
+In this top-down approach, one arrives at a propositional calculus which
+resembles the classical one, but differs from it in several important
+aspects. They are non-Boolean, i.e., non-distributive, algebraic structures.
+Furthermore, as has first been pointed out by Kochen and Specker in the
+context of partial algebras \cite{kochen-specker-65}, there exist certain
+{\em finite\/} sets of lines, such that the associated propositional
+structure cannot be classically embedded. That is, there does not exist any
+classical, i.e., two-valued, measure which could be interpreted as the fact
+that propositions are either ``true'' ($\equiv$ measure value~1) or
+``false'' ($\equiv$ measure value~0). Kochen and Specker's original
+construction used 117 lines. The number of lines has been subsequently
+reduced \cite{Peres1,Peres2,Mermin,Schuette}. These constructions are
+examples of propositional structures without any two-valued measures.
+
+
+This paper deals with the following questions: which orthomodular
+structure---finite or infinite---underlies the Kochen--Specker construction.
+The question can be approached from two different viewpoints: (i)~Which {\em
+minimal\/} set of propositions generates some Kochen--Specker type
+configurations? By ``generate'' we mean the construction of the
+propositional structure containing it. (ii)~What is the {\em minimal
+propositional structure\/} containing some sort of Kochen--Specker type
+configuration? In particular, is it finite or infinite?
+
+
+
+
+\section {Basic notions}
+
+
+The following definition gives two main concepts of a propositional
+structure.
+
+
+\begin {definition}
+An {\em orthomodular poset\/} is a structure $(P,\le,',0,1)$ fulfilling the
+following conditions:
+  \begin {conditions}
+  \item
+  $(P,\le)$ is a partial ordered set such that $0\le a \le 1$ for every $a
+  \in P$.
+  \item
+  $'\colon P \to P$ is an orthocomplementation, i.e., for every $a,b \in P$:
+     (a)~$a''=a$,
+     (b)~$a\le b$ implies $b' \le a'$,
+     (c)~$a \lor a' =1$.
+  \item
+  If $a \le b'$
+  then the supremum $a\lor b$ exists in~$P$.
+  \item
+  If $a\le b$ then there is an element $c\in L$ such that $c\le a'$ and
+  $b=a\lor c$ (the orthomodular law).
+  \end {conditions}
+An {\em orthomodular lattice\/} is an orthomodular poset which is a lattice.
+
+Elements $a,b$ of an orthomodular poset are called {\em orthogonal\/}
+(denoted by $a\perp b$) if $a\le b'$. A subset $O$ of an orthomodular poset is
+called {\em orthogonal\/} if every pair of its elements is orthogonal.
+\end {definition}
+
+
+\begin {definition}
+Let $P_1,P_2$ be orthomodular posets. $P_1$ is {\em orthorepresentable\/} in
+$P_2$ if there is a mapping (called {\em orthoembedding\/}) $h\colon\, P_1\to P_2$
+such that for every $a,b \in P_1$:
+  \begin {conditions}
+  \item $h(0)=0$,
+  \item $h(a')=h(a)'$,
+  \item $a \le b$ if and only if $h(a) \le h(b)$,
+  \item $h(a \lor b) = h(a) \lor h(b)$ whenever $a \perp b$.
+  \end {conditions}
+$P_1$ is {\em representable\/} in~$P_2$ if there is a mapping (called {\em
+embedding\/}) $h\colon\, P_1\to P_2$ such that $h$ is orthoembedding and for
+every $a,b \in P_1$:
+  \begin {conditions}
+  \item [(4')] $h(a \lor b) = h(a) \lor h(b)$.
+  \end {conditions}
+The set $h(P_1)$ is then called an {\em {\rm(}ortho{\/\rm)}representation\/}
+of $P_1$ in $P_2$.
+
+A {\em suborthoposet\/} ({\em subortholattice}, resp.) is a subset such that
+the identity mapping is orthoembedding (embedding, resp.).
+
+{\em Boolean subalgebra\/} of an orthomodular poset is a suborthoposet which
+is a Boolean algebra. {\em Block\/} is a maximal Boolean subalgebra.
+\end {definition}
+
+
+As we will see later, there are lattices $L_1,L_2$ such that $L_1$ is a
+suborthoposet but not a subortholattice of $L_2$. On the other hand, a
+suborthoposet of an orthomodular lattice need not be a lattice.
+
+
+\begin {definition}
+Let $L$ be an orthomodular lattice, $G,\bar L \subseteq P$ and let us denote
+by $L(G)$ ($P(G)$, resp.) the least subortholattice (suborthoposet, resp.)
+of~$L$ containing~$G$. We say that $G$ {\em generates\/} ({\em
+orthogenerates}, resp.) $\bar L$ if $\bar L \subseteq L(G)$ ($\bar L
+\subseteq P(G)$, resp.).
+\end {definition}
+
+
+$P(G)$ and $L(G)$ can be explicitly defined by the following process:
+$P(G)=\bigcup_{n=0}^{\infty} P_n(G)$, $L(G)=\bigcup_{n=0}^{\infty} L_n(G)$,
+where $P_0(G) = L_0(G) = G$ and, for every natural number~$n$:
+  \begin {eqnarray*}
+  L_{n+1} (G) &=& \big\{ \bigvee O;\; O \mbox{ is a finite subset of
+                        $L_n(G) \cup L_n(G)'$}
+                  \big\}, \\
+  P_{n+1} (G) &=& \big\{ \bigvee O;\; O \mbox{ is a finite orthogonal subset of
+                        $P_n(G) \cup P_n(G)'$}
+                  \big\}
+  \end {eqnarray*}
+($M'$ denotes the set $\{a';\; a \in M\}$). Hence, every countable set $G$
+generates a countable subortholattice and orthogenerates a countable
+suborthoposet.
+
+
+A very useful tool for constructing and representing some orthomodular
+posets is the so-called Greechie diagram.
+
+
+\begin {definition} \label{diagram}
+A {\em diagram\/} is a pair $(V,E)$, where $V \neq \emptyset$ is a set of
+{\em vertices\/} (usually drawn as points) and $E \subseteq \exp V \setminus
+\{\emptyset\}$ is a set of {\em edges\/} (usually drawn as line segments
+connecting corresponding points).
+
+Let $n \ge 2$ be a natural number. A {\em loop\/} of order $n$ in a diagram
+$(V,E)$ is a sequence $(e_1,\ldots,e_n)\in E^n$ of mutually different edges
+such that there are mutually different vertices $v_1,\ldots,v_n$ with
+$v_i \in e_i \cap e_{i+1}$ ($i=1,\ldots,n$, $e_{n+1}=e_1$).
+
+A {\em Greechie diagram\/} is a diagram fulfilling the following conditions:
+  \begin {conditions}
+  \item Every vertex belongs to at least one edge.
+  \item If there are at least two vertices then every edge is at least
+        2-element.
+  \item Every edge which intersects with another edge is at least 3-element.
+  \item Every pair of different edges intersects in at most one vertex.
+  \item There is no loop of order~3.
+  \end {conditions}
+\end {definition}
+
+
+\begin {figure}[ht]
+\hfill
+%   2 points
+\begin {picture}(10,20)(0,-10)
+\point{0}{0} \point{10}{0}
+\put(5,-10){\makebox(0,0)[b]{1}}
+\end {picture}
+%
+\hfill
+%  2-element edge
+\begin {picture}(30,20)(0,-10)
+\multiput (0,0)(10,0){3}{\disc} \point {20}{10}
+\put ( 0,0){\line(1,0){20}}
+\put (20,0){\line(0,1){10}}
+\put (10,-10){\makebox(0,0)[b]{2}}
+\end {picture}
+%
+\hfill
+%  2-element intersection of edges
+\begin {picture}(50,10)(0,-10)
+\multiput (0,0)(10,0){6}{\disc}
+\multiput (0,1)(20,-2){2}{\line(1,0){30}}
+\put (25,-10){\makebox(0,0)[b]{3}}
+\end {picture}
+%
+\hfill
+%  triangle
+\begin {picture}(20,30)(0,-10)
+\multiput (0, 0)(10,0){3}{\disc}
+\multiput (0,10)(10,0){2}{\disc}
+\point {0}{20}
+\put (0, 0){\line(1, 0){20}}
+\put (0, 0){\line(0, 1){20}}
+\put (0,20){\line(1,-1){20}}
+\put (10,-10){\makebox(0,0)[b]{4}}
+\end {picture}
+%
+\hfill\mbox{}
+%
+\caption {Examples of diagrams which are not Greechie diagrams.}
+\label {Fdiagrams}
+\end {figure}
+
+
+Some examples of diagrams which are not Greechie diagrams are given in
+Fig.~\ref{Fdiagrams}---these examples violates exactly one of conditions
+(2)--(5) in the above definition. (We usually do not denote 1-element
+edges.) The condition~(4) states that in Greechie diagrams there is no loop
+of order~2.
+
+Before we present the representation theorem let us recall that an {\em
+atom\/} in an orthomodular poset $P$ is a minimal element of $P \setminus
+\{0\}$.
+
+
+\begin {theorem}
+For every Greechie diagram with only finite edges there is exactly one (up
+to an isomorphism) orthomodular poset such that there are one-to-one
+correspondences between vertices and atoms and between edges and blocks
+which preserve incidence relations. A Greechie diagram does not contain any
+loop of order 4 if and only if the corresponding orthomodular poset is a
+lattice.
+\end {theorem}
+
+
+The proof can be found e.g.\ in~\cite{NR}. Let us reserve the notion {\em
+Greechie logic\/} for an orthomodular poset which can be represented by a
+Greechie diagram with only finite edges. It is easy to see that such an
+orthomodular poset does not contain any infinite chain, hence every its
+element is a supremum of a finite orthogonal set of atoms.
+
+Let us remark that there are finite orthomodular posets not representable by
+Greechie diagrams---intersections of blocks might be greater than a
+4-element Boolean subalgebra and hence the condition~(4) of \ref{diagram}
+cannot be fulfilled. On the other hand, every orthomodular poset with only
+finite and at most 3-atomic blocks (the case we are interested about) is a
+Greechie logic.
+
+We will have a special interest about the following example.
+
+
+\begin {definition}
+The 3-dimensional {\em Hilbert logic\/} $\HL$ is the orthomodular lattice
+of linear subspaces of $\R^3$. The ordering is given by inclusion and the
+orthocomplementation is given by $a'= \{v\in\R^3;\; v\perp a \}$ for every
+$a \in \HL$.
+\end {definition}
+
+
+The least element of $\HL$ is $0 = \{(0,0,0)\}$, the greatest element of $\HL$
+is $1 = \R^3$. Moreover $a \land b = a \cap b$ and $a \lor b = \Sp(a\cup b)$
+for every $a,b \in \HL$, where $\Sp (G)$ is the {\em span\/} of~$G$ in
+$\R^3$. (We will usually omit unnecessary parenthesis, e.g., $\Sp (1,0,0)$
+denotes $\Sp (\{(1,0,0)\})$.)
+
+Every element of $\HL \setminus \{0,1\}$ is either an atom or a coatom,
+every block in $\HL$ is finite and at most 3-element, every suborthoposet
+$P$ of~$\HL$ is a Greechie logic and is uniquely determined by the set
+$A_1(P)$ of its 1-dimensional atoms (lines):
+  $$
+  P = \{0,1\} \cup A_1(P) \cup A_1(P)'.
+  $$
+(There might be also 2-dimensional atoms in $P$, e.g., if $P$ is 4-element.)
+Moreover, for every set $G$ of lines in $\HL$ the set of lines of the
+orthomodular lattice $L(G)$ (orthomodular poset $P(G)$, resp.) generated
+(orthogenerated, resp.) by~$G$ can be expressed as follows: $A_1(P(G)) =
+\bigcup_{n=0}^{\infty} P_n$, $A_1(L(G)) = \bigcup_{n=0}^{\infty} L_n$, where
+$P_0 =L_0 = G$ and, for every natural number~$n$:
+  \begin {eqnarray*}
+  L_{n+1} &=& L_n \cup \big\{(a\lor b)';\; a,b \in L_n \big\}, \\
+  P_{n+1} &=& P_n \cup \big\{(a\lor b)';\; a,b \in P_n \mbox{ such that }
+                  a\perp b \big\}.
+  \end {eqnarray*}
+
+
+
+
+\section{Two-valued states and Greechie diagrams}
+
+
+Let us present the main definition.
+
+
+\begin {definition} \label{state}
+Let $P$ be an orthomodular poset and let $G \subset P$. A {\em state\/} $s$
+on~$G$ is a mapping $s\colon\, P \to [0,1]$ such that:
+  \begin {conditions}
+  \item $s(0)=0$,
+  \item $s(a) \le s(b)$ whenever $a,b \in G$ with $a \le b$,
+  \item $\sum_{a \in O} s(a) \le 1$ for every orthogonal set $O \subset G$,
+  \item $\sum_{a \in O} s(a) = 1$ for every orthogonal set $O \subset G$
+        with $\bigvee O =1$.
+  \end {conditions}
+A {\em two-valued state\/} is a state with values in $\{0,1\}$.
+\end {definition}
+
+
+If $G=P$ then conditions (1)--(2) follows from conditions (3)-(4) and from
+the orthomodular law and, moreover, $s(a')=1-s(a)$ for every $a \in P$.
+
+The Kochen--Specker construction gives an example of a propositional
+structure without any two-valued state. We will use more general attempt and
+will ask whether there is a propositional structure without `enough'
+two-valued states. Originally, `enough' meant `at least one'. We will use
+also the following properties of state space, which are important in quantum
+logic theories.
+
+
+\begin {definition}
+Let $P$ be an orthomodular poset and let $G \subseteq P$. A set $S$ of
+states on~$G$ is called:
+
+{\em unital\/} if for every $a\in G \setminus \{0\}$ there is a state $s\in
+S$ such that $s(a)=1$,
+
+{\em separating\/} if for every $a,b\in G$ with $a \neq b$ there is a state
+$s\in S$ such that $s(a) \neq s(b)$,
+
+{\em full\/} if for every $a,b \in G$ with $a \not\le b$ there is a state $s
+\in S$ such that $s(a) > s(b)$.
+\end {definition}
+
+
+Existence of a unital set of states means that every proposition which is
+not a tautology is sometimes false. Existence of a separating set of states
+means that a different propositions are distinguishable. Existence of a
+full set of two-valued states means that if some proposition does not imply
+another, then there is such a state that the first is true while the second
+is not. These properties are largely studied. An orthomodular poset with a
+full set of two-valued states is called a {\em concrete logic\/} (see
+e.g.~\cite{Ptak-Pulmannova}), an orthomodular poset with a separating set of
+two-valued states is called a {\em partition logic\/}---this notion is
+within orthomodular posets equivalent to the notion of {\em automaton
+logic\/} (see e.g.~\cite{svosh,svosh2,svosh3}).
+
+It is easy to see that a full set of states is separating and that a
+separating set of two-valued states is unital. Before we give examples
+demonstrating differences in the above defined notions let us give some
+criteria, how we can verify whether an orthomodular poset given by a
+Greechie diagram has `enough' two-valued states.
+
+
+\begin {definition}
+Let $P$ be an orthomodular poset and let $A$ be the set of atoms in~$P$. A
+{\em weight\/} $w$ on~$A$ is a mapping $w\colon\, A \to [0,1]$ such that
+$\sum_{a \in O} w(a) = 1$ for every maximal orthogonal set $O \subseteq P$.
+A {\em two-valued\/} weight is a weight with values in $\{0,1\}$.
+\end {definition}
+
+
+\begin {lemma} \label {s-w}
+Let $P$ be a Greechie logic and let $A$ be the set of atoms in~$P$.
+Then there is a one-to-one correspondence between two-valued states $s$
+on~$P$ and two-valued weights $w$ on~$A$ given by $w=s|A$.
+\end {lemma}
+
+
+\begin {proof}
+Obvious.
+\end {proof}
+
+
+Due to this correspondence we may (and will) identify states and weights and
+study only the values of states on the set of atoms. Since every maximal
+orthogonal set of atoms corresponds uniquely to a block, we need only to
+check that the sum of values of a state on every edge in a Greechie diagram
+is equal to~1.
+
+
+\begin {proposition} \label {full}
+Let $P$ be a Greechie logic and let $A$ be the set of atoms in~$P$. Then $P$
+has a full set of two-valued states (i.e., $P$ is a concrete logic) if and
+only if for every pair $a_1,a_2 \in P$ of different nonorthogonal atoms
+there is a two-valued weight $w$ on~$A$ such that $w(a_1) = w(a_2) = 1$.
+\end {proposition}
+
+
+\begin {proof}
+$\Rightarrow$: Let $a_1,a_2 \in A$ such that $a_1 \not\perp a_2$. Then $a_1
+\not\le a_2'$ and there is a two-valued state $s$ on~$P$ such that $1 =
+s(a_1) > s(a_2') = 0$. Hence, $s(a_2)=1$ and, according to \ref{s-w}, it
+suffices to take $w=s|A$.
+
+$\Leftarrow$: Let $b_1,b_2 \in P$ such that $b_1 \not\le b_2$, i.e., $b_1
+\not\perp b_2'$. There are orthogonal sets $A_1,A_2 \neq \emptyset$ of atoms
+in~$P$ such that $b_1 = \bigvee A_1$, $b_2' = \bigvee A_2$. According to
+\ref{s-w}, it suffices to prove that there are atoms $a_1 \in A_1$, $a_2\in
+A_2'$ and a weight $w$ on~$A$ such that $w(a_1) = w(a_2) = 1$. Let us
+suppose first that $A_1 \cap A_2 = \emptyset$. Then there are atoms $a_1 \in
+A_1$ and $a_2 \in A_2$ such that $a_1 \neq a_2$ and $a_1 \not\perp a_2$ and,
+due to our assumption, a weight $w$ on~$A$ such that $w(a_1) = w(a_2) = 1$.
+Let us suppose now that $A_1 \cap A_2 \neq \emptyset$. Then there is an atom
+$a_1 \le b_1,b_2'$ and either there is an atom $a_2 \neq a_1$ such that $a_1
+\not\perp a_2$, or $a_1 \perp a$ for every atom $a \neq a_1$. In both cases
+there is a two-valued weight $w$ on~$A$ such that $w(a_1)=1$; in the first
+case due to our assumption and in the second case we can put $w(a)=1$ iff
+$a=a_1$.
+\end {proof}
+
+
+The situation for a separating set of states is much more complicated and we
+will state a criterion in a special case (which is in our interest here).
+
+
+\begin {proposition} \label {separating}
+Let $P$ be a Greechie logic with at most 3-atomic blocks and let $A$ be the
+set of atoms in~$P$. Then the set of two-valued states on~$P$ is separating
+(i.e., $P$ is a partition logic) if and only if the following conditions
+hold:
+
+{\rm(1)} For every atom $a \in P$ there is a two-valued weight $w$ on~$A$
+such that $w(a)=1$.
+
+{\rm(2)} For every pair $a_1,a_2 \in P$ of different nonorthogonal atoms
+there are two-valued weights $w_+,w_-$ on~$A$ such that $w_+(a_1) = w_+(a_2)$
+and $w_-(a_1) \neq w_-(a_2)$.
+\end {proposition}
+
+
+\begin {proof}
+$\Rightarrow$: Let $a \in A$. Then $a \neq 0$ and there is a two-valued state
+$s$ on~$P$ such that $1=s(a) > s(0)=0$. Let $a_1,a_2 \in A$ such that $a_1
+\neq a_2$ and $a_1 \not\perp a_2$. Then also $a_1 \neq a_2'$ and there are
+two-valued states $s_-,s_+$ on~$P$ such that and $1=s_-(a_1) > s_-(a_2)=0$,
+$1=s_+(a_1) > s_+(a_2')=0$, i.e., $s_+(a_1)=s_+(a_2)$. The rest follows from
+\ref{s-w}.
+
+$\Leftarrow$: Let $b_1,b_2 \in P$ such that $b_1 \neq b_2$. Since every
+element of $P\setminus \{0,1\}$ is either an atom or a coatom, there are
+atoms $a_1,a_2 \in P$ such that $b_1 \in \{0,a_1,a_1',1\}$ and $b_2 \in
+\{0,a_2,a_2',1\}$. If $a_1=a_2$ then there are two-valued weights $w_+,w_-$
+on~$A$ such that $w_+(a_1)=1$ and $w_-(a_1)=0$. If $a_1 \neq a_2$ then there
+are two-valued weights $w_+,w_-$ on~$A$ such that $w_+(a_1) = w_+(a_2)$ and
+$w_-(a_1) \neq w_-(a_2)$. In both cases there are, according to
+\ref{s-w}, two-valued states $s_+,s_-$ on~$P$ such that either
+$s_+(b_1) \neq s_+(b_2)$ or $s_-(b_1) \neq s_-(b_2)$.
+\end {proof}
+
+
+Let us present a lemma, which might simplify to verify criteria in
+\ref{separating}.
+
+
+\begin {lemma} \label {partition}
+Let $P$ be a Greechie logic and let $A$ be the set of atoms in~$P$. If $W$
+is an at least 3-element set of two-valued weights on~$A$ such that
+$\{w^{-1}(1);\; w \in W\}$ is a partition of~$A$ then
+  \begin {conditions}
+  \item
+  For every atom $a \in A$ there is a weight $w \in W$ such that $w(a)=1$.
+  \item
+  For every pair $a_1,a_2 \in A$ there is a weight $w \in W$ such that
+  $w(a_1) = w(a_2)$.
+  \end {conditions}
+\end {lemma}
+
+
+\begin {proof}
+Obvious.
+\end {proof}
+
+
+Let us remark that in Greechie diagrams it suffices to use the above
+conditions for every connected subdiagram separately (weights behave
+independently on nonconnected subgraphs). In terms of orthomodular posets we
+can use the following important notion.
+
+
+\begin {definition}
+Let ${\cal P}$ be a set of orthomodular posets such that $P_1\cap P_2 =
+\{0,1\}$ for every $P_1,P_2 \in {\cal P}$ with $P_1 \neq P_2$. The
+{\em horizontal sum\/} $\sum_{P \in {\cal P}} P$ is defined as $(\bigcup_{P
+\in {\cal P}} P,\, \bigcup_{P \in {\cal P}} \le_P,\, \bigcup_{P \in {\cal P}}
+\mbox{}^{\prime_P},\, 0, 1)$.
+\end {definition}
+
+
+More generally we speak about the horizontal sum of $P_i$, $i \in I$. It is
+an abbreviation for saying that we take disjoint representations $\bar P_i$
+of $P_i$ (e.g., $\{i\} \times P_i$), identify all $\bar 0_i$ ($i \in I$) and
+all $\bar 1_i$ ($i \in I$) and take $\sum_{i \in I} P_i$. It is easy to see
+that a horizontal sum of orthomodular posets (orthomodular lattices, resp.)
+is an orthomodular poset (orthomodular lattice, resp.) and that a set of
+states is nonempty (unital, separating, full, resp.) on a horizontal sum if
+and only if it is nonempty (unital, separating, full, resp.) on every
+horizontal summand.
+
+In a Greechie diagram every connected subdiagram corresponds to a horizontal
+summand. (In particular, every finite 2-atomic block is a horizontal
+summand.) On the other hand, horizontal sum of Greechie logics is a Greechie
+logic with the Greechie diagram, which is a (disjoint) union of summands
+with only one exception---we loose isolated vertices (these correspond to
+the trivial orthomodular poset $\{0,1\}$).
+
+The notion of a horizontal sum is a special kind of the notion of {\em
+pasting}. We are not interested here in a general setting (see
+e.g.~\cite{NR}), thus we describe only special cases how we can obtain a new
+Greechie logic using this process. Greechie diagram of the {\em pasting of
+Greechie logics\/} $P_i$ ($i\in I$) {\em for atoms\/} $a_i \in P_i$ ($i\in
+I$) we obtain as follows: we take disjoint union of Greechie diagrams
+of~$P_i$ ($i\in I$), identify vertices corresponding to $a_i$ ($i\in I$)
+and, if some $a_i$ ($i \in I$) belong to a 2-atomic block, we delete
+necessary vertices corresponding to such $a_i'$ such that the condition~(3)
+of \ref{diagram} is fulfilled. Greechie diagram of the {\em pasting of
+Greechie logics\/} $P_i$ ($i \in I$) {\em for blocks\/} $B_i\subseteq P_i$
+($i\in I$) with the same number of atoms we obtain as follows: we take
+disjoint union of Greechie diagrams of~$P_i$ ($i \in I$) and identify edges
+corresponding to~$B_i$ ($i \in I$) (I.e., we identify also atoms in these
+blocks.) It is easy to see that such pastings of (lattice) Greechie logics
+are (lattice) Greechie logics.
+
+The notion of a horizontal sum is related also to the following notion.
+
+
+\begin {definition}
+Let $P$ be an orthomodular poset. The {\em distance\/} $\dist$ on~$P$ is a
+mapping $\dist\colon\, P \times P \to \N \cup \{\infty\}$ defined by:
+  \begin {eqnarray*}
+  \dist(a,b) &=& \inf \big\{ n \in \N;\;
+    \mbox{there are blocks $B_1,\ldots,B_n$ in $P$ such that}\\
+    &&
+    \mbox {$B_i \cap B_{i+1} \neq \{0,1\}$ for $i=0,\ldots,n$,
+           $B_0 = \{a\}$, $B_{n+1} = \{b\}$} \big\}.
+  \end {eqnarray*}
+\end {definition}
+
+
+The distance function defines the largest decomposition of~$P$ into
+horizontal summands---the least summands are maximal subsets of $P \setminus
+\{0,1\}$ of elements with finite distances joined with $\{0,1\}$.
+
+The following result we will use in the sequel.
+
+
+\begin {proposition} \label{noloop-concrete}
+Every Greechie logic without any loop has a full set of two-valued states.
+\end {proposition}
+
+
+\begin {proof}
+The distance function on~$P$ decompose $P$ into the horizontal sum $\sum_{i
+\in I} P_i$ such that the distance of every pair of elements in every
+summand is finite. It suffices to prove fullness for every summand. According
+to \ref{full}, it suffices, for every $i\in I$ and for every pair $a_1,a_2$
+of different nonorthogonal atoms in $P_i$, to find a weight $w$ on the set
+$A$ of atoms in~$P_i$ such that $w(a_1) = w(a_2) = 1$. Let us put $A_n= \{a
+\in A;\; \dist(a,a_1)=n \}$ for every natural number $n$ and let us define
+$w$ by induction:
+  \begin {enumerate}
+  \item [I.] $w(a_1)=1$.
+  \item [II.]
+  Let us suppose that there is a natural number $n\ge 0$ such that $w$ is
+  defined on $A_0 \cup \cdots \cup A_n$. Every element of~$A_{n+1}$ belongs
+  to some block $B$ in~$P_i$ such that $B \cap A_n \neq \emptyset$. For
+  every such block $B$ we have $B \cap A_n = \{a_B\}$. If $w(a_B)$=1, we
+  put $w|B \cap A \setminus A_n = 0$. If $w(a_B)=0$, we can choose ($B$
+  has at least three atoms) properly a $b_B \in B \cap A \setminus A_n$ and
+  put $w(b_B)=1$, $w|B \cap A \setminus \{b_B\} = 0$. Properly means that if
+  $n = \dist(a_2,a_1)-2$ then $b_B$ is chosen such that it does not belong to
+  the same block as $a_2$ and if $n = \dist(a_2,a_1)-1$ then $b_B=a_2$.
+  \end {enumerate}
+\end {proof}
+
+
+Let us present examples demonstrating differences in properties of state
+space.
+
+
+\begin {proposition}  \label{statespaces}
+Let us consider the following conditions:
+  \begin {conditions}
+  \item The set of two-valued states is full.
+  \item The set of two-valued states is separating but not full.
+  \item The set of two-valued states is unital but not separating.
+  \item The set of two-valued states is nonempty but not unital.
+  \item The set of two-valued states is empty.
+  \end {conditions}
+For each of the above conditions there is an orthomodular lattice with only
+finite 3-atomic blocks which fulfills it.
+\end {proposition}
+
+
+\begin {figure}[ht]
+%
+\hfill
+%  3-atomic B.algebra
+\begin {picture}(20,20)(0,-20)
+\multiput (0,0)(10,0){3}{\disc}
+\put (0,0){\line(1,0){20}}
+\put (10,-20){\makebox(0,0)[b]{1}}
+\end {picture}
+%
+\hfill
+%  separating, not full set of 2-v. states
+\begin {picture}(60,50)(-30,-30)
+\edges\vertices
+\put (-25,  0){\makebox(0,0){$a$}}
+\put (-20, -7){\makebox(0,0){$a_c$}}
+\put (-15,-15){\makebox(0,0){$c_a$}}
+\put (  0,-15){\makebox(0,0){$c$}}
+\put ( 15,-15){\makebox(0,0){$c_b$}}
+\put ( 20, -7){\makebox(0,0){$b_c$}}
+\put ( 25,  0){\makebox(0,0){$b$}}
+\put ( 20,  7){\makebox(0,0){$b_d$}}
+\put ( 15, 15){\makebox(0,0){$d_b$}}
+\put (  0, 15){\makebox(0,0){$d$}}
+\put (-15, 15){\makebox(0,0){$d_a$}}
+\put (-20,  7){\makebox(0,0){$a_d$}}
+\put (  5,  0){\makebox(0,0){$e$}}
+\put (  0,-30){\makebox(0,0)[b]{2}}
+\end {picture}
+%
+\hfill
+%    unital, not separating set of 2-v. states
+\begin {picture}(40,45)(-20,-30)
+\multiput(-10,-10)(0,20){2}{\line(1,0){20}}  \multiput(0,-10)(0,20){2}{\discbig}
+\put (-10,-10){\line(1, 1){20}}  \multiput (-10,-10)(20,0){2}{\disc}
+\put (-10, 10){\line(1,-1){20}}  \multiput (-10, 10)(20,0){2}{\disc}
+\put (0,0){\disc}
+\put (-15,-15){\makebox(0,0){$a_1$}}
+\put ( 15,-15){\makebox(0,0){$a_2$}}
+\put ( 15, 15){\makebox(0,0){$a_3$}}
+\put (-15, 15){\makebox(0,0){$a_4$}}
+\put ( -5,  0){\makebox(0,0){$b$}}
+\put (0,-30){\makebox(0,0)[b]{3}}
+\end {picture}
+%
+\hfill
+%    not unital set of 2-v. states
+\begin {picture}(30,50)(-15,-20)
+\multiput (-10,0)(10,0){3}{\disc}
+\put (0,10){\disc}
+\put (0,20){\disc}
+\put (-5,10){\discbig}
+\put ( 5,10){\discbig}
+\put (-10,0){\line(1,0){20}}
+\put (  0,0){\line(0,1){20}}
+\put (-10,0){\line( 1,2){10}}
+\put ( 10,0){\line(-1,2){10}}
+\put (  0,25){\makebox(0,0){$b$}}
+\put (-15,-5){\makebox(0,0){$a_1$}}
+\put (  0,-5){\makebox(0,0){$a_2$}}
+\put ( 15,-5){\makebox(0,0){$a_3$}}
+\put (  0,-20){\makebox(0,0)[b]{4}}
+\end {picture}
+%
+\hfill
+%    no unital 2.
+\begin {picture}(40,45)(-20,-30)
+\multiput(-10,-10)(0,20){2}{\line(1,0){20}}  \multiput(0,-10)(0,20){2}{\discbig}
+\multiput(-10,-10)(20,0){2}{\line(0,1){20}}  \multiput(-10,0)(20,0){2}{\discbig}
+\put (-10,-10){\line(1, 1){20}}  \multiput (-10,-10)(20,0){2}{\disc}
+\put (-10, 10){\line(1,-1){20}}  \multiput (-10, 10)(20,0){2}{\disc}
+\put (0,0){\disc}
+\put (-15,-15){\makebox(0,0){$a_1$}}
+\put ( 15,-15){\makebox(0,0){$a_2$}}
+\put ( 15, 15){\makebox(0,0){$a_3$}}
+\put (-15, 15){\makebox(0,0){$a_4$}}
+\put ( -5,  0){\makebox(0,0){$b$}}
+\put (0,-30){\makebox(0,0)[b]{5}}
+\end {picture}
+%
+\hfill\mbox{}
+%
+\caption {Greechie diagrams of orthomodular posets with finite 3-atomic
+blocks demonstrating differences of state spaces (a~\usebox{\shortdiagram}~b
+denotes the diagram~2).}
+\label {Fstatespaces}
+\end {figure}
+
+
+\begin {proof}
+(1) See Fig.~\ref{Fstatespaces}.1. It is a Boolean algebra, which obviously
+has a full set of two-valued states.
+
+(2) See Fig.~\ref{Fstatespaces}.2. For every two-valued state $s$ we have
+$s(a) + s(b) \le \big(1-s(c_a) + 1-s(d_a) + 1-s(c_b) + 1-s(d_b)\big)/2 =
+\big( 2 - s(c) - s(d) \big)/2 \le 3/2$. Hence $s(a)+s(b) \le 1$ and,
+according to \ref{full}, this orthomodular lattice has not a full set of
+two-valued states. The set $S_1 = \{s_1,s_2,s_3\}$ of states given in
+Fig.~\ref{Fstates} fulfills conditions of \ref{partition}. It can be checked
+that the set of all two-valued states `symmetric' to some state from~$S$
+distinguish different nonorthogonal atoms. Hence the set of two-valued
+states fulfills conditions of \ref{separating}. A smaller example of a
+separating set of states is given in Fig.~\ref{Fstates}. We can express this
+orthomodular lattice as a partition logic on a 6-element set of these
+states---see Fig.~\ref{Frepresentations}.1. (Compare with the representation
+on the 14-element set of states in~\cite{svosh3}.)
+
+(3) See Fig.~\ref{Fstatespaces}.3. Let us use the previous result. For every
+two-valued state $s$ with $s(a_1)=1$ we obtain $s(a_2)=s(b)=0$, hence
+$s(a_4)=1$. Using the symmetry we obtain $s(a_1)=s(a_4)$ for every
+two-valued state, hence the set of two-valued states is not separating. The
+unitality can be verified routinely.
+
+(4) See Fig.~\ref{Fstatespaces}.4. For every two-valued state $s$ there is an
+$i \in \{1,2,3\}$ such that $s(a_i)=1$ and therefore $s(b)=0$. Hence, the
+set of two-valued states is not unital. Existence of a two-valued state can
+be verified routinely. (Let us note that if we paste `sides of the triangle'
+not only for $b$ but for the whole block we obtain a smaller example with
+25~atoms.)
+
+(5) See Fig.~\ref{Fstatespaces}.5. According to part~(3) of this proof,
+$s(a_1) = s(a_2) = s(a_3) = s(a_4)$ for every two-valued state~$s$. Hence
+all these values are equal to~0 and $s(b) = 1$. The desired example we
+obtain by pasting this orthomodular lattice with the orthomodular lattice
+from Fig.~\ref{Fstatespaces}.4 for~$b$'s or, more effectively, by pasting
+for blocks containing $b$'s and $a_2$'s.
+
+\end {proof}
+
+%
+\newcommand{\smalldiag}[2]{\begin{picture}(40,30)(-20,-20)
+  \edges#2\put(0,-20){\makebox(0,0)[b]{$s_#1$}}\end{picture}}
+%
+\begin {figure}[ht]
+%
+\smalldiag{1}{
+  \point{-20}{0}\point{0}{0}\point{10}{10}\point{10}{-10}}
+\hfill\smalldiag{2}{
+  \point{-15}{5}\point{-5}{-10}\point{0}{10}\point{10}{-10}}
+\hfill\smalldiag{3}{
+  \point{-15}{-5}\point{-10}{10}\point{0}{-10}\point{15}{-5}\point{15}{5}}
+\hfill\smalldiag{4}{
+  \point{-15}{5}\point{-10}{10}\point{0}{0}\point{10}{10}\point{15}{-5}}
+\hfill\smalldiag{5}{
+  \point{-15}{-5}\point{-15}{5}\point{0}{10}\point{10}{-10}\point{15}{5}}
+\hfill\smalldiag{6}{
+  \point{-10}{10}\point{-10}{-10}\point{0}{0}\point{15}{-5}\point{15}{5}}
+%
+\caption {Separating set of two-valued states on an orthomodular lattice
+from Fig.\protect\ref{Fstatespaces}.2. (only atoms in which the corresponding
+state is equal to 1 are marked).}
+\label {Fstates}
+\end {figure}
+%
+
+%
+{
+\unitlength 1mm
+\begin {figure}[ht]
+%
+\begin {picture}(60,45)(-30,-25)
+\edges\vertices\footnotesize
+\put (-24,  0){\makebox(0,0)[r]{$\{1\}$}}
+\put (-17, -7){\makebox(0,0)[r]{$\{3,5\}$}}
+\put ( -9,-15){\makebox(0,0)[r]{$\{2,4,6\}$}}
+\put (  0,-15){\makebox(0,0)[c]{$\{3\}$}}
+\put (  9,-15){\makebox(0,0)[l]{$\{1,5\}$}}
+\put ( 17, -7){\makebox(0,0)[l]{$\{3,4,6\}$}}
+\put ( 24,  0){\makebox(0,0)[l]{$\{2\}$}}
+\put ( 17,  7){\makebox(0,0)[l]{$\{3,5,6\}$}}
+\put (  9, 15){\makebox(0,0)[l]{$\{1,4\}$}}
+\put (  0, 15){\makebox(0,0)[c]{$\{2,5\}$}}
+\put ( -9, 15){\makebox(0,0)[r]{$\{3,6\}$}}
+\put (-17,  7){\makebox(0,0)[r]{$\{2,4,5\}$}}
+\put (  2,  0){\makebox(0,0)[l]{$\{1,4,6\}$}}
+\put(0,-25){\makebox(0,0)[b]{\normalsize1}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(70,45)(-35,-25)
+\catcode`\S=\active\defS{\sqrt2} % abbr
+\edges\vertices\footnotesize
+\put (-24,  0){\makebox(0,0)[r]{$( S,-1, 0)$}}
+\put (-17, -7){\makebox(0,0)[r]{$( 1, S, 3)$}}
+\put ( -9,-15){\makebox(0,0)[r]{$( 1, S,-1)$}}
+\put (  0,-15){\makebox(0,0)[c]{$( 1, 0, 1)$}}
+\put (  9,-15){\makebox(0,0)[l]{$(-1,-S, 1)$}}
+\put ( 17, -7){\makebox(0,0)[l]{$(-1, S,-3)$}}
+\put ( 24,  0){\makebox(0,0)[l]{$( S, 1, 0)$}}
+\put ( 17,  7){\makebox(0,0)[l]{$(-1, S, 3)$}}
+\put (  9, 15){\makebox(0,0)[l]{$(-1, S,-1)$}}
+\put (  0, 15){\makebox(0,0)[c]{$( 1, 0,-1)$}}
+\put ( -9, 15){\makebox(0,0)[r]{$( 1, S, 1)$}}
+\put (-17,  7){\makebox(0,0)[r]{$( 1, S,-3)$}}
+\put (  2,  0){\makebox(0,0)[l]{$( 0, 1, 0)$}}
+\put(0,-25){\makebox(0,0)[b]{\normalsize2}}
+\end {picture}
+%
+\caption {Various representations of an orthomodular lattice from
+Fig.~\protect\ref{Fstatespaces}.2.}
+\label {Frepresentations}
+\end {figure}
+}
+
+
+
+
+\section {Subortholattices of $\HL$}
+
+
+There are only several types of finite subortholattices of~$\HL$. The
+following characterization of finite subortholattices of~$\HL$ seems to be in
+a common knowledge (see e.g.~\cite[Example~1.5.3]{Kalmbach-83}), but we do
+not know a proper reference for its proof.
+
+\begin {lemma} \label {3lines}
+Let $L$ be a subortholattice of~$\HL$ and let lines $a_1,a_2,a_3,b \in L$ be
+such that $a_1,a_2,a_3$ are mutually orthogonal and $b \not\perp
+a_1,a_2,a_3$. Then there is a line $c \in L$ such that $c \not\perp a_3$ and
+the angle $\angle (c,a_3)$ is greater than $\angle (b,a_3)$.
+\end {lemma}
+
+
+\begin {proof}
+Let us choose the system of coordinates such that $a_1 = \Sp (1,0,0)$, $a_2
+= \Sp (0,1,0)$, $a_3 = \Sp (0,0,1)$, $b = \Sp (x,y,z)$ such that $x,y,z >0$.
+Since $L$ is a subortholattice of~$\HL$, the following elements belong
+to~$L$:
+  \begin {eqnarray*}
+  \bar b &=& (a_1 \lor a_2) \land b'              = \Sp (y,-x,0) \\
+       c &=& (a_1 \lor a_3) \land (b \lor \bar b) = \Sp (x+\frac{y^2}{x},0,z).
+  \end {eqnarray*}
+Hence,
+  \begin {eqnarray*}
+  0 < \cos \angle (c,a_3) &=& \frac {z}{\sqrt { (x+\frac {y^2}{x})^2 + z^2} }
+                          <  \frac {z}{\sqrt { x^2 + y^2 + z^2} }
+                          = \cos \angle (b,a_3)
+  \end {eqnarray*}
+\end {proof}
+
+
+\begin {theorem} \label {finitesubortholattices}
+Let $L \subset \HL$ be a finite orthomodular lattice. Then $L$ is a
+subortholattice of~$\HL$ if and only if exactly one of the following
+possibilities is fulfilled:
+
+{\rm (1)} $L = \{0,1\}$, i.e., $L$ is a 1-atomic Boolean algebra.
+
+{\rm (2)} $L = \{0,a,a',1\}$ for some line $a \in \HL$, i.e., $L$ is a
+2-atomic Boolean algebra.
+
+{\rm (3)} $L = \{0,a_1,a_2,a_3,a_1',a_2',a_3',1\}$ for some orthogonal set
+$\{a_1,a_2,a_3\}$ of lines in~$\HL$, i.e., $L$ is a 3-atomic Boolean
+algebra.
+
+{\rm (4)} $L = \{0,a,a',1\} \cup G \cup G' \cup \{a \lor b;\; b \in G\} \cup
+\{a' \land b';\; b \in G\}$ for some line $a \in \HL$ and some at least
+2-element set $G$ of mutually nonorthogonal atoms orthogonal to~$a$, i.e.,
+$L$ is a finite pasting of at least two 3-atomic Boolean algebras for a
+given atom.
+\end {theorem}
+
+
+\begin {proof}
+It is easy to see that each of these conditions excludes the others and
+gives a subortholattice of~$\HL$. Let us suppose that there is a finite
+subortholattice $L$ of~$\HL$ which fulfills no condition (1)--(4) and
+seek a contradiction. There are three mutually nonorthogonal lines $a,b,c
+\in L$. Let $d_3 = (a \lor b)' \in L$. Since $L$ is finite, there is a line
+$e \in L$ such that $\angle (e,d_3)$ is the greatest among all lines
+from~$L$ nonorthogonal to~$d_3$. Since $a \not\perp b$ there is a $d_1 \in
+\{a,b\}$ such that $d_1 \not\perp e, e' \land d_3'$. Let us put $d_2 = d_1'
+\land d_2' \in L$. Hence, lines $d_1,d_2,d_3$ are mutually orthogonal and $e
+\not\perp d_1,d_2,d_3$. According to \ref{3lines}, there is an element $f
+\in L$ such that $f \not\perp d_3$ and $\angle (f,d_3) < \angle
+(e,d_3)$---this contradicts to the selection of~$e$.
+\end {proof}
+
+
+Greechie diagrams of finite subortholattices of~$\HL$ are given in
+Fig.~\ref{Fsubortholattices}.
+
+
+\begin {figure}[ht]
+%
+\hfill
+%
+\begin {picture}(0,10)(0,-10)
+\point {0}{0}
+\put (0,-10){\makebox(0,0)[b]{1}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(10,10)(0,-10)
+\point { 0}{0}
+\point {10}{0}
+\put (0,0){\line(1,0){10}}
+\put (5,-10){\makebox(0,0)[b]{2}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(20,10)(0,-10)
+\multiput (0,0)(10,0){3}{\disc}
+\put (0,0){\line(1,0){20}}
+\put (10,-10){\makebox(0,0)[b]{3}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(20,20)(-20,-10)
+\multiput (0,0)(-10,0){3}{\disc}
+\put (0,0){\line(-1,0){20}}
+\multiput (0,0)(-9,4.5){3}{\disc}
+\put (0,0){\line(-2,1){18}}
+\put (-10,-10){\makebox(0,0)[b]{4.2}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(20,30)(-20,-10)
+\multiput (0,0)(-10,0){3}{\disc}
+\put (0,0){\line(-1,0){20}}
+\multiput (0,0)(-9,4.5){3}{\disc}
+\put (0,0){\line(-2,1){18}}
+\multiput (0,0)(-4.5,9){3}{\disc}
+\put (0,0){\line(-1,2){9}}
+\put (-10,-10){\makebox(0,0)[b]{4.3}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(0,10)(0,-10)
+\put (0,0){\makebox(0,0){\dots}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(40,20)(-20,-10)
+\multiput (0,0)(-10,0){3}{\disc}
+\put (0,0){\line(-1,0){20}}
+\multiput (0,0)(-9,4.5){3}{\disc}
+\put (0,0){\line(-2,1){18}}
+\multiput (0,0)(9,4.5){3}{\disc}
+\put (0,0){\line(2,1){18}}
+\put (0,10){\makebox(0,0){\dots}}
+\put (0,-10){\makebox(0,0)[b]{4.n}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(0,10)(0,-10)
+\put (0,0){\makebox(0,0){\dots}}
+\end {picture}
+%
+\hfill\mbox{}
+\caption {Greechie diagrams of finite subortholattices of~$\HL$.}
+\label {Fsubortholattices}
+\end {figure}
+
+
+\begin {corollary}  \label{finitesubOL-full}
+Every finite subortholattice of~$\HL$ has a full set of two-valued states.
+\end {corollary}
+
+
+\begin {proof}
+It follows from \ref{finitesubortholattices} and \ref{noloop-concrete}.
+\end {proof}
+
+
+As concerns infinite subortholattices of~$\HL$, there is a countable
+subortholattice of~$\HL$ without any two-valued states (e.g., generated by
+finite sets without any two-valued state---see \ref{3subset}). On the other
+hand, there are infinite subortholattices with a full set of two-valued
+states, e.g.\ infinite pastings of 3-atomic Boolean algebras for a given atom
+(compare condition~(4) of \ref{finitesubortholattices}). It seems to be an
+open problem whether there is an infinite subortholattice of~$\HL$ which is
+not of this type and which has a two-valued state. Moreover, there might be
+an interesting connection between the nonexistence of a two-valued state and
+density in $\R^3$. This might give better insight into the nature of
+subortholattices of~$\HL$ and the connection with famous Gleason
+theorem~\cite{Gleason,Ptak-Pulmannova}, which (among other things) states
+that there is no two-valued state on~$\HL$.
+
+It should be noted that Greechie diagrams of subortholattices of~$\HL$ are
+relatively `complex'---the distance of every pair of elements is at most 2
+(every pair of different lines has a common orthogonal line). Hence, it is
+usually difficult to give a Greechie diagram of an infinite subortholattice
+of~$\HL$.
+
+
+
+
+\section {Realizability in $\HL$}
+
+
+The study of finite suborthoposets of~$\HL$ is more complicated. We would
+like to know whether a Greechie logic is orthorepresentable in~$\HL$. The
+first problem erases with the intrinsic geometrical structure of~$\HL$.
+
+
+\begin {definition}
+Let $P$ be an orthomodular poset. We say that $P$ is {\em weakly
+realizable\/} in~$\HL$ if there is a mapping $h\colon\, P \to \HL$ such
+that, for every $a,b \in P$:
+  \begin {conditions}
+  \item $h(0)=0$,
+  \item $h(a')=h(a)'$,
+  \item $h(a) \le h(b)$ whenever $a \le b$,
+  \item $h(a) \neq 0$ whenever $a \neq 0$.
+  \end {conditions}
+If, moreover, the mapping $h$ fulfills for every $a,b \in P$:
+  \begin {conditions}
+  \item [(4')] $h(a) \neq h(b)$ whenever $a \neq b$
+  \end {conditions}
+we say that $P$ is {\em realizable}. The set $h(P)$ is called a ({\em
+weak\/}) {\em realization\/} of~$P$ in~$\HL$.
+\end {definition}
+
+Weak realizability means that all orthogonality relations remains true in
+the images and, since every nonzero element has a nonzero image, if the set
+of two-valued states on $G \subseteq P$ is empty (not unital, resp.) then
+the set of two-valued states on~$h(G)$ is empty (not unital. resp.), too.
+Realizability means that, moreover, the mapping is one-to-one. Hence, if the
+set of two-valued states on $G \subseteq P$ is not separating (full, resp.),
+then the set of two-valued states on~$h(G)$ is not separating (full, resp.),
+too. A realization need not be a suborthoposet because a new orthogonal
+pairs might appear in the images.
+
+Let us give a characterization of orthomodular posets weakly realizable
+in~$\HL$.
+
+
+\begin {lemma}
+Let $P_{\cal P}$ be the pasting of a set ${\cal P}$ of orthomodular posets
+and let there is a mapping $h\colon\, P_{\cal P} \to \HL$ such that $h(P)$
+is a weak realization of~$P$ for every $P\in {\cal P}$. Then $h(P_{\cal P})$
+is a weak realization of~$P_{\cal P}$ in~$\HL$. In particular, every
+horizontal sum of orthomodular posets weakly realizable in~$\HL$ is weakly
+realizable in~$\HL$.
+\end {lemma}
+
+
+\begin {proof}
+Obvious.
+\end {proof}
+
+\begin {proposition}
+An orthomodular poset is weakly realizable in~$\HL$ if and only if every its
+block is finite and at most 3-atomic.
+\end {proposition}
+
+
+\begin {proof}
+$\Rightarrow$: Every orthogonal set of nonzero elements in an orthomodular
+poset~$P$ corresponds to an orthogonal set of nonzero elements in~$\HL$.
+Since such a set in~$\HL$ is at most 3-element, every block of~$P$ is finite
+with at most three atoms.
+
+$\Leftarrow$: Let $P$ be an orthomodular poset with only finite at most
+3-atomic blocks. Let us decompose $P$ into the horizontal sum $\sum_{i \in
+I} P_i$ of minimal horizontal summands. Let us choose a line $l \in \HL$ and
+let us define a mapping $h_i$ for every $i \in I$ as follows: $h(0)=0$,
+$h(1)=1$; if $P_i$ is 4-element, then let us take an atom $a_i \in P_i$ and
+put $h(a_i)=l$, $h(a_i')=l'$; if $P_i$ has more than four elements then
+every its block has three atoms and we put $h(a)=l$, $h(a')=l'$ for every
+atom $a \in P_i$. It is easy to see that $h_i(P_i)$ is a weak realization
+of~$P_i$ in~$\HL$ and that $\bigcup_{i \in I} h_i(P_i)$ is a weak realization
+of~$P$ in~$\HL$.
+\end {proof}
+
+
+The situation with realizability is more difficult and we do not know a
+characterization of it. Some results we will present in the next section.
+Let us present now another necessary condition.
+
+
+\begin {proposition}
+Every orthomodular poset realizable in~$\HL$ is a lattice.
+\end {proposition}
+
+
+\begin {proof}
+Let us suppose that $P$ is an orthomodular poset with a loop of order 4
+realizable in~$\HL$ and seek a contradiction. There are nonzero mutually
+different elements $a_1 \perp a_2 \perp a_3 \perp a_4 \perp a_1$ in~$P$ (see
+Fig.~\ref{Fnonrealizable}.2). Since for every pair of different nonzero
+elements there is only one nonzero element in~$\HL$ orthogonal to them, $a_1
+= a_3$---a contradiction.
+\end {proof}
+
+
+\begin {figure}[ht]
+%
+\hfill
+%
+\begin {picture}(30,20)(0,-20)
+\multiput (0,0)(10,0){4}{\disc}
+\put (0,0){\line(1,0){30}}
+\put (15,-20){\makebox(0,0)[b]{1}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(40,50)(-20,-30)
+\multiput(-10,-10)(0,20){2}{\line(1,0){20}}  \multiput (-10,-10)(10,0){3}{\disc}
+\multiput(-10,-10)(20,0){2}{\line(0,1){20}}  \multiput (-10, 10)(10,0){3}{\disc}
+\multiput(-10,  0)(20,0){2}{\disc}
+\put (-15,-15){\makebox(0,0){$a_1$}}
+\put ( 15,-15){\makebox(0,0){$a_2$}}
+\put ( 15, 15){\makebox(0,0){$a_3$}}
+\put (-15, 15){\makebox(0,0){$a_4$}}
+\put (0,-30){\makebox(0,0)[b]{2}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(40,50)(-20,-20)
+\put (-10, 0){\line(1,0){20}}    \multiput (-10,0)(10, 0){3}{\disc}
+\put (  0, 0){\line(0,1){20}}    \multiput (  0,0)( 0,10){3}{\disc}
+\put (  0,20){\line(-1,-2){10}}  \put ( -5,10){\discbig}
+\put (  0,20){\line( 1,-2){10}}  \put (  5,10){\discbig}
+\put (-15, -5){\makebox(0,0){$a_1$}}
+\put (  0, -5){\makebox(0,0){$a_2$}}
+\put ( 15, -5){\makebox(0,0){$a_3$}}
+\put (  0, 25){\makebox(0,0){$b$}}
+\put (  0,-20){\makebox(0,0)[b]{3}}
+\end {picture}
+%
+\hfill\mbox{}
+%
+\caption {Greechie diagrams of some orthomodular posets nonrealizable in~$\HL$
+(a~\usebox{\shortdiagram}~b is an abbreviation of the Greechie diagram in
+Fig.~\protect\ref{Fstatespaces}.2.).}
+\label {Fnonrealizable}
+\end {figure}
+
+
+Examples of orthomodular posets nonrealizable in~$\HL$ are given in
+Fig.~\ref{Fnonrealizable}. The first has a 4-atomic block, the second is not
+a lattice. The third example is much more subtle an depends on the following
+intrinsic property of~$\HL$.
+
+
+\begin {lemma}  \label {realizabilityoflogic}
+Let $L$ be a realization of an orthomodular lattice given in
+Fig.~\ref{Fstatespaces}.2. Then $\angle (a,b) \in \langle \arccos \frac 13,
+\frac \pi 2)$. On the other hand, for every $\alpha \in \langle \arccos
+\frac 13, \frac \pi 2)$ there is a realization of~$L$ such that $\angle
+(a,b) = \alpha$.
+\end {lemma}
+
+
+\begin {proof}
+(See also~\cite{Kochen-Specker}). Let us choose a coordinate system such
+that $c = \Sp (1,0,0)$, $d = \Sp (0,1,0)$. Hence $e = \Sp (0,0,1)$. Since
+$c_a \perp c$ and $d_b \perp d$, there are $x,y \in \R \setminus \{0\}$ such that
+  $$
+  c_a = \Sp (0,y,1), \qquad
+  d_b = \Sp (x,0,1).
+  $$
+Since $c_b \perp c,c_a$ and $d_a \perp d,d_b$, $a \perp c_a,d_a$ and $b \perp
+c_b,d_b$, we obtain
+  \begin {eqnarray*}
+  c_b = \Sp (0,-1,y), &\enspace&
+  d_a = \Sp (-1,0,x), \\
+  a   = \Sp (xy,-1,y), &\enspace&
+  b   = \Sp (-1,xy,x).
+  \end {eqnarray*}
+Thus, using an elementary calculus,
+  $$
+  \cos \angle (a,b) = \frac {|xy|}{\sqrt {(1+x^2+x^2y^2)(1+y^2+x^2y^2)}}
+    \in (0, 1/3 \rangle.
+  $$
+For an arbitrary $\alpha \in \langle \arccos \frac 13, \frac \pi2)$ we can
+solve this equation and obtain, e.g.,
+  $$
+  x = y = \sqrt { \frac {1/\cos\alpha-1}{2} -
+             \sqrt {\left( \frac {1/\cos\alpha}{2} \right)^2-1}}.
+  $$
+\end {proof}
+
+
+
+For $\alpha = \arccos \frac 13$ we have exactly one realization (two
+different solutions given by the symmetry of the Greechie diagram). In
+Fig.~\ref{Frepresentations}.2 there is an example such that symmetries of
+the realization are easily seen (with respect to the axis $o$ of $a$ and $b$
+and to planes $\Sp\{a,b\}$, $\Sp\{o,a\times b\}$). For $\alpha \in
+(\arccos \frac 13, \frac \pi2)$ we have two different realizations (each
+symmetric with respect to the axis of $a$ and $b$).
+
+The orthomodular lattice given in Fig.~\ref{Fnonrealizable}.3 is not
+realizable, because for every triple $a_1,a_2,a_3 \in \HL$ of mutually
+orthogonal nonzero elements and for every $b \in \HL$ there is an $i \in
+\{1,2,3\}$ such that $\angle (b,a_i) \le \arccos \frac 1{\sqrt 3}$.
+
+Let us note that in~\cite{Kochen-Specker} the above lemma is stated also for
+$\alpha = \frac {\pi}{2}$. This is not true, because then either $x=0$ or
+$y=0$ and we obtain only a weak realization.
+
+
+
+
+\section {Suborthoposets of~$\HL$}
+
+
+We would like to present examples of orthomodular lattices
+orthorepresentable in~$\HL$. To ensure that an orthomodular lattice is
+orthorepresentable in~$\HL$ it suffices to find its realization in~$\HL$
+such that there are not ordered (orthogonal, resp.) pairs other than it was
+intended. E.g., it can be easily verified that an orthomodular lattice given
+in Fig.~\ref{Fstatespaces}.2 is orthorepresentable in~$\HL$ (see
+Fig.~\ref{Frepresentations}.2). We present partial results which
+orthomodular lattices are orthorepresentable (realizable, resp.) in~$\HL$.
+The idea of their proofs is that we can find uncountable many (continuum)
+weak realizations while only for a countable many of them some images
+coincide or, in case of orthorepresentability, give a new ordered
+(orthogonal, resp.) pair.
+
+We show that there is a large class of infinite suborthoposets of~$\HL$ with
+a full set of two-valued states.
+
+
+\begin {proposition} \label {representablesum}
+Every horizontal sum of countable many countable orthomodular lattices
+orthorepresentable (realizable, resp.) in~$\HL$ is orthorepresentable
+(realizable, resp.) in~$\HL$.
+\end {proposition}
+
+
+\begin {proof}
+It suffices to prove this proposition for two summands (we can proceed by
+induction). Let $L_1,L_2$ be their orthorepresentations (realizations,
+resp.) in~$\HL$. It suffices to prove that we can rotate $L_2$ to~$\bar L_2$
+such that $a_1 \not\subseteq a_2$ and $a_2 \not\subseteq a_1$ for every $a_1
+\in L_1 \setminus \{0,1\}$ and for every $a_2 \in \bar L_2 \setminus
+\{0,1\}$, i.e. such that $l \not\subseteq \bigcup (L_1 \setminus \{1\})$ for
+every line $l \in \bar L_2$. If $L_2 = \{0,1\}$ then the proof is complete.
+Let us suppose that $L_2 \neq \{0,1\}$. Then there is a line $l_0 \in L_2$.
+Since $\bigcup (L_1 \setminus \{1\}) \neq \R^3$ there is a line $\bar l_0
+\not\subseteq \bigcup (L_1 \setminus \{1\})$ and we can rotate $L_2$ such
+that $l_0$ goes to $\bar l_0$. Rotating now the image of $L_2$ around $\bar
+l_0$ we obtain an uncountable many possibilities while for only a countable
+many of them there is a line $\bar l \in \bar L_2$ such that $\bar l
+\subseteq \bigcup (L_1 \setminus \{1\})$. Indeed, for every $l \in L_2$ all
+possible positions of~$\bar l$ in a unit sphere $S(0,1)$ in~$\R^3$ form a
+circle $C$ with the center on $\bar l_0$ while, for every $a \in L_1
+\setminus \{1\}$, $a \cap S(0,1)$ is either a 2-element set ($a$ is a line)
+or a circle not identical to~$C$; hence $a \cap S(0,1) \cap C$ is at most
+2-element.
+\end {proof}
+
+
+\begin {proposition} \label{representablepasting}
+Every pasting for an atom of a pair of countable orthomodular lattices
+orthorepresentable (realizable, resp.) in~$\HL$ is orthorepresentable
+(realizable, resp.) in~$\HL$.
+\end {proposition}
+
+
+\begin {proof}
+If we paste for an atom in a 2-atomic block then we obtain a horizontal sum
+and the proof follows from~\ref{representablesum}. Let us suppose that we
+paste for atoms in 3-atomic blocks. Let $L_1,L_2$ be orthorepresentations
+(realizations, resp.) in~$\HL$ of given orthomodular lattices such that $L_1
+\cap L_2 \ni l_0$ where $l_0$ represents the atom in both $L_1,L_2$ for
+which we paste. It suffices to prove that there is a rotation $\bar L_2$
+of~$L_2$ around the line~$l_0$ such that $a_1 \not\subseteq a_2$ and $a_2
+\not\subseteq a_1$ for every $a_1 \in L_1 \setminus \{0,1,l_0,l_0'\}$ and
+for every $a_2 \in L_2 \setminus \{0,1,l_0,l_0'\}$, i.e., such that $l
+\not\subseteq \bigcup (L_1 \setminus \{1,l_0'\})$ for every line $l \in \bar
+L_2$. This gives only countable many restrictions to uncountable possible
+positions of~$\bar L_2$, hence the proof is complete.
+\end {proof}
+
+
+\begin {corollary}
+Every countable Greechie logic with at most 3-atomic blocks and without
+any loop is orthorepresentable in~$\HL$.
+\end {corollary}
+
+
+\begin {proof}
+Every countable Greechie logic with only finite at most 3-atomic blocks is a
+horizontal sum of subsequent countable pastings of finite 3-atomic Boolean
+algebras for an atom. The rest follows from \ref{finitesubortholattices},
+\ref{representablepasting} (using the induction) and \ref{representablesum}.
+\end {proof}
+
+
+According to \ref{noloop-concrete}, Greechie logics from the above Corollary
+have a full set of two-valued states.
+
+
+\begin {lemma} \label{representablepasting2}
+Let $L_1$ be a countable orthomodular lattice orthorepresentable
+(realizable, resp.) in~$\HL$ and $L_2$ be an orthomodular lattice given in
+Fig.~\ref{Frealizable}.1 such that $L_1 \cap L_2 = \{0,a,b,a',b',1\}$ and $a
+\neq b$ are nonorthogonal atoms in~$L_1$ (in its realization, resp.). Then
+the pasting of $L_1$ and~$L_2$ is orthorepresentable (realizable, resp.)
+in~$\HL$.
+\end {lemma}
+
+
+\begin {figure}[ht]
+%
+\hfill
+%   3 chain
+\begin {picture}(40,50)(-20,-20)
+\put (-10, 0){\line(0,1){20}}  \multiput (-10,0)(0,10){3}{\disc}
+\put ( 10, 0){\line(0,1){20}}  \multiput ( 10,0)(0,10){3}{\disc}
+\put (-10,20){\line(1,0){20}}  \put (0,20){\disc}
+\put (-15,-5){\makebox(0,0){$a$}}
+\put (-15,10){\makebox(0,0){$a_c$}}
+\put (-15,25){\makebox(0,0){$c_a$}}
+\put (  0,25){\makebox(0,0){$c$}}
+\put ( 15,25){\makebox(0,0){$c_b$}}
+\put ( 15,10){\makebox(0,0){$b_c$}}
+\put ( 15,-5){\makebox(0,0){$b$}}
+\put (  0,-20){\makebox(0,0)[b]{1}}
+\end {picture}
+%
+\hfill
+%   no separating
+\begin {picture}(40,45)(-20,-30)
+\multiput(-10,-10)(0,20){2}{\line(1,0){20}}  \multiput(0,-10)(0,20){2}{\discbig}
+\put (-10,-10){\line(1, 1){20}}  \multiput (-10,-10)(10,0){3}{\disc}
+\put (-10, 10){\line(1,-1){20}}  \multiput (-10, 10)(10,0){3}{\disc}
+\put (  0,-10){\line(0, 1){20}}  \put (0,0){\disc}
+\put (-15,-15){\makebox(0,0){$a_1$}}
+\put ( 15,-15){\makebox(0,0){$b_1$}}
+\put ( 15, 15){\makebox(0,0){$a_2$}}
+\put (-15, 15){\makebox(0,0){$b_2$}}
+\put (  5,  0){\makebox(0,0){$f$}}
+\put (0,-30){\makebox(0,0)[b]{2}}
+\end {picture}
+%
+\hfill
+%    no unital
+\newsavebox{\web}% base of web in 2 pictures
+\savebox{\web}{%
+\begin{picture}(40,35)(-20,0)
+\put (0,15){\line( 0, 1){20}}  \multiput (0,15)(  0,  10){3}{\disc}
+\put (0,15){\line( 4, 1){20}}  \multiput (0,15)( 10, 2.5){3}{\disc}
+\put (0,15){\line(-4, 1){20}}  \multiput (0,15)(-10, 2.5){3}{\disc}
+\put (0,15){\line( 2,-3){10}}  \multiput (0,15)(  5,-7.5){3}{\disc}
+\put (0,15){\line(-2,-3){10}}  \multiput (0,15)( -5,-7.5){3}{\disc}
+\put (  0,35  ){\line( 4,-3){20}}  \put ( 10 ,27.5){\discbig}
+\put (  0,35  ){\line(-4,-3){20}}  \put (-10 ,27.5){\discbig}
+\put (  5, 7.5){\line( 1, 2){ 5}}  \put ( 7.5,12.5){\discbig}
+\put ( -5, 7.5){\line(-1, 2){ 5}}  \put (-7.5,12.5){\discbig}
+\put (-10, 0  ){\line( 1, 0){20}}  \put (  0 , 0  ){\discbig}
+\end{picture}}%
+\begin {picture}(60, 65)(-30,-20)
+\put (0,0){\makebox(0,0)[b]{\usebox{\web}}}
+\put (  0,40){\makebox(0,0){$a_1$}}
+\put ( 27,20){\makebox(0,0){$a_5$}}
+\put (-27,20){\makebox(0,0){$a_2$}}
+\put ( 15,-5){\makebox(0,0){$a_4$}}
+\put (-15,-5){\makebox(0,0){$a_3$}}
+\put (  7,22){\makebox(0,0){$\bar a_5$}}
+\put ( -7,21){\makebox(0,0){$\bar a_2$}}
+\put ( 11, 7){\makebox(0,0){$\bar a_4$}}
+\put (-11, 7){\makebox(0,0){$\bar a_3$}}
+\put (0,-20){\makebox(0,0)[b]{3}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(60,65)(-30,-20)
+\put (0,0){\makebox(0,0)[b]{\usebox{\web}}}
+\put (  0,25  ){\line( 4,-3){10}}  \put (  5,21.2){\discbig}
+\put (  0,25  ){\line(-4,-3){10}}  \put ( -5,21.2){\discbig}
+\put ( 10, 0  ){\line( 1, 2){10}}  \put ( 15,10  ){\discbig}
+\put (-10, 0  ){\line(-1, 2){10}}  \put (-15,10  ){\discbig}
+\put ( -5, 7.5){\line( 1, 0){10}}  \put (  0, 7.5){\discbig}
+\put (  0,40){\makebox(0,0){$a_1$}}
+\put ( 27,20){\makebox(0,0){$a_5$}}
+\put (-27,20){\makebox(0,0){$a_2$}}
+\put ( 15,-5){\makebox(0,0){$a_4$}}
+\put (-15,-5){\makebox(0,0){$a_3$}}
+\put (0,-20){\makebox(0,0)[b]{4}}
+\end {picture}
+%
+\hfill
+%
+\begin {picture}(50,60)(-30,-40)
+\put (-10, 20){\line( 1, 0){20}}  \multiput (-10, 20)( 10, 0){3}{\disc}
+\put (-10,-20){\line( 1, 0){20}}  \multiput (-10,-20)( 10, 0){3}{\disc}
+\put (  0,-10){\line(-2, 1){20}}  \multiput (  0,-10)(-10, 5){3}{\disc}
+\put (  0,-10){\line( 2, 1){20}}  \multiput (  0,-10)( 10, 5){3}{\disc}
+\put (-10,-10){\line( 0, 1){20}}  \multiput (-10,-10)(  0,20){2}{\disc}
+\put (-20,  0){\line( 1, 2){10}}  \put (-15, 10){\disc}
+\put (-20,  0){\line( 1,-2){10}}  \put (-15,-10){\disc}
+\put ( 20,  0){\line(-1, 2){10}}  \put ( 15, 10){\disc}
+\put ( 20,  0){\line(-1,-2){10}}  \put ( 15,-10){\disc}
+\put (-10, 10){\line( 1, 1){10}}  \put ( -5, 15){\disc}
+\put (-10,-10){\line( 1,-1){10}}  \put ( -5,-15){\disc}
+\put (-25, 0){\makebox(0,0){$a$}}
+\put ( 10, 0){\makebox(0,0){$b$}}
+\put (  0,-40){\makebox(0,0)[b]{5}}
+\end {picture}
+%
+\hfill\mbox{}
+%
+\caption {Greechie diagrams of orthomodular lattices weakly realizable
+in~$\HL$.}
+\label {Frealizable}
+\end {figure}
+
+
+
+\begin {proof}
+Let us suppose that $L_1$ is an orthorepresentation (realization, resp.)
+in~$\HL$ of a given orthomodular lattice. If $a$ ($b$, resp.) is a
+2-dimensional subspace of~$\HL$ then $a$ ($b$, resp.) is a part of a
+4-element horizontal summand and this summand might be considered as a part
+of~$L_2$. The proof then follows from \ref{representablepasting}. Let
+us suppose that $a,b$ are lines. Let us consider all atoms $c_a \le a'$. We
+have uncountable many possibilities which fill in the unit sphere $S(0,1)$ a
+circle~$C_a$. Of course, $c_a \le a'$ and $a_c = a' \land c_a' \le a'$ but
+all other ordering of $c_a$ and $a_c$ with elements of~$L_1 \setminus
+\{0,1\}$ can be excluded if we exclude a countable many possibilities.
+Similarly, if positions of~$c_a$ fill a circle~$C_a$ then positions of $c_b
+\perp c_a,b$ fill a circle $C_b \subset b'$ ($a \not\perp b$). Again, there
+is only a countable many positions of~$c_a$ for which either $c_b$ or $b_c =
+b' \land c_b'$ is ordered with some element of $L_1 \setminus \{0,1,b'\}$.
+Finally, it can be shown that positions of~$c$ fill a smooth curve on
+$S(0,1)$ which is not a circle. Hence, there is a possibility to choose
+$c_a$ such that we obtain the desired orthorepresentation (realization,
+resp.).
+\end {proof}
+
+
+\begin {proposition}
+Let $n \ge 5$ be a natural number and let $B_1,\ldots,B_n$ be finite
+3-atomic Boolean algebras such that $B_i \cap B_{i+1} = \{0,a_i,a_i',1\}$
+for every $i\in \{1,\ldots,n\}$, where $B_{n+1} = B_1$ and $a_1,\ldots,a_n$
+are mutually different atoms. Then the pasting of $\{B_1,\ldots,B_n\}$
+(so-called {\em $n$-cycle\/}) is orthorepresentable in~$\HL$.
+\end {proposition}
+
+
+\begin {proof}
+It follows from \ref{representablepasting} and from
+\ref{representablepasting2}.
+\end {proof}
+
+
+
+
+\section {Kochen--Specker type configurations}
+
+
+We will give several examples of Kochen--Specker type configurations which
+arise from Greechie diagrams. Some of these examples has been already used
+in the literature in the attempt to find a subset of~$\HL$ without a
+two-valued state. We present the connection to Greechie diagrams (this gives
+a better geometric insight), show a nonexistence of a `large' set of
+two-valued states for various concepts, and, moreover, we do not stop in
+proving weak realizability but we discuss the real number of elements.
+
+
+\begin {proposition} \label{nofull}
+There is a finite suborthoposet of~$\HL$ such that the set of two-valued
+states on it is not full.
+\end {proposition}
+
+
+\begin {proof}
+Let us consider a suborthoposet $L$ of~$\HL$ given in
+Fig.~\ref{Frepresentations}.2. It is an orthorepresentation of an
+orthomodular lattice given in Fig.~\ref{Fstatespaces}.2, it is 28-element
+(13-atomic) and the set of two-valued states on~$L$ is not full (see the
+proof of \ref{statespaces}.(1)). In fact, in the proof of
+\ref{statespaces}.(1) it was shown that there is no two-valued state on the
+8-element set $\{a,c_a,d_a,c,d,c_b,d_b,b\}$ such that $s(a)=s(b)=1$ (a
+reformulation of fullness---see~\ref{full}). This orthomodular lattice
+can be orthogenerated e.g.\ by the 6-element set $\{a,c_a,c_b,b,d_b,d_a\}$ and
+generated e.g.\ by the 3-element set $\{a,c_b,d_b\}$.
+\end {proof}
+
+
+\begin {proposition} \label{noseparating}
+There is a finite suborthoposet of~$\HL$ such that the set of two-valued
+states on it is not separating.
+\end {proposition}
+
+\begin {proof}
+Let us consider an orthomodular lattice given in Fig.~\ref{Fstatespaces}.3.
+It is an orthomodular lattice without a separating set of two-valued states
+(see the proof of \ref{statespaces}.(2)). It has 56~elements (27~atoms) and
+a 17-element subset without a separating set of states (5 marked and 6
+`hidden' in every circle). It can be checked that it has the following
+realization (which forms a suborthoposet of~$\HL$ given in
+Fig.~\ref{Frealizable}.2---points in circles denotes the middle elements of
+the diagram from Fig.~\ref{Fstatespaces}.2): $f=\Sp(0,0,1)$,
+$a_1$~\usebox{\shortdiagram}~$b_1$ given by Fig.~\ref{Frepresentations}.2;
+$a_2$~\usebox{\shortdiagram}~$b_2$ we obtain from the representation on
+Fig.~\ref{Frepresentations}.2 rotating by $\pi/2$ around~$f$. There is a
+10-element set of orthogenerators (e.g.\
+$\{a_1,b_1,c_{a1},c_{b1},d_{a1},d_{b1},f,c_2,c_{b2},d_{b2}\}$) and a
+4-element set of generators (e.g.\ $\{a_1,c_{b1},d_{b1},c_{b2}\}$).
+\end {proof}
+
+
+Let us note that we can take a realization of an orthomodular lattice given
+in Fig.~\ref{Fstatespaces}.2 such that we obtain an orthorepresentation of
+the orthomodular lattice given in Fig.~\ref{Fstatespaces}.3, but the set of
+(ortho)generators is larger in this case.
+
+
+\begin {proposition} \label{nounital}
+There is a finite suborthoposet of~$\HL$ such that the set of two-valued
+states on it is not unital.
+\end {proposition}
+
+
+\begin {proof}
+Let us consider an orthomodular lattice $L$ given in
+Fig.~\ref{Frealizable}.3. It is an orthomodular lattice without a unital set
+of two-valued states. Indeed, for every two-valued state $s$ on~$L$ with
+$s(a_1)=1$ we have $s(f)=s(a_2)=s(a_5)=0$, $s(\bar a_2)=s(\bar a_5)=1$,
+$s(\bar a_3)=s(\bar a_4)=0$, $s(a_3)=s(a_4)=1$---a contradiction. It has 132
+elements (65 atoms) and a 40-element subset without a unital set of states
+(6 hidden in every circle and all marked $a_i$'s and~$\bar a_i$'s). Let us
+find a weak realization of~$L$. It can be done as follows: Put
+$f=\Sp(0,0,1)$, $a_1=\Sp(1,0,0)$, $\bar a_1=\Sp(0,1,0)$ and let $a_k,\bar
+a_k$ ($k=2,\ldots,5$) be images of $a_1,\bar a_1$ in rotations around~$f$
+about $k\cdot 72^\circ$. Find a realization of the orthomodular lattice
+given in Fig.~\ref{Fstatespaces}.2 such that the angle of images of $a,b$
+is~72$^\circ$ (see the proof of \ref{realizabilityoflogic}) and rotate this
+realization to the following pairs of lines: $(a_1,a_2)$, $(\bar a_2,\bar
+a_3)$, $(a_3,a_4)$, $(\bar a_4,\bar a_5)$, $(a_5,a_1)$ (i.e., $a$ goes to
+the first and $b$ to the second line for every pair). It can be checked that
+an orthomodular poset orthogenerated by this weak realization is finite. (In
+fact, it is a weak realization of an orthomodular lattice given in
+Fig.~\ref{Frealizable}.4 by the same way.)
+\end {proof}
+
+
+It can be shown that if we take the realization of the orthomodular lattice
+given in Fig.~\ref{Fstatespaces}.2 such that the angle between $a$ and $b$ is
+equal to $72^\circ$ by the expression given in the proof of
+\ref{realizabilityoflogic} as the first copy and if the second and the third
+copy arise by rotations around the axis of the plane given by $a$ and $b$
+such that $b$ coincides with $a$ of the next copy, then some elements
+coincide:
+  \begin {eqnarray*}
+  (c_a, c  , c_b, b_c, b, b_d, d_b)_1 &=&
+  (d  , d_b, d_a, a_d, a, a_c, c_a)_2 ,\\
+  (c  , d_b, d  , d_a, e  )_1 &=&
+  (c_a, d  , c  , e  , c_b)_3.
+  \end {eqnarray*}
+(Index denotes the number of the copy.) Hence, the weak realization of the
+orthomodular lattice from the above proof gives a 29-element subset of~$\HL$
+without a unital set of two-valued states and the suborthoposet
+orthogenerated by it has 104~elements (51~atoms), is orthogenerated by a
+16-element set and generated by a 4-element set (e.g., elements $a,c_b,d_b$
+of some a~\usebox{\shortdiagram}~b and some element from the inner
+`pentagon'). The `almost' Greechie diagram (20 points which belong to
+exactly one edge are for simplicity omitted) of this suborthoposet of~$\HL$
+(realization of the orthomodular lattice given in Fig.~\ref{Frealizable}.4)
+is given in Fig.~\ref{FGD2pentagons}. Elements of the 29-element subset
+without a unital set of two-valued states are all marked points which are
+not crossed, a set of orthogenerators is e.g.\ the set of vertices of both
+pentagons with $a_i$'s and with the middle point, a set of generators
+is marked by circles.
+
+It should be noted that in~\cite{Schuette,svozil-nat-acad} there is an
+example of an 11-element set of lines orthogenerating a 25-element set of
+lines and a 76-element (37-atomic) suborthoposet of~$\HL$ without a unital
+set of two-valued states. This suborthoposet is generated by a 3-element
+set. The Greechie diagram of this example does not seem to provide an easy
+survey, hence we omit it. A more detailed description of this example is
+given in Section~\ref{Sdiscussion}.
+
+
+\begin {figure}[p]
+\unitlength 0.40\textwidth
+\newcommand{\inner}[3]{\point#1\point#2\point#3\emline#1#2\emline#2#3
+  \emline#2{0}{0}  % for 2 pentagons only
+  }
+\newcommand{\side}[6]{\emline#1#4}
+\newcommand{\pentagon}[5]{\inner#1\inner#2\inner#3\inner#4\inner#5
+  \side#1#2\side#2#3\side#3#4\side#4#5\side#5#1}
+\newcommand{\pentagondiagram}{\pentagon
+  {{{ 0    }{ 1    }}{{-0.5  }{ 0    }}{{ 0    }{-0.809}}}%
+  {{{-0.951}{ 0.309}}{{-0.155}{-0.476}}{{ 0.769}{-0.250}}}%
+  {{{-0.588}{-0.809}}{{ 0.405}{-0.294}}{{ 0.476}{ 0.655}}}%
+  {{{ 0.588}{-0.809}}{{ 0.405}{ 0.294}}{{-0.476}{ 0.655}}}%
+  {{{ 0.951}{ 0.309}}{{-0.155}{ 0.476}}{{-0.769}{-0.250}}}%
+  }
+\def\contr{0.333}
+\newsavebox{\smallpentagon}
+\savebox{\smallpentagon}{{\unitlength\contr\unitlength%
+  \begin{picture}(2,2)(-1,-1)\pentagondiagram\end{picture}}}
+\begin {center}
+\begin {picture}(2,2)(-1,-0.9)
+\pentagondiagram
+\point {0}{0}
+\put (0,0){\makebox(0,0){\usebox{\smallpentagon}}}
+\put ( 0    , 1    ){\discbig}        % generators
+\put ( 0    ,\contr){\discbig}
+\put ( 0    ,-0.809){\discbig}
+\put ( 0.405, 0.294){\discbig}
+\put ( 0.135, 0.098){\makebox(0,0){$\times$}}    % unnecessary for a set
+\put (-0.159, 0.218){\makebox(0,0){$\times$}}
+\footnotesize
+\place { 0    }{ 0    }{ 2}{ -9}{}{f}
+\place {-0.5  }{ 0    }{15}{ -9}{}{a_2}
+\place {-0.155}{-0.476}{12}{ 12}{}{a_5}
+\place { 0.405}{-0.294}{-6}{ 15}{}{a_3}
+\place { 0.405}{ 0.294}{-6}{-14}{}{a_1}
+\place {-0.155}{ 0.476}{-3}{-15}{}{a_4}
+\place { 0.000}{ 1.000}{ 0}{ 6}{ b}{d_{b1}=c_{a2}=d_{ 3}=c_{ 5}}
+\place {-0.476}{ 0.655}{-4}{ 4}{rb}{d_{a1}=e_{ 3}=c_{b5}}
+\place {-0.951}{ 0.309}{-6}{ 0}{r }{d_{ 1}=c_{3}=d_{b4}=c_{a5}}
+\place {-0.769}{-0.250}{-6}{ 0}{r }{e_{ 1}=c_{b3}=d_{a4}}
+\place {-0.588}{-0.809}{ 0}{-6}{ t}{c_{ 1}=d_{b2}=c_{a3}=d_{ 4}}
+\place { 0    }{-0.809}{ 0}{-6}{ t}{c_{b1}=d_{a2}=e_{ 4}}
+\place { 0.588}{-0.809}{ 0}{-6}{ t}{c_{a1}=d_{ 2}=c_{ 4}=d_{b5}}
+\place { 0.769}{-0.250}{ 6}{ 0}{l }{e_{ 2}=c_{b4}=d_{a5}}
+\place { 0.951}{ 0.309}{ 6}{ 0}{l }{c_{ 2}=d_{b3}=c_{a4}=d_{ 5}}
+\place { 0.476}{ 0.655}{ 4}{ 4}{lb}{c_{b2}=d_{a3}=e_{ 5}}
+\end {picture}
+\end {center}
+\caption {`Almost' Greechie diagram of a suborthoposet of~$\HL$ without a
+unital set of two-valued states.}
+\label {FGD2pentagons}
+\footnotesize
+$$
+\begin {array}{l@{\,=\,\Sp\,(\,}r@{\,,\,}r@{\,,\,}r@{\,)}}
+a_{ 1} & 1               & 0                & 0                \\
+a_{ 2} & \sqrt{3-\sqrt5} & \sqrt{ 5+\sqrt5} & 0                \\
+a_{ 3} &-\sqrt{3+\sqrt5} & \sqrt{ 5-\sqrt5} & 0                \\
+a_{ 4} &-\sqrt{3+\sqrt5} &-\sqrt{ 5-\sqrt5} & 0                \\
+a_{ 5} & \sqrt{3-\sqrt5} &-\sqrt{ 5+\sqrt5} & 0                \\
+c_{a1} & 0               &-\sqrt{-1+\sqrt5} & 1                \\
+d_{a1} & 0               & \sqrt 2          & \sqrt{-2+\sqrt5} \\
+c_{ 1} & \sqrt{  \sqrt5} & \sqrt{ 2+\sqrt5} & \sqrt{ 3+\sqrt5} \\
+d_{ 1} &-\sqrt{  \sqrt5} &-\sqrt{-2+\sqrt5} & \sqrt  2         \\
+c_{b1} &-\sqrt{5+\sqrt5} & \sqrt{ 3-\sqrt5} &2\sqrt{-2+\sqrt5} \\
+d_{b1} & \sqrt{  \sqrt5} &-\sqrt{-2+\sqrt5} & \sqrt  2         \\
+e_{ 1} & \sqrt{  \sqrt5} &-\sqrt{ 2+\sqrt5} & \sqrt{ 3-\sqrt5} \\
+c_{ 2} &-\sqrt{  \sqrt5} & \sqrt{ 2+\sqrt5} & \sqrt{ 3+\sqrt5} \\
+c_{b2} &-\sqrt{  \sqrt5} &-\sqrt{ 2+\sqrt5} & \sqrt{ 3-\sqrt5} \\
+e_{ 2} & \sqrt{5+\sqrt5} & \sqrt{ 3-\sqrt5} &2\sqrt{-2+\sqrt5} \\
+f      & 0               & 0                & 1
+\end {array}
+$$
+\end {figure}
+
+
+\begin {proposition} \label {empty}
+There is a finite suborthoposet of~$\HL$ such that the set of two-valued
+states on it is empty.
+\end {proposition}
+
+
+\begin {proof}
+Let us consider an orthomodular lattice $L$ which is the pasting of the
+orthomodular lattice given in Fig.~\ref{Frealizable}.3 for $a_1$ and of the
+orthomodular lattice given in Fig.~\ref{Frealizable}.4 for its middle point.
+It is an orthomodular lattice without any two-valued state. Indeed, if $s$
+is a two-valued state on~$L$ then $s(a_1)=0$ (see above). Analogously from
+the other diagram, $s(a_1)=1$---a contradiction. It has 374~elements
+(186~atoms) and a 110-element subset without any two-valued state (6
+`hidden' in every circle and all marked except two of them---$a_1$ and $\bar
+a_1$). According to \ref {representablepasting}, this orthomodular poset is
+weakly realizable in~$\HL$.
+\end {proof}
+
+
+It can be shown that we can paste for the whole block and obtain a weak
+realization which is a union of weak realizations of two copies of an
+orthomodular lattice given in Fig.~\ref{Frealizable}.4. Hence, this
+suborthoposet has 200~elements (99~atoms) and a 58-element subset without
+any two-valued state.
+
+
+It should be noted that in~\cite{Peres2} there is an example of a 33-element
+set of lines without any two-valued state. Direction vectors of these lines
+arise by all permutations of coordinates from $(0,0,1)$, $(0,\pm1,1)$
+$(0,\pm1,\sqrt2)$, $(\pm1,\pm1,\sqrt2)$. This set of lines orthogenerates a
+suborthoposet of~$\HL$ with 116~elements (57~atoms). Direction vectors of
+remaining lines arise by all permutations of coordinates from
+$(\pm1,\pm3,\sqrt2)$. This suborthoposet of~$\HL$ has a 17-element set of
+orthogenerators (e.g.\ lines with direction vectors $(0,0,1)$, $(0,1,0)$ and
+all coordinate permutations from $(0,1,\sqrt2)$, $(1,\pm1,\sqrt2)$) and a
+3-element set of generators (e.g.\ lines with direction vectors $(1,0,0)$,
+$(1,1,0)$, $(\sqrt2,1,1)$). The `almost' Greechie diagram (24~points which
+belong to exactly one edge are for simplicity omitted) of this example is
+given in Fig.~\ref{FGD33lines} (one edge is denoted by a circle). The above
+mentioned 3-element set of generators is marked by circles.
+
+
+\begin {figure}[p]
+\unitlength .45\textwidth
+\newcommand{\onethird}[3]{\axis#1\side#1#2\side#1#3\cross#2#3}
+\newcommand{\axis}[4]%
+  {\point#1\point#2\point#3\point#4\emline#1#3\emline#3{0}{0}}
+\newcommand{\side}[8]%
+  {\point#5\point#6\point#7\point#8\emline#1#5\emline#5#6\emline#2#8\emline#8#7}
+\newcommand{\cross}[8]{\emline#1#7\emline#7#3\emline#3#5\emline#2{0}{0}}
+\catcode`\!=\active  \def!{\bar1}
+\begin {center}
+\begin {picture}(2,2)(-1,-1)
+% \input svtk.dat
+\onethird
+{{{ 0.100}{-0.995}}{{ 0.050}{-0.747}}{{ 0.000}{-0.500}}{{ 0.000}{-0.250}}}%
+{{{ 0.643}{-0.766}}{{ 0.087}{-0.050}}{{ 0.100}{-0.250}}{{ 0.536}{-0.112}}}%
+{{{-0.643}{-0.766}}{{-0.087}{-0.050}}{{-0.100}{-0.250}}{{-0.536}{-0.112}}}%
+\onethird
+{{{ 0.812}{ 0.584}}{{ 0.622}{ 0.417}}{{ 0.433}{ 0.250}}{{ 0.217}{ 0.125}}}%
+{{{ 0.342}{ 0.940}}{{-0.000}{ 0.100}}{{ 0.167}{ 0.212}}{{-0.171}{ 0.520}}}%
+{{{ 0.985}{-0.174}}{{ 0.087}{-0.050}}{{ 0.267}{ 0.038}}{{ 0.365}{-0.408}}}%
+\onethird
+{{{-0.912}{ 0.411}}{{-0.672}{ 0.330}}{{-0.433}{ 0.250}}{{-0.217}{ 0.125}}}%
+{{{-0.985}{-0.174}}{{-0.087}{-0.050}}{{-0.267}{ 0.038}}{{-0.365}{-0.408}}}%
+{{{-0.342}{ 0.940}}{{-0.000}{ 0.100}}{{-0.167}{ 0.212}}{{ 0.171}{ 0.520}}}%
+\put (0,0){\circle{0.2}}
+\put ( 0.000, 0.100){\discbig}
+\put ( 0.050,-0.747){\discbig}
+\put ( 0.217, 0.125){\discbig}
+\footnotesize
+\place { 0.100}{-0.995}{ 0}{-6}{ t}{2!!}
+\place { 0.050}{-0.747}{ 6}{ 0}{l }{211}
+\place { 0.000}{-0.500}{ 6}{ 0}{l }{01!}
+\place { 0.000}{-0.250}{ 2}{ 3}{lb}{011}
+\place { 0.000}{ 0.100}{ 0}{-4}{ t}{100}
+\place { 0.100}{-0.250}{ 4}{-4}{lt}{2!1}
+\place {-0.100}{-0.250}{-4}{-4}{rt}{21!}
+\place { 0.643}{-0.766}{ 6}{ 0}{l }{102}
+\place { 0.365}{-0.408}{ 6}{ 0}{l }{20!}
+\place { 0.087}{-0.050}{ 4}{ 0}{lb}{010}
+\place {-0.643}{-0.766}{-6}{ 0}{r }{120}
+\place {-0.365}{-0.408}{-6}{ 0}{r }{2!0}
+\place {-0.087}{-0.050}{-4}{ 0}{rb}{001}
+\place { 0.812}{ 0.584}{ 6}{ 0}{lb}{!!2}
+\place { 0.622}{ 0.417}{ 6}{ 0}{lt}{112}
+\place {-0.912}{ 0.411}{-6}{ 0}{rb}{!2!}
+\place {-0.672}{ 0.330}{-6}{ 0}{rt}{121}
+\place { 0.433}{ 0.250}{ 3}{-3}{lt}{1!0}
+\place { 0.217}{ 0.125}{-6}{ 1}{r }{110}
+\place {-0.433}{ 0.250}{-3}{-3}{rt}{10!}
+\place {-0.217}{ 0.125}{ 6}{ 1}{l }{101}
+\place { 0.267}{ 0.038}{ 6}{ 0}{l }{1!2}
+\place { 0.167}{ 0.212}{ 0}{ 6}{lb}{!12}
+\place {-0.267}{ 0.038}{-6}{ 0}{r }{12!}
+\place {-0.167}{ 0.212}{ 0}{ 6}{rb}{!21}
+\place { 0.985}{-0.174}{ 4}{-6}{ t}{201}
+\place { 0.536}{-0.112}{ 0}{-6}{lt}{!02}
+\place {-0.985}{-0.174}{-4}{-6}{ t}{210}
+\place {-0.536}{-0.112}{ 0}{-6}{rt}{!20}
+\place { 0.342}{ 0.940}{ 0}{ 6}{ b}{021}
+\place { 0.171}{ 0.520}{-4}{ 4}{rb}{0!2}
+\place {-0.342}{ 0.940}{ 0}{ 6}{ b}{012}
+\place {-0.171}{ 0.520}{ 4}{ 4}{lb}{02!}
+\end {picture}
+\end {center}
+\caption {`Almost' Greechie diagram of a suborthoposet of~$\HL$ without any
+two-valued state (e.g.\ 1$!$2 denotes $\Sp(1,-1,\protect\sqrt2)$).}
+\label {FGD33lines}
+\end {figure}
+
+
+\begin {corollary}  \label {3subset}
+There is a 3-element set of lines in~$\HL$ such that no subortholattice
+of~$\HL$ containing it has a two-valued state.
+\end {corollary}
+
+
+It seems to be an open question whether every 3-element set of mutually
+nonorthogonal lines in~$\HL$ generates a subortholattice without any
+two-valued state. The least numbers in constructions are given in
+Tab.~\ref{Tnumbers}.
+
+
+\begin {table}[ht]
+\begin {center}
+\begin {tabular}{|l|*5{r|}}
+\hline
+`large': & full & separating & \multicolumn{2}{c|}{unital} & nonempty \\\hline
+example (figure) &
+  \ref{Frepresentations}.2 &
+  \ref{Frealizable}.2      &
+  \cite{Schuette,svozil-nat-acad}&
+  \ref{FGD2pentagons}      &
+  \ref{FGD33lines}         \\\hline\hline
+elements of a suborthoposet & 28 & 56 & 76 & 104 & 116 \\\hline
+atoms of a suborthoposet    & 13 & 27 & 37 &  51 &  57 \\\hline
+lines                       &  8 & 17 & 25 &  29 &  33 \\\hline
+orthogenerators             &  6 &  9 & 11 &  16 &  17 \\\hline
+generators                  &  3 &  4 &  3 &   4 &   3 \\\hline
+\end {tabular}
+\end {center}
+\caption {Numbers of elements of constructed propositional structures
+in~$\HL$ without a `large' set of two-valued states.}
+\label {Tnumbers}
+\end {table}
+
+
+Let us note that the examples in \ref{nofull} and in \ref{noseparating}
+appeared in~\cite{Kochen-Specker}, the example in Fig.~\ref{Frealizable}.4
+appeared (not explicitly) in~\cite{Kochen-Specker,Peres1} as a part of
+their construction. In~\cite{Alda} the author uses (not explicitly) the
+orthomodular lattice given in Fig.~\ref{Frealizable}.3 and paste three
+copies to distinct atoms of a block obtaining thus an orthomodular lattice
+without any two-valued state (however, his estimation of lines does not seem
+to be correct).
+
+In~\cite{Mermin} the author uses weak realizability of an orthomodular
+lattice in Fig.~\ref{Frealizable}.5 whenever we represent elements $a,b$ by
+lines in~$\HL$ such that their angle is less than~45$^{\circ}$. This leads
+to the construction of an orthomodular lattice with 392~elements (146~atoms)
+weakly realizable in~$\HL$ and (at most) 130-element set of lines
+without any two-valued state.
+
+
+
+
+\section {Discussion of physical relevance}
+\label {Sdiscussion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%   mention Penrose
+%%%%%%%%%%%%%%%%%%%%%%%%   mention Schuette's letter
+%%%%%%%%%%%%%%%%%%%%%%%%%% eliminite blanks at bibitems etc.
+%%%%%%%%%%%%%%%%%%%%%%%%%% mention Svozil book
+
+
+In this final section we shall give a brief review of the physical relevance
+of the above findings. The nonexistence of two-valued measures on certain
+finite propositional structures in threedimensional Hilbert spaces has first
+been explicitly demonstrated by Kochen and Specker \cite{Kochen-Specker}. It
+is strongly recommended to read this original account. Their result has
+given rise to a number of interpretations, by Kochen and Specker and others.
+A detailed overview of the history of the subject can, for instance, be
+found in the reviews by Mermin \cite{Mermin} and Brown \cite{brown}.
+
+
+What does it physically mean that {\em three\/} nonorthogonal rays in
+threedimensional Hilbert space are sufficient to generate a finite system of
+rays which have no two-valued state? To state the associated Kochen--Specker
+paradox explicitly, let us associate any onedimensional subspace $\Sp (v)$
+spanned by a nonzero vector $v$ with the proposition that the physical
+system is in a pure state associated with that subspace. That is,
+  $$
+  \Sp (1,0,0) = a, \quad
+  \Sp (1,1,0) = b, \quad
+  \Sp (\sqrt{2},1,1) = c,
+  $$
+where $a,b$ and $c$ are propositions. If $a$ (similar for $b$ and $c$) is
+measured, then we associate the logical value ``true''  or ``false'' with
+the two-valued state function $s(a)=1$ and $s(a)=0$, respectively. $a,b,c$
+generate the propositional structure derived by Peres \cite[pp.\
+186--190]{Peres2,peres}. That is, if $v$ and $w$ are two vectors in
+threedimensional Hilbert space corresponding to the propositions $p_v$ and
+$p_w$, respectively, then the vector product $v \times w$ corresponds to the
+proposition $(p_v \vee p_w)'$. In particular,
+
+{
+\newcommand{\gen}[9]{\Sp(\ex#1,\ex#2,\ex#3)&=&
+  (\Sp(\ex#4,\ex#5,\ex#6)\lor\Sp(\ex#7,\ex#8,\ex#9))'=\\*&&}
+\def\sqrtii{\sqrt2}\catcode`\2=\active\def2{\sqrtii}
+\catcode`\+=\active\def+{\lor}\footnotesize
+\begin {eqnarray*}
+\Sp(1,0,0) &=& a ,\\
+\Sp(1,1,0) &=& b ,\\
+\Sp(2,1,1) &=& c ,\\
+\gen 001100110 (a+b)',\\
+\gen 01A100211 (a+c)',\\
+\gen 010100001 (a+(a+b)')',\\
+\gen 01110001A (a+(a+c)')',\\
+\gen 1A0110001 (b+(a+b)')',\\
+\gen A20211001 (c+(a+b)')',\\
+\gen 2AA21101A (c+(a+c)')',\\
+\gen A02211010 (c+(a+(a+b)')')',\\
+\gen 210001A20 ((a+b)'+(c+(a+b)')')',\\
+\gen 1200012AA ((a+b)'+(c+(a+c)')')',\\
+\gen 1020102AA ((a+(a+b)')'+(c+(a+c)')')',\\
+\gen 21A011A20 ((a+(a+c)')'+(c+(a+b)')')',\\
+\gen 201010A02 ((a+(a+b)')'+(c+(a+(a+b)')')')',\\
+\gen 2A0001120 ((a+b)'+((a+b)'+(c+(a+c)')')')',\\
+\gen 2A1011A02 ((a+(a+c)')'+(c+(a+(a+b)')')')',\\
+\gen A12110201 (b+((a+(a+b)')'+(c+(a+(a+b)')')')')',\\
+\gen 02A100A12 (a+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')',\\
+\gen 20A010102 ((a+(a+b)')'+((a+(a+b)')'+(c+(a+c)')')')',\\
+\gen 1A2110A12 (b+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')',\\
+\gen 01210002A (a+(a+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')',\\
+\gen 0211001A2 (a+(b+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')',\\
+\gen AA21A0201 ((b+(a+b)')'+((a+(a+b)')'+(c+(a+(a+b)')')')')',\\
+\gen 0A2100021 (a+(a+(b+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')',\\
+\gen 1121A002A ((b+(a+b)')'+(a+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')',\\
+\gen A2A210012 (((a+b)'+(c+(a+b)')')'+\\*%
+               &&(a+(a+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')',\\
+\gen A212100A2 (((a+b)'+(c+(a+b)')')'+\\*%
+               &&(a+(a+(b+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')')',\\
+\gen 12A2A0012 (((a+b)'+((a+b)'+(c+(a+c)')')')'+\\*%
+               &&(a+(a+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')',\\
+\gen A01010A2A ((a+(a+b)')'+(((a+b)'+(c+(a+b)')')'+\\*%
+               &&(a+(a+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')')',\\
+\gen 1212A00A2 (((a+b)'+((a+b)'+(c+(a+c)')')')'+\\*%
+               &&(a+(a+(b+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')')',\\
+\gen 101010A21 ((a+(a+b)')'+(((a+b)'+(c+(a+b)')')'+\\*%
+               &&(a+(a+(b+(b+((a+(a+b)')'+(c+(a+(a+b)')')')')')')')')')'.
+\end {eqnarray*}
+}
+
+Suppose, for the sake of contradiction, that each one of the above 33
+propositions corresponds to an ``element of physical reality'' \cite{epr}.
+That is, suppose that its value is either ``true'' (exclusive) or ``false,''
+irrespective of whether it has been actually measured or just
+counterfactually inferred. Let us further assume with Peres \cite[pp.
+186-190]{Peres2,peres} that---provided these ``elements of reality''
+exist---$
+  \Sp (0,0,1) =
+  \Sp (1,0,1) =
+  \Sp (0,1,1) =
+  \Sp (1,-1,\sqrt{2}) =
+  \Sp (1,0,\sqrt{2}) =
+  \Sp (\sqrt{2},1,1) =
+  \Sp (\sqrt{2},0,1) =
+  \Sp (1,1,\sqrt{2}) =
+  \Sp (0,1,\sqrt{2}) =
+  \Sp (1,\sqrt{2},1) =$
+``true.''
+One can follow Peres' arguments to show that---provided these ``elements of
+reality'' exist---all  other rays belong to triads which are orthogonal to
+the above rays. Therefore, these latter rays must correspond to propositions
+whose value is ``false.'' In particular, $\Sp (1,0,0)=\Sp (0,\sqrt{2},1)=\Sp
+(0,-1,\sqrt{2})=$``false,'' associate with $s(\Sp (1,0,0))=s(\Sp
+(0,\sqrt{2},1))=s(\Sp (0,-1,\sqrt{2}))=0$. Thus, $s(\Sp (1,0,0))+s(\Sp
+(0,\sqrt{2},1))+s(\Sp (0,-1,\sqrt{2})) =0+0+0=0$. But $\Sp (1,0,0)$, $\Sp
+(0,\sqrt{2},1)$ and $\Sp (0,-1,\sqrt{2})$ are mutually orthogonal. This is
+in contradiction to the assumption that for any orthogonal triad spanning
+the entire Hilbert space, the sum of the measures should be one (cf.\
+\ref{state}.(4)). Notice that in order to arrive at this Kochen--Specker
+paradox, we had to explicitly assume the existence of the ``elements of
+reality,'' irrespective of whether they have (or could have) actually been
+measured or not.
+
+What physical use can be a paradox? How can one measure a contradiction?
+Indeed, what can actually be measured is merely {\em one\/} triplet of
+propositions corresponding to some of the triads of mutually orthogonal
+rays. Such a measurement can be performed with the operator discussed by
+Peres, or with an arrangement of beam splitters discussed by Reck,
+Zeilinger, Bernstein and Bertani \cite{rzbb}.
+
+For instance, after $c$ is found to be ``true'' (corresponding to $s(c)=1$),
+then measurement of the original values of $a$ or $b$ is no longer possible.
+However, suppose one would be willing to believe in the existence of
+``elements of reality'' \cite{epr,peres-no-results}, which could merely be
+{\em counterfactually\/} inferred. Then one could for instance---at least in
+principle---``measure'' all $16$ orthogonal triads by the production of a
+state with $16$ entangled subsystems. On each one of the $16$ different
+entangled subsystems one could measure one of the $16$ different orthogonal
+triads. This is similar to a proposal by Greenberger, Horne and Zeilinger
+\cite{ghz}, which use three particles and eight-dimensional Hilbert space.
+Indeed, only in such a way---namely by (counterfactually) inferring
+non-comeasurable propositions---one would encounter a complete
+Kochen--Specker contradiction.
+
+As has been already proven in Kochen and Specker's original work \cite[pp.\
+82--85, Theorem 4]{Kochen-Specker}, the notion of tautology is connected to a
+classical (Boolean) imbedding of a partial Boolean algebra. Indeed, there
+exist propositions which are tautologies in the classical (Boolean) algebra
+but which are not tautologies in the partial Boolean algebra if and only if
+the partial Boolean algebra does not have a unital set of two-valued states
+and thus cannot be imbedded into a classical (Boolean) algebra.
+
+This is true for all partial Boolean algebras, in particular for orthomodular
+posets. Notice that the above result does not imply that every propositional
+structure giving rise to a (classical) Boolean tautology which is no quantum
+tautology also has no two-valued measure (cf.\ below).
+
+Until now, the lowest number of rays necessary to produce a classical
+tautology which is not always true quantum mechanically is due to
+Sch\"utte~\cite {Schuette,svozil-nat-acad}. The eleven rays used by
+Sch\"utte can also be generated by the three vectors $(1,0,0)$, $(1,1,0)$
+and $(\sqrt{2},1,1)$ (corresponding to $a$, $b$ and~$c$) used before.
+Indeed, $d = \Sp (0,1,-1) = (\Sp (1,1,0) \lor \Sp (\sqrt2,1,1))' = (a \lor
+c)'$ and
+
+  {
+  \catcode`\+=\active\def+{\lor}\footnotesize
+  \newcommand{\gen}[9]{\Sp(\ex#1,\ex#2,\ex#3)=
+    (\Sp(\ex#4,\ex#5,\ex#6)\lor\Sp(\ex#7,\ex#8,\ex#9))'=\\*&&}
+  \begin {eqnarray*}
+  a_1&=&\Sp(1,0,0) = a ,\\
+  a_2&=&\gen 010100001 (a+(a+b)')',\\
+  b_1&=&\gen 01110001A (a+d)',\\
+  b_2&=&\gen 101010A11 ((a+(a+b)')'+(b+d)')',\\
+  b_3&=&\Sp(1,1,0) = b ,\\
+  c_1&=&\gen 10201021A ((a+(a+b)')'+((a+d)'+(b+(a+d)')')')',\\
+  c_2&=&\gen 201010A02
+             ((a+(a+b)')'+((a+(a+b)')'+((a+d)'+((a+d)'+(b+(a+b)')')')')')',\\
+  d_1&=&\gen A1111001A (b+d)',\\
+  d_2&=&\gen 1A1110011 (b+(a+d)')',\\
+  d_3&=&\gen 11A0111A0 ((a+d)'+(b+(a+b)')')',\\
+  d_4&=&\gen 11101A1A0 (d+(b+(a+b)')')',
+  \end {eqnarray*}
+  }
+where
+  {
+  \newcommand{\gen}[9]{\Sp(\ex#1,\ex#2,\ex#3)&=&
+    (\Sp(\ex#4,\ex#5,\ex#6)\lor\Sp(\ex#7,\ex#8,\ex#9))'=\\*&&}
+  \catcode`\+=\active\def+{\lor}\footnotesize
+  \begin {eqnarray*}
+  \gen 21A0111A1 ((a+d)'+(b+(a+d)')')',\\
+  \gen A02010B1A ((a+(a+b)')'+((a+d)'+((a+d)'+(b+(a+b)')')')')',\\
+  \gen 2A101111A ((a+d)'+((a+d)'+(b+(a+b)')')')'.
+  \end {eqnarray*}
+  }
+
+\noindent\sloppy
+As we have mentioned above, there is not a unital set of two-valued states
+on a suborthoposet orthogenerated by these rays (e.g., there is no
+two-valued state $s$ with $s(\Sp (1,0,0)) = 1$). On the other hand, a
+two-valued can be defined by
+   $s(\Sp( 0, 1, 0)) =
+    s(\Sp( 0, 1, 1)) =
+    s(\Sp( 1, 1, 0)) =
+    s(\Sp( 1, 1, 1)) =
+    s(\Sp( 1, 1, 2)) =
+    s(\Sp( 1, 2, 1)) =
+    s(\Sp( 2, 1, 1)) =
+    s(\Sp( 1, 2,-1)) =
+    s(\Sp(-1, 2, 1)) =
+    s(\Sp( 1, 5, 2)) =
+    s(\Sp( 2, 5, 1)) =
+    s(\Sp(-1, 5, 2)) =
+    s(\Sp( 2, 5,-1)) =
+    s(\Sp( 1, 5,-2)) =
+    s(\Sp(-2, 5, 1)) = 1$
+and
+   $s(\Sp( 1, 0, 0)) =
+    s(\Sp( 0, 0, 1)) =
+    s(\Sp( 1, 0, 1)) =
+    s(\Sp( 0, 1,-1)) =
+    s(\Sp( 1, 0,-1)) =
+    s(\Sp( 1,-1, 0)) =
+    s(\Sp( 1, 1,-1)) =
+    s(\Sp( 1,-1, 1)) =
+    s(\Sp(-1, 1, 1)) =
+    s(\Sp(-1,-1, 2)) =
+    s(\Sp(-1, 2,-1)) =
+    s(\Sp( 2,-1,-1)) =
+    s(\Sp( 1,-1, 2)) =
+    s(\Sp(-1, 1, 2)) =
+    s(\Sp( 2, 1,-1)) =
+    s(\Sp( 2,-1, 1)) =
+    s(\Sp( 1, 0, 2)) =
+    s(\Sp( 2, 0, 1)) =
+    s(\Sp(-1, 0, 2)) =
+    s(\Sp( 2, 0,-1)) =
+    s(\Sp( 1,-5, 2)) =
+    s(\Sp( 2,-5, 1)) = 0$.
+
+Consider now the following propositions (notice that any binary operation is
+either performed by orthogonal rays or by a ray and an orthocomplement of
+another ray such that these rays are orthogonal):
+{
+\catcode`\+=\active\def+{\lor}\catcode`\-=\active\def-{\land}
+\begin{eqnarray*}
+f_1   &=& d_1   \to  b_2'\\*
+      &=& (d_1-b_2)'\\
+f_2   &=& d_1   \to  b_3'\\*
+      &=& (d_1-b_3)'\\
+f_3   &=& d_2   \to a_2 \vee b_2\\*
+      &=& (d_2-(a_2+b_2)')'\\
+f_4   &=& d_2   \to  b_3'\\*
+      &=& (d_2-b_3)'\\
+f_5   &=& d_3   \to  b_2'\\*
+      &=& (d_3-b_2)'\\
+f_6   &=& d_3   \to ( a_1\vee a_2\to b_3)\\*
+      &=& (d_3-((a_1+a_2)'+b_3)')'\\
+f_7   &=& d_4   \to a_2 \vee b_2\\*
+      &=& (d_4-(a_2+b_2)')'\\
+f_8   &=& d_4   \to ( a_1\vee a_2\to b_3)\\*
+      &=& (d_4-((a_1+a_2)'+b_3)')'\\
+f_9   &=& (a_2  \vee  c_1) \vee (b_3 \vee d_1)\\*
+      &=& ((a_2+c_1)'-(b_3+d_1)')'\\
+f_{10}&=& (a_2  \vee  c_2) \vee (a_1 \vee b_1 \to d_1)\\*
+      &=& ((a_2+c_2)'-((a_1+b_1)'+d_1)')'\\
+f_{11}&=& c_1   \to  b_1 \vee d_2\\*
+      &=& (c_1-(b_1+d_2)')'\\
+f_{12}&=& c_2   \to  b_3 \vee d_2\\*
+      &=& (c_2-(b_3+d_2)')'\\
+f_{13}&=& (a_2 \vee  c_1)\vee [ (a_1\vee a_2\to b_3)\to d_3]\\*
+      &=& ((a_2+c_1)'-(((a_1+a_2)'+b_3)'+d_3)')'\\
+f_{14}&=& (a_2  \vee  c_2) \vee (b_1 \vee d_3) \\*
+      &=& ((a_2+c_2)'-(b_1+d_3)')'\\
+f_{15}&=& c_2\to  [ (a_1 \vee a_2 \to b_3)\to d_4]\\*
+      &=& (c_2-(((a_1+a_2)'+b_3)'+d_4)')'\\
+f_{16}&=& c_1 \to  (a_1 \vee b_1 \to d_4)\\*
+      &=& (c_1-((a_1+b_1)'+d_4)')'\\
+f_{17}&=& (a_1 \to a_2)\vee b_1\\*
+      &=& (a_1'+a_2)+b_1  .
+\end{eqnarray*}
+}
+The ``implication'' relation has been expressed as $ x \to y \equiv x' \vee
+y \equiv (x \land y')'$.
+
+As can be straightforwardly checked, the proposition formed by
+  $$
+  F\colon\; f_1 \wedge f_2 \wedge  \cdots \wedge f_{16}\rightarrow f_{17}
+  $$
+is a classical tautology. Nevertheless, $F$ is not valid in threedimensional
+(real) Hilbert space $\HL$, since $f_1,f_2, \ldots, f_{16}=\HL$, whereas
+$f_{17}= ( \Sp (1,0,0))'=\Sp (0,1,0)\vee \Sp (0,0,1) \neq \HL$.
+
+
+The three vectors $(1,0,0)$, $(1,1,0)$ and $(\sqrt{2},1,1)$ generating the
+Sch\"utte rays are not mutually orthogonal. Therefore, the corresponding
+propositions $a$, $b$ and $c$ are not co-measurable. In the sense of partial
+algebras, they cannot be combined by logical operations ``or'' ($\vee$),
+``and'' ($\land$), ``not'' ($'$) to form new expressions. Thus, it would be
+incorrect to state that there exists a classical tautology in the three
+variables $a$, $b$ and $c$ which is no quantum tautology. Indeed, Coray
+proved~\cite{coray} that all classical tautologies in three variables are
+tautologies in all partial algebras, in particular in the one associated
+with the logic of quantum observables.
+
+However, also Sch\"utte's example is counterfactual in nature.
+Although every  operation or relation is solely defined on
+co-measurable propositions, the entire formula $F$ contains 11
+nonco-measurable variables (nonorthogonal rays). In order to be able to
+evaluate this formula, one would have to know the truth value of all
+these 11 variables. Since they are not co-measurable, this is possible
+only by counterfactual inference; in very much the same way as discussed
+before in the case of the original Kochen-Specker paradox.
+Indeed, Corey's result shows that {\em any\/} classical (Boolean)
+tautology which is no quantum tautology will have to rely on at least
+four variables which cannot be mutually orthogonal (in $\HL$), and
+therefore must be based upon counterfactual inference.
+
+Finally, let us shortly mention the relevance of these findings to
+the partition logic of automata. \ref{finitesubOL-full} states that
+every finite subortholattice of $\HL$ has a full (and thus separating)
+set of two-valued states.  Thus, any finite subortholattice of $\HL$ can
+be expressed as an automaton logic.  The subortholattices of $\HL$ which
+have no two-valued state are infinite.
+
+
+
+
+\section *{Acknowledgement}
+
+
+This research has been partially supported by the Austrian--Czech program
+AKTION.
+
+
+
+
+\begin{thebibliography}{99}
+
+\bibitem {Alda} V. Alda:
+{\em On\/ {\rm 0-1} measure for projectors}.
+Apl. Mat. {\bf 25} (1980), 373--374.
+
+\bibitem {birk-vonneu} G. Birkhof, J. von Neumann:
+{\em The logic of quantum mechanics}.
+Ann. of Math. {\bf 37} (1936), 823--834.
+
+\bibitem{brown} H. R. Brown:
+{\em Bell's other theorem and its connection with nonlocality, part I},
+in
+{\em Bell's theorem and the foundations of modern physics}, A. Van der
+Merwe, F. Selleri and G. Tarozzi (World Scientific, Singapore, 1992),
+104--116.
+
+\bibitem {Schuette} % Schuette rays
+K. Sch\"uette, {\em letter to Professor E. P. Specker,} dated April
+22nd, 1965; published in
+E. Clavadetscher-Seeberger: {\it Eine partielle Pr\"adikatenlogik}.
+(Dissertation, ETH-Z\"urich, Z\"urich, 1983).
+
+\bibitem{coray} G. Coray:
+{\em Validit\'e dans les alg\'ebres de Boole partielles}.
+Comm. Math. Helv. {\bf 45} (1970), 49--82.
+
+\bibitem {Gleason} A. Gleason:
+{\em Measures on a closed subspaces of a Hilbert space}.
+J. Math. Mech. {\bf 6} (1957), 883--894.
+
+\bibitem{ghz} D. M. Greenberger, M. Horne and A. Zeilinger:
+in {\sl Bell's Theorem, Quantum Theory, and Conceptions of the Universe},
+ed. by M. Kafatos (Kluwer, Dordrecht, 1989);
+D. M. Greenberger, M. A. Horne, A. Shimony and A. Zeilinger,
+Am. J. Phys. {\bf 58} (1990), 1131.
+
+\bibitem {epr} A. Einstein, B. Podolsky and N. Rosen:
+{\em Can quantum-mechanical description of physical reality be considered
+complete?}. Phys. Rev. {\bf 47}, 777 (1935); reprinted in J. A. Wheeler and
+W. H. Zurek, eds., {\em Quantum Theory and Measurement\/} (Princeton
+University Press, Princeton, 1983), 145--151.
+
+\bibitem {Kalmbach-83} G. Kalmbach:
+{\em Orthomodular Lattices}. Academic Press, New York, 1983.
+
+\bibitem {kalmbach-86} G. Kalmbach:
+{\em Measures and Hilbert Lattices}. World Scientific, Singapore, 1986.
+
+\bibitem {kochen-specker-64} %partial algebras
+S. Kochen and E. P. Specker:
+{\em The calculus of partial propositional functions}, in
+{\em Proceedings of the 1964 International Congress for Logic,
+Methodology and Philosophy of Science, Jerusalem\/} (North Holland,
+Amsterdam, 1965), 45--57.
+
+\bibitem {kochen-specker-65} %partial algebras
+S. Kochen and E. P. Specker:
+{\em Logical Structures arising in quantum theory}, in
+{\em Symposium on the Theory of Models, Proceedings of the
+1963 International Symposium at Berkeley\/}
+(North Holland, Amsterdam, 1965), 177-189.
+
+\bibitem {Kochen-Specker} %Kochen-specker type construction
+S. Kochen and E. P. Specker:
+{\em The problem of hidden varibles in quantum mechanics}.
+Journal of Mathematics and Mechanics {\bf 17} (1967), 59--87.
+% reprinted in
+% E. Specker, {\em Selecta} (Birkh\"auser Verlag, Basel, 1990)
+
+\bibitem {Mermin}
+N. D. Mermin:
+{\em Hidden variables and the two theorems of John Bell}.
+Rev. Mod. Phys. {\bf 65} (1993), 803--815.
+
+\bibitem {NR} M. Navara, V. Rogalewicz:
+{\it The pasting constructions for orthomodular posets}. Math. Nachrichten
+{\bf 154} (1991), 157--168.
+
+\bibitem{peres-no-results} A. Peres:
+{\em Unperformed experiments have no results}. Am. J. Phys. {\bf 46} (1978),
+745.
+
+\bibitem {Peres1} A. Peres:
+{\em Cryptodeterminism and quantum theory}. In Microphysical Reality and
+Quantum Formalism (Kluwer Academic Publishers, Dordrecht, 1988), 115--123.
+
+\bibitem {Peres2} A. Peres:
+{\em Two simple proofs of the Kochen--Specker theorem}. J. Phys. A: Math.
+Gen. {\bf 24} (1991), L175--L178.
+
+\bibitem {peres} A. Peres:
+{\em Quantum Theory: Concepts \& Methods}.
+(Kluwer Academic Publishers, Dordrecht, 1993).
+
+\bibitem {Ptak-Pulmannova} P. Pt\'ak and S. Pulmannov\'a:
+{\em Orthomodular Structures as Quantum Logics}.
+Kluwer Academic Publishers, Dordrecht, 1991.
+
+\bibitem{rzbb} M. Reck, A. Zeilinger, H. J. Bernstein and P. Bertani:
+{\em Experimental realization of any discrete unitary operator}.
+Phys. Rev. Lett. {\bf 73}, 58 (1894); see also
+F. D. Murnaghan,
+{\em The Unitary and Rotation Groups}
+(Spartan Books, Washington, 1962).
+
+\bibitem {svosh} M. Schaller, K. Svozil:
+{\it Partition logics of automata.} Il Nuovo Cimento {\bf 109 B} (1994),
+167--176.
+
+\bibitem {svosh2} M. Schaller, K. Svozil:
+{\it Automaton partition logic versus quantum logic}.
+Inter. J. Theor. Phys {\bf 35} (1996), 911--940.
+
+\bibitem{svosh3} M. Schaller, K. Svozil:
+{\it Automaton logic}. Inter. J. Theor. Phys
+{\bf 34} (1995), 1741--1749.
+
+
+\bibitem {kochen-specker-60}  %first mentioning
+E. P. Specker: {\em Die Logik nicht gleichzeitig entscheidbarer
+Aussagen}. Dialectica
+{\bf
+14}
+(1960),
+175--182.
+
+\bibitem {svozil-93} K. Svozil:
+{\em Randomness and Undecidability in Physics}. World Scientific, Singapore,
+1993.
+
+\bibitem{svozil-nat-acad} K. Svozil:
+{\em A constructivist manifesto for the physical  sciences}, in
+{\em The Foundational Debate, Complexity and Constructivity in
+Mathematics and Physics}, Werner DePauli Schimanovich, Eckehart K\"ohler
+and Friedrich Stadler, eds. (Kluwer, Dordrecht, Boston, London, 1995),
+65--88.
+\end{thebibliography}
+
+
+\end{document}
+
+
+
+List of labels:
+
+Sdiscussion - the last section
+
+Fdiagrams - non-Greechie diagrams
+Fstatespaces - Greechie diagrams demonstr. differ. in state spaces
+Fstates - states in a special OML
+Frepresentations - representations of a special OML
+Fsubortholattices - GD of all subortholattices of $\HL$
+Fnonrealizable - GD of nonrealizable OMP
+Frealizable - GD of realizable OMP
+FGD2pentagons - GD of a suborthoposet without a unital set of 2v. states
+FGD33lines - GD of a suborthoposet of $\HL$ without any 2v. state
+
+Tnumbers - numbers of elements
+
+diagram  - definition of GD
+state    - definition of a state
+s-w      - correspondence of states and weights
+full     - criterion for a full set of states
+separating - criterion for a separating set of states
+noloop-concrete - GD without a loop is concrete
+partition - partial criterion for a separating set of states
+statespaces - there are 3-atomic OML demonstr. differences
+3lines - 3 nonorthogonal lines generate infinite OML
+finitesubortholattices - characterization
+finitesubOL-full - finite subortholattice has a full set of 2-states
+realizabilityoflogic - for a special logic
+representablesum - horizontal sum of orthorep. (w. real.) is orthorep. (w.r.)
+representablepasting - pasting for an atom of orthorep. is orthorep.
+representablepasting2 -pasting of 3-chain for nonorthog. atoms
+nofull - example
+noseparating
+nounital
+empty
+3subset - 3-element set generates subOL without 2v. states
+
