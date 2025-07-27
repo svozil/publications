@@ -1,0 +1,896 @@
+\documentclass[%
+ % reprint,
+ % twocolumn,
+ %superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+  preprint,
+ showpacs,
+ showkeys,
+ preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+ amsmath,amssymb,
+ aps,
+ % prl,
+  pra,
+ % prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+ %floatfix,
+ %lengthcheck,%
+ ]{revtex4-2}
+
+%\usepackage{cdmtcs-pdf}
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{mathptmx}% http://ctan.org/pkg/mathptmx
+
+\usepackage{amssymb,amsthm,amsmath}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\usepackage[breaklinks=true,colorlinks=true,anchorcolor=blue,citecolor=blue,filecolor=blue,menucolor=blue,pagecolor=blue,urlcolor=blue,linkcolor=blue]{hyperref}
+\usepackage{graphicx}% Include figure files
+\usepackage{url}
+
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+
+\begin{document}
+
+\title{Climate data analysis for the classroom}
+
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+
+\affiliation{Institute for Theoretical Physics,
+Vienna  University of Technology,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria}
+
+
+
+\date{\today}
+
+\begin{abstract}
+Open access climate data from various sensors can be analyzed with standard techniques. We present such analyses for the Arctic ice extent, temperatures at various stations, and the increase of carbon dioxide in the atmosphere. This is brought into a broader methodologic context, in particular, regarding causation and correlation as well as chaos and (un)predictability.
+\end{abstract}
+
+\keywords{Arctic ice extent, Multisensor Analyzed Sea Ice Extent, Northern Hemisphere, MASIE-NH, MASIE}
+
+\maketitle
+\newpage
+
+\section{Climate change as a `hot' classroom topic}
+
+A preliminary caveat is warranted at the outset: I do not possess expert credentials within the field of climate science.
+Thus, I cannot assert absolute validity to the ensuing reflections beyond the diligent research undertaken for this article.
+However, drawing upon my background as a theoretical physicist, coupled with experience in methodological approaches within the discipline,
+I aim to offer a novel perspective on the subject matter.
+It is noteworthy to consider the sentiment articulated by a UN Under-Secretary General for Global Communications,
+who explicitly stated that this discourse is effectively `owned' by certain parties involved---a notion that could have conceivably faced challenge from the late philosopher of science, Paul Feyerabend, with whom
+I had the privilege of personal encounters and shared numerous intellectual objectives.
+
+Let me also state a personal motivation upfront: Ever since a fifteen-year-old high school student confronted me with the allegation that, as Earth's climate progresses,
+his father's (and my) generation `stole his future'---he had just come back from a prolonged family trip to the national parks in the American southwest
+and the Hawaiian islands---I have been wondering if this sentiment could be channeled into some useful scientific motion;
+thereby tempering the debate to something which Freud called `evenly suspended attention'.
+I am presenting here an effort to get a `hands-on feeling'
+for the data science and modeling involved. This, I believe, may attract the vivid attention of classroom audiences
+and ultimately stimulate a considerate perception of the sciences involved.
+
+%https://www.verywellmind.com/doomsday-phobias-2671856
+
+As a starting point, one may introduce issues related to methodology as well as the philosophy of science,
+for instance, the age-old issue of {\em causation versus correlation}~\cite{Vigen:2015aa}, or even {\em spurious correlations}~\cite{Calude2016}.
+In previous Earth ages, the warming of the  Antarctic temperature was
+strongly correlated with, and actually {\em preceeded}~\cite{Luethi2008}
+(yet not everywhere~\cite{Shakun2012}),
+the rise of the concentration of carbon
+dioxide (CO$_2$), which in turn preceded the rise of Methane
+(CH$_4$, another `greenhouse'~\cite{Wood-1009} gas absorbing radiation and thereby heating up)
+in the atmosphere.
+
+It may also be informative to point out that the climate models and predictions (but fortunately not their subject of study)
+seem to obey discontinuous `mood swings':
+as recently as fifty years ago, there has been climate scares in the opposite direction during which
+leading researchers and newspapers predicted with high confidence the coming of an ice age.
+An anecdote (among many) may suffice to recall those `global cooling days':
+back then, on July 9th, 1971, {\em The Washington Post}  quoted from Science~\cite{Rasool138} and
+reported on Page~A4 that
+{\em ``the world could be as little as 50 or 60 years away from a disastrous new ice age, a leading atmospheric scientist predicts. $\ldots$ of the National
+Aeronautics and Space Administration and Columbia University says that:
+$\ldots$ `In the next 50 years,' the fine dust man constantly puts into the atmosphere by
+fossil fuel-burning could screen out so much sunlight that the average temperature
+could drop by six degrees.
+$\ldots$If sustained over `several
+years' -- `five to 10,' he estimated -- `such a temperature decrease could be sufficient to trigger a new ice age!'~''}
+
+Popper's demarcation criterium of {\em falsifiability} comes to mind:
+a theory must be accepted as scientific if and only if it is discomfirmable, that is, refutable by predictions and forecasts.
+%https://www.youtube.com/watch?v=-X8Xfl0JdTQ
+In its strictest form a single disconfirmation invalidates an entire theory, and if no such crucial prediction criterion is presented the
+candidate theory must be considered as a pseudo-science and an ideology.
+We can discuss the critique Lakatos and Feyerabend put forward on Popper's maybe all to stringent criteria
+in the context of climatology,
+as the climate science community
+appears to be holding on to the alleged consensus~\cite{Maibach-2012,Cook_2013,Stenhouse-2014,Legates2015,Stenhouse-2017}
+of failing  climate models~\cite{remss}  by ever more refined epicycles~\cite{Weart-2008,Harper-2007}.
+
+
+In the Lockean and Humean spirit, we shall fall back in addressing some empirical findings which are readily available through open access institutional websites.
+Thereby we shall concentrate on those signals which might be considered `raw' and without postprocessing as they come from the respective sensors.
+
+
+\section{Arctic ice extent}
+
+With respect to ice, the situation of Arctic and Antarctic region is, in many ways converse: for instance, whereas Antarctica  is a small continent
+covered by ice and surrounded by a huge ocean with currents isolating it, the Arctic ice presents a relatively thin (mostly thickness is between 2-4 meters)
+layer floating on a small ocean surrounded by huge continents, and very susceptible to winds. As a result two movements -- the
+Beaufort Gyral Stream and the Transpolar Drift Stream -- form a complex ice drift pattern~\cite{Hempel-2010}.
+And whereas it is commonly perceived that the Antarctic ice extent is growing at a (relative to the overall extension) moderate rate of about $20,000 \text{ km}^2$ per year,
+the ice cap in the Arctic region appears to be shrinking~\cite{MASIE-SH}.
+
+
+
+%\subsection{2006--the present Multisensor Analyzed Sea Ice Extent -- Northern Hemisphere (MASIE-NH) data}
+
+A good empirical signal of the state of the Arctic ice is the sea ice extent.
+The Arctic sea ice thickness and volume are model dependent~\cite{asithick} and will not be reviewed.
+In what follows I shall present a very elementary analysis based on the high-quality data set for the {\em Multisensor Analyzed Sea Ice Extent, Northern Hemisphere (MASIE-NH)}
+which are publicly available.
+
+This NASA Data Set ID: G02186~\cite{MASIE-NH}
+is based on the satellites/platforms
+ALOS, AQUA, DMSP, ENVISAT, GOES, MSG, RADARSAT-2;
+the sensors involved are AMSR-E, AMSU-A, ASAR, GOES I-M IMAGER, MODIS, PALSAR, SAR, SEVIRI, SSM/I.
+These data are updated daily and start in 2006.
+While the 14 years of data certainly cannot allow a prediction of the distant future
+they are capable of yielding a signal for the current trend of shrinking ice extent in the Arctic zone including the Terrestrial North Pole.
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{c}
+\includegraphics[width=0.45\textwidth]{2019-MASIE-filled-linearmodel.pdf}
+\\
+(a)
+\\
+\includegraphics[width=0.45\textwidth]{2019-MASIE-1978-2019-filled-linearmodel.pdf}
+\\
+(b)
+\\
+\includegraphics[width=0.45\textwidth]{2019-MASIE-1971-2002-filled-linearmodel.pdf}
+\\
+(c)
+\end{tabular}
+\end{center}
+\caption{
+\label{2019-MASIE-f1}
+Plot of Arctic ice extent as a function of time
+(a) sampled by MASIE-NH for the entire Northern Hemisphere from 2006 to the present, from the NASA Data Set ID: G02186~\cite{MASIE-NH}
+(b) sampled by NIPR/ArCS based on NASA satellite data  from November 1978 to the present,
+(c) from the NASA Data Set ID: NSIDC-0192~\cite{MASIE-NH-older} from 1971-2002.
+Linear regressions yield a projected decrease of Arctic ice extent by
+(a) $175 \pm 34  \text{ km}^2$ per day,
+(b) $191 \pm 7  \text{ km}^2$   per day, and
+(c)  $101 \pm 8  \text{ km}^2$  per day,
+respectively.
+The bold joint curve represents a moving average of the data smoothed over a year.
+}
+\end{figure}
+Figure~\ref{2019-MASIE-f1}(a) depicts the list plot of the approximately 5000 data sampled by MASIE-NH for the entire Northern Hemisphere so far~\cite{MASIE-NH}.
+A linear regression~\cite{Mathematica12.0} yields an average daily decrease of ice extension of $175 \pm 34  \text{ km}^2$.
+If this trend persists  one could speculate that
+the total exhaustion of the Arctic ice in the summer and winter seasons would occur in about
+$4\times 10^6  \text{ km}^2 / (175 \times 365 \text{ km}^2  \text{year}^{-1}) \approx
+70$ years
+and
+$15\times 10^6  \text{ km}^2 / (175 \times 365 \text{ km}^2  \text{year}^{-1}) \approx
+250$ years, respectively.
+
+
+This linear model appears to be in relative good compliance with
+the estimated trend of about $52.000 \text{ km}^2$ of loss of Arctic ice extent per year  from a different data source for 1979-2008
+mentioned on the web page~\cite{MASIE-SH} of the  {\em National Snow and Ice Data Cente};
+possibly based on data discussed next.
+
+%\subsection{November 1978--the present  NIPR/ArCS based on NASA satellite data}
+
+The {\em National Institute of Polar Research} of Japan provides satellite data~\cite{VISHOP-1978-2019}
+from various (NASA GSFC) sensors and sources:  SMMR, SSM/I, AMSR-E,  WindSat, and AMSR2.
+Figure~\ref{2019-MASIE-f1}(b) depicts the list plot of the approximately 13000 data for the entire Northern Hemisphere from November 1978-2019~\cite{VISHOP-1978-2019}.
+A linear regression~\cite{Mathematica12.0} yields an average daily decrease of ice extension of $191 \pm 7  \text{ km}^2$.
+
+
+
+%\subsection{1971-2002  Sea Ice Trends and Climatologies from SMMR and SSM/I-SSMIS data}
+
+The {\em Sea Ice Trends and Climatologies from SMMR and SSM/I-SSMIS}
+ NASA Data Set ID: NSIDC-0192~\cite{MASIE-NH-older}
+is based on the satellites/platforms
+DMSP 5D-2/F11, DMSP 5D-2/F13, DMSP 5D-2/F15, DMSP 5D-2/F8, DMSP 5D-3/F17, Nimbus-5 and Nimbus-7;
+the sensors involved are ESMR, SMMR, SSM/I, SSMIS.
+
+Figure~\ref{2019-MASIE-f1}(c) depicts the list plot of the approximately 11000 data for the entire Northern Hemisphere from 1971-2002~\cite{MASIE-NH-older}.
+A linear regression~\cite{Mathematica12.0} yields an average daily decrease of ice extension of $101 \pm 8  \text{ km}^2$.
+
+
+
+%\subsection{Linear model predictions for the far future}
+
+As stated earlier, if this shrinking trend of the Arctic ice would persist the most recent MASIE-NH data suggest that it would take approximately 70
+years to totally exhaust the Arctic sea ice in the Arctic summer.
+But any such prediction could be considered speculative for at least three reasons:
+(i) first, the small data basis of merely 14 years (from 2006 to 2019), with a relatively high standard error,  cannot reliably predict
+behavior extending multiple times into the future.
+(ii) Second, this linear regression model is based on the data alone and does not take other, possibly very relevant, factors and causes into account.
+(iii) Even if all (presumably nonlinear) factors and causes would be known the climate system may amount to a deterministic chaos~\cite[Section~14.2.2]{ipcc2001-physics_basics}
+which, for all practical purposes~\cite{bell-a},
+would make predictions increasingly unfeasible -- indeed, most uncertainties would grow at least exponentially as a function of time (into the future).
+We come back to this issue later.
+
+
+It may also be that the high-quality data from satellite sensors started at a `relatively cool' time, and not at `relatively hot'
+times such as the thirties of the past century (if such `hot--versus--cool' statements are justified).
+%The difficulties involved are corroborated by previous `predictions'.
+%For instance, in the early seventies of the past century there was a scare that an ice age might be imminent.
+
+
+\section{Signals from Mauna Loa, Hawaii}
+
+Mauna Loa in Hawaii represents an important location for atmospheric and climate data:
+its relative isolation makes the location an ideal platform for all kinds of sensors, in particular, temperature~\cite{Essex-2007}
+and CO$_2$ concentration measurements~\cite[Chapter~6, 1951-1960, p~117]{Harper-2007}.
+Previous  CO$_2$ concentration measurements in Scandinavia had been inconclusive and widely varying~\cite[pp.~21-22]{Weart-2008}.
+Indeed for temperature measurements, the same might hold true: whereas in less isolated regions measurement locations
+might get `compromised' over time -- for instance, by nearby constructions resulting in changes of previously (rural) vicinities and environments
+(which require corrections of the raw data by model assumptions)
+--
+the Mauna Loa platform in Hawaii can be expected to have maintained its configuration (with respect to the sensors involved)
+over the relevant time periods~\cite{cp-7-975-2011}.
+
+We present two time series,
+as provided by the National Oceanic and Atmospheric Administration (NOAA)~\cite{mlo-in-situ-noaa.gov-1977-2019,mlo-in-situ-noaa.gov-1977-2019-CO2}.
+Fig.~\ref{2019-MASIE-f2}(a) plots hourly temperature data, measured at 2~m, from 1977 until the present.
+A linear model calculation of the temperature trends indicates an increase in temperature of about
+$0.028 \pm 0.0005    \; ^\circ\text{C}$ per year; in good concordance with previous trend projections of
+an overall annual warming trend of temperatures
+$0.021 \pm 0.011   \; ^\circ\text{C}$ per year~\cite{cp-7-975-2011}.
+Fig.~\ref{2019-MASIE-f2}(a) plots the famous Keeling curve -- a modulated (by seasons in the northern hemisphere) increase in atmospheric CO$_2$.
+
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{c}
+\includegraphics[width=0.45\textwidth]{2019-MASIE-1977-2019-MNL-model.pdf}
+\\
+(a)
+\\
+\includegraphics[width=0.45\textwidth]{2019-MASIE-1974-2018-MNL-CO2-model.pdf}
+\\
+(b)
+\end{tabular}
+\end{center}
+\caption{
+\label{2019-MASIE-f2}
+Plot of
+(a)
+the hourly temperatures at the NOAA/ESRL/GMD Baseline Observatory at Mauna Loa  at 2 Meters
+from 1977 until the present~\cite{mlo-in-situ-noaa.gov-1977-2019}.
+The first 147.713 data points (until about 1995) contain no 9.9$^\circ\text{C}$ entry.
+Linear regression yields  a projected increase of temperature
+ $3.2109 10^{-6} \pm 5.65585 10^{-8}  \; ^\circ\text{C}$ per hour, or
+ $0.028 \pm 0.0005    \; ^\circ\text{C}$ per year, or
+ $3 \pm 0.05    \; ^\circ\text{C}$ per century.
+(b) The hourly CO$_2$ concentrations at the NOAA/ESRL/GMD Baseline Observatory at Mauna Loa
+from May 1974 until the present~\cite{mlo-in-situ-noaa.gov-1977-2019-CO2}.
+The joint curves represent a moving average over the data smoothed over two weeks.
+}
+\end{figure}
+
+\section{Homogenized and adjusted temperature data from the Global Historical Climatology Network (GHCN) around the world}
+
+
+In what follows we shall present the analysis of temperature data from the
+{\em Global Historical Climatology Network (GHCN)},
+an `integrated database of climate summaries from land surface stations across the globe'
+maintained by the {\em National Oceanic and Atmospheric Administration (NOAA)}~\cite{GHCN}.
+These data are not `raw as can be' but  corrected, homogenized and adjusted
+to eliminate `outliers' or systematic drifts; eg, by the change of sensors~\cite{2009-Menne}.
+
+A note on data retention policy seems in order:
+I am grateful to institutions such as NOAA financed by the United States government
+providing free access to data which even a public university in my own country would not be able to obtain without paid access.
+Nevertheless, I would prefer obtaining the uncorrected, not homogenized and unadjusted raw data as well.
+Of course one could compare this to, say, CERN's data analysis of the Higgs boson, but
+there are at least two criteria for requesting raw data from NOAA:
+(i) a pragmatic reason: the digitized temperature data are orders of magnitude smaller than the data collected at CERN; as well as
+(ii) a historic reason:  as {\em `Climategate had a significant effect on public beliefs in global warming
+and trust in scientists'}~\cite{climategate-Yale} it might be prudent to communicate the raw signals as well.
+
+
+
+The examples will be anecdotal, and the choice (among over 100.000 stations~\cite{GHCN-Stations})
+is guided by the `isolation' of most of these stations; for the same reasons as stated for Mauna Loa, HI earlier.
+
+\begin{figure*}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=0.35\textwidth]{2019-MASIE-AR000087344-CORDOBAAERO,AR.png}       &
+\includegraphics[width=0.35\textwidth]{2019-MASIE-ASN00055023-GUNNEDAHPOOL,AS.png}
+\\
+\includegraphics[width=0.35\textwidth]{2019-MASIE-AU000015410-SONNBLICK,AU.png}    &
+\includegraphics[width=0.35\textwidth]{2019-MASIE-BE000006447-UCCLE,BE.png}
+\\
+\includegraphics[width=0.35\textwidth]{2019-MASIE-FR000007150-PARISLEBOURGET,FR.png} &
+\includegraphics[width=0.35\textwidth]{2019-MASIE-IN011170400-INDORE,IN.png}
+\\
+\includegraphics[width=0.35\textwidth]{2019-MASIE-JA000047898-SHIMIZU,JA.png}           &
+\includegraphics[width=0.35\textwidth]{2019-MASIE-NO000098550-VARDO,NO.png}
+\\
+\includegraphics[width=0.35\textwidth]{2019-MASIE-NZ000093994-RAOULISLKERMADEC,NZ.png} &
+\includegraphics[width=0.35\textwidth]{2019-MASIE-SZ000002220-SAENTIS,SZ.png}
+\end{tabular}
+\end{center}
+\caption{
+\label{2019-MASIE-f3}
+Plots of
+the minimal and maximal daily temperatures at assorted stations from homogenized data obtained by NOAA/GHCN.
+The joint curves represent a moving average over the data smoothed over a year.
+Linear regression yields projected increases and decreases of minimal and maximal daily temperatures, enumerated in degrees Celsius per year.
+}
+\end{figure*}
+
+The data suggest that there is a relatively constant increase in overall temperatures for both hemispheres since the beginning of the respective recording periods.
+This is consistent with the retreat of Alpine glaciers since around 1850.
+
+%\section{Climate predictions}
+
+
+\section{Summary}
+We have presented an elementary analysis of the Arctic ice extent from MASIE data from 2006 to the present (December 2019), as well as from earlier sensors.
+A very crude linear model approximation yields a small decline of the Arctic ice extent of about $60,000 \pm 12,000 \text{ km}^2$ per year which,
+if projected into the far (relative to the extension of the data) future,
+would result in the total exhaustion of the Arctic ice in the summer and winter seasons in about 70 and 250 years, respectively.
+
+We also presented an analysis of globalized temperature data that has been homogenized and made available by NOAA's Global Historical Climatology Network.
+This suggests an increase in temperatures of about 1--2.5$^\circ$~C per century.
+This trend seemed to have started already at pre-industrial levels of carbon dioxide.
+How much (in which direction and if any) influence the anthropogenic CO$_2$ emissions exactly have can not be directly derived from these empirical anecdotes.
+Indeed, attempts to stabilize a constantly changing natural climate by anthropogenic measures
+might be considered questionable and intractable at best; and dangerous at worst.
+
+Climate science should never forget that it rediscovered~\cite{HOLMES1990137} deterministic Chaos~\cite{Lorenz-EOC}.
+As Earth's climate appears to be dominated astronomical configurations as well as by nonlinear phenomena
+it can be expected to perform chaotically~\cite{Rial2004} at least to some unknown degree.
+This has two consequences: (i) nonlinear causes of the climate evolution greatly reduce the predictability even if all of them would be perfectly known
+and accounted for in the models;
+(ii) they also allow (but not necessarily imply) abrupt climate transitions.
+
+The sobering perspective of this situation might be the acknowledgment that `little is known or can be predicted'~\cite{Schiebinger-Proctor}.
+One may discuss in the classroom whether these `unknown unknowns'~\cite{Rumsfeld-2001} justify
+many bold statements posted as well as scarcity measures suggested in the public debate.
+
+\begin{acknowledgments}
+The author declares no conflict of interest.
+\end{acknowledgments}
+
+%\bibliography{csvo,svozil}
+
+
+%merlin.mbs apsrev4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+%Control: key (0)
+%Control: author (0) dotless jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (0) allowed
+%Control: page (1) range
+%Control: year (0) verbatim
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{36}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{`#1'}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {Vigen}(2015)}]{Vigen:2015aa}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Tyler}\ \bibnamefont
+  {Vigen}},\ }\href {https://www.tylervigen.com/spurious-correlations} {\emph
+  {\bibinfo {title} {Spurious Correlations}}}\ (\bibinfo  {publisher} {Hachette
+  Books},\ \bibinfo {address} {New York},\ \bibinfo {year} {2015})\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Longo}(2016)}]{Calude2016}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {Giuseppe}\
+  \bibnamefont {Longo}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The
+  deluge of spurious correlations in big data},}\ }\href {\doibase
+  10.1007/s10699-016-9489-4} {\bibfield  {journal} {\bibinfo  {journal}
+  {Foundations of Science}\ ,\ \bibinfo {pages} {1--18}} (\bibinfo {year}
+  {2016})},\ \Eprint {http://arxiv.org/abs/CDMTCS-488} {CDMTCS-488}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {L\"uthi}\ \emph {et~al.}(2008)\citenamefont
+  {L\"uthi}, \citenamefont {Le~Floch}, \citenamefont {Bereiter}, \citenamefont
+  {Blunier}, \citenamefont {Barnola}, \citenamefont {Siegenthaler},
+  \citenamefont {Raynaud}, \citenamefont {Jouzel}, \citenamefont {Fischer},
+  \citenamefont {Kawamura},\ and\ \citenamefont {Stocker}}]{Luethi2008}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Dieter}\ \bibnamefont
+  {L\"uthi}}, \bibinfo {author} {\bibfnamefont {Martine}\ \bibnamefont
+  {Le~Floch}}, \bibinfo {author} {\bibfnamefont {Bernhard}\ \bibnamefont
+  {Bereiter}}, \bibinfo {author} {\bibfnamefont {Thomas}\ \bibnamefont
+  {Blunier}}, \bibinfo {author} {\bibfnamefont {Jean-Marc}\ \bibnamefont
+  {Barnola}}, \bibinfo {author} {\bibfnamefont {Urs}\ \bibnamefont
+  {Siegenthaler}}, \bibinfo {author} {\bibfnamefont {Dominique}\ \bibnamefont
+  {Raynaud}}, \bibinfo {author} {\bibfnamefont {Jean}\ \bibnamefont {Jouzel}},
+  \bibinfo {author} {\bibfnamefont {Hubertus}\ \bibnamefont {Fischer}},
+  \bibinfo {author} {\bibfnamefont {Kenji}\ \bibnamefont {Kawamura}}, \ and\
+  \bibinfo {author} {\bibfnamefont {Thomas~F.}\ \bibnamefont {Stocker}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {High-resolution carbon
+  dioxide concentration record 650,000--800,000 years before present},}\ }\href
+  {\doibase 10.1038/nature06949} {\bibfield  {journal} {\bibinfo  {journal}
+  {Nature}\ }\textbf {\bibinfo {volume} {453}},\ \bibinfo {pages} {379--382}
+  (\bibinfo {year} {2008})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Shakun}\ \emph {et~al.}(2012)\citenamefont {Shakun},
+  \citenamefont {Clark}, \citenamefont {He}, \citenamefont {Marcott},
+  \citenamefont {Mix}, \citenamefont {Liu}, \citenamefont {Otto-Bliesner},
+  \citenamefont {Schmittner},\ and\ \citenamefont {Bard}}]{Shakun2012}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Jeremy~D.}\
+  \bibnamefont {Shakun}}, \bibinfo {author} {\bibfnamefont {Peter~U.}\
+  \bibnamefont {Clark}}, \bibinfo {author} {\bibfnamefont {Feng}\ \bibnamefont
+  {He}}, \bibinfo {author} {\bibfnamefont {Shaun~A.}\ \bibnamefont {Marcott}},
+  \bibinfo {author} {\bibfnamefont {Alan~C.}\ \bibnamefont {Mix}}, \bibinfo
+  {author} {\bibfnamefont {Zhengyu}\ \bibnamefont {Liu}}, \bibinfo {author}
+  {\bibfnamefont {Bette}\ \bibnamefont {Otto-Bliesner}}, \bibinfo {author}
+  {\bibfnamefont {Andreas}\ \bibnamefont {Schmittner}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {Edouard}\ \bibnamefont {Bard}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Global warming preceded by increasing carbon
+  dioxide concentrations during the last deglaciation},}\ }\href {\doibase
+  10.1038/nature10915} {\bibfield  {journal} {\bibinfo  {journal} {Nature}\
+  }\textbf {\bibinfo {volume} {453}},\ \bibinfo {pages} {49--54} (\bibinfo
+  {year} {2012})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Wood}(1909)}]{Wood-1009}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~W.}\ \bibnamefont
+  {Wood}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {{XXIV}. {N}ote on
+  the theory of the greenhouse},}\ }\href {\doibase 10.1080/14786440208636602}
+  {\bibfield  {journal} {\bibinfo  {journal} {The London, Edinburgh, and Dublin
+  Philosophical Magazine and Journal of Science}\ }\textbf {\bibinfo {volume}
+  {17}},\ \bibinfo {pages} {319--320} (\bibinfo {year} {1909})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Rasool}\ and\ \citenamefont
+  {Schneider}(1971)}]{Rasool138}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~I.}\ \bibnamefont
+  {Rasool}}\ and\ \bibinfo {author} {\bibfnamefont {S.~H.}\ \bibnamefont
+  {Schneider}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Atmospheric
+  carbon dioxide and aerosols: Effects of large increases on global climate},}\
+  }\href {\doibase 10.1126/science.173.3992.138} {\bibfield  {journal}
+  {\bibinfo  {journal} {Science}\ }\textbf {\bibinfo {volume} {173}},\ \bibinfo
+  {pages} {138--141} (\bibinfo {year} {1971})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Maibach}\ \emph {et~al.}(2012)\citenamefont
+  {Maibach}, \citenamefont {Stenhouse}, \citenamefont {Cobb}, \citenamefont
+  {Ban}, \citenamefont {Bleistein}, \citenamefont {Croft}, \citenamefont
+  {Bierly}, \citenamefont {Seitter}, \citenamefont {Rasmussen},\ and\
+  \citenamefont {Leiserowitz}}]{Maibach-2012}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Edward}\ \bibnamefont
+  {Maibach}}, \bibinfo {author} {\bibfnamefont {Neil}\ \bibnamefont
+  {Stenhouse}}, \bibinfo {author} {\bibfnamefont {Sara}\ \bibnamefont {Cobb}},
+  \bibinfo {author} {\bibfnamefont {Ray}\ \bibnamefont {Ban}}, \bibinfo
+  {author} {\bibfnamefont {Andrea}\ \bibnamefont {Bleistein}}, \bibinfo
+  {author} {\bibfnamefont {Paul}\ \bibnamefont {Croft}}, \bibinfo {author}
+  {\bibfnamefont {Eugene}\ \bibnamefont {Bierly}}, \bibinfo {author}
+  {\bibfnamefont {Keith}\ \bibnamefont {Seitter}}, \bibinfo {author}
+  {\bibfnamefont {Gary}\ \bibnamefont {Rasmussen}}, \ and\ \bibinfo {author}
+  {\bibfnamefont {Anthony}\ \bibnamefont {Leiserowitz}},\ }\href
+  {https://www.climatechangecommunication.org/wp-content/uploads/2016/03/February-2012-American-Meteorological-Society-Member-Survey-on-Global-Warming-Preliminary-Findings.pdf}
+  {\enquote {\bibinfo {title} {{A}merican {M}eteorological {S}ociety member
+  survey on global warming: {P}reliminary findings. {F}ebruary 12th, 2012.
+  {S}urvey conducted under the auspices of {AMS} committee to improve climate
+  change communication {(CICCC)}},}\ } (\bibinfo {year} {2012}),\ \bibinfo
+  {note} {published by the Center For Climate Change Communication, George
+  Mason University, in collaboration with the American Meteorological Society
+  (AMS)}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Cook}\ \emph {et~al.}(2013)\citenamefont {Cook},
+  \citenamefont {Nuccitelli}, \citenamefont {Green}, \citenamefont
+  {Richardson}, \citenamefont {Winkler}, \citenamefont {Painting},
+  \citenamefont {Way}, \citenamefont {Jacobs},\ and\ \citenamefont
+  {Skuce}}]{Cook_2013}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {John}\ \bibnamefont
+  {Cook}}, \bibinfo {author} {\bibfnamefont {Dana}\ \bibnamefont {Nuccitelli}},
+  \bibinfo {author} {\bibfnamefont {Sarah~A}\ \bibnamefont {Green}}, \bibinfo
+  {author} {\bibfnamefont {Mark}\ \bibnamefont {Richardson}}, \bibinfo {author}
+  {\bibfnamefont {B\"arbel}\ \bibnamefont {Winkler}}, \bibinfo {author}
+  {\bibfnamefont {Rob}\ \bibnamefont {Painting}}, \bibinfo {author}
+  {\bibfnamefont {Robert}\ \bibnamefont {Way}}, \bibinfo {author}
+  {\bibfnamefont {Peter}\ \bibnamefont {Jacobs}}, \ and\ \bibinfo {author}
+  {\bibfnamefont {Andrew}\ \bibnamefont {Skuce}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Quantifying the consensus on anthropogenic
+  global warming in the scientific literature},}\ }\href {\doibase
+  10.1088/1748-9326/8/2/024024} {\bibfield  {journal} {\bibinfo  {journal}
+  {Environmental Research Letters}\ }\textbf {\bibinfo {volume} {8}},\ \bibinfo
+  {pages} {024024} (\bibinfo {year} {2013})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stenhouse}\ \emph {et~al.}(2014)\citenamefont
+  {Stenhouse}, \citenamefont {Maibach}, \citenamefont {Cobb}, \citenamefont
+  {Ban}, \citenamefont {Bleistein}, \citenamefont {Croft}, \citenamefont
+  {Bierly}, \citenamefont {Seitter}, \citenamefont {Rasmussen},\ and\
+  \citenamefont {Leiserowitz}}]{Stenhouse-2014}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Neil}\ \bibnamefont
+  {Stenhouse}}, \bibinfo {author} {\bibfnamefont {Edward}\ \bibnamefont
+  {Maibach}}, \bibinfo {author} {\bibfnamefont {Sara}\ \bibnamefont {Cobb}},
+  \bibinfo {author} {\bibfnamefont {Ray}\ \bibnamefont {Ban}}, \bibinfo
+  {author} {\bibfnamefont {Andrea}\ \bibnamefont {Bleistein}}, \bibinfo
+  {author} {\bibfnamefont {Paul}\ \bibnamefont {Croft}}, \bibinfo {author}
+  {\bibfnamefont {Eugene}\ \bibnamefont {Bierly}}, \bibinfo {author}
+  {\bibfnamefont {Keith}\ \bibnamefont {Seitter}}, \bibinfo {author}
+  {\bibfnamefont {Gary}\ \bibnamefont {Rasmussen}}, \ and\ \bibinfo {author}
+  {\bibfnamefont {Anthony}\ \bibnamefont {Leiserowitz}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Meteorologists' views about global warming: {A}
+  survey of american meteorological society professional members},}\ }\href
+  {\doibase 10.1175/BAMS-D-13-00091.1} {\bibfield  {journal} {\bibinfo
+  {journal} {Bulletin of the American Meteorological Society}\ }\textbf
+  {\bibinfo {volume} {95}},\ \bibinfo {pages} {1029--1040} (\bibinfo {year}
+  {2014})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Legates}\ \emph {et~al.}(2015)\citenamefont
+  {Legates}, \citenamefont {Soon}, \citenamefont {Briggs},\ and\ \citenamefont
+  {Monckton~of Brenchley}}]{Legates2015}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {David~R.}\
+  \bibnamefont {Legates}}, \bibinfo {author} {\bibfnamefont {Willie}\
+  \bibnamefont {Soon}}, \bibinfo {author} {\bibfnamefont {William~M.}\
+  \bibnamefont {Briggs}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {Christopher}\ \bibnamefont {Monckton~of Brenchley}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Climate consensus and `misinformation': {A}
+  rejoinder to agnotology, scientific consensus, and the teaching and learning
+  of climate change},}\ }\href {\doibase 10.1007/s11191-013-9647-9} {\bibfield
+  {journal} {\bibinfo  {journal} {Science {\&} Education}\ }\textbf {\bibinfo
+  {volume} {24}},\ \bibinfo {pages} {299--318} (\bibinfo {year}
+  {2015})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stenhouse}\ \emph {et~al.}(2017)\citenamefont
+  {Stenhouse}, \citenamefont {Harper}, \citenamefont {Cai}, \citenamefont
+  {Cobb}, \citenamefont {Nicotera},\ and\ \citenamefont
+  {Maibach}}]{Stenhouse-2017}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Neil}\ \bibnamefont
+  {Stenhouse}}, \bibinfo {author} {\bibfnamefont {Allison}\ \bibnamefont
+  {Harper}}, \bibinfo {author} {\bibfnamefont {Xiaomei}\ \bibnamefont {Cai}},
+  \bibinfo {author} {\bibfnamefont {Sara}\ \bibnamefont {Cobb}}, \bibinfo
+  {author} {\bibfnamefont {Anne}\ \bibnamefont {Nicotera}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {Edward}\ \bibnamefont {Maibach}},\ }\bibfield
+  {title} {\enquote {\bibinfo {title} {Conflict about climate change at the
+  {A}merican {M}eteorological {S}ociety: {M}eteorologists' views on a
+  scientific and organizational controversy},}\ }\href {\doibase
+  10.1175/BAMS-D-15-00265.1} {\bibfield  {journal} {\bibinfo  {journal}
+  {Bulletin of the American Meteorological Society}\ }\textbf {\bibinfo
+  {volume} {98}},\ \bibinfo {pages} {219--223} (\bibinfo {year}
+  {2017})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Remote Sensing Systems (REMSS)}}(2019)}]{remss}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{Remote Sensing Systems
+  (REMSS)}}},\ }\href {http://www.remss.com/research/climate/} {\enquote
+  {\bibinfo {title} {Climate analysis},}\ } (\bibinfo {year} {2019}),\ \bibinfo
+  {note} {accessed on December 30th, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Weart}(2008)}]{Weart-2008}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Spencer~R.}\
+  \bibnamefont {Weart}},\ }\href
+  {https://www.hup.harvard.edu/catalog.php?isbn=9780674031890} {\emph {\bibinfo
+  {title} {The Discovery of Global Warming}}},\ New Histories of Science,
+  Technology, and Medicine\ (\bibinfo  {publisher} {Harvard University Press},\
+  \bibinfo {address} {Cambridge, MA},\ \bibinfo {year} {2008})\ \bibinfo {note}
+  {see also \url{https://history.aip.org/climate/index.htm}}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Harper}(2007)}]{Harper-2007}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Kristine~C.}\
+  \bibnamefont {Harper}},\ }\href
+  {http://www.infobasepublishing.com/Bookdetail.aspx?ISBN=1438109822&Ebooks=1}
+  {\emph {\bibinfo {title} {Weather and Climate: {D}ecade by Decade}}},\
+  Twentieth-Century Science\ (\bibinfo  {publisher} {Facts on File, An imprint
+  of Infobase Publishing},\ \bibinfo {address} {New York, NY},\ \bibinfo {year}
+  {2007})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Hempel}\ and\ \citenamefont
+  {Piepenburg}(2010)}]{Hempel-2010}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Gotthilf}\
+  \bibnamefont {Hempel}}\ and\ \bibinfo {author} {\bibfnamefont {Dieter}\
+  \bibnamefont {Piepenburg}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {{N}ord- und {S}\"udpolarmeer im {K}limawandel. {E}in biologischer
+  {V}ergleich},}\ }\href {\doibase 10.1002/biuz.201010437} {\bibfield
+  {journal} {\bibinfo  {journal} {Biologie in unserer Zeit}\ }\textbf {\bibinfo
+  {volume} {40}},\ \bibinfo {pages} {386--395} (\bibinfo {year}
+  {2010})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{National Snow and Ice Data Center
+  (NSIDC)}}(2019)}]{MASIE-SH}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Snow and Ice
+  Data Center (NSIDC)}}},\ }\href
+  {https://nsidc.org/cryosphere/seaice/characteristics/difference.html} {\emph
+  {\bibinfo {title} {All About Sea Ice. {A}rctic vs. {A}ntarctic}}}\ (\bibinfo
+  {publisher} {NSIDC: National Snow and Ice Data Center},\ \bibinfo {address}
+  {Boulder, Colorado, USA},\ \bibinfo {year} {2019})\ \bibinfo {note} {accessed
+  on December 23rd, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Danish Meteorological Institute (DMI), National
+  Space Institute/ Institute for Civil Engineering (DTU), The Geological Survey
+  of Denmark and Greenland (GEUS)}}(2018)}]{asithick}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{Danish Meteorological
+  Institute (DMI), National Space Institute/ Institute for Civil Engineering
+  (DTU), The Geological Survey of Denmark and Greenland (GEUS)}}},\ }\href
+  {http://polarportal.dk/en/sea-ice-and-icebergs/sea-ice-thickness-and-volume/}
+  {\enquote {\bibinfo {title} {Sea ice thickness and volume},}\ } (\bibinfo
+  {year} {2018}),\ \bibinfo {note} {accessed on December 26th,
+  2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{National Ice Center and National Snow and Ice Data
+  Center. Compiled by F. Fetterer, M. Savoie, S. Helfrich, and P.
+  Clemente-Col\'on}}(2010, updated daily)}]{MASIE-NH}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Ice Center
+  and National Snow and Ice Data Center. Compiled by F. Fetterer, M. Savoie, S.
+  Helfrich, and P. Clemente-Col\'on}}},\ }\href {\doibase 10.7265/N5GT5K3K}
+  {\emph {\bibinfo {title} {Multisensor Analyzed Sea Ice Extent - Northern
+  Hemisphere (MASIE-NH), Version 1. (0) Northern{\_}Hemisphere}}}\ (\bibinfo
+  {publisher} {NSIDC: National Snow and Ice Data Center},\ \bibinfo {address}
+  {Boulder, Colorado, USA},\ \bibinfo {year} {2010, updated daily})\ \bibinfo
+  {note} {accessed on December 23rd, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stroeve}\ and\ \citenamefont
+  {Meier}(2018)}]{MASIE-NH-older}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {Stroeve}}\ and\ \bibinfo {author} {\bibfnamefont {W.~N.}\ \bibnamefont
+  {Meier}},\ }\href {\doibase 10.5067/IJ0T7HFHB9Y6} {\emph {\bibinfo {title}
+  {Sea Ice Trends and Climatologies from {SMMR} and {SSM/I-SSMIS}, Version 3.
+  (0) Northern{\_}Hemisphere}}}\ (\bibinfo  {publisher} {NASA National Snow and
+  Ice Data},\ \bibinfo {address} {Boulder, Colorado, USA},\ \bibinfo {year}
+  {2018})\ \bibinfo {note} {accessed on December 23rd, 2019}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Inc.}(2019)}]{Mathematica12.0}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Wolfram~Research{,}}\
+  \bibnamefont {Inc.}},\ }\href@noop {} {\enquote {\bibinfo {title}
+  {Mathematica, {V}ersion 12.0},}\ } (\bibinfo {year} {2019})\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {{National Institute of Polar
+  Research}}(2019)}]{VISHOP-1978-2019}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Institute of
+  Polar Research}}},\ }\href {https://ads.nipr.ac.jp/vishop/{\#}/extent}
+  {\enquote {\bibinfo {title} {Arctic data archive system {(ADS)}, {VISHOP}},}\
+  } (\bibinfo {year} {2019}),\ \bibinfo {note} {accessed on December 25th,
+  2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Houghton}\ \emph {et~al.}(2001)\citenamefont
+  {Houghton}, \citenamefont {Ding}, \citenamefont {Griggs}, \citenamefont
+  {Noguer}, \citenamefont {van~der Linden}, \citenamefont {Dai}, \citenamefont
+  {Maskell},\ and\ \citenamefont {Johnson}}]{ipcc2001-physics_basics}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~T.}\ \bibnamefont
+  {Houghton}}, \bibinfo {author} {\bibfnamefont {Y.}~\bibnamefont {Ding}},
+  \bibinfo {author} {\bibfnamefont {D.~J.}\ \bibnamefont {Griggs}}, \bibinfo
+  {author} {\bibfnamefont {M.}~\bibnamefont {Noguer}}, \bibinfo {author}
+  {\bibfnamefont {P.~J.}\ \bibnamefont {van~der Linden}}, \bibinfo {author}
+  {\bibfnamefont {X.}~\bibnamefont {Dai}}, \bibinfo {author} {\bibfnamefont
+  {K.}~\bibnamefont {Maskell}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {C.~A.}\ \bibnamefont {Johnson}},\ }\href
+  {https://www.ipcc.ch/report/ar3/wg1/} {\emph {\bibinfo {title} {Climate
+  Change 2001: {T}he Scientific Basis. {C}ontribution of Working Group {I} to
+  the {T}hird {A}ssessment {R}eport of the {I}ntergovernmental {P}anel on
+  {C}limate {C}hange {(IPCC)}}}}\ (\bibinfo  {publisher} {Cambridge University
+  Press},\ \bibinfo {address} {Cambridge, United Kingdom and New York, NY,
+  USA},\ \bibinfo {year} {2001})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bell}(1990)}]{bell-a}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {John~Stuard}\
+  \bibnamefont {Bell}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Against `measurement'},}\ }\href {\doibase 10.1088/2058-7058/3/8/26}
+  {\bibfield  {journal} {\bibinfo  {journal} {Physics World}\ }\textbf
+  {\bibinfo {volume} {3}},\ \bibinfo {pages} {33--41} (\bibinfo {year}
+  {1990})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Essex}\ \emph {et~al.}(2007)\citenamefont {Essex},
+  \citenamefont {McKitrick},\ and\ \citenamefont {Andresen}}]{Essex-2007}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Christopher}\
+  \bibnamefont {Essex}}, \bibinfo {author} {\bibfnamefont {Ross}\ \bibnamefont
+  {McKitrick}}, \ and\ \bibinfo {author} {\bibfnamefont {Bjarne}\ \bibnamefont
+  {Andresen}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Does a global
+  temperature exist?}}\ }\href {\doibase 10.1515/JNETDY.2007.001} {\bibfield
+  {journal} {\bibinfo  {journal} {Journal of Non-Equilibrium Thermodynamics}\
+  }\textbf {\bibinfo {volume} {32}},\ \bibinfo {pages} {1--27} (\bibinfo {year}
+  {2007})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Malamud}\ \emph {et~al.}(2011)\citenamefont
+  {Malamud}, \citenamefont {Turcotte},\ and\ \citenamefont
+  {Grimmond}}]{cp-7-975-2011}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.~D.}\ \bibnamefont
+  {Malamud}}, \bibinfo {author} {\bibfnamefont {D.~L.}\ \bibnamefont
+  {Turcotte}}, \ and\ \bibinfo {author} {\bibfnamefont {C.~S.~B.}\ \bibnamefont
+  {Grimmond}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Temperature
+  trends at the {M}auna {L}oa observatory, {H}awaii},}\ }\href {\doibase
+  10.5194/cp-7-975-2011} {\bibfield  {journal} {\bibinfo  {journal} {Climate of
+  the Past}\ }\textbf {\bibinfo {volume} {7}},\ \bibinfo {pages} {975--983}
+  (\bibinfo {year} {2011})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{National Oceanic and Atmospheric Administration}}\
+  \emph {et~al.}(1977-2019{\natexlab{a}})\citenamefont {{National Oceanic and
+  Atmospheric Administration}}, \citenamefont {{Oceanic and Atmospheric
+  Research}}, \citenamefont {{Earth System Research Laboratory}},\ and\
+  \citenamefont {{Global Monitoring
+  Division}}}]{mlo-in-situ-noaa.gov-1977-2019}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Oceanic and
+  Atmospheric Administration}}}, \bibinfo {author} {\bibnamefont {{Oceanic and
+  Atmospheric Research}}}, \bibinfo {author} {\bibnamefont {{Earth System
+  Research Laboratory}}}, \ and\ \bibinfo {author} {\bibnamefont {{Global
+  Monitoring Division}}},\ }\href
+  {ftp://ftp.cmdl.noaa.gov/data/meteorology/in-situ/mlo/} {\enquote {\bibinfo
+  {title} {Meteorology measurements from the {NOAA/ESRL/GMD} baseline
+  observatories -- {M}auna {L}oa observatory in {H}ilo, {H}awaii},}\ }
+  (\bibinfo {year} {1977-2019}{\natexlab{a}}),\ \bibinfo {note} {accessed on
+  December 1st, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{National Oceanic and Atmospheric Administration}}\
+  \emph {et~al.}(1977-2019{\natexlab{b}})\citenamefont {{National Oceanic and
+  Atmospheric Administration}}, \citenamefont {{Oceanic and Atmospheric
+  Research}}, \citenamefont {{Earth System Research Laboratory}},\ and\
+  \citenamefont {{Global Monitoring
+  Division}}}]{mlo-in-situ-noaa.gov-1977-2019-CO2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Oceanic and
+  Atmospheric Administration}}}, \bibinfo {author} {\bibnamefont {{Oceanic and
+  Atmospheric Research}}}, \bibinfo {author} {\bibnamefont {{Earth System
+  Research Laboratory}}}, \ and\ \bibinfo {author} {\bibnamefont {{Global
+  Monitoring Division}}},\ }\href
+  {ftp://aftp.cmdl.noaa.gov/data/trace_gases/co2/in-situ/surface/mlo/co2_mlo_surface-insitu_1_ccgg_HourlyData.txt}
+  {\enquote {\bibinfo {title} {Atmospheric carbon dioxide dry air mole
+  fractions from quasi-continuous measurements at {M}auna {L}oa observatory in
+  {H}ilo, {H}awaii},}\ } (\bibinfo {year} {1977-2019}{\natexlab{b}}),\ \bibinfo
+  {note} {accessed on December 26th, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{National Oceanic and Atmospheric Administration
+  (NOAA)}}(2019{\natexlab{a}})}]{GHCN}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Oceanic and
+  Atmospheric Administration (NOAA)}}},\ }\href
+  {https://www.ncdc.noaa.gov/data-access/land-based-station-data/land-based-datasets/global-historical-climatology-network-ghcn}
+  {\enquote {\bibinfo {title} {Global historical climatology network
+  {(GHCN)}},}\ } (\bibinfo {year} {2019}{\natexlab{a}}),\ \bibinfo {note}
+  {accessed on December 28th, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Menne}\ and\ \citenamefont
+  {Williams}(2009)}]{2009-Menne}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Matthew~J.}\
+  \bibnamefont {Menne}}\ and\ \bibinfo {author} {\bibfnamefont {Claude~N.}\
+  \bibnamefont {Williams}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Homogenization of temperature series via pairwise comparisons},}\ }\href
+  {\doibase 10.1175/2008JCLI2263.1} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Climate}\ }\textbf {\bibinfo {volume} {22}},\ \bibinfo {pages}
+  {1700--1717} (\bibinfo {year} {2009})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Leiserowitz}\ \emph {et~al.}(2010, 2012)\citenamefont
+  {Leiserowitz}, \citenamefont {Maibach}, \citenamefont {Roser-Renouf},
+  \citenamefont {Smith},\ and\ \citenamefont {Dawson}}]{climategate-Yale}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.~A.}\ \bibnamefont
+  {Leiserowitz}}, \bibinfo {author} {\bibfnamefont {E.~W.}\ \bibnamefont
+  {Maibach}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Roser-Renouf}}, \bibinfo {author} {\bibfnamefont {N.}~\bibnamefont {Smith}},
+  \ and\ \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Dawson}},\ }\href
+  {https://climatecommunication.yale.edu/publications/climategate-public-opinion-and-the-loss-of-trust/}
+  {\enquote {\bibinfo {title} {Climategate, public opinion, and the loss of
+  trust},}\ } (\bibinfo {year} {2010, 2012}),\ \bibinfo {note} {working Paper,
+  Yale University. Accessed on December 30th, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{National Oceanic and Atmospheric Administration
+  (NOAA)}}(2019{\natexlab{b}})}]{GHCN-Stations}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{National Oceanic and
+  Atmospheric Administration (NOAA)}}},\ }\href
+  {https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt} {\enquote
+  {\bibinfo {title} {Global historical climatology network {(GHCN)}
+  stations},}\ } (\bibinfo {year} {2019}{\natexlab{b}}),\ \bibinfo {note}
+  {accessed on December 28th, 2019}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Holmes}(1990)}]{HOLMES1990137}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Philip}\ \bibnamefont
+  {Holmes}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Poincar\'e,
+  celestial mechanics, dynamical-systems theory and `chaos'},}\ }\href
+  {\doibase 10.1016/0370-1573(90)90012-Q} {\bibfield  {journal} {\bibinfo
+  {journal} {Physics Reports}\ }\textbf {\bibinfo {volume} {193}},\ \bibinfo
+  {pages} {137--163} (\bibinfo {year} {1990})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Lorenz}(1993, 2005)}]{Lorenz-EOC}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Edward~N.}\
+  \bibnamefont {Lorenz}},\ }\href {https://doi.org/10.1201/9781482288988}
+  {\emph {\bibinfo {title} {The Essence of Chaos}}}\ (\bibinfo  {publisher}
+  {University of Washington Press, CRC Press, Taylor \& Francis},\ \bibinfo
+  {year} {1993, 2005})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Rial}\ \emph {et~al.}(2004)\citenamefont {Rial},
+  \citenamefont {Pielke}, \citenamefont {Beniston}, \citenamefont {Claussen},
+  \citenamefont {Canadell}, \citenamefont {Cox}, \citenamefont {Held},
+  \citenamefont {de~Noblet-Ducoudr{\'e}}, \citenamefont {Prinn}, \citenamefont
+  {Reynolds},\ and\ \citenamefont {Salas}}]{Rial2004}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Jos{\'e}~A.}\
+  \bibnamefont {Rial}}, \bibinfo {author} {\bibfnamefont {Roger~A.}\
+  \bibnamefont {Pielke}}, \bibinfo {author} {\bibfnamefont {Martin}\
+  \bibnamefont {Beniston}}, \bibinfo {author} {\bibfnamefont {Martin}\
+  \bibnamefont {Claussen}}, \bibinfo {author} {\bibfnamefont {Josep}\
+  \bibnamefont {Canadell}}, \bibinfo {author} {\bibfnamefont {Peter}\
+  \bibnamefont {Cox}}, \bibinfo {author} {\bibfnamefont {Hermann}\ \bibnamefont
+  {Held}}, \bibinfo {author} {\bibfnamefont {Nathalie}\ \bibnamefont
+  {de~Noblet-Ducoudr{\'e}}}, \bibinfo {author} {\bibfnamefont {Ronald}\
+  \bibnamefont {Prinn}}, \bibinfo {author} {\bibfnamefont {James~F.}\
+  \bibnamefont {Reynolds}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {Jos{\'e}~D.}\ \bibnamefont {Salas}},\ }\bibfield  {title} {\enquote
+  {\bibinfo {title} {Nonlinearities, feedbacks and critical thresholds within
+  the {E}arth's climate system},}\ }\href {\doibase
+  10.1023/B:CLIM.0000037493.89489.3f} {\bibfield  {journal} {\bibinfo
+  {journal} {Climatic Change}\ }\textbf {\bibinfo {volume} {65}},\ \bibinfo
+  {pages} {11--38} (\bibinfo {year} {2004})}\BibitemShut {NoStop}%
+\bibitem [{Sch(2008)}]{Schiebinger-Proctor}%
+  \BibitemOpen
+  \href
+  {https://history.stanford.edu/publications/agnotology-making-and-unmaking-ignorance}
+  {\emph {\bibinfo {title} {Agnotology: {T}he Making and Unmaking of
+  Ignorance}}}\ (\bibinfo  {publisher} {Stanford University Press},\ \bibinfo
+  {year} {2008})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Rumsfeld}(2002)}]{Rumsfeld-2001}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Donald}\ \bibnamefont
+  {Rumsfeld}},\ }\href {https://www.nato.int/docu/speech/2002/s020606g.htm}
+  {\enquote {\bibinfo {title} {Press conference by {US} {S}ecretary of
+  {D}efence},}\ } (\bibinfo {year} {2002}),\ \bibinfo {note} {{NATO}
+  headquarters, {B}russels, June 6th, 2002, by {US} {S}ecretary of {D}efence,
+  accessed on August 16th, 2018}\BibitemShut {NoStop}%
+\end{thebibliography}%
+
+
+\end{document}

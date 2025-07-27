@@ -1,0 +1,154 @@
+<< Algebra`ReIm`
+
+(* Definition of the Tensor Product *)
+
+TensorProduct[a_, b_] :=    Table[(*a, b are nxn and mxm - matrices*)
+a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*b[[s - Floor[(s -
+1)/Length[b]]*Length[b],t - Floor[(t - 1)/Length[b]]*Length[b]]], {s,
+  1,Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(* Definition of the Tensor Product between two vectors *)
+
+TensorProductVec[x_, y_] := Flatten[Table[ x[[i]] y[[j]] , {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(* Definition of the Dyadic Product *)
+
+DyadicProductVec[x_] :=  Table[x[[i]] x[[j]], {i, 1, Length[x]}, {j, 1, Length[x]}];
+
+(* Definition of the sigma matrices *)
+
+
+vecsig[r_, tt_, p_ ]:= r * { {Cos[tt], Sin[tt] Exp[-I p]}, {Sin[tt] Exp[I p], -Cos[tt]}}
+
+(* Definition of some vectors *)
+
+BellBasis = (1/Sqrt[2]) {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, -1, 0}, {1, 0, 0,-1}};
+
+Basis =  {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0,1}};
+
+vp = {0,1};
+vm = {1,0};
+
+(* 2 PARTICLES *)
+
+
+(* Definition of singlet state *)
+
+psi2s =(1/Sqrt[2])* (TensorProductVec[{0, 1}, {1, 0}] - TensorProductVec[{1, 0}, {0, 1}]);
+
+(* Definition of operators *)
+
+(* Definition of single operators for occurrence of spin up *)
+
+SingleParticleProjector2first[x_,p_,pm_] :=   TensorProduct[1/2(IdentityMatrix[2] + pm * vecsig[1, x, p]), IdentityMatrix[2]]
+
+SingleParticleProjector2second[x_,p_,pm_] :=   TensorProduct[IdentityMatrix[2], 1/2(IdentityMatrix[2] + pm * vecsig[1, x, p])]
+
+
+
+(* Definition of two-particle joint operator for occurrence of spin up and down  *)
+
+JointProjector2[x1_, x2_,p1_,p2_,pm1_,pm2_] :=       TensorProduct[ 1/2(IdentityMatrix[2] + pm1 * vecsig[1, x1, p1]),  1/2(IdentityMatrix[2] + pm2 * vecsig[1, x2, p2]) ]
+
+(* Verify identity pm <-> x1-Pi *)
+
+FullSimplify[
+    ComplexExpand[
+      TensorProduct[1/2(IdentityMatrix[2] - 1*vecsig[1, x1, 0]),
+        1/2(IdentityMatrix[2] - 1*vecsig[1, x2, 0])]]] ==
+  FullSimplify[
+    ComplexExpand[
+      TensorProduct[1/2(IdentityMatrix[2] + 1*vecsig[1, x1 - Pi, 0]),
+        1/2(IdentityMatrix[2] + 1*vecsig[1, x2 - Pi, 0])]]]
+
+
+
+(* Definition of simplified joint two-particle ops. *)
+
+JP2[x1_, x2_, pm1_, pm2_] := TensorProduct[ 1/2(IdentityMatrix[2] + pm1 * vecsig[1, x1, 0]), 1/2(IdentityMatrix[2] + pm2 * vecsig[1, x2, 0]) ]
+
+O33[d1_,d2_,d3_] :=  JP2[d1,d1,1,1] + JP2[d1, d1,-1,-1]+ JP2[d2,d2,1,1] + JP2[d2, d2, -1,-1]+       JP2[d3,d3,1,1] + JP2[d3, d3, -1,-1]+       JP2[d1,d2,1,-1] + JP2[d1, d2, -1,1]+       JP2[d2,d1,1,-1] + JP2[d2, d1 ,-1,1]+       JP2[d1,d3,1,-1] + JP2[d1, d3 ,-1,1]+       JP2[d3,d1,1,-1] + JP2[d3, d1 ,-1,1]+       JP2[d2,d3,1,-1] + JP2[d2, d3 ,-1,1]+       JP2[d3,d2,1,-1] + JP2[d3, d2 ,-1,1];
+
+
+(* ================== special parameterizations ==================== *)
+
+(* Eigenvalues of O33 with two parameters \[Theta] & \[CurlyPhi] *)
+
+
+MatrixForm[
+  FullSimplify[
+    PowerExpand[
+      FullSimplify[
+        PowerExpand[
+          FullSimplify[
+            Eigenvalues[
+              FullSimplify[
+                PowerExpand[
+                  FullSimplify[
+                    PowerExpand[
+                      FullSimplify[O33[0, 2\[CurlyPhi], 2\[Theta]]]]]]]]]]]]]]
+
+(* Eigenvectors -- turn out a little messy ;-) *)
+
+
+FullSimplify[
+  TrigExpand[
+    FullSimplify[
+      PowerExpand[
+        FullSimplify[
+          PowerExpand[
+            FullSimplify[
+              Eigenvectors[
+                FullSimplify[
+                  PowerExpand[
+                    FullSimplify[
+                      PowerExpand[
+                        FullSimplify[{O33[0, 2\[CurlyPhi], 2\[Theta]][[4]],
+                            O33[0, 2\[CurlyPhi], 2\[Theta]][[3]],
+                            O33[0, 2\[CurlyPhi], 2\[Theta]][[2]],
+                            O33[0, 2\[CurlyPhi],
+                                2\[Theta]][[1]]} ]]]]]]]]]]]]]
+
+
+(* Structure of Eigenvectors *)
+
+
+{FullSimplify[PowerExpand[TrigExpand[Out[21][[3]]]]][[1]],
+  FullSimplify[PowerExpand[TrigExpand[Out[21][[3]]]]][[4]],
+  FullSimplify[PowerExpand[TrigExpand[Out[21][[4]]]]][[1]],
+  FullSimplify[PowerExpand[TrigExpand[Out[21][[4]]]]][[4]]}
+
+
+FullSimplify[PowerExpand[TrigExpand[Out[21][[3]]]]][[2]] ===
+  FullSimplify[PowerExpand[TrigExpand[Out[21][[3]]]]][[3]]
+
+
+FullSimplify[PowerExpand[TrigExpand[Out[21][[4]]]]][[2]] ===
+  FullSimplify[PowerExpand[TrigExpand[Out[21][[4]]]]][[3]]
+
+
+
+
+
+
+(* Eigenvalues of O33 with one parameter \[Theta] *)
+
+FullSimplify[
+  PowerExpand[
+    FullSimplify[
+      PowerExpand[
+        FullSimplify[ Eigenvalues[O33[0, 2\[Theta], -2\[Theta]]]]]]]]
+
+
+
+(* Eigenvectors -- not messyat all; turn out just to be the Bell states *)
+
+FullSimplify[
+  PowerExpand[
+    FullSimplify[
+      PowerExpand[
+        FullSimplify[ Eigenvectors[O33[0, 2\[Theta], -2\[Theta]]]]]]]]
+
+

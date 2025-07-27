@@ -1,0 +1,379 @@
+\newif\ifws
+%\wstrue
+\ifws
+
+\documentclass{article}
+
+\usepackage{graphicx}        % standard LaTeX graphics tool
+\usepackage[dvipsnames]{xcolor}
+\usepackage[normalem]{ulem}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={blue!80!black},
+    citecolor={red!75!black},
+    urlcolor={blue!80!black}
+}
+
+% Damit die Verwendung der deutschen Sprache nicht ganz so umst\"andlich wird,
+% sollte man die folgenden Pakete einbinden:
+
+
+%German
+%\usepackage[latin1]{inputenc}% erm\"oglich die direkte Eingabe der Umlaute
+%\usepackage[T1]{fontenc} % das Trennen der Umlaute
+%\usepackage{ngerman} % hiermit werden deutsche Bezeichnungen genutzt und
+                     % die W\"orter werden anhand der neue Rechtschreibung
+                     % automatisch getrennt.
+\title{Quantum Contextuality for Contextual Word Embeddings}
+
+\author{Karl Svozil \\
+        Institute for Theoretical Physics,
+TU Wien,  \\
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria
+        }
+
+\date{\today}
+% Hinweis: \title{um was auch immer es geht}, \author{wer es auch immer
+% geschrieben hat} und  \date{wann auch immer das war} k\"onnen vor
+% oder nach dem  Kommando \begin{document} stehen
+% Aber der \maketitle Befehl mu\ss{} nach dem \begin{document} Kommando stehen!
+
+\newcommand{%!
+\new}[1]{{\color{magenta}#1}}
+\newcommand{%!
+\deleted}[1]{{\color{magenta}\sout{#1}}}
+
+
+\begin{document}
+
+\maketitle
+
+
+\begin{abstract}
+\end{abstract}
+
+
+\else
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\documentclass[
+% reprint,
+  preprint,
+ % twocolumn,
+ %superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ showpacs,
+ showkeys,
+ preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+ amsmath,amssymb,
+ aps,
+ % prl,
+  pra,
+ % prb,
+ % rmp,
+ %prstab,
+ %prstper,
+ longbibliography,
+ floatfix,
+ %lengthcheck,
+ ]{revtex4-2}
+
+%\usepackage{cdmtcs-pdf}
+
+\usepackage{mathptmx}% http://ctan.org/pkg/mathptmx
+
+
+
+\usepackage{amssymb,amsthm,amsmath}
+
+\usepackage{mathbbol}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,math,decorations.shapes,fit, shapes.geometric, positioning,arrows.meta, decorations.pathreplacing, decorations.markings, backgrounds}
+
+\usepackage {pgfplots}
+\pgfplotsset {compat=1.8}
+\usepackage{graphicx}% Include figure files
+%\usepackage{url}
+
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={blue},
+    citecolor={red!75!black},
+    urlcolor={blue}
+}
+
+\newcommand{%!
+\new}[1]{{\color{magenta}#1}}
+\newcommand{%!
+\deleted}[1]{{\color{magenta}\sout{#1}}}
+
+
+\begin{document}
+
+
+%\title{Contextual word-to-vector embeddings by quantum contextuality}
+\title{Quantum Contextuality for Contextual Word Embeddings}
+
+
+
+\author{Karl Svozil}
+\email{karl.svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+
+\affiliation{Institute for Theoretical Physics,
+TU Wien,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria}
+
+
+
+\date{\today}
+
+\begin{abstract}
+Conventional word-to-vector embeddings face challenges in representing polysemy, where word meaning is context-dependent. While dynamic embeddings address this, we propose an alternative framework utilizing quantum contextuality. In this approach, words are encoded as single, static vectors within a Hilbert space. Language contexts are formalized as maximal observables, mathematically equivalent to orthonormal bases. A word vector acquires its specific semantic meaning based on the basis (context) it occupies, leveraging the quantum concept of intertwining contexts where a single vector can belong to multiple, mutually complementary bases. This method allows meaning to be constructed through orthogonality relationships inherent in the contextual structure, potentially offering a novel way to statically encode contextual semantics.
+\end{abstract}
+
+%\pacs{03.65.Aa, 03.65.Ta, 03.65.Ud, 03.67.-a}
+\keywords{contextuality, word embeddings, quantum states, Hilbert space, polysemy, vector semantics}
+%\preprint{CDMTCS preprint nr. x}
+\maketitle
+
+\newpage
+\fi
+
+%\section{Semantics from syntax}
+
+Word embeddings represent tokens (words or sub-words) as vectors. While basic methods like one-hot encoding produce sparse, orthogonal vectors unable to capture semantic similarity, modern approaches create dense embeddings in a continuous vector space.
+These dense vectors aim to position words such that their geometric relationships reflect semantic similarities and contextual nuances.
+
+%Searle's Chinese Room argument \cite{searle1980minds} contends that algorithms  lack true understanding, asserting that syntax can never cross over to semantics.
+%Although countering this argument on purely metaphysical grounds may seem challenging, recent advancements have introduced powerful techniques that encode language contexts into abstract representations.
+%These representations, strikingly similar to physical structures, deliver performance so impressive that they effectively pass Turing's imitation game test~\cite{turing1950computing}.
+%
+%Thereby,
+%\textit{tokens} which are words or sub-words, have been encoded as vectors (all normalized to unit norm) in a vector space.
+%One inefficient sparse way of vector encoding would be one-hot encoding that represents each word as a very long vector with mostly zero values,
+%where only a single element corresponding to that specific word's index in the vocabulary is set to one.
+%This leads to extremely high dimensionality (equal to the vocabulary size), requires significant memory, and crucially fails to capture any semantic similarity between words, as the vectors for any two different words are orthogonal and equidistant.
+
+More explicitly, representing each discrete word or token as a learned dense vector
+\(
+\mathbf{w2v}(\text{word})
+\)
+in a continuous Hilbert space allows the model to capture intricate semantic relationships~\cite{bengio2003neural,mikolov2013linguistic,mikolov2013efficient,mikolov2013distributed,camacho2018fromJAIR}.
+Words with similar meanings or that typically appear in similar contexts are positioned closer together (with respect to the inner product) within this space,
+unlike the equidistant, meaningless vectors of one-hot encoding.
+This enables the discovery of linguistic regularities and analogies through vector arithmetic, such as~\cite{mikolov2013linguistic,mikolov2013efficient}
+\[
+\mathbf{w2v}(\text{queen}) = \mathbf{w2v}(\text{king}) - \mathbf{w2v}(\text{man}) + \mathbf{w2v}(\text{woman}).
+\]
+This vector representation mirrors the principle articulated by Hertz \cite{hertz-94e}, who stated that \textit{``the necessary consequents of the images in thought are always the images of the necessary consequents in nature of the things pictured.''}
+In essence, the structure and relationships captured within the vector space reflect the semantic connections observed in the world as described by language.
+
+
+
+However, this approach faces an immediate issue of \textit{polysemy}: not all words are monosemic, so that words have multiple meanings depending on the context.
+For the sake of an example, take the word `run', which has at least three distinct context-dependent meanings with respect to:
+(i) Physical movement (e.g., `She runs every morning.');
+(ii) Manage or operate (e.g., `He runs a small business.');
+(iii) Flow or spread (e.g., `The river runs through the valley.').
+
+This ambiguity is resolved by dynamically adjusting word or token representations according to the context~\cite{vaswani2017attention}.
+This can, for instance, be achieved by training with emphasis on either
+Generative Pre-trained Transformer (GPT)~\cite{radford2018improving,radford2019language,brown2020language,kaplan2020scaling},
+or
+Bidirectional Encoder Representations from Transformers (BERT)~\cite{devlin2019bert,peters2018deep,rogers2020primer}
+ type methods, whereby the function \(
+\mathbf{w2v}
+\)
+is dynamic and context dependent---either forward-directed input as in GPT-type, or bidirectional on both previous and later input as in BERT-type.
+
+
+In what follows we shall introduce a different type of contextual encoding---one that uses quantum contextuality.
+Quantum contextuality has many definitions and facets~\cite{cabello2021contextuality,Pavicic_2023}.
+For the rest of this paper, contexts are formalized by maximal observables. Every such maximal observable is, through its spectral composition, equivalent to an orthonormal basis, or a set of mutually orthogonal self-adjoint projection operators.
+For the purpose of contextually encoding text or tokens two features of quantum contextuality appear crucial:
+(i) Complementarity: The mutual impossibility to directly measure different context simultaneously;
+(ii) Intertwining Contexts: The possibility that one and the same (unit) vector belongs to two or more contexts.
+This latter property can be realized in Hilbert space of dimension three and higher.
+
+
+In the study of quantum contextuality, hypergraphs~\cite{Bretto-MR3077516,svozil-2021-chroma} are commonly employed to compactly represent (intertwining) contexts~\cite{greechie:71,nav:91,Mckay2000}.
+Under this model, every context corresponds to a hyperedge within the hypergraph.
+Graphically, these hyperedges are illustrated as smooth lines linking the vertices that represent the observables contained within that context.
+The hypergraph's configuration thus reflects the orthogonality relationships among the propositions,
+with propositions residing within the same hyperedge being pairwise orthogonal~\cite{lovasz-79,Portillo-2015}.
+
+The most elementary configuration consists of just two three-element contexts $\left\{\mathbf{a},\mathbf{b},\mathbf{c}\right\}$ and $\left\{\mathbf{a},\mathbf{d},\mathbf{e}\right\}$, with one intertwining, common element $\mathbf{a}$.
+It has a continuum of vector label representations, among them $\mathbf{a}=\begin{pmatrix} 0,0,1\end{pmatrix}^\intercal$, $\mathbf{b}=\begin{pmatrix} 1,0,0\end{pmatrix}^\intercal$,
+%$\mathbf{d}=\left(1/\sqrt{2}\right)\begin{pmatrix} 1,1,0\end{pmatrix}^\intercal$,
+$\mathbf{d}=\begin{pmatrix} \cos \theta ,\sin \theta ,0\end{pmatrix}^\intercal$, with fixed $0< \theta < \pi / 2$,
+and the cross products $\mathbf{c}=\mathbf{a} \times \mathbf{b}$ and
+$\mathbf{e}=\mathbf{a} \times \mathbf{d}$, where $\intercal$ stands for transposition.
+In quantum logic, this is known as the `firefly logic' $L_{12}$, referring to the 12 elements in the Hasse diagram of this specific logical structure~\cite{cohen}.
+
+We propose formalizing language contexts using the framework of quantum contexts. A key advantage of this approach, compared to the previously mentioned adaptive vector encodings,
+lies in the ability to statically encode each word or token (such as `run' from the previous example) using a \textit{single}, fixed vector. This vector subsequently acquires its specific semantic meaning based on the context in which it appears.
+In this formalism, each context is represented by an orthonormal basis spanning either the entire Hilbert space or a designated subspace thereof.
+
+For example, we might obtain orthonormal bases representing different contexts, such as:
+\begin{align*} % align* creates its own display math block
+& \left\{ \mathbf{w2v}(\text{run}), \mathbf{w2v}(\text{exercise}), \ldots \right\} , \\
+& \left\{ \mathbf{w2v}(\text{run}), \mathbf{w2v}(\text{business}), \ldots \right\} , \text{ and} \\
+& \left\{ \mathbf{w2v}(\text{run}), \mathbf{w2v}(\text{river}), \ldots \right\} .
+\end{align*}
+Analogous to quantum Hilbert spaces with dimensions greater than two, the other vectors in these bases
+$\mathbf{w2v}(\text{exercise})$, $\mathbf{w2v}(\text{business})$, $ \mathbf{w2v}(\text{river})$, and so on,
+can also be components of different contexts that may (for dimensions greater than three) or may not intertwine with the original ones.
+As shown in Figure~\ref{fig:intertwining_contexts}, the vector $\mathbf{w2v}(\text{run})$ can belong to multiple bases or contexts;
+and in our example three different contexts extend from it.
+This example illustrates three intertwining pairs based on the firefly logic structure: `exercise' \& `business', `river' \& `business', and `exercise' \& `river', all sharing the central element `run'.
+
+
+\begin{figure}[htbp] % Figure environment: h=here, t=top, b=bottom, p=page of floats
+    \centering % Center the figure horizontally
+\begin{tikzpicture}[
+    % --- Define styles ---
+    % Significantly larger nodes and very thick lines
+    outer_node/.style={circle, draw, minimum size=0.3cm, inner sep=0pt}, % MUCH BIGGER
+    middle_node/.style={circle, draw, minimum size=0.2cm, inner sep=0pt}, % MUCH BIGGER (slightly smaller than outer)
+    node_label/.style={font=\small}, % Keeping font small relative to large nodes
+    line_style/.style={very thick, -} % MUCH THICKER lines
+]
+
+% Central Coordinate (anchor point)
+\coordinate (run) at (0,0);
+
+% --- Outer Nodes ---
+% Keeping 3.5cm radius for approx 1/2 A4 width, nodes are larger now
+\node[outer_node, draw=red, fill=red!80,
+      label={[node_label]above:$\mathbf{w2v}(\text{exercise})$}] (ex) at (90:3.5cm) {};
+
+\node[outer_node, draw=green, fill=green!80,
+      label={[node_label]below left:$\mathbf{w2v}(\text{business})$}] (biz) at (210:3.5cm) {};
+
+\node[outer_node, draw=blue, fill=blue!80,
+      label={[node_label]below right:$\mathbf{w2v}(\text{river})$}] (riv) at (330:3.5cm) {};
+
+% --- Lines (Hyperedges) with Middle Nodes ---
+% Apply the new line_style (very thick)
+\draw[line_style, color=red] (run) -- node[middle_node, draw=red, fill=red, pos=0.5] {} (ex);
+
+\draw[line_style, color=green] (run) -- node[middle_node, draw=green, fill=green, pos=0.5] {} (biz);
+
+\draw[line_style, color=blue] (run) -- node[middle_node, draw=blue, fill=blue, pos=0.5] {} (riv);
+
+% --- Draw the Concentric Circles for the Middle Element LAST ---
+% Increased radii significantly for MUCH BIGGER circles
+% Use 'very thick' for the draw part to match line_style
+\filldraw[draw=blue, fill=blue, very thick] (run) circle (0.30cm); % Outermost ring (blue) - MUCH BIGGER
+\filldraw[draw=green, fill=green, very thick] (run) circle (0.20cm); % Middle ring (green) - MUCH BIGGER
+\filldraw[draw=red, fill=red, very thick] (run) circle (0.10cm); % Innermost ring (red) - MUCH BIGGER
+
+% --- Place the Central Label LAST (after circles) ---
+% Adjusted offset to clear the larger outer blue circle (radius 0.30cm)
+\node[node_label, above right=0.4cm of run] {$\mathbf{w2v}(\text{run})$};
+
+\end{tikzpicture}
+\caption{Visualization of three intertwining contexts modeled using quantum contextuality principles for word embeddings. The central vector $\mathbf{w2v}(\text{run})$ is depicted as a shared element (represented by the concentric circles) common to three distinct contexts (orthonormal bases in Hilbert space).
+Each context connects $\mathbf{w2v}(\text{run})$ to a different semantic association: physical activity ($\mathbf{w2v}(\text{exercise})$,
+red line/basis), management ($\mathbf{w2v}(\text{business})$, green line/basis),
+and flow ($\mathbf{w2v}(\text{river})$, blue line/basis).
+The specific meaning of `run' emerges from the context it is considered within.}
+    \label{fig:intertwining_contexts} % Label for cross-referencing the figure
+\end{figure}
+
+
+Consequently, it would be possible to construct or reconstruct meaning through adjacency relationships---more precisely, orthogonality---within the Hilbert space.
+These semantic structures could subsequently be represented by quantum logics in high-dimensional Hilbert spaces.
+
+Another possibility involves associating scalar values (akin to eigenvalues) with the basis vectors within each context.
+This allows for the construction of self-adjoint operators (observables), effectively defining functions on the vector space rather than relying solely on the vectors themselves. Analogous to quantum mechanics,
+this operator-based approach~\cite{cabello2020converting,svozil-2024-convert-pra-externalfigures,svozil-2025-color}
+might permit a more compact encoding of contextual information.
+
+In conclusion, this paper proposes a novel framework for contextual word-to-vector embeddings inspired by quantum contextuality.
+Departing from dynamic embedding methods, we suggest encoding words as single, static vectors within a Hilbert space.
+ Linguistic contexts are formalized as distinct maximal observables, represented by orthonormal bases. The specific semantic meaning of a word vector,
+particularly for polysemous terms like `run', is then determined by the contextual basis it inhabits.
+This approach leverages key features of quantum contextuality, such as complementarity and the existence of intertwining contexts (vectors shared between bases),
+allowing meaning to emerge from structural, orthogonality-based relationships within the Hilbert space.
+This method offers a potential pathway to statically encode context-dependent semantics, linking linguistic structures directly to quantum formalisms,
+thereby offering a potentially more interpretable or structurally grounded way to statically encode contextual semantics.
+
+Future research could investigate methods for learning these intertwined contextual bases from linguistic data and explore the practical implications of this framework.
+
+\begin{acknowledgments}
+This research was funded in whole or in part by the Austrian Science Fund (FWF) [Grant DOI:10.55776/PIN5424624].
+
+The author declares no conflict of interest.
+\end{acknowledgments}
+
+
+\bibliography{svozil,llm}
+\ifws
+
+\bibliographystyle{spmpsci}
+
+\else
+%\bibliographystyle{apsrev4-2}
+
+\fi
+
+\end{document}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

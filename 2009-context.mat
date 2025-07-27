@@ -1,0 +1,368 @@
+(*Definition of the Tensor Product*)
+TensorProduct[a_, b_] :=
+  Table[(*a,b are nxn and mxm-matrices*)
+   a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*
+    b[[s - Floor[(s - 1)/Length[b]]*Length[b],
+      t - Floor[(t - 1)/Length[b]]*Length[b]]], {s, 1,
+    Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(*Definition of the Tensor Product between two vectors*)
+
+TensorProductVec[x_, y_] :=
+  Flatten[Table[x[[i]] y[[j]], {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(*Definition of the Dyadic Product*)
+
+DyadicProductVec[x_] :=
+  Table[x[[i]] Conjugate[x[[j]]], {i, 1, Length[x]}, {j, 1,
+    Length[x]}];
+
+
+J1 = (1/Sqrt[2]) {{0, 1, 0}, {1, 0, 1}, {0, 1, 0}};
+J2 = (I/Sqrt[2]) {{0, -1, 0}, {1, 0, -1}, {0, 1, 0}};
+J3 = {{1, 0, 0}, {0, 0, 0}, {0, 0, -1}};
+
+Eigenvectors[J1]
+Eigenvectors[J2]
+Eigenvectors[J3]
+
+S[t_, p_] := J1 Sin[t] Cos[p] + J2 Sin[t] Sin[p] + J3 Cos[t]
+
+FullSimplify[ComplexExpand[S[\[Theta], \[Phi]]]] // MatrixForm
+
+FullSimplify[ComplexExpand[S[Pi/2, 0]]] // MatrixForm
+FullSimplify[ComplexExpand[S[Pi/2, Pi/2]]] // MatrixForm
+FullSimplify[ComplexExpand[S[0, 0]]] // MatrixForm
+
+
+EVS1[t_, p_] :=
+  FullSimplify[
+   Normalize[
+    Eigenvectors[S[t, p]][[1]]*E^(I p)], {Element[\[Theta], Reals],
+    Element[\[Phi], Reals]}];
+EVS2[t_, p_] :=
+  FullSimplify[
+   Normalize[
+    Eigenvectors[S[t, p]][[2]]*E^(I p)], {Element[\[Theta], Reals],
+    Element[\[Phi], Reals]}];
+EVS3[t_, p_] :=
+  FullSimplify[
+   Normalize[
+    Eigenvectors[S[t, p]][[3]]*E^(I p)], {Element[\[Theta], Reals],
+    Element[\[Phi], Reals]}];
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS1[\[Theta], \[Phi]]]]
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS2[\[Theta], \[Phi]]]]
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS3[\[Theta], \[Phi]]]]
+
+
+Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  FullSimplify[DyadicProductVec[EVS1[\[Theta], \[Phi]]]]] // MatrixForm
+
+FullSimplify[
+ Eigenvalues[S[\[Theta], \[Phi]]][[1]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+
+Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  FullSimplify[DyadicProductVec[EVS2[\[Theta], \[Phi]]]]] // MatrixForm
+
+FullSimplify[
+ Eigenvalues[S[\[Theta], \[Phi]]][[2]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+
+Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  FullSimplify[DyadicProductVec[EVS3[\[Theta], \[Phi]]]]] // MatrixForm
+
+FullSimplify[
+ Eigenvalues[S[\[Theta], \[Phi]]][[3]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+(* ~~~~~~~~~~~~~~~~~~~~~ Orthonormality ~~~~~~~~~~~~~~~~~~~~~~~~~ *)
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS1[\[Theta], \[Phi]].Conjugate[
+    EVS1[\[Theta], \[Phi]]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS1[\[Theta], \[Phi]].Conjugate[
+    EVS2[\[Theta], \[Phi]]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS1[\[Theta], \[Phi]].Conjugate[
+    EVS3[\[Theta], \[Phi]]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS2[\[Theta], \[Phi]].Conjugate[
+    EVS2[\[Theta], \[Phi]]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS2[\[Theta], \[Phi]].Conjugate[
+    EVS3[\[Theta], \[Phi]]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+FullSimplify[
+ Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+  EVS3[\[Theta], \[Phi]].Conjugate[
+    EVS3[\[Theta], \[Phi]]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+
+(* ~~~~~~~~~~~~~~~~~ reconstruction of S through spectral theorem ~~~~~~~~~~~~~~~~~~~ *)
+
+FullSimplify[
+  FullSimplify[
+     Eigenvalues[S[\[Theta], \[Phi]]][[1]], {Element[\[Theta], Reals],
+       Element[\[Phi], Reals]}]*
+    Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+     FullSimplify[DyadicProductVec[EVS1[\[Theta], \[Phi]]]]] +
+   FullSimplify[
+     Eigenvalues[S[\[Theta], \[Phi]]][[2]], {Element[\[Theta], Reals],
+       Element[\[Phi], Reals]}]*
+    Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+     FullSimplify[DyadicProductVec[EVS2[\[Theta], \[Phi]]]]] +
+   FullSimplify[
+     Eigenvalues[S[\[Theta], \[Phi]]][[3]], {Element[\[Theta], Reals],
+       Element[\[Phi], Reals]}]*
+    Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+     FullSimplify[
+      DyadicProductVec[EVS3[\[Theta], \[Phi]]]]]] // MatrixForm
+
+
+(* ---------------- start anew -------------- *)
+
+vp[t_]:={(Cos[t/2])^2, (1/Sqrt[2])Sin[t],(Sin[t/2])^2}
+v0[t_]:={-(1/Sqrt[2])Sin[t], Cos[t],(1/Sqrt[2])Sin[t]}
+vm[t_]:={(Sin[t/2])^2, -(1/Sqrt[2])Sin[t],(Cos[t/2])^2}
+
+
+(* ---------------- KOCHEN-SPECKER OBSERVABLES -------------- *)
+
+(* ~~~~~~~~~~~~~~~~~~ construction of the KS operator  ~~~~~~~~~~~~~~~~~~~ *)
+T := FullSimplify[a * J1.J1   +  b * J2.J2  + c* J3.J3]
+
+T  //MatrixForm
+
+Eigenvalues[T]
+Eigenvectors[T]
+
+
+
+EVS1T =  FullSimplify[   Normalize[    Eigenvectors[T][[1]]]]
+EVS2T =  FullSimplify[   Normalize[    Eigenvectors[T][[2]]]]
+EVS3T =  FullSimplify[   Normalize[    Eigenvectors[T][[3]]]]
+
+FullSimplify[DyadicProductVec[EVS1T]] // MatrixForm
+FullSimplify[  Eigenvalues[T][[1]]]
+
+FullSimplify[DyadicProductVec[EVS2T]] // MatrixForm
+FullSimplify[  Eigenvalues[T][[2]]]
+
+FullSimplify[DyadicProductVec[EVS3T]] // MatrixForm
+FullSimplify[  Eigenvalues[T][[3]]]
+
+(* reconstruction *)
+FullSimplify[DyadicProductVec[EVS1T] * FullSimplify[  Eigenvalues[T][[1]]]+
+DyadicProductVec[EVS2T] * FullSimplify[  Eigenvalues[T][[2]]]+
+DyadicProductVec[EVS3T] * FullSimplify[  Eigenvalues[T][[3]]] ]   //MatrixForm
+
+
+(*
+FullSimplify[ComplexExpand[S[Pi/2, Pi/4]]] // MatrixForm
+FullSimplify[ComplexExpand[S[Pi/2, 3 Pi/4]]] // MatrixForm
+FullSimplify[ComplexExpand[S[0, 0]]] // MatrixForm
+*)
+
+(* ~~~~~~~~~~~~~~~~~~ construction of another (rotated) KS operator  ~~~~~~~~~~~~~~~~~~~ *)
+
+U := FullSimplify[a * S[Pi/2, Pi/4].S[Pi/2, Pi/4]   +  b * S[Pi/2, 3Pi/4].S[Pi/2, 3Pi/4]  + c* J3.J3]
+
+U  //MatrixForm
+
+Eigenvalues[U]
+Eigenvectors[U]
+
+EVS1U =  FullSimplify[   Normalize[    Eigenvectors[U][[1]]]]
+EVS2U =  FullSimplify[   Normalize[    Eigenvectors[U][[2]]]]
+EVS3U =  FullSimplify[   Normalize[    Eigenvectors[U][[3]]]]
+
+FullSimplify[DyadicProductVec[EVS1U]] // MatrixForm
+FullSimplify[  Eigenvalues[U][[1]]]
+
+FullSimplify[DyadicProductVec[EVS2U]] // MatrixForm
+FullSimplify[  Eigenvalues[U][[2]]]
+
+FullSimplify[DyadicProductVec[EVS3U]] // MatrixForm
+FullSimplify[  Eigenvalues[U][[3]]]
+
+(* reconstruction *)
+FullSimplify[DyadicProductVec[EVS1U] * FullSimplify[  Eigenvalues[U][[1]]]+
+DyadicProductVec[EVS2U] * FullSimplify[  Eigenvalues[U][[2]]]+
+DyadicProductVec[EVS3U] * FullSimplify[  Eigenvalues[U][[3]]] ]   //MatrixForm
+
+
+Solve[{a + b == \[Alpha], a + c == \[Beta], b + c == \[Gamma]}, {a, b, c}]
+Reduce[{a + b == \[Alpha], a + c == \[Beta], b + c == \[Gamma]}, {a, b, c}]
+
+
+TT =(\[Alpha]/2 + \[Beta]/2 - \[Gamma]/2 )*S[Pi/2,0].S[Pi/2,0] + (\[Alpha]/2 - \[Beta]/2 + \[Gamma]/2 )*S[Pi/2,Pi/2].S[Pi/2,Pi/2] +( -(\[Alpha]/2) + \[Beta]/2 + \[Gamma]/2)*S[0,0].S[0,0];
+Simplify[(\[Alpha]/2 + \[Beta]/2 - \[Gamma]/2)*
+    S[Pi/2, 0].S[Pi/2, 0] + (\[Alpha]/2 - \[Beta]/2 + \[Gamma]/2)*
+    S[Pi/2, Pi/2].S[Pi/2,
+      Pi/2] + (-(\[Alpha]/2) + \[Beta]/2 + \[Gamma]/2)*
+    S[0, 0].S[0, 0]] // MatrixForm
+UU =(\[Alpha]/2 + \[Beta]/2 - \[Gamma]/2 )*S[Pi/2,Pi/4].S[Pi/2,Pi/4] + (\[Alpha]/2 - \[Beta]/2 + \[Gamma]/2 )*S[Pi/2,3Pi/4].S[Pi/2,3Pi/4] +( -(\[Alpha]/2) + \[Beta]/2 + \[Gamma]/2)*S[0,0].S[0,0];
+Simplify[(\[Alpha]/2 + \[Beta]/2 - \[Gamma]/2)*
+    S[Pi/2, Pi/4].S[Pi/2,
+      Pi/4] + (\[Alpha]/2 - \[Beta]/2 + \[Gamma]/2)*
+    S[Pi/2, 3 Pi/4].S[Pi/2,
+      3 Pi/4] + (-(\[Alpha]/2) + \[Beta]/2 + \[Gamma]/2)*
+    S[0, 0].S[0, 0]] // MatrixForm
+
+Simplify[Eigenvalues[TT]]
+Simplify[Eigenvalues[UU]]
+
+Simplify[Eigenvectors[TT]]
+Simplify[Eigenvectors[UU]]
+
+
+(* ~~~~~~~~~~~~~~~~~ Spin 3/2 ~~~~~~~~~~~~~~~~~~ *)
+
+ClebschGordan[{3/2,3/2}, {3/2, -3/2}, {0,0}]
+ClebschGordan[{3/2,-3/2}, {3/2, 3/2}, {0,0}]
+ClebschGordan[{3/2,1/2}, {3/2, -1/2}, {0,0}]
+ClebschGordan[{3/2,-1/2}, {3/2, 1/2}, {0,0}]
+
+
+J41 = (1/2) {{0, Sqrt[3], 0, 0}, {Sqrt[3], 0, 2, 0}, {0, 2, 0, Sqrt[3]},{0, 0, Sqrt[3], 0}};
+J42 = (1/2) {{0, -I Sqrt[3], 0, 0}, {I Sqrt[3], 0,- 2 I, 0}, {0, 2 I, 0, -I Sqrt[3]},{0, 0, I Sqrt[3], 0}};
+J43 = (1/2) {{3, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, -1, 0 },{0, 0, 0, -3}};
+
+
+S4[t_, p_] := J41 Sin[t] Cos[p] + J42 Sin[t] Sin[p] + J43 Cos[t]
+
+FullSimplify[ComplexExpand[S4[\[Theta], \[Phi]]]] // MatrixForm
+
+FullSimplify[ComplexExpand[S4[Pi/2, 0]]] // MatrixForm
+FullSimplify[ComplexExpand[S4[Pi/2, Pi/2]]] // MatrixForm
+FullSimplify[ComplexExpand[S4[0, 0]]] // MatrixForm
+
+
+Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+ FullSimplify[
+  Normalize[
+   Eigenvectors[S4[\[Theta], \[Phi]]][[1]]], {Element[\[Theta],
+    Reals], Element[\[Phi], Reals]}]]
+
+
+Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi},
+ FullSimplify[
+   Eigenvectors[S4[0,0]], {Element[\[Theta],
+    Reals], Element[\[Phi], Reals]}]]
+
+
+TT4 =FullSimplify[\[Alpha] *S4[Pi/2,0].S4[Pi/2,0] +  \[Beta] *S4[Pi/2,Pi/2].S4[Pi/2,Pi/2] + \[Gamma]*S4[0,0].S4[0,0]]    // MatrixForm
+
+TT4 =FullSimplify[\[Alpha] *S4[Pi/2,0].S4[Pi/2,0] +  \[Beta] *S4[Pi/2,Pi/2].S4[Pi/2,Pi/2] + \[Gamma] *S4[0,0].S4[0,0]]
+
+FullSimplify[Eigenvalues[TT4]]
+
+TT4 =FullSimplify[\[Alpha] *S4[Pi/2,0] +  \[Beta] *S4[Pi/2,Pi/2] + \[Gamma]*S4[0,0] ]   // MatrixForm
+
+TT4 =FullSimplify[\[Alpha] *S4[Pi/2,0] +  \[Beta] *S4[Pi/2,Pi/2] + \[Gamma]*S4[0,0] ]
+
+FullSimplify[Eigenvalues[TT4]]
+
+CC= DiagonalMatrix[{a,b,c,d}]
+
+CCs = {{(e+f)/2,(e-f)/2,0,0},{(e-f)/2,(e+f)/2,0,0},{0,0,g,0},{0,0,0,h}}
+
+
+TensorProduct[CC,CCs]
+
+SingletStateSpin32=(1/2)*(TensorProductVec[{1,0,0,0},{0,0,0,1}]-TensorProductVec[{0,0,0,1},{1,0,0,0}]-TensorProductVec[{0,1,0,0},{0,0,1,0}]+TensorProductVec[{0,0,1,0},{0,1,0,0}])
+
+FullSimplify[ Tr[  DyadicProductVec[SingletStateSpin32] . TensorProduct[CC,CCs] ]]
+
+
+
+MixedState4= (1/4)DiagonalMatrix[{1,1,1,1}];
+
+TensorProduct[MixedState4,MixedState4]
+
+
+(* ~~~~~~~~~~~~~~~~~~ construction of another (rotated) KS operator  ~~~~~~~~~~~~~~~~~~~ *)
+
+
+T1 = FullSimplify[(1/2)*((a+b-c) * S[Pi/2, 0].S[Pi/2, 0]   +  (a-b+c) * S[Pi/2, Pi/2].S[Pi/2, Pi/2]  + (-a+b+c) * S[0, 0].S[0, 0])]
+
+U1 = FullSimplify[(1/2)*((d+e-f) * S[Pi/2, Pi/4].S[Pi/2, Pi/4]   +  (d-e+f) * S[Pi/2, 3Pi/4].S[Pi/2, 3Pi/4]  + (-d+e+f)* S[0, 0].S[0, 0])]
+
+Eigenvalues[T1]
+
+Eigenvalues[U1]
+
+
+SingletStateSpin1=(1/Sqrt[3])*( -TensorProductVec[{0,1,0},{0,1,0}] + (1/2)*(TensorProductVec[{1,0,1},{1,0,1}]+ TensorProductVec[{-1,0,1},{-1,0,1}] ) )
+
+DyadicProductVec[SingletStateSpin1] .DyadicProductVec[SingletStateSpin1] === DyadicProductVec[SingletStateSpin1]
+
+FullSimplify[ Tr[  DyadicProductVec[SingletStateSpin1] . TensorProduct[T1,U1] ]]
+
+EVS1U1 =  FullSimplify[   Normalize[    Eigenvectors[U1][[1]]]]
+EVS2U1 =  FullSimplify[   Normalize[    Eigenvectors[U1][[2]]]]
+EVS3U1 =  FullSimplify[   Normalize[    Eigenvectors[U1][[3]]]]
+
+
+
+FullSimplify[DyadicProductVec[EVS1U1]] // MatrixForm
+FullSimplify[  Eigenvalues[U1][[1]]]
+
+FullSimplify[DyadicProductVec[EVS2U1]] // MatrixForm
+FullSimplify[  Eigenvalues[U1][[2]]]
+
+FullSimplify[DyadicProductVec[EVS3U1]] // MatrixForm
+FullSimplify[  Eigenvalues[U1][[3]]]
+
+(* reconstruction *)
+FullSimplify[DyadicProductVec[EVS1T1] * FullSimplify[  Eigenvalues[U1][[1]]]+
+DyadicProductVec[EVS2U1] * FullSimplify[  Eigenvalues[U1][[2]]]+
+DyadicProductVec[EVS3U1] * FullSimplify[  Eigenvalues[U1][[3]]] ]   //MatrixForm
+
+EVS1T1 =  FullSimplify[   Normalize[    Eigenvectors[T1][[1]]]]
+EVS2T1 =  FullSimplify[   Normalize[    Eigenvectors[T1][[2]]]]
+EVS3T1 =  FullSimplify[   Normalize[    Eigenvectors[T1][[3]]]]
+
+
+
+FullSimplify[DyadicProductVec[EVS1T1]] // MatrixForm
+FullSimplify[  Eigenvalues[T1][[1]]]
+
+FullSimplify[DyadicProductVec[EVS2T1]] // MatrixForm
+FullSimplify[  Eigenvalues[T1][[2]]]
+
+FullSimplify[DyadicProductVec[EVS3T1]] // MatrixForm
+FullSimplify[  Eigenvalues[T1][[3]]]
+
+(* reconstruction *)
+FullSimplify[DyadicProductVec[EVS1T1] * FullSimplify[  Eigenvalues[T1][[1]]]+
+DyadicProductVec[EVS2T1] * FullSimplify[  Eigenvalues[T1][[2]]]+
+DyadicProductVec[EVS3T1] * FullSimplify[  Eigenvalues[T1][[3]]] ]   //MatrixForm

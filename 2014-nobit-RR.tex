@@ -1,0 +1,848 @@
+\documentclass[%
+ %reprint,
+ superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ preprint,
+ showpacs,
+ showkeys,
+ preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+  amsmath,amssymb,
+  aps,
+ % prl,
+ pra,
+ %prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+  floatfix,
+  %lengthcheck,%
+ ]{revtex4-1}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+%\usepackage[hmargin=2cm,vmargin=3cm]{geometry}
+\usepackage{graphicx}
+
+\RequirePackage{times}
+\RequirePackage{mathptm}
+
+\usepackage{url}
+\usepackage{yfonts}
+
+\sloppy
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{comment}[theorem]{Comment}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\seq}[1]{\mathbf{#1}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\rest}[2]{#1\!\!\restriction_{#2}}
+\newcommand{\reste}[2]{#1\restriction_{#2}}
+\newcommand{\N}{\mathbb{N}}%      \N   == \mathbb{N}
+\newcommand{\Z}{\mathbb{Z}}%      \Z   == \mathbb{Z}
+\newcommand{\Q}{\mathbb{Q}}%      \Q   == \mathbb{Q}
+\newcommand{\R}{\mathbb{R}}%      \R   == \mathbb{R}
+\newcommand{\C}{\mathbb{C}}%      \C   == \mathbb{C}
+\newcommand{\alphabet}{\{0,1\}}
+\newcommand{\B}{B^*}%        \X  == \Sigma^*
+\newcommand{\BI}{B^\omega}%        \XI  == \Sigma^\infty
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\dom}{\text{dom}}
+\newcommand{\cl}{\text{cl}}
+
+
+\newcommand{\bra}[1]{\left< #1 \right|}
+\newcommand{\ket}[1]{\left| #1 \right>}
+
+\newcommand{\iprod}[2]{\langle #1 | #2 \rangle}
+\newcommand{\mprod}[3]{\langle #1 | #2 | #3 \rangle}
+\newcommand{\oprod}[2]{| #1 \rangle\langle #2 |}
+\newcommand{\rb}{\raisebox{0.5ex}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+	
+\title{On the unpredictability of individual quantum measurement outcomes}
+	
+\author{Alastair A. Abbott}
+\email{a.abbott@auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~aabb009}
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+\affiliation{Centre Cavaill\`es, CIRPHLES, \'Ecole Normale Sup\'erieure, 29 rue d'Ulm, 75005 Paris, France}
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+
+\affiliation{Institute for Theoretical Physics,
+Vienna  University of Technology,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria}
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+\date{\today}
+
+\begin{abstract}
+Suppose  we prepare a quantum in a pure state corresponding to a unit vector in Hilbert space.
+Then an observable property of this quantum corresponding to a projector whose respective linear subspace is
+neither collinear nor orthogonal with respect to the pure state vector
+has no predetermined value, and thus remains value indefinite.
+Furthermore, the outcome of a measurement of such a property is unpredictable with respect to a very general model of prediction.
+These results are true relative to three assumptions, namely
+compatibility with quantum mechanical predictions, noncontextuality, and the value definiteness of observables corresponding to the preparation basis of a quantum state.
+Some consequences for quantum random number generation and hypercomputation are briefly discussed.
+\end{abstract}
+
+\pacs{}
+\keywords{}
+%\preprint{CDMTCS preprint nr. x}
+
+\maketitle
+
+\section{Introduction}
+Indeterminism has had a role at the heart of quantum mechanics since Born postulated that the modulus-squared of the wave function should be interpreted as a probability density~\cite{born-26-1} that, unlike in classical statistical physics~\cite{Myrvold2011237}, expresses fundamental,  irreducible indeterminism.
+In Born's own words, ``{\em I myself am inclined  to give up determinism in the world of atoms.}''
+The nature of individual measurement outcomes in quantum mechanics was, for a period, a subject of much debate.
+Einstein famously dissented, stating his belief that \cite[p. 204]{born-69} ``\emph{He does not throw dice}.''
+Nonetheless, over time the conjecture that measurement outcomes are themselves fundamentally indeterministic became the quantum orthodoxy~\cite{zeil-05_nature_ofQuantum}.
+
+Much later, this assumption was %(albeit retrospectively)
+ in a certain sense vindicated by the theorems of Bell~\cite{bell-66} and Kochen-Specker~\cite{kochen1} on the impossibility of certain classes of deterministic theories.
+These results were further corroborated by the experimental verification of violation of Bell's inequalities~\cite{wjswz-98}.
+
+Although these results have cemented the view that quantum mechanics is intrinsically indeterministic, it is crucial to recognise their limits.
+Firstly, such results nonetheless require belief in the validity of certain assumptions such as noncontextuality and locality.
+Secondly, even with these assumptions, such indeterminism need not entail complete unpredictability or randomness.
+
+In this paper we systematically approach these issues aiming to deduce quantum indeterminism and unpredictability from more fundamental,
+%arguably largely accepted,
+assumptions, rather rely on their \emph{ad hoc} postulation.
+Working directly from the results implied by strong versions of the Kochen-Specker theorem~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109}
+we propose   a very general model of prediction of physical outcomes.
+We show that, relative to specific assumptions drawn from the Kochen-Specker theorem, no outcome of any single measurement of a value indefinite quantum observable is predictable.
+
+\section{Unpredictability from value indefiniteness}
+
+\subsection{A necessary physical basis}
+%CC%
+%A good starting point is  Popper's description of quantum indeterminism in \cite[117--118]{popper-50i}:
+
+The generally accepted phenomenon of quantum indeterminism cannot be deduced from the Hilbert space formalism of quantum mechanics alone, as this specifies only the probability distribution for a given measurement which in itself need not indicate intrinsic indeterminism.
+While we could, in our effort to clarify and formalise this unpredictability, restrict ourselves to a particular interpretation it is preferable to work from a small set of physical assumptions and principles to arrive at a more general understanding of quantum unpredictability.
+
+In \cite{2012-incomput-proofsCJ} the physical assumptions needed to deduce quantum value indefiniteness---the formalisation of the intuitive notion of quantum indeterminism---were carefully analysed.
+Here we briefly review the key assumptions, as this will be important in the analysis of the link between value indefiniteness and unpredictability.
+
+In the following we shall work in an idealised theoretical framework.
+That is, we consider perfect idealised measuring devices and experiments where the devices behave precisely as they should in theory.
+Further, any predictions or access to measurement results that are in principle possible are considered reasonable in this framework.
+
+Since the central issue is that of value indefiniteness,
+it is crucial to have a clear understanding of when we should conclude that a physical quantity is indeed value definite.
+In \cite[p.~777]{epr}, Einstein, Podolsky and Rosen  define {\em physical reality} in terms of certainty and predictability.
+Based on this accepted notion of an element of physical reality, we allow ourselves to be guided by the following  ``EPR principle''
+which identifies their notion of an ``element of physical reality'' with ``value definiteness'':
+\begin{quote}
+	{\em EPR principle}: If, without in any way disturbing a system, we can predict with certainty the value of a physical quantity, then there exists a \emph{definite value} prior to observation corresponding to this physical quantity.
+\end{quote}
+
+Our main assumptions based on value definiteness are the following.
+More technical descriptions and further discussion can be found in \cite{2012-incomput-proofsCJ}.
+
+
+\emph{Admissibility}:  Definite values must not contradict the statistical quantum predictions for compatible observables on a single quantum.
+For example, given a set $\{P_1,\dots,P_n\}$ of commuting projection observables, if $P_1$ were to have the definite value 1, all other observables in this set must have the value 0 as any other possibility would contradict the quantum prediction that one and only one such projector will yield the value 1 upon measurement.
+
+\emph{Noncontextuality of definite values}: If a measurement is made of a value definite observable, the outcome obtained (and thus the preexisting physical property) is \emph{noncontextual}. That means it does not depend on other compatible (i.e.\ simultaneously co-measurable) observables which may be measured alongside the value definite observable.
+
+\emph{Eigenstate principle}:  If a quantum system is prepared in the state $\ket{\psi}$, then the projection observable $P_\psi=\ket{\psi}\bra{\psi}$ is value definite, as are (by the previous two assumptions) all observables which commute with $P_\psi$.
+
+The eigenstate principle follows largely from the EPR principle, since by preparing a system in the state $\ket{\psi}$ we ensure that we can predict with certainty the value of the observable $P_\psi$.
+However, we make this explicit because of its importance in deducing the existence of value indefiniteness.
+%{\bf If the Eigenstate assumption can be derived from EPR then we need to show this and not refer to it as an assumption, but as a fact or proposition or corollary.}
+%CC%
+
+The further constraint that prediction acts ``without in any way disturbing a system'' is perhaps nontrivial~\cite{laloe-2012}, but nonetheless appears a reasonable requirement for prediction.
+
+These assumptions give a generalised and formal base for the understanding of value indefiniteness in quantum physics.
+In particular, in \cite{2012-incomput-proofsCJ,PhysRevA.89.032109}
+the following result is proven from these assumptions:
+\begin{theorem}
+	\label{thm:vi-everywhere}
+		Let there be a quantum system prepared in the state
+	$\ket{\psi}$ in dimension $n\ge 3$ Hilbert space $\C^n$, and let $\ket{\phi}$ be any state neither orthogonal nor parallel to $\ket{\psi}$, i.e.\ $0<|\iprod{\psi}{\phi}|<1$.
+	Then the projection observable $P_\psi=\ket{\phi}\bra{\phi}$ is value indefinite.
+\end{theorem}
+
+
+\subsection{Unpredictability of individual measurements}
+\label{sec:physUnpred}
+
+
+The EPR principle renders a definition of value definiteness and physical reality based on the ability to predict.
+Conversely, \emph{value indefiniteness} corresponds to the {\em absence of physical reality};
+if no unique element of physical reality corresponding to a particular physical quantity exists, this is reflected by the physical quantity being value indefinite.
+If a physical property is value indefinite we cannot predict with certainty the outcome of any experiment measuring this property.
+
+%Now suppose the assumptions of the strong or extended Kochen-Specker theorem \cite{2012-incomput-proofsCJ,2013-KstLip} hold;
+%in particular admissibility and non-contextual of value assignments.
+To elaborate on this point, suppose that we consider, as in Theorem~\ref{thm:vi-everywhere}, a quantum projection observable in dimension $n\ge 3$ Hilbert space projecting onto a linear subspace which is neither collinear nor orthogonal with respect to the pure state %(represented by a projector)
+in which a single quantum system has been prepared.
+
+According to Theorem~\ref{thm:vi-everywhere} and the results of \cite{2012-incomput-proofsCJ,PhysRevA.89.032109}, any such observable is {\em provable} (relative to the assumptions we have discussed) value indefinite.
+That is, by the noncontextuality of definite values, the result obtained upon its measurement cannot correspond to any deterministic function of the observable alone.
+More explicitly, neither of the two exclusive measurement outcomes $\{0,1\}$ can be consistent with the state preparation.
+In particular, neither one of these outcomes is certain to occur and therefore any kind of prediction of the outcome with certainty cannot exist.
+Stated in terms of the EPR principle we infer that, as there cannot be any certainty in predicting a value indefinite observable, there is no element of physical reality corresponding to this physical property.
+
+%Because, for the sake of a proof by contradiction, suppose that there would exist a definite and certain measurement outcome, associated with a unique, non-arbitrary, functional value assignment onto $\{0,1\}$.
+%But this would contradict, and would be inconsistent with, in particular, the strong or extended Kochen-Specker theorems.
+%Hence any such functional value assignment, and therefore any kind of prediction of the outcome with certainty, cannot exist.
+
+%(From the converse of the EPR definition of physical reality, we infer that, as there cannot be any certainty in predicting a value indefinite observable, there cannot exist an element of physical reality corresponding to this physical quantity.)
+
+%Furthermore, this unpredictability (i.e.\ indeterminacy) of measurement outcomes associated with such observables projecting onto subspaces that are neither collinear nor orthogonal with respect to the pure state in which some individual quantum has been prepared, must be accepted for every such single quantum measured in this way.
+Furthermore, suppose that observables---whose associated projectors are neither collinear
+nor orthogonal with respect to the pure state in which some quantum has
+been prepared---are measured.  Then the resulting unpredictability (i.e. indeterminacy) of the outcome must be accepted for every such individual quantum measured.
+One possible interpretation of this unpredictability is that the physical property measured is logically independent of the information contained in the quantum system~\cite{1367-2630-12-1-013019}.%---often postulated to be a single bit per qubit.
+
+
+The ``more conjugate'' a measurement basis becomes relative to the state which has been used for preparing this quantum, the ``more unpredictable'' and thus ``more indeterminate'' in statistical terms the quantum behaves.
+In particular, if the state prepared is orthogonal to the projection observable measured
+(i.e.\ if there is a ``maximal mismatch'' between preparation
+and  measurement), then the individual quantum not only cannot be predicted with certainty by any agent, but such an agent can do no better than blindly guessing the outcome of the measurement.
+In this sense the quantum behaves maximally unpredictably.
+%, and thus can contribute towards a quantum source of randomness.
+%CC%
+%However, this is not to be understood that quantum randomness is ``maximally random'' or ``perfect random'', which are mathematically vacuous notions: there are only degrees of randomness, with no upper limit.
+
+This, however,  should not be understood as a claim that quantum randomness is ``maximally random'' in the sense that no correlations exist between successive measurement results.
+Such a notion of ``perfect randomness'' is in fact mathematically vacuous \cite{GS-90,calude:02}: there exist only degrees of randomness to which there is no upper limit.
+
+\section{%Towards a more formal explanation
+%CC%
+A formal model of prediction}
+
+While we have argued from a purely physical standpoint that prediction of a single quantum is in general impossible, the argument needs  a proper mathematical formalisation.
+%CC%
+In particular, to say more about the quality of a sequence of outcomes of quantum measurements, the notion of prediction needs to be given a more rigorous form.
+
+
+
+Intuitively, a prediction must be a method of specifying in advance the result that will be obtained by a measurement.
+Such a prediction is correct if it indeed agrees with the measured value.
+However, even if a prediction turns out to be correct, how can we be sure it was not correct merely by luck?
+
+Popper succinctly summarises this predicament in Ref.~\cite[117--118]{popper-50i}:
+``\emph{If we assert of an observable event that it is unpredictable we do not mean, of course, that it is logically or physically impossible for anybody to give a correct description of the event in question before it has occurred;
+for it is clearly not impossible that somebody may hit upon such a description accidentally.
+What is asserted is that certain rational methods of prediction break down in certain cases---the methods of prediction which are practised in physical science.}''
+
+One possibility to formalise predictability is then to demand a proof that the prediction will be correct---to formalise the ``rational methods of prediction'' that Popper refers to.
+However, this is notoriously difficult and must be made relative to the physical theory considered, which generally is not well axiomatised.
+Instead we demand that such predictions be {\em repeatable}, and not merely one-off events.
+This point of view is consistent with Popper's own framework of empirical falsification~\cite{popper,popper-en}: an empirical theory (in our case, the prediction) can never be proven correct, but it can be falsified through decisive experiments (an incorrect prediction).
+
+More formally, we consider a physical experiment $E$ producing a single bit $x\in\{0,1\}$.
+An example of such an experiment is the measurement of a photon's polarisation after it has passed through a 50-50 beam splitter.  As it will be  seen later, the proposed framework can apply equally to other experiments.
+Further, with a particular instantiation or ``trial'' of $E$ we associate the parameter $\lambda$, encoded as a real number,  which fully describes the trial.
+While $\lambda$ is not in its entirety an obtainable quantity, it contains any information that may be pertinent to prediction and we may have practical access to finite aspects of this information.
+In particular this information may be   directly associated with the particular trial of $E$ (e.g. initial conditions or hidden variables) %, the specific theory that $E$ is based on)
+and/or relevant external factors (e.g. the time, results of previous trials of $E$).
+%Further associated with a particular instantiation of $E$ is a parameter $\lambda$ which summarises any further information that may be pertinent to prediction (e.g. initial conditions, results of previous results of $E$).
+Any such external factors should, however, be local in the sense of special relativity, as (even if we admit quantum nonlocality) any other information cannot be utilised for the purpose of prediction~\cite{laloe-2012}.
+%By ``local'' information we mean in the relativity theoretical sense, as properties outside the space-time cone of the trial should have no bearing on the outcome~\cite{laloe-2012}.
+We can view $\lambda$ as resource that one can extract finite information from in order   to predict the outcome of the experiment $E$.
+We formalise this in the following.
+
+An {\em extractor} is a function selecting a ``finite'' amount of information included in $\lambda$
+which can be used to make predictions of experiments performed with parameter $\lambda$. Formally, an extractor is a (deterministic)
+function $\lambda \mapsto \langle \lambda \rangle$ mapping reals to rationals.
+For example, $\langle \lambda \rangle$ may be an encoding of the result of the previous instantiation of $E$, or the time of day the experiment is performed.
+
+A predictor for $E$ is an algorithm  (computable function) $P_E$
+which \emph{halts} on every input and \emph{outputs} either $0$, $1$ (cases in which  $P_E$ has made a prediction), or ``prediction withheld''.
+We interpret the last form of output as a refrain from making a prediction.
+%Generally, but not necessarily, the predictor $P_E$  uses the specific theory that $E$ is based on and details of the experiment $E$;
+The predictor
+$P_E$ can utilise as input the information $\langle\lambda\rangle$ selected by an extractor
+encoding  relevant information for a particular instantiation of $E$, but, {\em as required by} EPR,  must not disturb or interact with $E$ in any way;
+that is, it must be \emph{passive}.
+%$P_E$ can also utilise as input any finite available information contained in the parameter $\lambda$ for a particular instantiation of $E$, but, {\em as required by} EPR,  must not disturb or interact with $E$ in any way; i.e.\ it must be \emph{passive}.
+%We denote the encoding of this information by $\langle \lambda \rangle$, which must be consistently obtained for across trials of $E$.\footnote{More technically, we can require that $\langle \lambda \rangle$ be a deterministic, effective function of $\lambda$ for a specific $P_E$ (different predictors may use different information).}
+%For example, $\langle \lambda \rangle$ may be the result of the previous instantiation of $E$, or the time of day the experiment is performed.
+
+%can utilise as input any available information about a particular instantiation of $E$ (such as initial conditions and previous results) which we summarise in the parameter $\lambda$, but, {\em as required by} EPR,  must not disturb or interact with $E$ in any way; i.e.\ it must be \emph{passive}.
+%% Must the prediction be relative to a given theory, or can it utilise any theory?
+
+As we noted earlier, a certain predictor may give the correct output for a trial of $E$ simply by chance.
+This may be due not only to a lucky choice of predictor, but also to the input being chosen by chance to produce the correct output.
+Thus, we rather  consider the performance of a predictor $P_E$  using, as input, information extracted by a particular fixed extractor.
+This way we ensure that $P_E$ utilises in ernest information extracted from $\lambda$,
+and we avoid the complication of deciding under what input we should consider $P_E$'s correctness.
+
+A predictor $P_E$ provides a \emph{correct prediction} using the extractor $\langle \, \rangle$ for an instantiation of $E$ with parameter $\lambda$ if, %using any information contained in $\lambda$ as input,
+when taking as input $\langle \lambda \rangle$,
+%encoding any relevant information in $\lambda$,
+it outputs 0 or 1 (i.e.\ it does not refrain from making a prediction) and this output is equal to $x$, the result of the experiment.
+%The correctness of a prediction is considered relative to an extraction since the output of $P_E$ depends on its input, and this avoids the view that its correctness similarly depends largely on an arbitrary input.
+
+Let us fix an extractor $\langle \, \rangle$. The predictor $P_E$ is {\em $k,\langle \, \rangle$-correct} if there exists an $n\ge k$ such that when $E$ is repeated $n$ times with associated parameters $\lambda_1 ,\dots, \lambda_n$ producing the outputs $x_1,x_2,\dots ,x_n$, $P_E$ outputs the sequence $P_E(\langle\lambda_1\rangle), P_E(\langle\lambda_2\rangle),\dots ,P_E(\langle\lambda_n\rangle)$ with the following two properties:  (i) no prediction in the sequence is incorrect, and (ii) in the sequence there are $k$ correct predictions.
+%  of the $n$ repetitions of $E$.
+% it may have more than $k$ correct predictions
+%(and hence outputs ``prediction withheld'' for the remaining $n-k$ iterations).
+The trials of $E$ form a succession of events of the form ``$E$ is prepared, performed, the result recorded, $E$ is reset'', iterated $n$ times in an algorithmic fashion.
+
+If $P_E$ is $k,\langle \, \rangle$-correct we can bound the probability that $P_E$ is in fact operating by chance and may not continue to give correct predictions, and thus give a measure of our confidence in the predictions of $P_E$.
+Specifically, the sequence of $n$ predictions made by $P_E$ can be represented as a string of length $n$ over the alphabet $\{T,F,W\}$, where $T$ represents a correct prediction, $F$ an incorrect prediction, and $W$ a withheld prediction.
+Then, for a $k,\langle \, \rangle$-correct predictor there exists an $n\ge k$ such that the sequence of predictions contains $k$ $T$'s and $(n-k)\,$ $W$'s.
+%is of the form $u\cdot T$, where $u\in\{T,?\}^{n-1}$.
+%There are $2^{n-1}$ such possible prediction sequences out of  $3^n$ possible strings of length $n$.
+%Thus, the probability that such a correct sequence is due to chance is $$\frac{2^{n-1}}{3^n}=\frac{1}{3}\left(\frac{2}{3}\right)^{n-1}\le \frac{1}{3}\left(\frac{2}{3}\right)^{k-1}.$$
+There are ${n \choose k}$ such possible prediction sequences out of $3^n$ possible strings of length $n$.
+Thus, the probability that such a correct sequence would be produced by chance is
+$$\frac{{n\choose k}}{3^n}<\frac{2^n}{3^n}\le \left(\frac{2}{3}\right)^k\rb.$$
+
+Clearly the confidence we have in a $k,\langle \, \rangle$-correct predictor increases as $k\to\infty$.
+If $P_E$ is $k,\langle \, \rangle$-correct for all $k$, then $P_E$ never makes an incorrect prediction and the number of correct predictions can be made arbitrarily large by repeating $E$ enough times.
+
+%Finally, the predictor $P_E$ is \emph{correct for} $E$ if a) when $E$ is repeated a finite (but arbitrary large) number of times independently, $P_E$  never provides an incorrect prediction,  and b) the number of correct predictions can be made arbitrary large by repeating $E$ enough times.
+
+%CC%
+The definition of $k,\langle \, \rangle$-correctness allows $P_E$ to refrain from predicting when it is unable to.
+A predictor $P_E$ which is $k,\langle \, \rangle$-correct for all $k$,  is, when using the extracted information $\langle\lambda\rangle$, guaranteed to always be capable of providing more correct predictions for $E$,
+so it will not output ``prediction withheld'' indefinitely.
+Furthermore, although $P_E$ is technically used only a finite, but arbitrarily large, number of times, the definition guarantees that, in the hypothetical scenario where it is executed infinitely many times, $P_E$ will provide  infinitely many correct predictions and not a single incorrect one.
+
+
+While a predictor's correctness is based on its performance in repeated trials,  we can use the predictor to define the prediction of single bits produced by the experiment $E$.
+%As we noted earlier,
+If $P_E$ is not $k,\langle \, \rangle$-correct for all $k$, then we cannot exclude the possibility that any correct prediction $P_E$ makes is simply due to chance.
+Hence, we propose the following definition: \emph{the outcome $x$ of a single trial of the experiment $E$ performed with parameter $\lambda$ is {\rm predictable} (with certainty) if there exist an extractor $\langle \, \rangle$ and a predictor $P_E$ which is $k,\langle \, \rangle$-correct for all $k$, and $P_E(\langle\lambda\rangle)=x$}.
+
+
+
+\section{Maximal incomputability}
+
+%With a formal and physically motivated definition of prediction, we can investigate more carefully the unpredictability of quantum events.
+
+The formal and physically motivated model of prediction we have presented can be applied to any physical experiment.
+However, let us turn our attention to using it to categorise more rigorously the unpredictability of quantum measurement outcomes discussed in Sec.~\ref{sec:physUnpred}.
+
+We first show that experiments utilising quantum value indefinite observers cannot have a predictor which is $k,\langle \, \rangle$-correct for all $k$.
+More precisely: {\em if $E$ is an experiment measuring  a quantum value indefinite observer, then for every predictor $P_E$ using any extractor $\langle\, \rangle$, $P_E$ is not $k,\langle \, \rangle$-correct for all $k$.}
+%for every description $\langle \, \rangle$ and every predictor $P_E$, it is impossible that $P_E$  is $k$ $\langle \, \rangle$--correct for all $k$.}
+
+Throughout this section we will consider an experiment $E$ performed in dimension $n\ge 3$ Hilbert space in which a quantum system is prepared in a state $\ket{\psi}$ and a value indefinite observable $P_\phi$ is measured producing a single bit $x$.
+By Theorem~\ref{thm:vi-everywhere} such an observable is guaranteed to exist, and to identify one we need only a mismatch between preparation and observation contexts.
+The nature of the physical system in which this state is prepared and the experiment performed is not important, whether it be photons passing through generalised beam splitters~\cite{rzbb},
+ions in an atomic trap, or any other quantum system in dimension $n\ge 3$ Hilbert space.
+
+Let us fix an extractor $\langle\,  \rangle$, and
+assume for the sake of contradiction that there exists a predictor $P_E$ for $E$ which is $k,\langle \, \rangle$-correct for all $k$.
+Consider the hypothetical situation where the experiment $E$ is repeatedly initialised, performed and reset \emph{ad infinitum} in an algorithmic ``ritual'' generating an infinite sequence of bits $\x=x_1x_2\dots$
+
+Since $P_E$ \emph{never} makes an incorrect prediction, each of its predictions is correct with certainty.
+Then, according to the EPR principle we must conclude that each such prediction corresponds to a value definite property of the system measured in $E$.
+However, we chose $E$ such that this is not the case: each $x_i$ is the result of the measurement of a value indefinite observable, and thus we obtain a contradiction and conclude no such predictor $P_E$ can exist.
+
+%The absence of a predictor $P_E$ which is $k$-correct for all $k$ for such a quantum experiment $E$ allows us to further show that no single bit $x$ produced by such an experiment $E$ can be reliably predicted.
+%Moreover, since no such $P_E$ exists for this type of quantum experiment $E$, no single outcome is predictable with certainty.
+Moreover, since there does not exist a predictor $P_E$ which is $k,\langle \, \rangle$-correct using any extractor $\langle\, \rangle$ for all $k$, for such a quantum experiment $E$, no single outcome is predictable with certainty.
+Stated differently, in an infinite repetition of $E$ as considered previously generating the infinite sequence $\x=x_1x_2\dots$, \emph{no single bit $x_i$ can be predicted with certainty}.
+
+A further consequence of this result is that the sequence $\x$ must be strongly incomputable, technically {\em bi-immune}.\footnote{A bi-immune sequence is one that contains no infinite computable subsequence.}
+This was shown in \cite{svozil-2006-ran,2012-incomput-proofsCJ}, but follows directly and more naturally from this new formalism of prediction.
+
+Let us assume for the sake of contradiction that $\x=x_1x_2\dots$ is not bi-immune.  %, and let the infinite computable subsequence be $x_{j_1}x_{j_2}\dots$
+Then, from the definition of bi-immunity, there exist an infinite computable set $I \subset \N^+$ and a partially computable function $f$ whose domain is
+$I$ and satisfies $f(i)=x_i$ for every $i\in I$.
+\if01
+the set of indices of the computable subsequence $I=\{j_k \mid k\in\N^+\}$ is computable and infinite, so there exists a partial computable function $f:\N^+ \to \{0,1\}$ with computable domain $I$ such that $f(i)=x_i$ if $i\in I$ and $f(i)$ is undefined (i.e.\ the algorithm implementing it does not halt) if $i\notin I$.
+\fi
+%Fix a description $\langle \, \rangle$.
+Consider the extractor $\langle \lambda_i\rangle = i$.
+ Now we can use $f$ to construct a predictor $P_E$ which is $k,\langle \, \rangle$-correct for all $k>0$. On the $i$th iteration of $E$ with parameter $\lambda_i$, $$P_E(\langle\lambda_i\rangle)=\begin{cases}f(i)=x_i, & \text{if $i\in I$,}\\\text{``{prediction withheld}'',} & \text{if $i\notin I$.}\end{cases}$$
+It is clear by the properties of $f$ that $P_E$ indeed satisfies the criteria to be $k,\langle \, \rangle$-correct for all $k$:
+%the infinite set of bits $\{x_{f(i)} \;|\; i\in I\}$ is correctly predicted.
+each bit $x_{f(i)}$ for $i\in I$, for which there are infinitely many, is correctly predicted.
+Thus, since no such predictor can exist, the sequence $\x$ must be bi-immune; in particular,   $\x$ is {\em incomputable}.
+
+\if01
+Let us first ask whether, when the experiment is repeated \emph{ad infinitum} generating an infinite sequence of bits $\x=x_1x_2\dots$, it is possible to algorithmically compute $\x$ in any way.
+In \cite{svozil-2006-ran,2012-incomput-proofsCJ} it was shown that such sequence is strongly incomputable: it is bi-immune.
+A bi-immune sequence is one that contains no computable subsequence.
+That is, there is no algorithmic way to compute infinitely many measurement outcomes.
+However, we will see that this result follows much more naturally from our new formalism of predictors.
+
+Let us assume for the sake of contradiction that $\x$ is not bi-immune, and let the computable subsequence be $x_{j_1}x_{j_2}\dots$
+Then, from the definition of bi-immunity, the set of indices of the computable subsequence $I=\{j_k \mid k\in\N^+\}$ is computable and there exists a partially computable function $f:\N^+ \to \{0,1\}$ such that $f(i)=x_i$ if $i\in I$ and $f$ does not halt if $i\notin I$.
+%Then, from the definition of bi-immunity, there exists a computable function $f:\N^+\to \{0,1\}$ such that $f(i)=x_{j_i}$ computing the subsequence $x_{j_1}x_{j_2}\dots$ where the sequence of indices $(j_i)_{i\in\N^+}$ is increasing and computable.
+We can use $f$ to construct a predictor $P_E$ which is $k$-correct for all $k>0$.
+
+Specifically, on the $i$th iteration of $E$, $$P_E(\lambda_i)=P_E(i)=\begin{cases}f(i) & \text{if $i\in I$,}\\\text{``\emph{prediction withheld}''} & \text{if $i\notin I$.}\end{cases}$$
+It is clear by the properties of $f$ that $P_E$ indeed satisfies the criteria to be $k$-correct for all $k$.
+
+Since $P_E$ \emph{never} makes an incorrect prediction, each prediction it makes is correct with certainty.
+However, the EPR principle means we must then conclude that each such prediction corresponds to a value definite property of the system measured in $E$.
+However, we chose $E$ such that this is not the case: each $x_i$ is the result of the measurement of a value indefinite property, and thus we obtain a contradiction and conclude $\x$ is bi-immune.
+\fi
+
+\section{%{\it Ex nihilo} emergence of bits
+Contextual alternatives and predictability}
+
+So far we have argued for the complete unpredictability of quantum bits literally created {\it ``ex nihilo''};
+that is, out of nowhere, thereby contradicting the {\em  principle of sufficient reason} {\it ``ex nihilo nihil fit''}.
+This is in accord with the orthodox viewpoint which associates irreducible indeterminism with certain single
+outcomes \cite{born-26-1,zeil-05_nature_ofQuantum}.
+
+%Let us, for the sake of an alternative, also briefly mention other scenarios.
+It should be acknowledged, however, that the guarantee of such indeterminism relies on the assumptions made, in particular, on noncontextuality.
+%As our theorems are derived  mathematically, they leave no space for a formal alternative within (relative to) the assumptions.
+%Hence, in order to allow alternatives, we have to modify our assumptions.% and axioms.
+If this assumption were abandoned the nature of unpredictability in quantum mechanics could be considerably different, and it is worth briefly considering this situation.
+
+Perhaps the simplest alternative would be the explicit assumption of the context dependence of measurement results.
+The formal framework for such a theory is outlined in Refs.~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109}, and most attempts to interpret quantum mechanics deterministically could be expressed in this framework.
+An important caveat is that, due to the experimental verification of Bell inequalities~\cite{wjswz-98},
+any such deterministic hidden parameters must be explicitly nonlocal.
+The best-known such theory is Bohmian mechanics~\cite{Bohm52}, although many others exist (see \cite{laloe-2012}).
+In such a theory unpredictability does not follow immediately as the \emph{ex nihilo} results are sacrificed.
+However, predictability is still not an immediate consequence, as such hidden variables could potentially be ``assigned'' by a demon operating beyond the limits of computability.
+
+
+%A second alternative is based on the explicit assumption of context dependence of the measurement result as outlined in Refs.~\cite{2012-incomput-proofsCJ,2013-KstLip}.
+A second alternative challenges the
+%One assumption, in particular, the noncontextuality of definite values, seems to be highly
+nontrivial assumption that a predetermined outcome  (corresponding to a value definite property) needs to be a deterministic function of the observable alone.
+%In this view, any predetermined outcome solely corresponds to a value definite property (an element of physical reality) of the single quantum measured.
+%In what follows we shall assume that the
+Instead one could insist that the
+{\em ``$\ldots$ result of an observation may reasonably depend not only on the state of the system  $\ldots$ but also on the complete disposition  of the apparatus''} \cite[Sec.~5]{bell-66}.
+In particular this would apply to the situation of a mismatch between preparation and measurement for which the states prepared and measured are complementary (that is, neither collinear nor orthogonal).
+This position appears also to be in accord with Bohr's remarks \cite[p. 210]{bohr-1949} on {\em ``the impossibility of any sharp separation between the behaviour of atomic objects and the interaction with the measuring instruments which serve to define the conditions under which the phenomena appear.''}
+
+In this viewpoint, even when the macroscopic measurement apparatuses are still idealised as being perfect, their many degrees of freedom (which may by far exceed Avogadro's  or Loschmidt's constants) contribute to any measurement of the single quantum.
+Most of these degrees of freedom might be totally uncontrollable by the experimenter, and may result in an {\em epistemic uncertainty} which is dominated by the combined complexities of interactions between the single quantum measured and the (macroscopic) measurement device producing the outcome.
+%This might be even conjectured to be consistent with a combined uniform unitary evolution resulting from a quantisation of the quantum and the measurement device.
+
+%In terms of quantum states the situation could thus be as follows:
+%through the measurement interaction between the single quantum and the measurement outcome the compound state remains pure;
+%alas the single quantum and the fully quantised apparatus become entangled.
+%If there is no one-to-one uniqueness between the ``macroscopic'' states of the measurement apparatus and the quantum, then any measurement of the single quantum amounts to a partial trace resulting in a mixed state of the apparatus, and thus to uncertainty and unpredictability of the readout.
+
+In such a measurement, the pure single quantum and the apparatus would become entangled.
+In the absence of one-to-one uniqueness between the macroscopic states of the measurement apparatus and the quantum, any measurement would amount to a partial trace resulting in a mixed state of the apparatus, and thus to uncertainty and unpredictability of the readout.
+
+In this minority view, just as for irreversibility in classical statistical mechanics~\cite{Myrvold2011237}, the indeterminism of single quantum measurements might not be irreducible at all, but  an expression of, and relative to, the limited means available to analyse the situation.
+In Bell's terms, the outcome may be irreversible {\em for all practical purposes}~\cite{bell-a}.
+
+
+\section{Summary}
+
+The main thrust of our argument has been to formally certify the indeterminism of single quantum events and their consequential unpredictability, rather than rely on the {\it ad hoc} postulation of these properties.
+In particular, suppose that we prepare a quantum in a pure state corresponding %to a unit vector in Hilbert space.
+to a unit vector in Hilbert space of dimension at least three. Then any complementary
+observable property of this quantum---corresponding to some projector whose respective
+linear subspace is neither collinear nor orthogonal with respect to the pure state vector---has no predetermined value, and thus remains value indefinite.
+%Then an observable property of this quantum corresponding to a projector whose respective linear subspace is
+%neither collinear nor orthogonal with respect to the pure state vector
+%has no predetermined value, and thus remains value indefinite.
+Furthermore, we show that the outcome of a measurement of such a property is unpredictable with respect to a very general model of prediction.
+These results are true relative to the assumptions made,
+%and to the axioms from which it has been derived;
+in particular,
+admissibility, noncontextuality, and the eigenstate principle.
+
+In other terms the bit resulting from the measurement of such an observable property is ``created from nowhere'',
+and cannot be causally connected to any physical entity, whether it be knowable in practice or hidden.
+One might say that the quantum system acts like an {\em incomputable oracle.}
+
+This irreducible indeterminacy ``certifies'' the use of quantum random number generators for various computational tasks in cryptography and elsewhere~\cite{svozil-qct,stefanov-2000,10.1038/nature09008}.
+Our results can also be interpreted as justification for certain claims of {\em hypercomputation}, %at least in so far
+as no universal Turing machine will ever be able to produce in the limit an output that
+%, at least in the limit, has the same characteristics as
+is identical with the sequence of bits generated by %sequences resulting from
+a quantum oracle~\cite{qrand-oracle}.
+More than that---no single bit % infinite subsequence of bits
+of such sequences can ever be predicted.
+
+As a concluding remark, we  emphasise that the indeterminism and unpredictability of quantum measurement outcomes are based on the results of strong forms of the Kochen-Specker theorem, and hence require at minimum three-dimensional Hilbert space.
+This requirement is necessary to ensure the nontrivial interconnectedness of contexts (i.e. maximal sets of compatible observables) used to derive such results.
+%We also emphasise that, as our results are based on stronger forms of the Kochen-Specker theorem, they require three-dimensional Hilbert space and, in particular, the interconnectedness of maximal observables (also known as contexts, blocks, or simply bases) that allow the proofs based on finite interconnected subsets of observables. {\bf CC: not clear to me???}
+%(Quantised models of two-dimensional Hilbert space do not allow the possibility of some nontrival interconnection of observables; in this case, all interconnected observables coincide.) {\bf CC: We don't have a proof for this!!!}
+We thus  strongly recommend the use of at least three-dimensional Hilbert space in the construction of quantum random number generators based on quantised systems and quantum indeterminism.
+
+\section*{Acknowledgement} This work was supported in part by Marie Curie FP7-PEOPLE-2010-IRSES Grant RANPHYS.
+
+%\bibliography{svozil.bib}
+
+
+%merlin.mbs apsrev4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+%Control: key (0)
+%Control: author (0) dotless jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (0) allowed
+%Control: page (1) range
+%Control: year (0) verbatim
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{27}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {Born}(1926)}]{born-26-1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Max}\ \bibnamefont
+  {Born}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Zur
+  {Q}uantenmechanik der {S}to{\ss}vorg{\"{a}}nge},}\ }\href {\doibase
+  10.1007/BF01397477} {\bibfield  {journal} {\bibinfo  {journal} {Zeitschrift
+  f{\"{u}}r Physik}\ }\textbf {\bibinfo {volume} {37}},\ \bibinfo {pages}
+  {863--867} (\bibinfo {year} {1926})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Myrvold}(2011)}]{Myrvold2011237}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Wayne~C.}\
+  \bibnamefont {Myrvold}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Statistical mechanics and thermodynamics: A {M}axwellian view},}\ }\href
+  {\doibase 10.1016/j.shpsb.2011.07.001} {\bibfield  {journal} {\bibinfo
+  {journal} {Studies in History and Philosophy of Science Part B: Studies in
+  History and Philosophy of Modern Physics}\ }\textbf {\bibinfo {volume}
+  {42}},\ \bibinfo {pages} {237--243} (\bibinfo {year} {2011})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Born}(1969)}]{born-69}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Max}\ \bibnamefont
+  {Born}},\ }\href@noop {} {\emph {\bibinfo {title} {Physics in my
+  generation}}},\ \bibinfo {edition} {2nd}\ ed.\ (\bibinfo  {publisher}
+  {Springer},\ \bibinfo {address} {New York},\ \bibinfo {year}
+  {1969})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zeilinger}(2005)}]{zeil-05_nature_ofQuantum}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont
+  {Zeilinger}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The message
+  of the quantum},}\ }\href {\doibase 10.1038/438743a} {\bibfield  {journal}
+  {\bibinfo  {journal} {Nature}\ }\textbf {\bibinfo {volume} {438}},\ \bibinfo
+  {pages} {743} (\bibinfo {year} {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bell}(1966)}]{bell-66}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {John~S.}\ \bibnamefont
+  {Bell}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {On the problem of
+  hidden variables in quantum mechanics},}\ }\href {\doibase
+  10.1103/RevModPhys.38.447} {\bibfield  {journal} {\bibinfo  {journal}
+  {Reviews of Modern Physics}\ }\textbf {\bibinfo {volume} {38}},\ \bibinfo
+  {pages} {447--452} (\bibinfo {year} {1966})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kochen}\ and\ \citenamefont
+  {Specker}(1967)}]{kochen1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Simon}\ \bibnamefont
+  {Kochen}}\ and\ \bibinfo {author} {\bibfnamefont {Ernst~P.}\ \bibnamefont
+  {Specker}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The problem of
+  hidden variables in quantum mechanics},}\ }\href {\doibase
+  10.1512/iumj.1968.17.17004} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Mathematics and Mechanics (now Indiana University Mathematics
+  Journal)}\ }\textbf {\bibinfo {volume} {17}},\ \bibinfo {pages} {59--87}
+  (\bibinfo {year} {1967})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Weihs}\ \emph {et~al.}(1998)\citenamefont {Weihs},
+  \citenamefont {Jennewein}, \citenamefont {Simon}, \citenamefont
+  {Weinfurter},\ and\ \citenamefont {Zeilinger}}]{wjswz-98}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Gregor}\ \bibnamefont
+  {Weihs}}, \bibinfo {author} {\bibfnamefont {Thomas}\ \bibnamefont
+  {Jennewein}}, \bibinfo {author} {\bibfnamefont {Christoph}\ \bibnamefont
+  {Simon}}, \bibinfo {author} {\bibfnamefont {Harald}\ \bibnamefont
+  {Weinfurter}}, \ and\ \bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont
+  {Zeilinger}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Violation of
+  {B}ell's inequality under strict {E}instein locality conditions},}\ }\href
+  {\doibase 10.1103/PhysRevLett.81.5039} {\bibfield  {journal} {\bibinfo
+  {journal} {Physical Review Letters}\ }\textbf {\bibinfo {volume} {81}},\
+  \bibinfo {pages} {5039--5043} (\bibinfo {year} {1998})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Abbott}\ \emph {et~al.}(2012)\citenamefont {Abbott},
+  \citenamefont {Calude}, \citenamefont {Conder},\ and\ \citenamefont
+  {Svozil}}]{2012-incomput-proofsCJ}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Alastair~A.}\
+  \bibnamefont {Abbott}}, \bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}}, \bibinfo {author} {\bibfnamefont {Jonathan}\
+  \bibnamefont {Conder}}, \ and\ \bibinfo {author} {\bibfnamefont {Karl}\
+  \bibnamefont {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Strong {K}ochen-{S}pecker theorem and incomputability of quantum
+  randomness},}\ }\href {\doibase 10.1103/PhysRevA.86.062109} {\bibfield
+  {journal} {\bibinfo  {journal} {Physical Review A}\ }\textbf {\bibinfo
+  {volume} {86}},\ \bibinfo {pages} {062109} (\bibinfo {year} {2012})},\
+  \Eprint {http://arxiv.org/abs/arXiv:1207.2029} {arXiv:1207.2029} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Abbott}\ \emph {et~al.}(2014)\citenamefont {Abbott},
+  \citenamefont {Calude},\ and\ \citenamefont {Svozil}}]{PhysRevA.89.032109}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Alastair~A.}\
+  \bibnamefont {Abbott}}, \bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}}, \ and\ \bibinfo {author} {\bibfnamefont {Karl}\
+  \bibnamefont {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Value-indefinite observables are almost everywhere},}\ }\href {\doibase
+  10.1103/PhysRevA.89.032109} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review A}\ }\textbf {\bibinfo {volume} {89}},\ \bibinfo {pages}
+  {032109} (\bibinfo {year} {2014})},\ \Eprint
+  {http://arxiv.org/abs/arXiv:1309.7188} {arXiv:1309.7188} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Einstein}\ \emph {et~al.}(1935)\citenamefont
+  {Einstein}, \citenamefont {Podolsky},\ and\ \citenamefont {Rosen}}]{epr}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Albert}\ \bibnamefont
+  {Einstein}}, \bibinfo {author} {\bibfnamefont {Boris}\ \bibnamefont
+  {Podolsky}}, \ and\ \bibinfo {author} {\bibfnamefont {Nathan}\ \bibnamefont
+  {Rosen}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Can
+  quantum-mechanical description of physical reality be considered complete?}}\
+  }\href {\doibase 10.1103/PhysRev.47.777} {\bibfield  {journal} {\bibinfo
+  {journal} {Physical Review}\ }\textbf {\bibinfo {volume} {47}},\ \bibinfo
+  {pages} {777--780} (\bibinfo {year} {1935})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Lalo{\"e}}(2012)}]{laloe-2012}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Franck}\ \bibnamefont
+  {Lalo{\"e}}},\ }\href {www.cambridge.org/9781107025011} {\emph {\bibinfo
+  {title} {Do We Really Understand Quantum Mechanics?}}}\ (\bibinfo
+  {publisher} {Cambridge University Press},\ \bibinfo {address} {Cambridge},\
+  \bibinfo {year} {2012})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Paterek}\ \emph {et~al.}(2010)\citenamefont
+  {Paterek}, \citenamefont {Kofler}, \citenamefont {Prevedel}, \citenamefont
+  {Klimek}, \citenamefont {Aspelmeyer}, \citenamefont {Zeilinger},\ and\
+  \citenamefont {Brukner}}]{1367-2630-12-1-013019}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {T.}~\bibnamefont
+  {Paterek}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Kofler}},
+  \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {Prevedel}}, \bibinfo
+  {author} {\bibfnamefont {P.}~\bibnamefont {Klimek}}, \bibinfo {author}
+  {\bibfnamefont {M.}~\bibnamefont {Aspelmeyer}}, \bibinfo {author}
+  {\bibfnamefont {A.}~\bibnamefont {Zeilinger}}, \ and\ \bibinfo {author}
+  {\bibfnamefont {{\v{C}}}~\bibnamefont {Brukner}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Logical independence and quantum randomness},}\
+  }\href {\doibase 10.1088/1367-2630/12/1/013019} {\bibfield  {journal}
+  {\bibinfo  {journal} {New Journal of Physics}\ }\textbf {\bibinfo {volume}
+  {12}},\ \bibinfo {pages} {013019} (\bibinfo {year} {2010})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Graham}\ and\ \citenamefont {Spencer}(1990)}]{GS-90}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Ronald}\ \bibnamefont
+  {Graham}}\ and\ \bibinfo {author} {\bibfnamefont {Joel~H.}\ \bibnamefont
+  {Spencer}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Ramsey
+  theory},}\ }\href {\doibase 10.2307/2275058} {\bibfield  {journal} {\bibinfo
+  {journal} {Scientific American}\ }\textbf {\bibinfo {volume} {262}},\
+  \bibinfo {pages} {112--117} (\bibinfo {year} {1990})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}(2002)}]{calude:02}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Cristian}\
+  \bibnamefont {Calude}},\ }\href@noop {} {\emph {\bibinfo {title} {Information
+  and Randomness---An Algorithmic Perspective}}},\ \bibinfo {edition} {2nd}\
+  ed.\ (\bibinfo  {publisher} {Springer},\ \bibinfo {address} {Berlin},\
+  \bibinfo {year} {2002})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Popper}(1950)}]{popper-50i}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl~Raimund}\
+  \bibnamefont {Popper}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Indeterminism in quantum physics and in classical physics {I}},}\ }\href
+  {\doibase 10.1093/bjps/I.2.117} {\bibfield  {journal} {\bibinfo  {journal}
+  {The British Journal for the Philosophy of Science}\ }\textbf {\bibinfo
+  {volume} {1}},\ \bibinfo {pages} {117--133} (\bibinfo {year}
+  {1950})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Popper}(1934)}]{popper}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl~Raimund}\
+  \bibnamefont {Popper}},\ }\href {\doibase 10.1007/978-3-7091-4177-9} {\emph
+  {\bibinfo {title} {Logik der Forschung}}}\ (\bibinfo  {publisher}
+  {Springer},\ \bibinfo {address} {Vienna},\ \bibinfo {year}
+  {1934})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Popper}(1959)}]{popper-en}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl~Raimund}\
+  \bibnamefont {Popper}},\ }\href@noop {} {\emph {\bibinfo {title} {The Logic
+  of Scientific Discovery}}}\ (\bibinfo  {publisher} {Basic Books},\ \bibinfo
+  {address} {New York},\ \bibinfo {year} {1959})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Reck}\ \emph {et~al.}(1994)\citenamefont {Reck},
+  \citenamefont {Zeilinger}, \citenamefont {Bernstein},\ and\ \citenamefont
+  {Bertani}}]{rzbb}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Reck}}, \bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont {Zeilinger}},
+  \bibinfo {author} {\bibfnamefont {H.~J.}\ \bibnamefont {Bernstein}}, \ and\
+  \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Bertani}},\ }\bibfield
+  {title} {\enquote {\bibinfo {title} {Experimental realization of any discrete
+  unitary operator},}\ }\href {\doibase 10.1103/PhysRevLett.73.58} {\bibfield
+  {journal} {\bibinfo  {journal} {Physical Review Letters}\ }\textbf {\bibinfo
+  {volume} {73}},\ \bibinfo {pages} {58--61} (\bibinfo {year}
+  {1994})}\BibitemShut {NoStop}%
+\bibitem [{Note1()}]{Note1}%
+  \BibitemOpen
+  \bibinfo {note} {A bi-immune sequence is one that contains no infinite
+  computable subsequence.}\BibitemShut {Stop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Svozil}(2008)}]{svozil-2006-ran}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {Karl}\
+  \bibnamefont {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Quantum randomness and value indefiniteness},}\ }\href {\doibase
+  10.1166/asl.2008.016} {\bibfield  {journal} {\bibinfo  {journal} {Advanced
+  Science Letters}\ }\textbf {\bibinfo {volume} {1}},\ \bibinfo {pages}
+  {165--168} (\bibinfo {year} {2008})},\ \bibinfo {note} {eprint
+  arXiv:quant-ph/0611029},\ \Eprint
+  {http://arxiv.org/abs/arXiv:quant-ph/0611029} {arXiv:quant-ph/0611029}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bohm}(1952)}]{Bohm52}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {David}\ \bibnamefont
+  {Bohm}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {A suggested
+  interpretation of the quantum theory in terms of ``hidden'' variables.
+  {I,II}},}\ }\href@noop {} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review}\ }\textbf {\bibinfo {volume} {85}},\ \bibinfo {pages}
+  {166--193} (\bibinfo {year} {1952})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bohr}(1949)}]{bohr-1949}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Niels}\ \bibnamefont
+  {Bohr}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Discussion with
+  {E}instein on epistemological problems in atomic physics},}\ }in\ \href
+  {\doibase 10.1016/S1876-0503(08)70379-7} {\emph {\bibinfo {booktitle}
+  {{A}lbert {E}instein: Philosopher-Scientist}}},\ \bibinfo {editor} {edited
+  by\ \bibinfo {editor} {\bibfnamefont {P.~A.}\ \bibnamefont {Schilpp}}}\
+  (\bibinfo  {publisher} {The Library of Living Philosophers},\ \bibinfo
+  {address} {Evanston, Ill.},\ \bibinfo {year} {1949})\ pp.\ \bibinfo {pages}
+  {200--241}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bell}(1990)}]{bell-a}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {John~S.}\ \bibnamefont
+  {Bell}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Against
+  `measurement'},}\ }\href
+  {http://physicsworldarchive.iop.org/summary/pwa-xml/3/8/phwv3i8a26}
+  {\bibfield  {journal} {\bibinfo  {journal} {Physics World}\ }\textbf
+  {\bibinfo {volume} {3}},\ \bibinfo {pages} {33--41} (\bibinfo {year}
+  {1990})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}(1990)}]{svozil-qct}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl}\ \bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The quantum coin
+  toss---testing microphysical undecidability},}\ }\href {\doibase
+  10.1016/0375-9601(90)90408-G} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physics Letters A}\ }\textbf {\bibinfo {volume} {143}},\ \bibinfo {pages}
+  {433--437} (\bibinfo {year} {1990})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stefanov}\ \emph {et~al.}(2000)\citenamefont
+  {Stefanov}, \citenamefont {Gisin}, \citenamefont {Guinnard}, \citenamefont
+  {Guinnard},\ and\ \citenamefont {Zbinden}}]{stefanov-2000}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Andr{\'{e}}}\
+  \bibnamefont {Stefanov}}, \bibinfo {author} {\bibfnamefont {Nicolas}\
+  \bibnamefont {Gisin}}, \bibinfo {author} {\bibfnamefont {Olivier}\
+  \bibnamefont {Guinnard}}, \bibinfo {author} {\bibfnamefont {Laurent}\
+  \bibnamefont {Guinnard}}, \ and\ \bibinfo {author} {\bibfnamefont {Hugo}\
+  \bibnamefont {Zbinden}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Optical quantum random number generator},}\ }\href {\doibase
+  10.1080/095003400147908} {\bibfield  {journal} {\bibinfo  {journal} {Journal
+  of Modern Optics}\ }\textbf {\bibinfo {volume} {47}},\ \bibinfo {pages}
+  {595--598} (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pironio}\ \emph {et~al.}(2010)\citenamefont
+  {Pironio}, \citenamefont {Ac{\'i}n}, \citenamefont {Massar}, \citenamefont
+  {{Boyer de la Giroday}}, \citenamefont {Matsukevich}, \citenamefont {Maunz},
+  \citenamefont {Olmschenk}, \citenamefont {Hayes}, \citenamefont {Luo},
+  \citenamefont {Manning},\ and\ \citenamefont {Monroe}}]{10.1038/nature09008}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Pironio}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Ac{\'i}n}},
+  \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Massar}}, \bibinfo
+  {author} {\bibfnamefont {A.}~\bibnamefont {{Boyer de la Giroday}}}, \bibinfo
+  {author} {\bibfnamefont {D.~N.}\ \bibnamefont {Matsukevich}}, \bibinfo
+  {author} {\bibfnamefont {P.}~\bibnamefont {Maunz}}, \bibinfo {author}
+  {\bibfnamefont {S.}~\bibnamefont {Olmschenk}}, \bibinfo {author}
+  {\bibfnamefont {D.}~\bibnamefont {Hayes}}, \bibinfo {author} {\bibfnamefont
+  {L.}~\bibnamefont {Luo}}, \bibinfo {author} {\bibfnamefont {T.~A.}\
+  \bibnamefont {Manning}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {C.}~\bibnamefont {Monroe}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Random numbers certified by {B}ell's theorem},}\ }\href {\doibase
+  10.1038/nature09008} {\bibfield  {journal} {\bibinfo  {journal} {Nature}\
+  }\textbf {\bibinfo {volume} {464}},\ \bibinfo {pages} {1021--1024} (\bibinfo
+  {year} {2010})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Abbott}\ \emph {et~al.}(2013)\citenamefont {Abbott},
+  \citenamefont {Calude},\ and\ \citenamefont {Svozil}}]{qrand-oracle}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Alastair~A.}\
+  \bibnamefont {Abbott}}, \bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}}, \ and\ \bibinfo {author} {\bibfnamefont {Karl}\
+  \bibnamefont {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {A
+  quantum random oracle},}\ }in\ \href@noop {} {\emph {\bibinfo {booktitle}
+  {Alan {T}uring: His Work and Impact}}},\ \bibinfo {editor} {edited by\
+  \bibinfo {editor} {\bibfnamefont {S.~Barry}\ \bibnamefont {Cooper}}\ and\
+  \bibinfo {editor} {\bibfnamefont {J.}~\bibnamefont {van Leeuwen}}}\ (\bibinfo
+   {publisher} {Elsevier Science},\ \bibinfo {year} {2013})\ pp.\ \bibinfo
+  {pages} {206--209}\BibitemShut {NoStop}%
+\end{thebibliography}%
+\end{document}

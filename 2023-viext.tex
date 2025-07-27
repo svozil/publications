@@ -1,0 +1,2336 @@
+\documentclass[%
+ reprint,
+ superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ %preprint,
+ %onecolumn,
+ showpacs,
+ showkeys,
+ %preprintnumbers,
+ nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+  amsmath,amssymb,
+ % aps,
+ % prl,
+ pra,
+ %prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+  floatfix,
+  %lengthcheck,%
+ ]{revtex4-2}
+
+\renewcommand{\thefigure}{\arabic{figure}}
+
+\usepackage[normalem]{ulem}
+
+\usepackage{adjustbox}
+\usepackage{physics}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm} %bold math
+\usepackage{graphicx}
+
+\RequirePackage{times}
+\RequirePackage{mathptm}
+
+\usepackage{url}
+%\usepackage{yfonts}
+%\usepackage{color}
+\usepackage[x11names]{xcolor}
+\usepackage{eepic}
+\usepackage{tikz}
+\usetikzlibrary{decorations.markings}
+\usepackage {pgfplots}
+\pgfplotsset {compat=1.8}
+\usepackage{epstopdf}
+%\usepackage{pict2e}
+\usepackage[normalem]{ulem}
+\sloppy
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{comment}{Comment}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{fact}{Fact}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newcommand{\seq}[1]{\mathbf{#1}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+%\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\rest}[2]{#1\!\!\restriction_{#2}}
+\newcommand{\reste}[2]{#1\restriction_{#2}}
+\newcommand{\N}{\mathbb{N}}%      \N   == \mathbb{N}
+\newcommand{\Z}{\mathbb{Z}}%      \Z   == \mathbb{Z}
+\newcommand{\Q}{\mathbb{Q}}%      \Q   == \mathbb{Q}
+\newcommand{\R}{\mathbb{R}}%      \R   == \mathbb{R}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\alphabet}{\{0,1\}}
+\newcommand{\B}{B^*}%        \X  == \Sigma^*
+\newcommand{\BI}{B^\omega}%        \XI  == \Sigma^\infty
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\dom}{\text{dom}}
+\newcommand{\cl}{\text{cl}}
+%\newcommand{\dd}{\mathrm{d}}
+
+
+%\newcommand{\bra}[1]{\left< #1 \right|}
+%\newcommand{\ket}[1]{\left| #1 \right>}
+
+\newcommand{\iprod}[2]{\langle #1 | #2 \rangle}
+\newcommand{\mprod}[3]{\langle #1 | #2 | #3 \rangle}
+\newcommand{\oprod}[2]{| #1 \rangle\langle #2 |}
+
+
+\begin{document}
+
+\title{Binary Quantum Random Number Generator Based on Value Indefinite
+Observables}
+%Quantum random number generator by value indefiniteness of one observable and its remainders within a context}
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+
+
+\affiliation{School of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+
+\author{Karl Svozil}
+\email{karl.svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+
+\affiliation{Institute for Theoretical Physics,
+TU Wien,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria}
+
+
+\date{\today}
+
+\begin{abstract}
+All quantum random number generators based on measuring value indefinite observables are at least three-dimensional because the Kochen-Specker Theorem and the Located Kochen-Specker Theorem are false in dimension two. In this article, we construct quantum random number generators based on measuring a three-dimensional value indefinite observable that generates binary quantum random outputs with the same randomness qualities as the ternary ones: the outputs are maximally unpredictable.
+\end{abstract}
+
+%\pacs{03.65.Aa, 03.65.Ta, 03.65.Ud, 03.67.-a}
+\keywords{three-dimensional quantum random generator quantum,   quantum value indefinite observable, Kochen-Specker Theorem, Located Kochen-Specker Theorem, maximal unpredictable sequences }
+%\preprint{CDMTCS preprint nr. x}
+
+\maketitle
+
+\newpage
+
+
+
+\section{Introduction}
+
+In 1946, J.~von Neumann developed a pseudo-random generator (PRNG) with the following algorithm:
+``start with an initial random seed value, square it, and slice out the middle digits.''
+A sequence obtained by repeatedly using this method exhibits {\it some} statistical properties of randomness.
+While the seeds completely determine PRNGs, hundreds of billions of pseudo-random numbers are used daily to encrypt electronic network data.
+Their pitfalls have been discovered in the Internet era.
+An example is the discovery in 2012 of a weakness in the encryption system RSA~\cite{prng_flow};
+the flaw was traced to the numbers a PRNG has produced~\cite{factor_wrong2012}.
+
+
+New types of random generators have been developed to remedy these flaws, specifically quantum random number generators (QRNGs).
+In the last decade, QRNGs proliferated because higher quality randomness is required in many areas, from cryptography,
+statistics, and information science to medicine and physics.
+
+QRNGs are considered to be ``better than PRNGs'' because they are based on the
+``fundamental unpredictability of well-chosen and controlled quantum processes''~\cite{Quantis2020},
+a weak assertion, particularly because it is well-known that the notion of ``true randomness''
+interpreted as ``lack of correlations'' or ``maximal randomness'' is mathematically vacuous~\cite{calude:02}.
+Can we construct QRNGs ``provably better'' than PRNGs? There are two types of QRNGs ``theoretically certified'':
+by  the Bell inequalities~\cite{10.1038/nature09008,NonakaMyriam2022Tros,Hayashi:2022aa}
+and by the Located Kochen-Specker Theorem~\cite{2012-incomput-proofsCJ,2015-AnalyticKS},
+a form of the Kochen-Specker Theorem, see~\cite{kochen1,Landsman2020,cabello2021contextuality} for detailed reviews.
+
+To date, only the second type of QRNGs has been mathematically proven to be better than \textit{any} PRNG~\cite{2012-incomput-proofsCJ,aguero_trejo_new_2021,RSPA23}.
+These QRNGs are three-dimensional:
+Since two-dimensional analogs of the Kochen-Specker Theorem as well as the Located Kochen-Specker Theorem are false,
+the generated sequences must be at least ternary~\cite{svozil-2009-howto}.
+Therefore, to obtain sequences of quantum random bits with the same quality of randomness, we need to apply a ``three-to-two'' symbol conversion algorithm that preserves the level of randomness.
+In this article, we pursue an alternative physical conversion:
+We construct quantum random generators based on measuring a three-dimensional value indefinite observable,
+and operationally---with physical means---generate binary quantum random outputs with the same quality of randomness as the ternary ones.
+Such outputs are maximally unpredictable~\cite{2014-nobit}.
+Although the results are presented in $\mathbb{C}^3$, they can easily be generalized to $\mathbb{C}^n$ with $n>3$.
+
+
+
+
+\section{Nomenclature and definitions}
+\label{2023-viext-defs}
+
+
+By $n$, we denote a positive integer.
+We denote by $\C$ the set of complex numbers and employ the standard quantum mechanical bra-ket notation. In this context, (unit) vectors in the Hilbert space $\C^n$ are represented as $\ket{\cdot}$.
+Our focus will be on one-dimensional projection observables.
+We denote by $E_\psi$ the operator $E_\psi=\ket{\psi}\bra{\psi}/\vert \iprod{\psi}{\psi}\vert$ projecting the Hilbert space $\C^n$ onto the linear subspace spanned by $\ket{\psi}$.
+
+
+In the following, we formalize hidden variables and the concept of value definiteness as in~\cite{2015-AnalyticKS}.
+Fix $n>1$. Consider $\mathcal{O} \subseteq \{ E_\psi \mid \ket{\psi} \in \mathbb{C}^n \}$, a nonempty set of one-dimensional projection observables on the Hilbert space $\mathbb{C}^n$.
+        A set $C \subset \mathcal{O}$ is a {\it context of $\mathcal{O}$} if $C$ has $n$ elements (that is, $|C|=n$), and for all $E_\psi, E_\phi \in C$ with $E_\psi \neq E_\phi$, $\iprod{\psi}{\phi}=0$.
+
+
+Since distinct one-dimensional projection observables commute if and only if they project onto mutually orthogonal linear subspaces, a context $C$ of $\mathcal{O}$ is a maximal set of compatible one-dimensional projection observables on $\C^n$. Due to the correspondence (up to a phase-shift) between unit vectors and one-dimensional projection observables, a context is uniquely defined by an orthonormal basis of $\C^n$.
+
+A function is partial if it may be undefined for some values; a function
+defined everywhere is called total. The square root operation on the real numbers is partial
+ because negative real numbers do not have real square roots.
+Partial functions were introduced in
+computability theory in 1930s~\cite{davis-58}%Kleene1936,church36,turing-36}
+to model non-halting computations; they were used in quantum physics in~\cite{2012-incomput-proofsCJ}.
+
+        A {\it value assignment function (on $\mathcal{O}$)} is a {\it partial two-valued} function $v: \mathcal{O} \to \{0,1\}$,
+assigning values to some (possibly all) observables in $\mathcal{O}$.
+While we could allow $v$ to be a function of both the observable $E$ and the context $C$ containing $E$,
+enabling contextual value assignments for the sake of compactness,
+we define $v$ as a {\it noncontextual} value assignment function; this property is also called {\it contextual independence}.
+
+        An observable $E \in \mathcal{O}$ is {\it value definite (under $v$)} if $v(E)$ is defined;
+otherwise, it is {\it value indefinite (under $v$)}.
+Similarly, a context $\mathcal{O}$ is value definite (under $v$) if every observable $E \in \mathcal{O}$ is value definite.
+
+
+Assuming contextual independence, if  $v(E)=1$, the measurement of $E$ in every context containing $E$ must yield the outcome  $1$.
+More generally, every value (in)definite observable $E$ in one context must also value (in)definite in all other contexts containing $E$.
+This unique value, $0$, $1$, or undefined, depends on a particular state preparation and a specific collection of observables and contexts, which can be compactly represented by a hypergraph~\cite{greechie:71,Bretto-MR3077516} (for more details, see later Section~\ref{2023-viext-qrngdefs}).
+
+
+Let $\mathcal{O}$ be a set of one-dimensional projection observables on $\C^n$, and let $v:\mathcal{O}\to\{0,1\}$ be a value assignment function.
+Then, $v$ is {\it admissible} if the following two conditions hold for every context $C$ of $\mathcal{O}$:
+        \begin{itemize}
+                \item[(a)] Exclusivity: If there exists an $E\in C$ with $v(E)=1$, then $v(E')=0$, for all $E'\in C\setminus\{E\}$.
+                \item[(b)] Completeness:                  If there exists an $E\in C$ with $v(E')=0$,   for all $E'\in C\setminus\{E\}$, then $v(E)=1$.
+        \end{itemize}
+
+
+
+
+Admissibility is a weaker requirement than the usual assumption of the existence
+of a two-valued state---a total value assignment---because fewer than $n-1$ elements in a context on $\C^n$ may be assigned the value 0, and no element is assigned the value 1. If the value assignment is partial, then the observables corresponding to these remaining elements are value indefinite.
+
+For example, in $\C^3$, consider a  context that has no element with either value $0$ or $1$ (and thus the value assignments of all three elements are undefined) and another context that has only a single element that is assigned the value $0$, and the other two undefined.
+
+However, if the value assignment on a particular set $\mathcal{O}$ of one-dimensional projection observables on $\C^n$ is total,
+then admissibility coincides with the standard definition of two-valued state(s).
+
+
+Admissibility permits undefined values, and thus value indefiniteness of an observable $E$ if both outcomes (0 and 1) of a measurement of $E$
+are incompatible with the definite values of other observables sharing a context with $E$.
+An explicit construction of such a configuration has been presented in Tables~I and~II and Figure~2 in~\cite{2015-AnalyticKS}, also appearing in Figure~\ref{2023-viext-TIFS&TITSconcatenated}.
+
+If $v(E)=1$, the measurement of every observable in
+every
+context $C$ containing $E$ must yield the outcome 1 for $E$.
+Consequently, to avoid contradiction, the outcomes of measurements for all the other observables in the context must be 0, and vice versa.  On the other hand, if $v(E)=0$,
+then the measurements of the other observables in $C$ could yield the values 1 and 0 (as long as only one yields 1).
+
+
+\section{Three-Dimensional QRNGs}
+
+This section introduces the physical principles and assumptions on which the notion of being ``better than any PRNG'' operates~\cite{2012-incomput-proofsCJ,aguero_trejo_new_2021,RSPA23}.
+We then proceed to an explicit example based on a configuration of observables that realizes a QRNG according to these principles.
+
+
+\subsection{Principles of Three-Dimensional QRNGs}
+%\label{example-zero}
+
+
+In the articles~\cite{2008-cal-svo,2012-incomput-proofsCJ,2015-AnalyticKS}, the following protocol was used to construct a class of  3-dimensional QRNGs:
+\begin{quote} {\it repeatedly locate a value indefinite observable in $C^3$, measure it and record the output}.
+\end{quote}
+ The Kochen-Specker Theorem~\cite{kochen1} guarantees only the existence of value indefinite
+observables, so the above protocol cannot use it. In contrast, the located version of the theorem~\cite{2008-cal-svo,2012-incomput-proofsCJ} allows the construction of value indefinite observables, which can then be measured. In detail, consider a quantum system
+ described by the state
+$\ket{\psi}$ in a Hilbert space ${\mathbf C}^n$, $n\ge 3$ and choose  a value indefinite observable (quantum state) $\ket{\phi}$ that is neither orthogonal nor parallel to $\ket{\psi}$ {\rm ($0<\abs{\bra{\psi}\ket{\phi}}<1$)}. If the following three conditions are satisfied:
+
+\begin{enumerate}
+\item  admissibility, as defined in Section~\ref{2023-viext-defs}, \item non-contextuality,
+the outcome obtained by
+measuring a value definite observable
+  does not
+depend on other compatible
+ observables which may be measured alongside it, and \item
+Eigenstate principle, if a quantum system is prepared in the
+state $\ket{\psi}$,
+then the projection observable
+$P_\psi$ is value definite,
+\end{enumerate}
+then the projection observable $P_\phi$ is value indefinite.
+
+
+Furthermore, in~\cite{RSPA23}, it was proved that
+ given every probability distribution $(p_1,p_2,p_3)$ ($\sum_{i}p_i=1$ and $0\le  p_i < 1$), a value indefinite quantum state can be constructed which, by a {\it universal} measurement, produces the
+outcomes with probabilities $p_i$.
+
+
+
+ The {\it universal} measurement is described
+by the unitary operator given by the unitary matrix~\cite{RSPA23}:\footnote{This is obtained in terms of the spin-1 operator in the $x$-direction $S_x$, and its associated unit eigenvectors (through its spectral decomposition).}
+
+\begin{equation}
+U_x =\frac{1}{2}
+\begin{pmatrix}
+1 & \sqrt{2} & 1\\
+\sqrt{2} & 0 & -\sqrt{2}\\
+1 & -\sqrt{2} & 1
+\end{pmatrix}.
+\label{2023-ux}
+\end{equation}
+
+
+\noindent The quantum state
+(modular phase factors)
+
+\begin{equation}
+\label{vi}
+\vert \psi \rangle=\begin{pmatrix}\sqrt{p_1},\sqrt{p_2},\sqrt{p_3}\end{pmatrix}^T,
+\end{equation}
+is value indefinite~\cite[Theorem 4.1.]{RSPA23} and the result of the measurement of $\vert \psi \rangle$ on $U_x$ with respect to the Cartesian standard basis produces the outcome
+ $i\in \{0,1,2\}$ with probability $p_i$.
+
+In fact, {\it every unitary operator is universal with respect to the value indefinite quantum state} $\vert \psi \rangle$. This is easy to see for
+the identity matrix, the most elementary case. %$\text{diag}\begin{pmatrix} %1,1,1\end{pmatrix}$.
+%and the value indefinite quantum state $\vert \psi \rangle$.
+As every arbitrary unitary operator $U$  can be written in terms of two orthonormal bases,
+$\{ \vert f_1 \rangle, \vert f_2 \rangle , \vert f_3 \rangle  \}$
+and the  Cartesian standard basis $\{ \vert e_1 \rangle, \vert e_2 \rangle , \vert e_3 \rangle  \}$,
+as
+$$U=
+\vert f_1\rangle \langle e_1\vert +
+\vert f_2\rangle \langle e_2\vert +
+\vert f_3\rangle \langle e_3\vert ,$$
+ we have by {\ref{vi})
+\begin{equation}
+\vert \psi \rangle =
+\sqrt{p_1}\vert e_1 \rangle + \sqrt{p_2}\vert e_2 \rangle + \sqrt{p_3}\vert e_3 \rangle.
+\end{equation}
+If we measure the value indefinite $\vert \psi \rangle$ by $U$
+in terms of the orthonormal basis
+$\{ \vert f_1 \rangle, \vert f_2 \rangle , \vert f_3 \rangle  \}$
+}
+we get the outcome
+ $i\in \{0,1,2\}$ with probability $p_i$.
+ If we  measure the output of $U$ in terms of the
+Cartesian standard basis $\{ \vert e_1 \rangle, \vert e_2 \rangle , \vert e_3 \rangle  \}$, then the input state has to be pre-processed: %and transformed by $U^{-1}$, that is,
+$U^{-1}\vert \psi \rangle = U^\dagger \vert \psi \rangle$, where $\dagger$ stands for the  Hermitian adjoint.
+
+Finally, using the main result in~\cite{acs-2015-info6040773}, running the above quantum protocol indefinitely, we {\it always} obtain a maximally unpredictable ternary sequence.
+
+
+The first 3-dimensional QRNG~\cite{2012-incomput-proofsCJ} was constructed by (a)
+choosing the quantum state $\vert a \rangle=\begin{pmatrix}0,1,0
+\end{pmatrix}^T$---which is value definite with respect to any context containing the observable $\vert a \rangle \langle a\vert = \text{diag}\begin{pmatrix}1,0,0
+\end{pmatrix}$ because $\vert a \rangle$ is not in the context formed by the row vectors of $U_{x}$, (b)  choosing a quantum state that is neither orthogonal nor parallel to
+it and (c)  applying the measurement (\ref{2023-ux}).  The probabilities of the outputs 0, 1, and 2 generated by this quantum random generator are $\frac{1}{2},0  $  and $\frac{1}{2}$,  respectively, so theoretically, every sequence generated by this protocol is binary.
+
+ Does the probability 0 output
+ endanger the applicability of the Kochen-Specker Theorem (see also the
+ principle of three and higher-dimensionality of QRNGs~\cite{svozil-2009-howto})? The experimental analysis~\cite{Abbott_2019}, based on the experiments reported in~\cite{Kulikov2017Dec}, suggested that the answer to the question posed in~\cite{Arkady_Fedorov-pc},  is negative.\footnote{A very small number of outputs 2 have been obtained.} We can now provide a theoretical negative answer using the {\it universal} measurement (\ref{2023-ux}) to value indefinite quantum states.
+
+
+
+
+
+
+By  changing the input quantum state $\vert a \rangle = \begin{pmatrix} 0, 1 , 0  \end{pmatrix}^T$
+  to $\vert a \rangle = \begin{pmatrix} 1 , 0 , 0 \end{pmatrix}^T$ and using the  measurement (\ref{2023-ux})
+ we obtain ternary quantum random numbers 0,1,2 generated with with probabilities $1/2,1/4,1/4$, respectively,  hence
+  ``genuine'' ternary sequences.
+
+ As many current applications require random binary sequences, in~\cite{RSPA23},
+ the computable  alphabetic morphism $\varphi \colon \{0,1,2\} \rightarrow \{0,1\}$
+ \begin{equation}
+ \varphi(x)=
+ \begin{cases}1,&\text{if }x=0,
+ \\0,&\text{if }x=1,
+ \\0, &\text{if } x=2,\end{cases}
+\label{2023-alphabeticmorphism}
+ \end{equation}
+
+  A slightly modified version of this alphabetic morphism
+ was used to
+ transform ternary sequences into binary ones and preserve their maximal unpredictability
+ for the probability distributions  $\frac{1}{4},\frac{1}{2},\frac{1}{4}$ and $\frac{1}{2},\frac{1}{2}$, respectively;
+see~\cite{CALUDE202131} and Section~7 in~\cite{aguero_trejo_new_2021}. Can we ``quantize'' the algorithmic post-processing (\ref{2023-alphabeticmorphism})?
+
+
+
+
+Quantum mechanically, this alphabetic morphism corresponds to a post-processing of the output of $U_x\vert a \rangle$.
+In general, by
+post-processing of a  unitary transformation $A$ we mean the unitary transformation $B = U'A$, where $U'$ is a suitable unitary transformation.
+Physically, this corresponds to the serial composition of beam splitters, first applying $A$ and then $U'$.
+
+The post-processing of (\ref{2023-alphabeticmorphism}) results in the `merging'
+of a state with three nonzero components
+(or coordinates with respect to a particular basis, here the Cartesian standard basis)
+into a state with two
+nonzero components. The merging is justified only if the corresponding input ports belong to the same context.
+In other words, the corresponding observables have mutually exclusive outcomes---a condition satisfied by a beam splitter realizing $U_x$.
+The schema is presented in Figure~\ref{2023-viext-souubone2}.
+Thereby,  the unitary matrix is
+
+\begin{equation}
+U' =\frac{1}{2\sqrt2}
+\begin{pmatrix}
+1+\sqrt2& \sqrt2 & 1-\sqrt2\\
+1-\sqrt2 & \sqrt2 & 1+\sqrt2 \\
+\sqrt2 & -2 & \sqrt2
+\end{pmatrix}
+\label{2023-viext-upux}
+\end{equation}
+
+\noindent corresponds to the alphabetic morphism $\varphi$.
+Then, the combined transformation is
+\begin{equation}
+U'U_x =
+\frac{1}{\sqrt{2}}
+\begin{pmatrix}
+1&1&0\\
+1&-1&0\\
+0&0&\sqrt{2}
+\end{pmatrix}
+.
+\label{2023-viext-u}
+\end{equation}
+
+
+
+
+
+\begin{figure}
+\begin{center}
+\resizebox{.46\textwidth}{!}{
+\begin{tikzpicture}  [scale=1]
+\tikzstyle{every path}=[line width=1pt]
+
+\tikzset{->-/.style={decoration={
+  markings,
+ % mark=at position #1 with {\arrow{>}}},postaction={decorate,shorten >=1cm}}}
+  mark=at position #1 with {\arrow{>}}},postaction={decorate}}}
+
+
+
+% draw two large squares
+\draw (0,0) rectangle (4,4);
+\draw (6,0) rectangle (10,4);
+% draw three horizontal arrows on each side
+\draw[->-=.5] (4,3) -- (6,3);
+\draw[->-=.5] (4,2) -- (6,2);
+\draw[->-=.5] (4,1) -- (6,1);
+\draw[->-=.5,dashed] (-2,3) -- (0,3);
+\draw[->-=.5,dashed] (-2,2) -- (0,2);
+\draw[->-=.5] (-2,1) -- (0,1);
+\draw[->-=.5] (10,3) -- (12,3);
+\draw[->-=.5] (10,2) -- (12,2);
+\draw[->-=.5,dashed] (10,1) -- (12,1);
+% inscribe U in each of the squares
+\node at (2,2) {\Huge $U_x$};
+\node at (8,2) {\Huge $U'$};
+
+\node at (-3,3) {\Huge $\vert a'' \rangle$};
+\node at (-3,2) {\Huge $\vert a' \rangle$};
+\node at (-3,1) {\Huge $\vert a \rangle$};
+\node at (5,3.5) {\Large $\vert 3' \rangle$};
+\node at (5,2.5) {\Large $\vert 2' \rangle$};
+\node at (5,0.5) {\Large $\vert 1' \rangle$};
+\node at (13,3) {\Huge $\vert 0 \rangle$};
+\node at (13,2) {\Huge $\vert 1 \rangle$};
+\node at (13,1) {\Huge $\vert 2 \rangle$};
+\end{tikzpicture}
+}
+\end{center}
+                \caption{A horizontal schema of two beam splitters $U_x$ and $U'$ in serial composition $U'U_x$,
+with the `input' state prepared in $\vert a\rangle$,
+and two `active output' ports in states $\vert 0\rangle$ and $\vert 1\rangle$.}
+\label{2023-viext-souubone2}
+\end{figure}
+
+
+
+This unitary matrix $U'U_x$ corresponds to a beam splitter configuration that first allows a state $\vert a\rangle$ to be `expanded' by a unitary matrix $U_x$ with three nonzero components. Simultaneously,
+given $\vert a\rangle$, the output state $U_x\vert a\rangle$ is a value-indefinite observable `merged' or `folded' by the unitary matrix $U'$,
+representing a serially concatenated beam splitter that transforms this state
+into one with two nonzero components of equal probability amplitudes.
+On input $\vert a\rangle $ the unitary transformation  $U'U_x$ generates a ternary output
+with the probability distribution
+$\begin{pmatrix}\frac{1}{2},\frac{1}{2},0\end{pmatrix}$, which corresponds to the binary output with the probability distribution
+$\begin{pmatrix}\frac{1}{2},\frac{1}{2}\end{pmatrix}$.
+
+
+How can we realize this transformation in terms of unitary equivalence?
+Two transformations, $A$ and $B$, are unitarily equivalent if there exists a unitary matrix $V$ such that $B = V^\dagger AV$, where
+$V^\dagger$ means the Hermitian adjoint, or conjugate transpose, of $V$.
+If $V$ is real-valued then $V^\dagger =V^T$ is just the transpose $V^T$ of $V$.
+
+
+From Specht's Theorem~\cite{Horn-Johnson-MatrixAnalysis,Dokovi__2007}, two unitary matrices are unitary equivalent if their eigenvalues coincide.
+In our case, both $U_x$ in~(\ref{2023-ux}) as well as $U'U_x$ in~(\ref{2023-viext-upux}) have one eigenvalue $-1$, and a double eigenvalue $1$.
+More explicitly, the matrix
+
+\begin{equation}
+V=
+\begin{pmatrix}
+ \frac{1}{2\sqrt{3}} \sqrt{2-\sqrt{2+\sqrt{3}}}
+   & \frac{1}{2\sqrt{3}} \sqrt{2+\sqrt{2+\sqrt{3}}} & \sqrt{\frac{2}{3}} \\
+ -\frac{1}{\sqrt{6}}\sqrt{2-\sqrt{2+\sqrt{3}}} &
+   -\frac{1}{\sqrt{6}} \sqrt{2+\sqrt{2+\sqrt{3}}} &
+   \frac{1}{\sqrt{3}} \\
+ \frac{1}{2} \sqrt{2+\sqrt{2+\sqrt{3}}} & -\frac{1}{2}
+   \sqrt{2-\sqrt{2+\sqrt{3}}} & 0
+\end{pmatrix}
+\end{equation}
+satisfies the equality  $V^TU_xV=U'U_x$: this proves
+ that the matrix $U_x$ defined in (\ref{2023-ux}) is unitarily equivalent to the matrix combination $U'U_x$ in (\ref{2023-viext-u}).
+
+
+
+\subsection{Configuration of Observables Realizing the Principles of Three-Dimensional QRNGs}
+%\label{example-zero}
+
+
+For the sake of an example, take a configuration of observables enumerated  in~\cite[Table~I]{2018-minimalYIYS}
+presented in Figure~\ref{2023-viext-TIFS&TITSconcatenated},  as $v(a)=1$,
+in the context $\{b,2,3\}$, the observable $2$ is value definite with $v(2)=0$, whereas
+both observables
+$b$ and $3$ are value indefinite.
+Therefore, not all elements of $C\setminus \{E\}$ need to be value indefinite:
+Indeed, in the context $\{b,2,3\}$, the observable $b$ is value indefinite.
+But from the two remaining elements in $\{b,2,3\} \setminus \{b\}=\{2,3\}$,
+$2$ is value definite with $v(2)=0$,
+and $3$ is value indefinite.
+
+\medskip
+
+For the sake of an example, we shall use a hypergraph introduced in~\cite{2015-AnalyticKS}
+and split it into segments serving as true-implies-false (TIFS) and true-implies-true (TITS) gadgets~\cite{2018-minimalYIYS}.
+
+
+The hypergraph corresponding to the TIFS gadget  in Figure~\ref{2023-viext-TIFS}
+illustrates the orthogonality relations among vector labels of the elements of hyperedges~\cite{lovasz-79}, as detailed in~\cite[Table~I]{2018-minimalYIYS}.
+By subsequently applying the admissibility rules~\cite[Figure~(24.2.a)]{Svozil-2018-p} a single consistent value assignment,
+as in Figure~(\ref{2023-viext-TIFS}a) allows $v(a)=1$ and $v(b)=0$, whereas
+an inconsistent value assignment arises when assuming $v(a)=v(b)=1$.
+Therefore, for any such configuration of quantum observables, there exists no classical admissible value assignment $v$
+satisfying the constraint on the input and output ports $v(a)=v(b)=1$.
+Consequently, if $a$ has a preselected input state $v(a)=1$, then
+the value assignment $v(b)$ for the output state $b$ cannot be 1.
+Therefore, $v(b)$ can only be 0 or undefined.
+In the latter case, $b$
+is value indefinite.
+
+
+
+
+Conversely, the TITS gadget hypergraph in Figure~\ref{2023-viext-TITS}
+illustrates the orthogonality relations among vector labels of the elements of hyperedges~\cite{lovasz-79}, as detailed in~\cite[Table~I]{2018-minimalYIYS}.
+Using the admissibility rules~\cite[Fig.~(24.2.a)]{Svozil-2018-p} a single consistent value assignment,
+as in Figure~(\ref{2023-viext-TITS}a) implies $v(a)=1$ and $v(b)=1$, in contrast with
+the value assignment  when assuming $v(a)=1$ and $v(b)=0$.
+
+As before, for any such configuration of quantum observables, there exists no classical admissible value assignment $v$
+satisfying the constraint on the input and output ports $v(a)=1$ and $v(b)=0$, respectively.
+Consequently, if $a$ has a preselected input state $v(a)=1$, then the value assignment $v(b)$ for the output state $b$ must be either 1 or undefined,
+that is, value indefinite.
+
+\begin{figure*}
+                %\adjustbox{margin=1em,width=.9\textwidth,set height=3cm,frame,center}{Coming soon.}
+                \begin{center}
+\begin{tabular}{ccc}
+\resizebox{.46\textwidth}{!}{
+                \begin{tikzpicture}  [scale=0.5]
+
+
+
+                \tikzstyle{every path}=[line width=2pt]
+                \tikzstyle{c1}=[draw,black,fill=green,circle,inner sep={3},minimum size=6]
+                \tikzstyle{s1}=[draw,black,fill=red,rectangle,inner sep={4},minimum size=7]
+                \tikzstyle{l1}=[draw=none,circle,minimum size=4]
+
+                % Define positions of all observables
+
+                \draw (4,0) coordinate[c1,label=180:{\Large $b$}] (b)
+                        -- (13,0) coordinate[c1,label=45:$2$] (2)
+                        -- (22,0) coordinate[s1,label=0:$3$] (3)
+                        -- (26,12) coordinate[c1,pos=0.8,label=0:${21}$] (21) coordinate[c1,label=0:${23}$] (23);
+                        %%%%%%%%%%-- (22,18.5) coordinate[c1,pos=0.4,label=0:${29}$] (29) coordinate[c1,label=0:$5$] (5)
+                        \draw  (22,18.5) coordinate[c1,label=0:$5$] (5)
+                        -- (13,18.5) coordinate[s1,label=90:{\Large $a$}] (a)
+                        -- (4,18.5) coordinate[c1,label=90:$4$] (4)
+                        -- (0,12) coordinate[c1,pos=0.6,label=180:${10}$] (10) coordinate[s1,label=180:$7$] (7)
+                        -- (b) coordinate[c1,pos=0.2,label=180:$6$] (6);
+
+                \draw (a) -- (2) coordinate[c1,pos=0.5,label=315:$1$] (1);
+
+                \draw (5) -- (22,6) coordinate[s1,pos=0.4,label=0:${11}$] (11) coordinate[c1,label=0:$9$] (9)
+                        -- (b) coordinate[s1,pos=0.3,label=280:$8$] (8);
+
+                \draw (4) -- (4,6) coordinate[s1,pos=0.4,label=180:${28}$] (28) coordinate[c1,label=180:${22}$] (22)
+                        -- (3) coordinate[c1,pos=0.3,label=260:${19}$] (19);
+
+                \coordinate (25) at ([xshift=-4cm]1);
+                \coordinate (27) at ([xshift=4cm]1);
+
+                \draw (22) -- (25) coordinate[c1,pos=0.5,label=115:${24}$] (24) coordinate[s1,label=270:${25}$] (25)
+                        -- (9) coordinate[c1,pos=0.8,label=90:${35}$] (35);
+
+                \draw (7) -- (27) coordinate[c1,pos=0.5,label=90:${34}$] (34) coordinate[c1,label=90:${27}$] (27)
+                        -- (23) coordinate[s1,pos=0.3,label=270:${26}$] (26);
+
+                \draw (10) -- (15.5,17.5) coordinate[c1,pos=0.5,label=90:${12}$] (12) coordinate[s1,label=15:${13}$] (13);
+                        %%%%%%%%%%-- (29) coordinate[c1,pos=0.4,label=90:${31}$] (31);
+
+                \draw (28) -- (10.5,15) coordinate[c1,pos=0.5,label=90:${30}$] (30) coordinate[c1,label=90:${15}$] (15)
+                        -- (11) coordinate[c1,pos=0.6,label=90:${14}$] (14);
+
+                \draw (15) -- (1) coordinate[s1,pos=0.2,label=15:${17}$] (17)
+                        -- (13) coordinate[c1,pos=0.3,label=0:${16}$] (16);
+
+                \draw (19) -- (16) coordinate[s1,pos=0.3,label=180:${18}$] (18)
+                        -- (8) coordinate[c1,pos=0.7,label=180:${32}$] (32);
+
+                \draw (6) -- (17) coordinate[c1,pos=0.7,label=90:${33}$] (33)
+                        -- (21) coordinate[c1,pos=0.4,label=90:${20}$] (20);
+
+                %\draw[dashed] (25) -- (1) -- (27);
+                \draw (25) -- (1) -- (27);
+
+                \coordinate (ContextLabel) at ([shift=({-2cm,-3mm})]1);
+                %\draw (ContextLabel) coordinate[l1,label=90:$C_{26}$];
+
+                \end{tikzpicture}
+                }
+&$\qquad$&
+\resizebox{.46\textwidth}{!}{
+                \begin{tikzpicture}  [scale=0.5]
+
+
+
+                \tikzstyle{every path}=[line width=2pt]
+                \tikzstyle{c1}=[draw,black,fill=green,circle,inner sep={3},minimum size=6]
+                \tikzstyle{s1}=[draw,black,fill=red,rectangle,inner sep={4},minimum size=7]
+                \tikzstyle{l1}=[draw=none,circle,minimum size=4]
+
+                % Define positions of all observables
+
+                \draw (4,0) coordinate[s1,label=180:{\Large $b$}] (b)
+                        -- (13,0) coordinate[c1,label=45:$2$] (2)
+                        -- (22,0) coordinate[c1,label=0:$3$] (3);
+\draw [dashed] (3) -- (26,12) coordinate[c1,solid,pos=0.8,label=0:${21}$] (21) coordinate[c1,solid,label=0:${23}$] (23);
+                        %%%%%%%%%%-- (22,18.5) coordinate[c1,pos=0.4,label=0:${29}$] (29) coordinate[c1,label=0:$5$] (5)
+                        \draw  (22,18.5) coordinate[c1,label=0:$5$] (5)
+                        -- (13,18.5) coordinate[s1,label=90:{\Large $a$}] (a)
+                        -- (4,18.5) coordinate[c1,label=90:$4$] (4)
+                        -- (0,12) coordinate[s1,pos=0.6,label=180:${10}$] (10) coordinate[c1,label=180:$7$] (7)
+                        -- (b) coordinate[c1,pos=0.2,label=180:$6$] (6);
+
+                \draw (a) -- (2) coordinate[c1,pos=0.5,label=315:$1$] (1);
+
+                \draw (5) -- (22,6) coordinate[s1,pos=0.4,label=0:${11}$] (11) coordinate[c1,label=0:$9$] (9)
+                        -- (b) coordinate[c1,pos=0.3,label=280:$8$] (8);
+
+                \draw (4) -- (4,6) coordinate[c1,pos=0.4,label=180:${28}$] (28) coordinate[s1,label=180:${22}$] (22)
+                        -- (3) coordinate[c1,pos=0.3,label=260:${19}$] (19);
+
+                \coordinate (25) at ([xshift=-4cm]1);
+                \coordinate (27) at ([xshift=4cm]1);
+
+                \draw (22) -- (25) coordinate[c1,pos=0.5,label=115:${24}$] (24) coordinate[c1,label=270:${25}$] (25)
+                        -- (9) coordinate[s1,pos=0.8,label=90:${35}$] (35);
+
+                \draw (7) -- (27) coordinate[c1,pos=0.5,label=90:${34}$] (34) coordinate[s1,label=90:${27}$] (27)
+                        -- (23) coordinate[c1,pos=0.3,label=270:${26}$] (26);
+
+                \draw (10) -- (15.5,17.5) coordinate[c1,pos=0.5,label=90:${12}$] (12) coordinate[c1,label=15:${13}$] (13);
+                        %%%%%%%%%%-- (29) coordinate[c1,pos=0.4,label=90:${31}$] (31);
+
+                \draw (28) -- (10.5,15) coordinate[s1,pos=0.5,label=90:${30}$] (30) coordinate[c1,label=90:${15}$] (15)
+                        -- (11) coordinate[c1,pos=0.6,label=90:${14}$] (14);
+
+                \draw (15) -- (1) coordinate[s1,pos=0.2,label=15:${17}$] (17)
+                        -- (13) coordinate[s1,pos=0.3,label=0:${16}$] (16);
+
+                \draw (19) -- (16) coordinate[c1,pos=0.3,label=180:${18}$] (18)
+                        -- (8) coordinate[c1,pos=0.7,label=180:${32}$] (32);
+
+                \draw (6) -- (17) coordinate[c1,pos=0.7,label=90:${33}$] (33)
+                        -- (21) coordinate[c1,pos=0.4,label=90:${20}$] (20);
+
+                %\draw[dashed] (25) -- (1) -- (27);
+                \draw (25) -- (1) -- (27);
+
+                \coordinate (ContextLabel) at ([shift=({-2cm,-3mm})]1);
+                %\draw (ContextLabel) coordinate[l1,label=90:$C_{26}$];
+
+                \end{tikzpicture}
+                }
+\\
+\\
+(a)&&(b)
+\end{tabular}
+                \end{center}
+                \caption{The TIFS gadget hypergraph for $b$ given $v(a)=1$, as well as the TITS gadget hypergraph for $3$ given $v(a)=1$,
+illustrates the orthogonality relations among vector labels of the elements of hyperedges~\cite{lovasz-79} within a subset of quantum observables---also known as a faithful orthogonal representation~\cite{Portillo-2015} or coordinatization~\cite{Pavii2018}, as enumerated in~\cite[Table~I]{2018-minimalYIYS}. Red squares represent the value 1, and green circles represent the value 0.
+(a) A singular, consistent value assignment is obtained by assuming $v(a)=1$ and $v(b)=0$ and applying the admissibility rules successively~\cite[Figure~(24.2.a)]{Svozil-2018-p}.
+(b) An inconsistent value assignment is obtained by assuming $v(a)=v(b)=1$ and applying the admissibility rules successively:
+ the context $\{3,21,23\}$, shown dotted, contains three observables with the value 0; hence no admissible value assignment $v$
+with the constraint on the input and output ports $v(a)=v(b)=1$ exists. Therefore, if $a$ has a preselected input state $v(a)=1$,
+then the value assignment $v(b)$ for the output state $b$ has either to be 0 or needs to be undefined, that is, $b$ is value indefinite.
+}
+                \label{2023-viext-TIFS}
+        \end{figure*}
+%\twocolumngrid
+
+
+% END TIFS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+% BEGIN TITS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\onecolumngrid
+\begin{figure*}
+                %\adjustbox{margin=1em,width=.9\textwidth,set height=3cm,frame,center}{Coming soon.}
+                \begin{center}
+\begin{tabular}{ccc}
+\resizebox{.46\textwidth}{!}{
+                \begin{tikzpicture}  [scale=0.5]
+
+
+
+                \tikzstyle{every path}=[line width=2pt]
+                \tikzstyle{c1}=[draw,black,fill=green,circle,inner sep={3},minimum size=6]
+                \tikzstyle{s1}=[draw,black,fill=red,rectangle,inner sep={4},minimum size=7]
+                \tikzstyle{l1}=[draw=none,circle,minimum size=4]
+
+                % Define positions of all observables
+
+                \draw (4,0) coordinate[s1,label=180:{\Large $b$}] (b)
+                        -- (13,0) coordinate[c1,label=45:$2$] (2)
+                        -- (22,0) coordinate[c1,label=0:$3$] (3)
+                        -- (26,12) coordinate[c1,pos=0.8,label=0:${21}$] (21) coordinate[s1,label=0:${23}$] (23)
+                        -- (22,18.5) coordinate[c1,pos=0.4,label=0:${29}$] (29) coordinate[c1,label=0:$5$] (5)
+                        -- (13,18.5) coordinate[s1,label=90:{\Large $a$}] (a)
+                        -- (4,18.5) coordinate[c1,label=90:$4$] (4);
+\draw (0,12)  coordinate[c1,label=180:$7$] (7)
+                        -- (b) coordinate[c1,pos=0.2,label=180:$6$] (6);
+
+                \draw (a) -- (2) coordinate[c1,pos=0.5,label=315:$1$] (1);
+
+                \draw (5) -- (22,6) coordinate[s1,pos=0.4,label=0:${11}$] (11) coordinate[c1,label=0:$9$] (9)
+                        -- (b) coordinate[c1,pos=0.3,label=280:$8$] (8);
+
+                \draw (4) -- (4,6) coordinate[s1,pos=0.4,label=180:${28}$] (28) coordinate[c1,label=180:${22}$] (22)
+                        -- (3) coordinate[s1,pos=0.3,label=260:${19}$] (19);
+
+                \coordinate (25) at ([xshift=-4cm]1);
+                \coordinate (27) at ([xshift=4cm]1);
+
+                \draw (22) -- (25) coordinate[c1,pos=0.5,label=115:${24}$] (24) coordinate[s1,label=270:${25}$] (25)
+                        -- (9) coordinate[c1,pos=0.8,label=90:${35}$] (35);
+
+                \draw (7) -- (27) coordinate[s1,pos=0.5,label=90:${34}$] (34) coordinate[c1,label=90:${27}$] (27)
+                        -- (23) coordinate[c1,pos=0.3,label=270:${26}$] (26);
+
+                \draw  (15.5,17.5) coordinate[s1,label=15:${13}$] (13)
+                        -- (29) coordinate[c1,pos=0.4,label=90:${31}$] (31);
+
+                \draw (28) -- (10.5,15) coordinate[c1,pos=0.5,label=90:${30}$] (30) coordinate[c1,label=90:${15}$] (15)
+                        -- (11) coordinate[c1,pos=0.6,label=90:${14}$] (14);
+
+                \draw (15) -- (1) coordinate[s1,pos=0.2,label=15:${17}$] (17)
+                        -- (13) coordinate[c1,pos=0.3,label=0:${16}$] (16);
+
+                \draw (19) -- (16) coordinate[c1,pos=0.3,label=180:${18}$] (18)
+                        -- (8) coordinate[s1,pos=0.7,label=180:${32}$] (32);
+
+                \draw (6) -- (17) coordinate[c1,pos=0.7,label=90:${33}$] (33)
+                        -- (21) coordinate[c1,pos=0.4,label=90:${20}$] (20);
+
+                %\draw[dashed] (25) -- (1) -- (27);
+                \draw (25) -- (1) -- (27);
+
+                \coordinate (ContextLabel) at ([shift=({-2cm,-3mm})]1);
+                %\draw (ContextLabel) coordinate[l1,label=90:$C_{26}$];
+
+                \end{tikzpicture}
+                }
+&$\qquad$&
+\resizebox{.46\textwidth}{!}{
+                \begin{tikzpicture}  [scale=0.5]
+
+
+
+                \tikzstyle{every path}=[line width=2pt]
+                \tikzstyle{c1}=[draw,black,fill=green,circle,inner sep={3},minimum size=6]
+                \tikzstyle{s1}=[draw,black,fill=red,rectangle,inner sep={4},minimum size=7]
+                \tikzstyle{l1}=[draw=none,circle,minimum size=4]
+
+                % Define positions of all observables
+
+                \draw (4,0) coordinate[c1,label=180:{\Large $b$}] (b)
+                        -- (13,0) coordinate[c1,label=45:$2$] (2)
+                        -- (22,0) coordinate[s1,label=0:$3$] (3)
+                        -- (26,12) coordinate[c1,pos=0.8,label=0:${21}$] (21) coordinate[c1,label=0:${23}$] (23)
+                        -- (22,18.5) coordinate[s1,pos=0.4,label=0:${29}$] (29) coordinate[c1,label=0:$5$] (5)
+                        -- (13,18.5) coordinate[s1,label=90:{\Large $a$}] (a)
+                        -- (4,18.5) coordinate[c1,label=90:$4$] (4);
+\draw [dashed](0,12)  coordinate[c1,solid,label=180:$7$] (7)
+                        -- (b) coordinate[c1,solid,pos=0.2,label=180:$6$] (6);
+
+                \draw (a) -- (2) coordinate[c1,pos=0.5,label=315:$1$] (1);
+
+                \draw (5) -- (22,6) coordinate[c1,pos=0.4,label=0:${11}$] (11) coordinate[s1,label=0:$9$] (9)
+                        -- (b) coordinate[c1,pos=0.3,label=280:$8$] (8);
+
+                \draw (4) -- (4,6) coordinate[s1,pos=0.4,label=180:${28}$] (28) coordinate[c1,label=180:${22}$] (22)
+                        -- (3) coordinate[c1,pos=0.3,label=260:${19}$] (19);
+
+                \coordinate (25) at ([xshift=-4cm]1);
+                \coordinate (27) at ([xshift=4cm]1);
+
+                \draw (22) -- (25) coordinate[s1,pos=0.5,label=115:${24}$] (24) coordinate[c1,label=270:${25}$] (25)
+                        -- (9) coordinate[c1,pos=0.8,label=90:${35}$] (35);
+
+                \draw (7) -- (27) coordinate[c1,pos=0.5,label=90:${34}$] (34) coordinate[s1,label=90:${27}$] (27)
+                        -- (23) coordinate[c1,pos=0.3,label=270:${26}$] (26);
+
+                \draw  (15.5,17.5) coordinate[c1,label=15:${13}$] (13)
+                        -- (29) coordinate[c1,pos=0.4,label=90:${31}$] (31);
+
+                \draw (28) -- (10.5,15) coordinate[c1,pos=0.5,label=90:${30}$] (30) coordinate[c1,label=90:${15}$] (15)
+                        -- (11) coordinate[s1,pos=0.6,label=90:${14}$] (14);
+
+                \draw (15) -- (1) coordinate[s1,pos=0.2,label=15:${17}$] (17)
+                        -- (13) coordinate[s1,pos=0.3,label=0:${16}$] (16);
+
+                \draw (19) -- (16) coordinate[c1,pos=0.3,label=180:${18}$] (18)
+                        -- (8) coordinate[c1,pos=0.7,label=180:${32}$] (32);
+
+                \draw (6) -- (17) coordinate[c1,pos=0.7,label=90:${33}$] (33)
+                        -- (21) coordinate[c1,pos=0.4,label=90:${20}$] (20);
+
+                %\draw[dashed] (25) -- (1) -- (27);
+                \draw (25) -- (1) -- (27);
+
+                \coordinate (ContextLabel) at ([shift=({-2cm,-3mm})]1);
+                %\draw (ContextLabel) coordinate[l1,label=90:$C_{26}$];
+
+                \end{tikzpicture}
+                }
+\\
+\\
+(a)&&(b)
+\end{tabular}
+                \end{center}
+                \caption{The TITS gadget hypergraph for $b$ given $v(a)=1$, as well as the TIFS gadget hypergraph for $3$ given $v(a)=1$,
+which is partly reflection symmetric along the $\{a,1,2\}$ context to the TIFS gadget hypergraph in Figure~\ref{2023-viext-TIFS},
+illustrates the orthogonality relations among vector labels of the elements of hyperedges~\cite{lovasz-79}
+within a subset of quantum observables---also known as a faithful orthogonal representation~\cite{Portillo-2015} or coordinatization~\cite{Pavii2018},
+as enumerated in~\cite[Table~I]{2018-minimalYIYS}. Red squares represent the value 1, and green circles represent the value 0.
+(a) A single consistent value assignment is obtained by assuming $v(a)=1$ and $v(b)=1$ and applying the admissibility rules successively~\cite[Figure~(24.2.b)]{Svozil-2018-p}.
+(b) An inconsistent value assignment is obtained by assuming $v(a)=1$ and $v(b)=0$ and applying the admissibility rules successively:
+because the context $\{6,7,b\}$, shown dotted, contains three observables with the value 0,
+no admissible value assignment $v$ exists with the constraint on the input and output ports $v(a)=1$ and $v(b)=0$.
+Therefore, if $a$ has a preselected input state $v(a)=1$, then the value assignment $v(b)$.
+For the output state, $b$ has to be 1 or undefined; that is, $b$ is an indefinite value.
+}
+                \label{2023-viext-TITS}
+        \end{figure*}
+%\twocolumngrid
+
+
+% END TITS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\clearpage
+
+
+
+Therefore, the concatenation of the two hypergraphs depicting TIFS and TITS gadgets,
+originally introduced by Abbott and the authors in~\cite{2018-minimalYIYS}, and
+shown in Figures~\ref{2023-viext-TIFS} and~\ref{2023-viext-TITS} respectively, excludes both admissible value assignments of 0 and 1,
+rendering $v(b)$ undefined and thus the observable $b$ value indefinite.
+Indeed, as in Figure~\ref{2023-viext-TIFS&TITSconcatenated}
+the penetration of admissible value assignments is rather limited: if the system is prepared in state $a$, then admissibility merely allows
+``star-shaped'' value definite observables along the two contexts $\{a,1,2\}$ and $\{a,4,5\}$.
+Note that all contexts
+$\{b,2,3\}$,
+$\{b,6,7\}$, and
+$\{b,8,9\}$,
+in which $b$ is an element, have at least one more element with indefinite value.
+This is because
+the set of observables $O=\{ a,b, 1,\ldots , 35\}$ is not unital~\cite{svozil-tkadlec}, that is, all eight admissible (or global) value assignments must assign the value 1 to the observable 1,
+and thus the value 0 to $a$.
+There does not exist any value assignment  $v(a)=1$~\cite[Table~24.1]{Svozil-2018-p}.
+However, such value assignments with  $v(a)=1$ exist for the reduced set of observables
+$O  \setminus \{29,31\}$
+and
+$O  \setminus \{10,12\}$
+forming TIFS and TITS, respectively.
+
+
+\begin{figure}
+                %\adjustbox{margin=1em,width=.9\textwidth,set height=3cm,frame,center}{Coming soon.}
+                \begin{center}
+\resizebox{.46\textwidth}{!}{
+                \begin{tikzpicture}  [scale=0.5]
+
+
+
+                \tikzstyle{every path}=[line width=2pt]
+                \tikzstyle{c1}=[draw,black,solid,fill=white,circle,inner sep={3},minimum size=6]
+                \tikzstyle{cg1}=[draw,black,solid,fill=green,circle,inner sep={3},minimum size=6]
+                \tikzstyle{s1}=[draw,black,solid,fill=red,rectangle,inner sep={4},minimum size=7]
+                \tikzstyle{l1}=[draw=none,solid,circle,minimum size=4]
+
+                % Define positions of all observables
+
+                \draw [dashed] (4,0) coordinate[c1,label=180:{\Large $b$}] (b)
+                        -- (13,0) coordinate[cg1,label=45:$2$] (2)
+                        -- (22,0) coordinate[c1,label=0:$3$] (3)
+                        -- (26,12) coordinate[c1,pos=0.8,label=0:${21}$] (21) coordinate[c1,label=0:${23}$] (23)
+                        -- (22,18.5) coordinate[c1,pos=0.4,label=0:${29}$] (29) coordinate[cg1,label=0:$5$] (5);
+\draw (5)
+                        -- (13,18.5) coordinate[s1,label=90:{\Large $a$}] (a)
+                        -- (4,18.5) coordinate[cg1,label=90:$4$] (4);
+\draw [dashed] (4)
+                        -- (0,12) coordinate[c1,pos=0.6,label=180:${10}$] (10) coordinate[c1,label=180:$7$] (7)
+                        -- (b) coordinate[c1,pos=0.2,label=180:$6$] (6);
+
+                \draw (a) -- (2) coordinate[cg1,pos=0.5,label=315:$1$] (1);
+
+                \draw [dashed] (5) -- (22,6) coordinate[c1,pos=0.4,label=0:${11}$] (11) coordinate[c1,label=0:$9$] (9)
+                        -- (b) coordinate[c1,pos=0.3,label=280:$8$] (8);
+
+                \draw [dashed] (4) -- (4,6) coordinate[c1,pos=0.4,label=180:${28}$] (28) coordinate[c1,label=180:${22}$] (22)
+                        -- (3) coordinate[c1,pos=0.3,label=260:${19}$] (19);
+
+                \coordinate (25) at ([xshift=-4cm]1);
+                \coordinate (27) at ([xshift=4cm]1);
+
+                \draw [dashed] (22) -- (25) coordinate[c1,pos=0.5,label=115:${24}$] (24) coordinate[c1,label=270:${25}$] (25)
+                        -- (9) coordinate[c1,pos=0.8,label=90:${35}$] (35);
+
+                \draw [dashed] (7) -- (27) coordinate[c1,pos=0.5,label=90:${34}$] (34) coordinate[c1,label=90:${27}$] (27)
+                        -- (23) coordinate[c1,pos=0.3,label=270:${26}$] (26);
+
+                \draw [dashed] (10) -- (15.5,17.5) coordinate[c1,pos=0.5,label=90:${12}$] (12) coordinate[c1,label=15:${13}$] (13)
+                        -- (29) coordinate[c1,pos=0.4,label=90:${31}$] (31);
+
+                \draw [dashed] (28) -- (10.5,15) coordinate[c1,pos=0.5,label=90:${30}$] (30) coordinate[c1,label=90:${15}$] (15)
+                        -- (11) coordinate[c1,pos=0.6,label=90:${14}$] (14);
+
+                \draw [dashed] (15) -- (1) coordinate[c1,pos=0.2,label=15:${17}$] (17)
+                        -- (13) coordinate[c1,pos=0.3,label=0:${16}$] (16);
+
+                \draw [dashed] (19) -- (16) coordinate[c1,pos=0.3,label=180:${18}$] (18)
+                        -- (8) coordinate[c1,pos=0.7,label=180:${32}$] (32);
+
+                \draw [dashed] (6) -- (17) coordinate[c1,pos=0.7,label=90:${33}$] (33)
+                        -- (21) coordinate[c1,pos=0.4,label=90:${20}$] (20);
+
+                %\draw[dashed] (25) -- (1) -- (27);
+                \draw [dashed] (25) -- (1) -- (27);
+
+                \coordinate (ContextLabel) at ([shift=({-2cm,-3mm})]1);
+                %\draw [dashed] (ContextLabel) coordinate[l1,label=90:$C_{26}$];
+
+                \end{tikzpicture}
+                }
+                \end{center}
+                \caption{Concatenated hypergraph from the hypergraphs depicting TIFS and TITS gadgets shown in Figures~\ref{2023-viext-TIFS} and~\ref{2023-viext-TITS},
+respectively. Admissibility merely allows ``star-shaped'' value definite observables along the two contexts $\{a,1,2\}$ and $\{a,4,5\}$
+if the system is prepared in state $a$.
+}
+                \label{2023-viext-TIFS&TITSconcatenated}
+        \end{figure}
+
+A very similar argument uses the same hypergraphs as in Figures~\ref{2023-viext-TIFS}
+and~\ref{2023-viext-TITS} as TITS and TIFS gadgets for $3$ given $v(a)=1$, respectively.
+Therefore, $v(3)$ is undefined, and the observable $3$ is value indefinite.
+
+
+Finally, what are the effects of errors and system imperfections?
+This question requires a technical long discussion, which will be the object of another study. Here, we argue only about the stability of the construction of our QRNGs due to variations in the indefinite observable value and measurement.
+
+
+1. The stability of the choice of value indefinite observable comes from the Located Kochen-Specker Theorem~\cite{2012-incomput-proofsCJ,2015-AnalyticKS} stated at the beginning of this section:
+The projection observable $P_\phi$ of {\it any state $\ket{\phi}$ such that {\rm $0<\abs{\bra{\psi}\ket{\phi}}<1$}}
+is value
+indefinite.
+
+
+2. The stability of the measurement comes from the result proved at the beginning of this section, stating that any unitary operator is {\it universal}.
+
+
+\section{Binary QRNG Based on Value Indefinite Observables}
+\label{2023-viext-qrngdefs}
+
+Subsequently, we present in detail an example of a configuration that illustrates a scenario where two observables within a context are value-indefinite, while the third observable is value-definite.
+
+Here, value indefiniteness is contingent upon two factors:
+(i) the state that is (pre-)selected and prepared, and
+(ii) the specific set of observables arranged within a particular configuration of intertwined contexts.
+To establish value indefiniteness within this configuration, the (pre-)selected state and the state characterized by value indefiniteness must be elements of the setup.
+Therefore, any explicit assertion regarding the value indefiniteness of an observable should include a reference to the specific conditions upon which this claim relies.
+
+\subsection{Quantum versus classical models}
+
+A quantum realization of the construction  in Figures~\ref{2023-viext-TIFS},~\ref{2023-viext-TITS} and~\ref{2023-viext-TIFS&TITSconcatenated}
+can be obtained from the faithful orthogonal representation of the elements of the hyperedges as vectors.
+One such representation was given in~\cite[Table~I]{2018-minimalYIYS}.
+It assigns the  (superscript $T$ indicates transposition)
+$\vert a \rangle = \begin{pmatrix}1,0,0\end{pmatrix}^T$ to (the pure state) $a$,
+also representable by the trace-class one orthogonal (that is, positive, self-adjoint) projection operator
+whose matrix representation with respect to the Cartesian standard basis
+is a diagonal matrix
+$E_a=\vert a \rangle \langle a \vert = \text{diag}\begin{pmatrix} 1,0,0 \end{pmatrix}^T$
+and
+$\vert b \rangle = \begin{pmatrix}\frac{1}{\sqrt{2}},\frac{1}{2},\frac{1}{2}\end{pmatrix}^T$
+as well as
+$\vert 3 \rangle = \begin{pmatrix}\frac{1}{\sqrt{2}},-\frac{1}{2},-\frac{1}{2}\end{pmatrix}^T$
+to the observables $b$ and $3$, respectively.
+Therefore, if the system is preselected (or prepared) in state $\vert a \rangle$, the output of the
+measurement of
+\begin{equation*}
+E_b=\vert b \rangle \langle b \vert =  \frac{1}{2}
+\begin{pmatrix}
+1&\frac{1}{\sqrt{2}}&\frac{1}{\sqrt{2}} \\
+\frac{1}{\sqrt{2}}&\frac{1}{2}&\frac{1}{2} \\
+\frac{1}{\sqrt{2}}&\frac{1}{2}&\frac{1}{2}
+\end{pmatrix}
+\end{equation*}
+along  $\vert b \rangle$
+ is obtained with the probability
+% prediction of frequency
+\begin{equation*}
+\text{Tr}\big(E_a \cdot E_b \big) = \vert \langle b \vert a \rangle \vert^2 = \frac12.
+\end{equation*}
+Likewise, the output of the
+measurement of
+\begin{equation*}
+E_3=\vert 3 \rangle \langle 3 \vert =  \frac{1}{2}
+\begin{pmatrix}
+1&-\frac{1}{\sqrt{2}}&-\frac{1}{\sqrt{2}} \\
+-\frac{1}{\sqrt{2}}&\frac{1}{2}&\frac{1}{2} \\
+-\frac{1}{\sqrt{2}}&\frac{1}{2}&\frac{1}{2}
+\end{pmatrix}
+\end{equation*}
+along  $\vert b \rangle$
+ is obtained with the probability
+
+\begin{equation*}
+\text{Tr}\big(E_a \cdot E_3 \big) = \vert \langle 3 \vert a \rangle \vert^2 = \frac12.
+\end{equation*}
+
+As $\vert 2 \rangle$ is orthogonal to $\vert a \rangle$,
+$\text{Tr}\big(E_a \cdot E_2 \big) = \vert \langle 2 \vert a \rangle \vert^2 = 0$,
+and the observable $2$ is defined.
+Hence, when the observable $a$ is preselected in the state $\vert a \rangle$, both observables $b$ and $3$ become value-indefinite (relative to admissibility),
+while observable $2$ has value  $v(2) = 0$.
+A quantum calculation confirmes what is posited in the (Located) Kochen-Specker Theorem,
+that both $b$ and $3$ occur with a probability of $\frac12$.
+
+
+To emphasize the three-dimensionality of the configuration, even if only two observables have nonzero probabilities,  the sum of frequencies of the remaining quantum observables $2$ and $3$
+ in the complement  $\{2,3\}$ of the context $\{b,2,3\}$ containing $b$ is $1/2$.
+More explicitly, expressed in terms of orthogonal projection operators, the observable corresponding to $\{2,3\}$
+is given by a  matrix  corresponding to the orthogonal projection operator $E_{2,3}$:
+\begin{equation}
+\begin{split}
+E_{2,3}=E_2 + E_3 = \vert 2 \rangle \langle 2 \vert + \vert 3 \rangle \langle 3 \vert \\
+\quad = \frac12
+\begin{pmatrix}
+1 & -\frac1{\sqrt{2}}& -\frac1{\sqrt{2}}\\
+-\frac1{\sqrt{2}}& \frac32& -\frac12\\
+-\frac1{\sqrt{2}}& -\frac12& \frac32
+\end{pmatrix}
+.
+\end{split}
+\label{2023-viext-sumotopo}
+\end{equation}
+The vectors in $E_{2,3}\in \C^3$ are orthogonal to vectors in  $E_{b}\in \C^3$.
+Together, $E_b+E_{2,3} =\vert b \rangle \langle b \vert +\vert 2 \rangle \langle 2 \vert + \vert 3 \rangle \langle 3 \vert =I_3$ yield
+the identity $I_3=\text{diag}\begin{pmatrix}1,1,1\end{pmatrix}$.
+
+Classically, there is no realization of the set of observables $O=\{ a, b, 1,\ldots , 35\}$ in Figure~\ref{2023-viext-TIFS&TITSconcatenated} because
+some elements of $O$ are assigned the value $0$ for all two-valued states~\cite[Table~24.1]{Svozil-2018-p}, hence
+not separable~\cite[Theorem~0]{kochen1}.  This result holds for total value assignments---a stronger assumption than admissibility.
+Indeed, in this case  the ``central'' point 1 must be classically assigned the value $v(1)=1$,
+and, therefore, all remaining eight elements
+$\{a, 2, 13, 15, 16, 17, 25, 27\}$
+in the four contexts
+$\{a,1,2\}$, $\{1,13,16\}$, $\{1,15,17\}$, and $\{1,25,27\}$ containing 1 to be zero.
+
+Finally, using the Eigenstate principle
+and Theorem 5.6 in~\cite{RSPA23}, we deduce that the QRNG described above generates maximally unpredictable binary random digits.
+\subsection{Beam splitter realizations}
+
+Figure~\ref{2023-viext-bsr} presents a triangular array of quantum  beam splitters
+ which physically transforms the preparation context  $\{a,4,5\}$
+into the measurement context $\{b,2,3\}$.
+
+The vector coordinatization ~\cite[Table~I]{2018-minimalYIYS}
+$\vert a \rangle = \begin{pmatrix} 1, 0, 0\end{pmatrix}^T$,
+$\vert b \rangle = \begin{pmatrix} \frac1{\sqrt{2}}, \frac12, \frac12 \end{pmatrix}^T$,
+$\vert 2 \rangle = \begin{pmatrix} 0, \frac1{\sqrt{2}}, -\frac1{\sqrt{2}} \end{pmatrix}^T$,
+$\vert 3 \rangle = \begin{pmatrix} \frac1{\sqrt{2}}, -\frac12, -\frac12 \end{pmatrix}$,
+$\vert 4 \rangle = \begin{pmatrix} 0, 0, 1\end{pmatrix}^T$, and
+$\vert 5 \rangle = \begin{pmatrix} 0, 1, 0\end{pmatrix}^T$
+computes the unitary transformation matrix~\cite{Schwinger.60,Joglekar-I}
+that transforms the input state $\vert a\rangle$ into the output state $\vert b\rangle$,
+ the input state $\vert 4\rangle$ into the output state $\vert 2\rangle$,
+and  the input state $\vert 5\rangle$ into the output state $\vert 3\rangle$:
+
+\begin{equation}
+\begin{split}
+U =
+\vert b \rangle \langle a \vert
++
+\vert 2 \rangle \langle 4 \vert
++
+\vert 3 \rangle \langle 5 \vert  \\
+\quad =  \frac12
+\begin{pmatrix}
+\sqrt{2} &  \sqrt{2}& 0\\
+1& -1&  \sqrt{2} \\
+1& -1& - \sqrt{2}
+\end{pmatrix}
+.
+\end{split}
+\label{2023-viext-uo}
+\end{equation}
+
+This unitary matrix realizes  a beam splitter~\cite{reck-94,rzbb,%reck-96},
+de_Guise_2018}
+using the parametrization of the unitary group~\cite{murnaghan}.
+Besides phase shifters operating in one-dimensional subspaces (in this particular case, all zero but one),
+these concatenations of optical elements
+contain beam splitters operating in two-dimensional subspaces.
+These beam splitters have a parametrization unitary matrix
+\begin{equation*}
+B( \omega , \varphi )  =
+\begin{pmatrix}
+ \sin  \omega  & \cos  \omega
+\\
+e^{-i \varphi } \cos  \omega  &-e^{-i \varphi } \sin  \omega
+\end{pmatrix}
+\end{equation*}
+depending on two parameters:
+ $\omega$ is the transmissivity $T=\sin^2\omega$ and reflectivity $R=1-T=\cos^2\omega$,
+and $\varphi$ is the phase change at reflection.
+
+
+
+
+\begin{figure}[ht]
+\begin{center}
+\resizebox{.45\textwidth}{!}{
+\begin{tikzpicture} [scale=2, rotate=45]
+\tikzstyle{every path}=[line width=1pt]
+\draw [red,dashed,very thick] ({1-0.25},{2+0.25}) -- ({3+0.25},{0-0.25});
+\node at (1.22,2.25)  {$T=0, \frac{\pi}{2}$};
+\node at (2.22,1.25)  {$T=0, \frac{\pi}{2}$};
+\node at (3.22,0.25)  {$T=0, \frac{\pi}{2}$};
+\node at (1.5,0.5)  {$T=\frac{2}{3}, \frac{\pi}{2}$};
+%\draw [draw=none] (1,1) arc (0:90:0.2cm);
+%\node at (1.14,1.12) {$\frac{\pi}{2}$};
+\draw [red,dashed,very thick] (0.8,1.2) -- (1.2,1 - 0.2 );
+%\draw [draw=none] (0.8,0.8) rectangle ++(0.4,0.4);
+\draw [fill,blue] (0.9,1.5) rectangle ++(0.2,0.05);
+\node at (1.2,1.55) {$\frac{\pi}{2}$};
+\draw [black] (0.5,1) -- (1.5,1);
+\draw [black] (1,0.5) -- (1,1.5);
+\node at (1.5,-0.5)  {$T=\frac{3}{4}, \frac{\pi}{2}$};
+%\draw [draw=none] (1,0) arc (0:90:0.2cm);
+%\node at (1.14,0.12) {$\frac{\pi}{2}$};
+\draw [red,dashed,very thick] (0.8,0.2) -- (1.2,-0.2 );
+%\draw [draw=none] (0.8,-0.2) rectangle ++(0.4,0.4);
+\draw [fill,blue] (0.9,0.5) rectangle ++(0.2,0.05);
+\node at (1.2,0.55) {$0$};
+\draw [black] (0.5,0) -- (1.5,0);
+\draw [black] (1,-0.5) -- (1,0.5);
+\node at (2.5,-0.5)  {$T=\frac{2}{3}, \frac{\pi}{2}$};
+%\draw [draw=none] (2,0) arc (0:90:0.2cm);
+%\node at (2.14,0.12) {$\frac{\pi}{2}$};
+\draw [red,dashed,very thick] (1.8,0.2) -- (2.2,-0.2 );
+%\draw [draw=none] (1.8,-0.2) rectangle ++(0.4,0.4);
+\draw [fill,blue] (1.9,0.5) rectangle ++(0.2,0.05);
+\node at (2.2,0.55) {$0$};
+\draw [black] (1.5,0) -- (2.5,0);
+\draw [black] (2,-0.5) -- (2,0.5);
+\draw [black] (0,2) -- (0.5,2);
+\node at (-0.2,1.9) {$\begin{pmatrix} 0, 0, 1 \end{pmatrix}^T = \vert 4 \rangle\qquad$};
+\draw [black] (3,-0.5) -- (3,-1);
+\node at (3,-1.3) {$\begin{pmatrix}1,0,0\end{pmatrix}^T$};
+\draw [black] (0.5,2) -- (1,2);
+\draw [black] (1,2) -- (1,1.5);
+\draw [black] (0,1) -- (0.5,1);
+\node at (-0.2,0.9) {$\begin{pmatrix} 0, 1, 0\end{pmatrix}^T = \vert 5 \rangle\qquad$};
+\draw [black] (2,-0.5) -- (2,-1);
+
+(* arrows*)
+\draw [black] (3,-1) -- (2.95,-0.9);
+\draw [black] (3,-1) -- (3.05,-0.9);
+\draw [black] (2,-1) -- (1.95,-0.9);
+\draw [black] (2,-1) -- (2.05,-0.9);
+\draw [black] (1,-1) -- (0.95,-0.9);
+\draw [black] (1,-1) -- (1.05,-0.9);
+\draw [black] (0.2,1) -- (0.15,1.05);
+\draw [black] (0.2,1) -- (0.15,0.95);
+\draw [black] (0.2,0) -- (0.15,0.05);
+\draw [black] (0.2,0) -- (0.15,-0.05);
+\draw [black] (0.2,2) -- (0.15,2.05);
+\draw [black] (0.2,2) -- (0.15,1.95);
+
+(* symmetric beamsplitter over-extension *)
+
+\draw [gray,dotted] (1,2) -- (1.2,2);
+\draw [gray,dotted] (1,2) -- (1,2.2);
+
+\draw [gray,dotted] (2,1) -- (2.2,1);
+\draw [gray,dotted] (2,1) -- (2,1.2);
+
+\draw [gray,dotted] (3,0) -- (3.2,0);
+\draw [gray,dotted] (3,0) -- (3,0.2);
+
+
+\node at (2,-1.3) {$\begin{pmatrix}0,1,0\end{pmatrix}^T$};
+\draw [black] (1.5,1) -- (2,1);
+\draw [black] (2,1) -- (2,0.5);
+\draw [black] (0,0) -- (0.5,0);
+\node at (-0.2,-0.1) {$\begin{pmatrix} 1, 0, 0 \end{pmatrix}^T = \vert a \rangle\qquad$};
+\draw [black] (1,-0.5) -- (1,-1);
+\node at (1,-1.3) {$\begin{pmatrix}0,0,1\end{pmatrix}^T$};
+\draw [black] (2.5,0) -- (3,0);
+\draw [black] (3,0) -- (3,-0.5);
+\draw [fill,blue] (0.5,-0.1) rectangle ++(0.05,0.2);
+\node at (0.45,0.2) {$\frac{3\pi}{2}$};
+\draw [fill,blue] (0.5,0.9) rectangle ++(0.05,0.2);
+\node at (0.45,1.2) {$\frac{\pi}{2}$};
+\draw [fill,blue] (0.5,1.9) rectangle ++(0.05,0.2);
+\node at (0.45,2.2) {$0$};
+\end{tikzpicture}
+}
+\end{center}
+\caption{A triangular array of quantum mechanical beam splitters is a realization of the input or preparation context $\{a,4,5\}$ and the output or measurement context $\{b,2,3\}$.
+\label{2023-viext-bsr}}
+\end{figure}
+
+
+
+The output wave function, given the input wave function,
+is the coherent superposition of the contributions of all the possible forward passes from the input port(s) toward the output port(s).
+Thereby, the transmissibility and reflectivity contribute by the square roots $\sqrt{T}=\sin \omega$
+and reflectivity $\sqrt{R}=\cos \omega$ of $T$ and $R$~\cite{green-horn-zei}.
+The sum of the phase shifts between reflected and transmitted waves
+excited by a wave incident from the side of the beam splitter, and the corresponding phase shift
+for a wave incident from the opposing side, contribute with $\pi$~\cite{zeilinger:882}.
+For a symmetric lossless dielectric plate~\cite{Lai_1985},
+the reflected and transmitted parts are $\pi/2$ out of phase~\cite{Degiorgio_1980,green-horn-zei}.
+
+
+The relations~(\ref{2023-viext-owf}) present a computation of the effects on the input ports of the beam splitter
+in Figure~\ref{2023-viext-bsr} by successive applications of phase shifts and beam mixings.
+\begin{widetext}
+\begin{equation}
+\begin{split}
+\vert a \rangle
+\longrightarrow
+e^{i\frac{3\pi}{2}} \left\{
+ e^{i\frac{\pi}{2}} \sqrt{\frac14}  \begin{pmatrix}0\\0\\1\end{pmatrix} +   \sqrt{\frac34}  \left[  e^{i\frac{\pi}{2}}  \sqrt{\frac13}  \begin{pmatrix}0\\1\\0\end{pmatrix} +    \sqrt{\frac23}    e^{i\frac{\pi}{2}} \begin{pmatrix}1\\0\\0\end{pmatrix} \right]
+\right\} =  \vert b \rangle
+,
+\\
+\vert 5 \rangle
+\longrightarrow
+ e^{i\frac{\pi}{2}} \left(
+ e^{i\frac{\pi}{2}}  \sqrt{\frac13} \left\{
+ \sqrt{\frac34}   \begin{pmatrix}0\\0\\1\end{pmatrix} +  e^{i\frac{\pi}{2}}  \sqrt{\frac14} \left[
+                                            e^{i\frac{\pi}{2}}  \sqrt{\frac13}  \begin{pmatrix}0\\1\\0\end{pmatrix} +  e^{i\frac{\pi}{2}}  \sqrt{\frac23}  \begin{pmatrix}1\\0\\0\end{pmatrix}
+                                           \right]
+                      \right\}  \right.
+\\ \qquad \qquad
+\left.
++  \sqrt{\frac23}   e^{i\frac{\pi}{2}}  \left[   \sqrt{\frac23}  \begin{pmatrix}0\\1\\0\end{pmatrix} +  e^{i\frac{\pi}{2}}  \sqrt{\frac13}   e^{i\frac{\pi}{2}} \begin{pmatrix}1\\0\\0\end{pmatrix}
+                      \right]
+\right)
+=  \vert 3 \rangle
+,
+\\
+\vert 4 \rangle
+\longrightarrow
+ e^{i\frac{\pi}{2}}  e^{i\frac{\pi}{2}} \left(
+             \sqrt{\frac23} \left\{
+                      \sqrt{\frac34}  \begin{pmatrix}0\\0\\1\end{pmatrix} +  e^{i\frac{\pi}{2}}  \sqrt{\frac14}   \left[
+                                                                  e^{i\frac{\pi}{2}}  \sqrt{\frac13}  \begin{pmatrix}0\\1\\0\end{pmatrix} +   \sqrt{\frac23}   e^{i\frac{\pi}{2}} \begin{pmatrix}1\\0\\0\end{pmatrix}
+                                                                \right]
+                     \right\}
+\right.
+\\ \qquad \qquad
+\left.
+            +  e^{i\frac{\pi}{2}}  \sqrt{\frac13}   e^{i\frac{\pi}{2}}                 \left[
+                                                                  \sqrt{\frac23}  \begin{pmatrix}0\\1\\0\end{pmatrix} +  e^{i\frac{\pi}{2}}  \sqrt{\frac13}   e^{i\frac{\pi}{2}} \begin{pmatrix}1\\0\\0\end{pmatrix}
+                                                                \right]
+             \right)
+=  \vert 2 \rangle
+.
+\end{split}
+\label{2023-viext-owf}
+\end{equation}
+\end{widetext}
+
+
+
+\section{Beam splitter as an analogy of Ariadne's tread}
+
+How come can we quantum mechanically `spread' a  qutrit state of input  into a coherent superposition of all qutrit states,
+and finally end up with a binary sequence---very much like two Hadamard unitary transformations first `spread' a qubit,
+and then (up to a constant scalar factor) `fold it back' into its original state?
+This is where the allegory of Ariadne's thread comes up in the configuration of a beam splitter.
+Consider a general quantum beam splitter with $m>0$ nonzero inputs and $n>0$ nonzero output ports.
+As long as the sum of probabilities of preparation and detection on both the respective input and the output ports adds up to one,
+a quantum realization is feasible~\cite{reck-94,rzbb,%reck-96
+de_Guise_2018}. Indeed, all that is necessary
+is that the input and the output state are tailored according to the probability amplitudes (phases do not count).
+
+Considering this scenario, one may question:
+What happens to quantum unitarity, especially if $m \neq n$?
+For instance, with such a beam splitter, we could `merge' two input ports into one output port ($n=m+1=2$).
+ Alternatively, one could `split' a single input port into (a coherent superposition, resulting in) two output ports ($m=n+1=2$).
+For example, the associated unitary three-dimensional matrix entries could be
+\begin{equation}
+U_{\text{2-to-1}}=
+\begin{pmatrix}
+0&\frac{1}{\sqrt{2}}&\frac{1}{\sqrt{2}} \\
+\cdot&\cdot&\cdot \\
+\cdot&\cdot&\cdot
+\end{pmatrix}
+,\phantom{x}%\qquad
+U_{\text{1-to-2}}=
+\begin{pmatrix}
+0&\cdot&\cdot \\
+\frac{1}{\sqrt{2}}&\cdot&\cdot \\
+\frac{1}{\sqrt{2}}&\cdot&\cdot
+\end{pmatrix},
+\end{equation}
+where, for $U_{\text{2-to-1}}$ (or $U_{\text{1-to-2}}$)
+the remaining rows (or columns) could fill up with unit vectors forming the orthonormal basis of a two-dimensional subspace orthogonal to
+$
+\begin{pmatrix}
+0&\frac{1}{\sqrt{2}}&\frac{1}{\sqrt{2}}
+\end{pmatrix}
+$
+(or its Hermitian conjugate).
+
+
+Indeed, to obtain a binary sequence, one could `post-process' the beam splitter arrangement  in
+Figure~\ref{2023-viext-bsr} by a beam splitter corresponding to the following real-valued unitary matrix:
+\begin{equation}
+%
+U'_{\text{2-to-1}}=
+\frac{1}{\sqrt{2}}
+\begin{pmatrix}
+\sqrt{2}&0&0\\
+0&1&1 \\
+0&1&-1
+\end{pmatrix}
+.
+\label{2023-viext-ub1to}
+\end{equation}
+
+When the input state is $\vert a \rangle$, the resulting output state is  $U'_{\text{2-to-1}}U\vert a \rangle$, with $U$ and $U'_{\text{2-to-1}}$ defined in~(\ref{2023-viext-u}) and~(\ref{2023-viext-ub1to}), respectively.
+
+More explicitly,
+\begin{equation*}
+\begin{split}
+\frac{1}{\sqrt{2}}
+\begin{pmatrix}
+\sqrt{2}&0&0\\
+0&1&1 \\
+0&1&-1
+\end{pmatrix}
+%
+ \frac12
+\begin{pmatrix}
+\sqrt{2} &  \sqrt{2}& 0\\
+1& -1&  \sqrt{2} \\
+1& -1& - \sqrt{2}
+\end{pmatrix}
+%
+\begin{pmatrix}
+1\\
+0 \\
+0
+\end{pmatrix}
+=
+ \frac{1}{\sqrt{2}}
+\begin{pmatrix}
+1\\
+1 \\
+0
+\end{pmatrix}
+.
+\end{split}
+%\label{2023-viext-ub1to1}
+\end{equation*}
+ A particle in state $\vert a \rangle$ will end up in either the first or second port with probability $\frac{1}{2}$ and be registered in the third port with probability 0.
+
+
+Two questions arise:
+(i)
+The unitary quantum evolution---of the von Neumann type `Vorgang' 2~\cite{v-neumann-49,v-neumann-55}, referred to as `process 2' by Everett~\cite{everett}---that
+needs to be one-to-one, and it appears to be compromised.
+(ii)
+Can this problem be discussed in terms of value indefiniteness and partial value assignments?
+
+
+The first question can be quickly addressed:
+The beam splitter examples discussed here show that concentration on a partial array of input and output ports cannot represent the whole picture.
+The full specification of a beam splitter in $n$ dimensions has the same number $n$ of input and output ports.
+The quantum evolution is incomplete if some input and output contexts are not considered.
+Because any unitary transformation can be represented by a bijective map of the vectors
+of one orthonormal basis---the input context---into the vectors of another orthonormal basis~\cite{Schwinger.60,Joglekar-I}---the output context.
+Suppose we also allow incomplete mappings of vectors from one context into some vectors of another context. This could not exclude mappings that are not one-to-one. Therefore,
+only the totality of those one-to-one vector transformations relating to two orthonormal bases forms a forward- and backward-reversible transformation.
+
+
+The context-to-context unitary mapping can be viewed as a sort of `rescrambling'
+of information contained in the channels or ports of the beam splitter~\cite{schrodinger-gwsidqm2,zeil-99}.
+Thereby, the `latent' and `omitted' ports act as Ariadne's thread that must be considered for reversibility.
+The situation resembles a zero-sum game encountered in
+entanglement swapping~\cite{BBCJPW,peres-DelayedChoiceEntanglementSwapping}.
+
+
+Although the results in this article have been proved in  $\C^3$, they can easily be generalized to $\C^n$ with $ n>3$.
+Therefore, by `merging'
+or `folding'
+two or more observables of the context, represented by the orthogonal projection operators $E_2,\ldots , E_n$,
+we never leave the $n$-dimensional Hilbert space $\C^n$,
+because $E_{2,\ldots,n}\C^n$ is the $(n-1)$-dimensional Hilbert space spanned by the vectors
+$\vert e_i\rangle$ that form
+$E_i=\vert e_i\rangle \langle e_i \vert$, with $i=2,\ldots, n$.
+The vectors in $E_{2,\ldots,n}\C^n$ are orthogonal to the one-dimensional subspace $E_{1}\C^n$ spanned by $\vert e_1\rangle$,
+and the vectors $\vert e_1\rangle,\ldots ,\vert e_1\rangle$ form an orthonormal basis.
+
+Regarding the second question, we may say that value indefiniteness `prevails' over value definiteness: whenever a value indefinite observable is involved, the `merged' observables `inherit' value indefiniteness.
+
+
+\section{Conclusions}
+
+
+We have proved that
+for every probability distribution $(p_1,p_2,p_3)$ ($\sum_{i}p_i=1$ and $0\le  p_i < 1$), one can construct a value indefinite quantum state which, by {\it every unitary  measurement}, produces the
+outcomes with probabilities $p_i$.
+
+
+Based on this result, the quantization of an algorithmic pre-processing binary method~\cite{CALUDE202131} and the quantum `merging' technique, we have constructed quantum random generators based on measuring a three-dimensional value indefinite observable producing binary quantum random outputs with the same randomness qualities as the ternary ones; their outputs are maximally unpredictable~\cite{2014-nobit}. The results can easily be generalized from $\C^3$ to $\C^n$ with $ n>3$.
+
+
+\begin{acknowledgments}
+We thank J.~M. Ag\"{u}ero Trejo for comments, which improved the presentation, and M.~Reck for the Mathematica code producing the generalized beam-splitter setup for an arbitrary unitary transformation.
+The research of K.~Svozil was funded in whole or in part by the Austrian Science Fund (FWF), Project No. I 4579-N.
+\end{acknowledgments}
+
+
+
+%\bibliographystyle{apsrev}
+\bibliography{svozil}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%% Spare raw hypergraph ;-)
+
+
+\begin{figure}
+                %\adjustbox{margin=1em,width=.9\textwidth,set height=3cm,frame,center}{Coming soon.}
+                \begin{center}
+\resizebox{.46\textwidth}{!}{
+                \begin{tikzpicture}  [scale=0.5]
+
+
+
+                \tikzstyle{every path}=[line width=2pt]
+                \tikzstyle{c1}=[draw,black,fill=gray,circle,inner sep={3},minimum size=6]
+                \tikzstyle{s1}=[draw,black,fill=red,rectangle,inner sep={4},minimum size=7]
+                \tikzstyle{l1}=[draw=none,circle,minimum size=4]
+
+                % Define positions of all observables
+
+                \draw [dashed] (4,0) coordinate[c1,label=180:{\Large $b$}] (b)
+                        -- (13,0) coordinate[c1,label=45:$2$] (2)
+                        -- (22,0) coordinate[c1,label=0:$3$] (3)
+                        -- (26,12) coordinate[c1,pos=0.8,label=0:${21}$] (21) coordinate[c1,label=0:${23}$] (23)
+                        -- (22,18.5) coordinate[c1,pos=0.4,label=0:${29}$] (29) coordinate[c1,label=0:$5$] (5)
+                        -- (13,18.5) coordinate[c1,label=90:{\Large $a$}] (a)
+                        -- (4,18.5) coordinate[c1,label=90:$4$] (4)
+                        -- (0,12) coordinate[c1,pos=0.6,label=180:${10}$] (10) coordinate[c1,label=180:$7$] (7)
+                        -- (b) coordinate[c1,pos=0.2,label=180:$6$] (6);
+
+                \draw [dashed] (a) -- (2) coordinate[c1,pos=0.5,label=315:$1$] (1);
+
+                \draw [dashed] (5) -- (22,6) coordinate[c1,pos=0.4,label=0:${11}$] (11) coordinate[c1,label=0:$9$] (9)
+                        -- (b) coordinate[c1,pos=0.3,label=280:$8$] (8);
+
+                \draw [dashed] (4) -- (4,6) coordinate[c1,pos=0.4,label=180:${28}$] (28) coordinate[c1,label=180:${22}$] (22)
+                        -- (3) coordinate[c1,pos=0.3,label=260:${19}$] (19);
+
+                \coordinate (25) at ([xshift=-4cm]1);
+                \coordinate (27) at ([xshift=4cm]1);
+
+                \draw [dashed] (22) -- (25) coordinate[c1,pos=0.5,label=115:${24}$] (24) coordinate[c1,label=270:${25}$] (25)
+                        -- (9) coordinate[c1,pos=0.8,label=90:${35}$] (35);
+
+                \draw [dashed] (7) -- (27) coordinate[c1,pos=0.5,label=90:${34}$] (34) coordinate[c1,label=90:${27}$] (27)
+                        -- (23) coordinate[c1,pos=0.3,label=270:${26}$] (26);
+
+                \draw [dashed] (10) -- (15.5,17.5) coordinate[c1,pos=0.5,label=90:${12}$] (12) coordinate[c1,label=15:${13}$] (13)
+                        -- (29) coordinate[c1,pos=0.4,label=90:${31}$] (31);
+
+                \draw [dashed] (28) -- (10.5,15) coordinate[c1,pos=0.5,label=90:${30}$] (30) coordinate[c1,label=90:${15}$] (15)
+                        -- (11) coordinate[c1,pos=0.6,label=90:${14}$] (14);
+
+                \draw [dashed] (15) -- (1) coordinate[c1,pos=0.2,label=15:${17}$] (17)
+                        -- (13) coordinate[c1,pos=0.3,label=0:${16}$] (16);
+
+                \draw [dashed] (19) -- (16) coordinate[c1,pos=0.3,label=180:${18}$] (18)
+                        -- (8) coordinate[c1,pos=0.7,label=180:${32}$] (32);
+
+                \draw [dashed] (6) -- (17) coordinate[c1,pos=0.7,label=90:${33}$] (33)
+                        -- (21) coordinate[c1,pos=0.4,label=90:${20}$] (20);
+
+                %\draw[dashed] (25) -- (1) -- (27);
+                \draw [dashed] (25) -- (1) -- (27);
+
+                \coordinate (ContextLabel) at ([shift=({-2cm,-3mm})]1);
+                %\draw [dashed] (ContextLabel) coordinate[l1,label=90:$C_{26}$];
+
+                \end{tikzpicture}
+                }
+                \end{center}
+                \caption{Hypergraph showing the orthogonality relation between the observables in~\cite[Table~I]{2018-minimalYIYS}.
+We have shown the deduction for $v(E_a)=v(E_b)=1$, where black squares represent the value 1 and circles the value 0. Observe that the context $C_{26}$, shown dotted, contains three observables with the value 0, and hence $v$ is not admissible.}
+                \label{fig:greechie}
+        \end{figure}
+
+\subsection{Direct measurement of value indefinite observables: Not useful for us!!!}
+
+An alternative approach could generate EPR pairs of two three-state particles in a singlet state.
+Subsequently, one particle from the pair could serve as a trigger for measuring either $b$ or $3$.
+In this scenario, a beam splitter is not required; instead,
+the key criterion is ensuring the production and detection of these specific EPR pairs.}
+
+{\color{blue}\subsection{How good are the binary quantum random generators?}
+We need a) to write the diagram for Fig 4 as a QRNG, b) to prove that every infinite sequence generated by the QRNG is maximally unpredictable --- I can do this.  We also want to compare this  QRNG with the first QRNG in our paper~\cite{2012-incomput-proofsCJ}.
+
+
+(**************************************************************************
+Mathematica code
+**************************************************************************)
+
+(******** definitions *)
+
+(*<<Algebra`ReIm`*)(*Definition of the Tensor Product*)
+TensorProduct1[a_, b_] :=
+  Table[(*a,b are nxn and mxm-matrices*)
+   a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*
+    b[[s - Floor[(s - 1)/Length[b]]*Length[b],
+      t - Floor[(t - 1)/Length[b]]*Length[b]]], {s, 1,
+    Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(*Definition of the Tensor Product between two vectors*)
+
+(*
+TensorProduct[x_, y_] :=
+  Table[
+   Conjugate[  x[[i]] ] y[[j]], {i, 1, Length[x]}, {j, 1, Length[y]}];
+*)
+
+TensorProductVec[x_, y_] :=
+  Flatten[Table[
+    Conjugate[ x[[i]] ] y[[j]], {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(*Definition of the Dyadic Product*)
+
+DyadicProductVec[x_] :=
+  Table[x[[i]] Conjugate[x[[j]]], {i, 1, Length[x]}, {j, 1,
+    Length[x]}];
+
+(********* two bases *)
+
+e={{1,0,0},{0,0,1},{0,1,0}};
+f={{1/Sqrt[2],1/2,1/2},{0, 1/Sqrt[2],-1/Sqrt[2]},{1/Sqrt[2],-1/2,-1/2}};
+
+
+u = FullSimplify[TensorProduct [ f[[1]] , e[[1]] ] + TensorProduct [ f[[2]] , e[[2]] ] + TensorProduct [ f[[3]] , e[[3]] ]]
+
+DrawExperiment[MatrixToExperiment[u]]
+
+
+
+
+
+(* Do
+
+SetDirectory["C:\\MYTEX"]
+<< "2012-unitary.m"
+
+for this to work for you.
+
+Such as
+
+DrawExperiment[MatrixToExperiment[UM]]
+DrawExperimentTex[MatrixToExperiment[UM]]
+
+*)
+
+
+(*:Title: Unitary operators as multiport interferometers *)
+
+(*:Copyright: Copyright 1994, Michael Reck, Innsbruck, Austria *)
+
+(*:Copyright: Copyright 2003, Karl Svozil, University of Technology Vienna, for the LaTeX adaption *)
+
+(*:Copyright: Copyright 2023, Karl Svozil, University of Technology Vienna, for the LaTeX adaption *)
+
+(*:Package Version: 1.1 *)
+
+(*:Mathematica Version: 2.2 *)
+
+(*:Context: `UnitaryMultiports` *)
+
+(*:Author: Michael Reck
+           Institute for Experimental Physics
+           Innsbruck University
+           Technikerstrasse 25
+           6020 Innsbruck, Austria
+           email: Michael.Reck@uibk.ac.at
+
+  Supported by: Fond zur Foerderung der Wissenschaftlichen Forschung,
+  Austria, Schwerpunkt Quantenoptik, project number S6502
+*)
+
+(*:Summary:
+   This package provides functions calculating the laboratory setup for a
+   given unitary matrix and the unitary matrix of a given laboratory setup.
+*)
+
+(*:Discussion: please consult:
+
+  1) M. Reck and A. Zeilinger, "Quantum phase tracing of correlated
+     photons in optical multiports", In Proceedings of the Adriatico
+     Workshop on Quantum Interferometry, pp. 170-177, Singapore,
+     World Scientific (1994)
+  2) M. Reck, A. Zeilinger, H.J. Bernstein, and P. Bertani,
+     "Experimental realization of any discrete unitary operator",
+     Phys. Rev. Lett. 73(1), 58-61 (1994)
+*)
+
+(*:History:
+  2023-11-18 Added function to output generic TikZ LaTeX (Svozil)
+  2012-02-08 Changed beamsplitter matrix (Svozil)
+  2003-12-30 Added function to output generic LaTeX (Svozil)
+  1996-04-04 Beam splitter matrix changed to give {{1,1},{1,-1}} for phase 0.
+  1995-07-03 Fixed bug in drawing routine (beam splitter rows and columns transposed)
+             Added "pi" and quarter arc to indicate phase on beamsplitter and mirror.
+             Parameters (w,p,alpha) returned now refer to the beamsplitter as drawn,
+             i.e. as operated in the experiment. This is the inverse of the beamsplitter
+             used in the diagonalization.
+  1994-12-05 rationalized results,
+             bstrans returns intensity transmissivity
+             matrix normalized
+             mirror, and nothing drawn differently from the beam splitter
+  1994-11-30 second coding
+*)
+
+(*:Limitations: Will only process matrices with numerical values. *)
+
+UM0 = (1/2) {{1, Sqrt[2], -1}, {1, -Sqrt[2], -1}, {Sqrt[2], 0, Sqrt[2]}};
+UM = (1/2){{ 1 , Sqrt[2] , - 1 }, {Sqrt[2] , 0 , Sqrt[2] }, { 1 , - Sqrt[2] , - 1 }}     ;
+UM1 = (1/Sqrt[2]){{ 1 , 0 , - 1 }, {0 , Sqrt[2] , 0 }, { 1 , 0 ,  1 }}     ;
+UM01 = (1/2) { {Sqrt[2], 0, Sqrt[2]},{1, Sqrt[2], -1}, {1, -Sqrt[2], -1}};
+
+
+U = (1/2) {{1, -Sqrt[2], 1}, {1, Sqrt[2], 1}, {-Sqrt[2], 0, Sqrt[2]}};
+U1 = (1/2) {{1, Sqrt[2], 1}, {Sqrt[2], 0, -Sqrt[2]}, {1, -Sqrt[2], 1}};
+U2 = (1/2) {{Sqrt[2], 0, -Sqrt[2]}, {1, Sqrt[2], 1}, {1, -Sqrt[2], 1}};
+
+
+BeginPackage["UnitaryMultiports`"]
+
+ClearAll[BeamSplitter,MatrixToExperiment,ExperimentToMatrix,DrawExperiment,DrawExperimentTex,DrawExperimentTikZ];
+
+UnitaryMultiports::usage =
+"Package for the calculation and design of multiport
+experiments with unitary operators.
+See: BeamSplitter, MatrixToExperiment, DrawExperiment, ExperimentToMatrix, DrawExperimentTex."
+
+BeamSplitter::usage =
+"BeamSplitter[omega,phi] returns the 2x2 beam splitter
+operator used by MatrixToExperiment in this package."
+
+MatrixToExperiment::usage =
+"{t,a}=MatrixToExperiment[u] returns the reflectivity and phase
+parameters for the experimental realization of the unitary
+matrix u in the form of a triangular arrangement of beam
+splitters and phase shifters in t and the final phases in a."
+
+DrawExperiment::usage =
+"DrawExperiment[{t,a}] Draws the experimental setup calculated
+using MatrixToExperiment[u]."
+
+ExperimentToMatrix::usage =
+"ExperimentToMatrix[connection_list] returns the unitary
+matrix of a list describing the connections of an experimental
+setup of beamsplitters and phase shifters."
+
+DrawExperimentTex::usage =
+"DrawExperimentTex[{t,a}] Draws the experimental setup calculated
+using MatrixToExperiment[u] in standard LaTeX."
+
+DrawExperimentTikZ::usage =
+"DrawExperimentTikZ[{t,a}] Draws the experimental setup calculated
+using MatrixToExperiment[u] in standard LaTeX."
+
+Begin["Private`"]
+
+(*
+
+  Definition of beamsplitter matrix as used in this package.
+  DonÂ´t change unless you know what you are doing.
+
+
+*)
+
+BeamSplitter[w_,p_]:=
+  {{Sin[w],Cos[w]},{Exp[-I*p]*Cos[w],-Exp[-I*p]*Sin[w]}}
+
+(* transmissivity of beam splitter *)
+bstrans[w_]:= Rationalize[N[Sin[w]*Sin[w]]];
+
+(* Beam splitter operator in an n x n dimensional space. *)
+
+bs[n_,kk_,jj_,w_,p_]:=
+  Module[{x,k,l,b},
+    If[kk<jj, k=kk; j=jj;, k=jj; j=kk;,
+       Message[UnitaryMultiports::NonNumericError,{kk,jj}]
+    ];
+    x= IdentityMatrix[n];
+    b= BeamSplitter[w,p];
+    x[[k,k]]= b[[1,1]]; x[[k,j]]= b[[1,2]];
+    x[[j,k]]= b[[2,1]]; x[[j,j]]= b[[2,2]];
+    Return[x];
+  ];
+
+(*
+  Parameters solving equation 0==M21*B11+M22*B21
+  for the given beam splitter matrix.
+*)
+
+bsparam[m21_,m22_]:= Module[{w,p},
+  If[Chop[m21]==0,
+      w= N[Pi/2]; p= 0;,             (* skip *)
+    If[Chop[m22]==0,
+      w= 0; p= N[Pi];,               (* swap beams (==mirror) *)
+      p= Pi+Arg[m22]-Arg[m21];       (* transform *)
+      w= ArcTan[Abs[m21],Abs[m22]];
+    ]; (* If *)
+  ]; (* If *)
+  Return[{w,p}];
+]; (* Module *)
+
+(* Definition of error messages *)
+
+UnitaryMultiports::NonNumericError =
+  " `1` is not a numeric quantity."
+
+UnitaryMultiports::TransformationError =
+  " in row `1` column `2` transformation of `3`."
+
+UnitaryMultiports::UnitaryError =
+  " matrix not unitary !"
+
+(* Definition of exportable functions *)
+
+MatrixToExperiment[m_]:= Module[
+  {mx,mx0,dx,zx,n,r,c,eps,p,w,n2pi,alpha,t,i,j},
+  Clear[i,j];
+  mx0= N[m];
+  n= Dimensions[m][[1]];
+  (* normalize *)
+  dx= Transpose[Conjugate[mx0]].mx0;
+  zx= DiagonalMatrix[ Table[1/Sqrt[dx[[i,i]]],{i,1,n}] ];
+  mx= N[mx0.zx];
+  (* Print["Using normalized matrix: ",MatrixForm[mx]]; *)
+  If[Chop[Transpose[Conjugate[mx]].mx] != IdentityMatrix[n],
+    Message[UnitaryMultiports::UnitaryError]];
+  n2pi= N[2*Pi];
+  t=Table[0,{i,1,n},{j,1,n}]; (* empty array for result *)
+  If[!MatrixQ[mx,NumberQ],Message[UnitaryMultiports::NonNumericError,mx],
+    For[r=n,r>1,r--,       (* all rows >1   *)
+      For[c=r-1,c>=1,c--,  (* all cols >= 1 *)
+        (* calculate phase shift and reflectivity parameters *)
+        {w,p}= Mod[ bsparam[ N[mx[[r,c]]],N[mx[[r,r]]] ], n2pi];
+        (* now multiply matrices *)
+        mx= mx.bs[n,r,c,w,p];
+        (* Print[MatrixForm[Chop[N[mx]]]]; *)
+        (* test *)
+        If[Chop[mx[[r,c]]]!=0,
+          Message[UnitaryMultiports::TransformationError,r,c,mx[[r,c]]];
+        ];
+        (* insert in result *)
+        t[[r,c]]={w,p};
+      ]; (* For c *)
+    ]; (* For r *)
+    (* Now calculate phases *)
+    alpha= Chop[N[Table[Mod[Arg[mx[[i,i]]],n2pi], {i,1,n}]]];
+  ]; (* If *)
+  Return[Rationalize[N[{t,alpha}/Pi]]*Pi];
+]; (* Module *)
+
+(* the following functions are used to draw the setup *)
+
+bscube[x_,y_,dw_,txt_]:=Module[{t,c,d,t2},
+  t=Text[Style[StringForm["T=`1`",InputForm[txt]], FontFamily -> {"Times",8}],{x+dw,y+dw},{-1,-1}];
+  t2=Text[Style["\[Pi]", FontFamily -> {"Symbol",14}],{x+0.5*dw,y+0.5*dw},{-1,-1}];
+  c2=Circle[{x, y}, 0.5*dw, {0,Pi/2}];
+  c=Line[{{x-dw,y+dw},{x+dw,y+dw},{x+dw,y-dw},
+          {x-dw,y-dw},{x-dw,y+dw}}];
+  d=Line[{{x-dw,y+dw},{x+dw,y-dw}}];
+  Return[
+    If[Chop[N[txt]]==1,t,
+      If[Chop[N[txt]]==0,{t,c2,t2,d},{t,c2,t2,d,c}]
+    ]
+  ]
+]
+
+phaseshifter[x_,y_,dw_,dp_,txt_]:=
+   {Rectangle[{x-dw,y-dp},{x+dw,y+dp}],
+    Text[Style[InputForm[txt],FontFamily -> {"Times",8}],{x+dw,y+dp},{-1,-1}]}
+
+DrawExperiment[x_]:= Module[{t,a,dw,dp,n,i,j},
+  {t,a}=x;
+  dw= 0.2;  (* width of beam splitter cube *)
+  dp= 0.05; (* height of phase shifter *)
+  n= Dimensions[t[[1]]][[1]];
+  Show[Graphics[
+   {Table[
+      Table[
+        {bscube[i,n-j,dw,bstrans[t[[n+1-i,n+1-j,1]]]],
+         phaseshifter[i,n-j+0.5,dw,dp,t[[n+1-i,n+1-j,2]]],
+         Line[{{i-0.5,n-j},{i+0.5,n-j}}], (* H line *)
+         Line[{{i,n-j-0.5},{i,n-j+0.5}}]} (* V line *)
+      ,{i,1,j-1}]
+    ,{j,2,n}],
+    Table[
+      {Line[{{0,n-i},{0.5,n-i}}],       (* H rays *)
+       Text[n-i+1,{-0.05,n-i},{1,0}],
+       Line[{{n-i+1,-0.5},{n-i+1,-1}}], (* V rays *)
+       Line[{{n-i+0.95,-0.95},{n-i+1,-1},{n-i+1.05,-0.95}}], (* tips *)
+       Text[i,{n-i+1,-1},{0,1}],
+       Line[{{i-0.5,n-i},{i,n-i},{i,n-i-0.5}}]} (* corners *)
+    ,{i,1,n}],
+    Table[phaseshifter[i,-0.5,dw,dp,a[[n-i+1]]],{i,1,n}]
+  }
+  ],AspectRatio->1,PlotRange->All]
+]
+
+
+(* the following functions are used to draw the setup in LaTeX.
+   Function added by Karl Svozil in December 2003 *)
+
+bscubeTex[x_,y_,dw_,txt_]:=Module[{t,c,d,t2},
+       t = Row[{"\\put(", x+1.1*dw,",",y+1.5*dw,"){\\makebox(0,0)[lc]{$T=",TeXForm[txt],"$}}"}];
+  (* t=Text[StyleForm[StringForm["T=`1`",InputForm[txt]],{"Times",8}],{x+dw,y+dw},{-1,-1}];  *)
+       t2 = Row[{"\\put(", x+0.7*dw,",",y+0.6*dw,"){\\makebox(0,0)[cc]{$\\pi$}}"}];
+  (* t2=Text[StyleForm["p",{"Symbol",8}],{x+0.5*dw,y+0.5*dw},{-1,-1}]; *)
+       c2 = Row[{"\\put(",x,",",y,"){\\oval(",0.7*dw,",",0.7*dw,")[rt]}"}];
+  (* c2=Circle[{x, y}, 0.5*dw, {0,Pi/2}]; *)
+       c = Row[{"\\put(", x-dw,",",y-dw,"){\\framebox(", 2*dw,",",2*dw,")[cc]{}}"}];
+  (* c=Line[{{x-dw,y+dw},{x+dw,y+dw},{x+dw,y-dw}, {x-dw,y-dw},{x-dw,y+dw}}]; *)
+       d = Row[{"\\put(", x-dw,",",y+dw,"){\\line(1,-1){",2*dw,"}}"}];
+  (* d=Line[{{x-dw,y+dw},{x+dw,y-dw}}]; *)
+  Return[
+    If[Chop[N[txt]]==1,Write[stmp,t],
+      If[Chop[N[txt]]==0,{Write[stmp,t],Write[stmp,c2],Write[stmp,t2],Write[stmp,d]},{Write[stmp,t],Write[stmp,c2],Write[stmp,t2],Write[stmp,d],Write[stmp,c]}]
+    ]
+  ]
+]
+
+phaseschifterTex[x_,y_,dw_,dp_,txt_]:=
+{
+Write[stmp,"\\put(", x-dw/2,",",y,"){\\framebox(", dw,",",dp,")[cc]{}}"];
+Write[stmp,"\\put(", x+dw,",",y+dp,"){\\makebox(0,0)[lc]{$",TeXForm[txt],"$}}"]
+}
+
+DrawExperimentTex[x_]:= Module[{t,a,dw,dp,n,i,j},
+  {t,a}=x;
+  dw= 0.2;  (* width of beam splitter cube *)
+  dp= 0.05; (* height of phase shifter *)
+  n= Dimensions[t[[1]]][[1]];
+stmp = OpenWrite["tmp.", PageWidth -> 1000, FormatType -> OutputForm];
+Write[stmp,"%TexCad Options"];
+Write[stmp,"%\\grade{\\off}"];
+Write[stmp,"%\\emlines{\\off}"];
+Write[stmp,"%\\beziermacro{\\on}"];
+Write[stmp,"%\\reduce{\\on}"];
+Write[stmp,"%\\snapping{\\off}"];
+Write[stmp,"%\\quality{2.00}"];
+Write[stmp,"%\\graddiff{0.01}"];
+Write[stmp,"%\\snapasp{1}"];
+Write[stmp,"%\\zoom{10.00}"];
+Write[stmp,"\\unitlength 20mm"];
+Write[stmp,"\\linethickness{0.8pt}"];
+Write[stmp,"\\begin{picture}(",n,",",n,")(0.0,-1.0)"];
+{
+    Table[
+      Table[
+        {bscubeTex[i,n-j,dw,bstrans[t[[n+1-i,n+1-j,1]]]],
+         phaseschifterTex[i,n-j+0.5,dw,dp,t[[n+1-i,n+1-j,2]]],
+         Write[stmp,"\\put(", i-0.5,",",n-j,"){\\line(1,0){1.00}}"],
+         (* Line[{{i-0.5,n-j},{i+0.5,n-j}}],  H line *)
+         Write[stmp,"\\put(", i,",",n-j-0.5,"){\\line(0,1){1.00}}"]
+         (* Line[{{i,n-j-0.5},{i,n-j+0.5}}]}  V line *)
+        }
+      ,{i,1,j-1}]
+    ,{j,2,n}],
+    Table[
+      {Write[stmp,"\\put(", 0,",",n-i,"){\\line(1,0){0.50}}"],
+       (*Line[{{0,n-i},{0.5,n-i}}],        H rays *)
+       Write[stmp,"\\put(", -0.08,",",n-i,"){\\makebox(0,0)[cc]{",n-i+1,"}}"],
+       (* Text[n-i+1,{-0.05,n-i},{1,0}], *)
+       Write[stmp,"\\put(", n-i+1,",",-0.5,"){\\line(0,-1){0.50}}"],
+       (*Line[{{n-i+1,-0.5},{n-i+1,-1}}],  V rays *)
+       Write[stmp,"\\put(", n-i+1,",",-1,"){\\line(1,1){0.2}}"],
+       Write[stmp,"\\put(", n-i+1,",",-1,"){\\line(-1,1){0.2}}"],
+       (*Line[{{n-i+1,-1},{n-i+1,-1},{n-i+1.05,-0.95}}],  tips *)
+       Write[stmp,"\\put(", n-i+1,",",-1.2,"){\\makebox(0,0)[cc]{",i,"}}"],
+       (* Text[i,{n-i+1,-1},{0,1}], *)
+       Write[stmp,"\\put(", i-0.5,",",n-i,"){\\line(1,0){0.5}}"],
+       Write[stmp,"\\put(", i,",",n-i,"){\\line(0,-1){0.5}}"]
+       (* Line[{{i-0.5,n-i},{i,n-i},{i,n-i-0.5}}]  corners *)
+      }
+     ,{i,1,n}],
+    Table[phaseschifterTex[i,-0.5,dw,dp,a[[n-i+1]]],{i,1,n}];
+Write[stmp,"\\end{picture}"];
+Close[stmp]
+}
+  ]
+
+
+(* the following functions are used to draw the setup in TikZ LaTeX.
+   Function added by Karl Svozil in November 2023 *)
+
+bscubeTikZ[x_,y_,dw_,txt_]:=Module[{t,c,d,t2},
+       t = Row[{"\\node at (", x+1.1*dw,",",y+1.5*dw,")  {$T=",TeXForm[txt],"$};"}];
+  (* t=Text[StyleForm[StringForm["T=`1`",InputForm[txt]],{"Times",8}],{x+dw,y+dw},{-1,-1}];  *)
+
+       t2 = Row[{"\\node at (", x+0.7*dw,",",y+0.6*dw,") {$\\pi$};"}];
+  (* t2=Text[StyleForm["p",{"Symbol",8}],{x+0.5*dw,y+0.5*dw},{-1,-1}]; *)
+
+    c2 = Row[{"\\draw [draw=none] (",x,",",y,") arc (0:90:0.2cm);"}];
+ (*     c2=Circle[{x, y}, 0.5*dw, {0,Pi/2}]; quarter circle wrong  *)
+
+       c = Row[{"\\draw [draw=none] (", x-dw,",",y-dw,") rectangle ++(", 2*dw,",",2*dw,");"}];
+  (* c=Line[{{x-dw,y+dw},{x+dw,y+dw},{x+dw,y-dw}, {x-dw,y-dw},{x-dw,y+dw}}]; box around R-T mirror    *)
+
+
+       d = Row[{"\\draw [red,dashed,very thick] (", x-dw,",",y+dw,") -- (",x+dw,",",y-dw");"}];
+  (* d=Line[{{x-dw,y+dw},{x+dw,y-dw}}]; *)
+  Return[
+    If[Chop[N[txt]]==1,Write[stmp,t],
+      If[Chop[N[txt]]==0,{Write[stmp,t],Write[stmp,c2],Write[stmp,t2],Write[stmp,d]},{Write[stmp,t],Write[stmp,c2],Write[stmp,t2],Write[stmp,d],Write[stmp,c]}]
+    ]
+  ]
+]
+
+phaseschifterTikZ[x_,y_,dw_,dp_,txt_]:=
+{
+Write[stmp,"\\draw [fill,blue] (", x-dw/2,",",y,") rectangle ++(", dw,",",dp,");"];
+Write[stmp,"\\node at (", x+dw,",",y+dp,") {$",TeXForm[txt],"$};"]
+}
+
+DrawExperimentTikZ[x_]:= Module[{t,a,dw,dp,n,i,j},
+  {t,a}=x;
+  dw= 0.2;  (* width of beam splitter cube *)
+  dp= 0.05; (* height of phase shifter *)
+  n= Dimensions[t[[1]]][[1]];
+stmp = OpenWrite["TikZ.tex", PageWidth -> 1000, FormatType -> OutputForm];
+Write[stmp,"\\begin{tikzpicture} [scale=2] \\tikzstyle{every path}=[line width=1pt]"];
+{
+    Table[
+      Table[
+        {bscubeTikZ[i,n-j,dw,bstrans[t[[n+1-i,n+1-j,1]]]],
+         phaseschifterTikZ[i,n-j+0.5,dw,dp,t[[n+1-i,n+1-j,2]]],
+         Write[stmp,"\\draw [black] (", i-0.5,",",n-j,") -- (", i+0.5,",",n-j,");"],
+         (* Line[{{i-0.5,n-j},{i+0.5,n-j}}],  H line *)
+         Write[stmp,"\\draw [black] (", i,",",n-j-0.5,") -- (", i,",",n-j+0.5,");"]
+         (* Line[{{i,n-j-0.5},{i,n-j+0.5}}]}  V line *)
+        }
+      ,{i,1,j-1}]
+    ,{j,2,n}],
+    Table[
+      {Write[stmp,"\\draw [black] (", 0,",",n-i,") -- (", 0.5 ,",",n-i,");"],
+       Write[stmp,"\\draw [black] (", 0.5,",",n-i,") -- (", 0.45 ,",",n-i+0.05,");"],
+       Write[stmp,"\\draw [black] (", 0.5,",",n-i,") -- (", 0.45 ,",",n-i-0.05,");"],
+       (*Line[{{0,n-i},{0.5,n-i}}],        H rays *)
+       Write[stmp,"\\node at (", -0.1,",",n-i,") {$",n-i+1,"$};"],
+       (* Text[n-i+1,{-0.05,n-i},{1,0}], *)
+       Write[stmp,"\\draw [black] (", n-i+1,",",-0.5,") -- (", n-i+1,",",-1,");"],
+       (*Line[{{n-i+1,-0.5},{n-i+1,-1}}],  V rays *)
+       Write[stmp,"\\draw [black] (", n-i+1,",",-1,") -- (", n-i+0.95,",",-0.9,");"],
+       Write[stmp,"\\draw [black] (", n-i+1,",",-1,") -- (", n-i+1.05 ,",",-0.9,");"],
+       (*Line[{{n-i+1,-1},{n-i+1,-1},{n-i+1.05,-0.95}}],  tips *)
+       Write[stmp,"\\node at (", n-i+1,",",-1.2,") {$",n-i+1,"$};"],
+       (* Text[i,{n-i+1,-1},{0,1}], *)
+       Write[stmp,"\\draw [black] (", i-0.5,",",n-i,") -- (", i ,",",n-i,");"],
+       Write[stmp,"\\draw [black] (", i,",",n-i,") -- (", i ,",",n-i-0.5,");"]
+       (* Line[{{i-0.5,n-i},{i,n-i},{i,n-i-0.5}}]  corners *)
+      }
+     ,{i,1,n}],
+    Table[phaseschifterTikZ[i,-0.5,dw,dp,a[[n-i+1]]],{i,1,n}];
+
+Write[stmp,"\\end{tikzpicture}"];
+
+Close[stmp]
+}
+  ]
+
+
+
+ExperimentToMatrix[l_]:= Print["In preparation !"];
+
+End[ ]  (* Private` *)
+
+(* Protect[BeamSplitter,MatrixToExperiment,
+  ExperimentToMatrix,DrawExperiment] *)
+
+EndPackage[ ]   (* UnitaryMultiports` *)
+
+
+
+e={{1,0,0},{0,0,1},{0,1,0}};
+f={{1/Sqrt[2],1/2,1/2},{0, 1/Sqrt[2],-1/Sqrt[2]},{1/Sqrt[2],-1/2,-1/2}};
+
+
+u = FullSimplify[TensorProduct [ f[[1]] , e[[1]] ] + TensorProduct [ f[[2]] , e[[2]] ] + TensorProduct [ f[[3]] , e[[3]] ]]
+
+DrawExperiment[MatrixToExperiment[u]]
+
+
+
+DrawExperimentTikZ[MatrixToExperiment[u]]
+
+
+
+(**********************************************************************************************)
+(**********************************************************************************************)
+(**********************************************************************************************)
+(**********************************************************************************************)
+
+
+E^(I(3Pi/2)) ( E^(I(Pi/2)) Sqrt[1/4] {0,0,1} +  Sqrt[3/4] ( E^(I(Pi/2)) Sqrt[1/3] {0,1,0} +   Sqrt[2/3]  E^(I(Pi/2)) {1,0,0} ) )
+
+
+FullSimplify[
+E^(I(Pi/2)) (
+E^(I(Pi/2)) Sqrt[1/3] (
+Sqrt[3/4]  {0,0,1} + E^(I(Pi/2)) Sqrt[1/4](
+                                           E^(I(Pi/2)) Sqrt[1/3] {0,1,0} + E^(I(Pi/2)) Sqrt[2/3] {1,0,0}
+                                           )
+                      ) +
+Sqrt[2/3] E^(I(Pi/2)) ( Sqrt[2/3] {0,1,0} + E^(I(Pi/2)) Sqrt[1/3] E^(I(Pi/2)) {1,0,0}
+                      )
+)]
+
+FullSimplify[
+E^(I(Pi/2)) E^(I(Pi/2)) (
+            Sqrt[2/3](
+                     Sqrt[3/4] {0,0,1} + E^(I(Pi/2)) Sqrt[1/4]  (
+                                                                 E^(I(Pi/2)) Sqrt[1/3] {0,1,0} +  Sqrt[2/3] E^(I(Pi/2)) {1,0,0}
+                                                                )
+                     )
+            + E^(I(Pi/2)) Sqrt[1/3] E^(I(Pi/2))                 (
+                                                                 Sqrt[2/3] {0,1,0} + E^(I(Pi/2)) Sqrt[1/3] E^(I(Pi/2)) {1,0,0}
+                                                                )
+            )
+]
+
+
+
+
+
+
+
+
+
+
+
+Ux = (1/2) {{1, Sqrt[2], 1}, {Sqrt[2], 0, -Sqrt[2]}, {1, -Sqrt[2], 1}}
+
+Ux . Conjugate[Transpose[Ux]]
+
+u11=FullSimplify[1/2 Sqrt[1/6 (4 - Sqrt[2] - Sqrt[6])]]
+
+u23= 1/Sqrt[3]
+
+u33=0
+
+U2to1 ={{u11,u12,u13}, {u21,u22,u23}, {u31,u32,u33}};
+
+(*
+
+Reduce[{(Conjugate[Transpose[U2to1]] . (Ux . U2to1)) . {1, 0,
+     0} == (1/Sqrt[2]) {1, 1,
+     0}, (Conjugate[Transpose[U2to1]] . (Ux . U2to1)) . {0, 1,
+     0} == (1/Sqrt[2]) {1, -1,
+     0}, (Conjugate[Transpose[U2to1]] . (Ux . U2to1)) . {0, 0, 1} == {0, 0, 1},
+  Conjugate[Transpose[U2to1]] .
+    U2to1 == {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}}, { u12, u13, u21,
+  u22, u31, u32}]
+
+
+Reduce[{(Transpose[U2to1] . (Ux . U2to1)) . {1, 0,
+     0} == (1/Sqrt[2]) {1, 1,
+     0}, (Transpose[U2to1] . (Ux . U2to1)) . {0, 1,
+     0} == (1/Sqrt[2]) {1, -1,
+     0}, (Transpose[U2to1] . (Ux . U2to1)) . {0, 0, 1} == {0, 0, 1},
+  Transpose[U2to1] .
+    U2to1 == {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}}, { u12, u13, u21,
+  u22, u31, u32}]
+
+*)
+
+
+u12 = 1/
+   6 (3 Sqrt[2 - Sqrt[2 + Sqrt[3]]] +
+     3 Sqrt[2 (2 - Sqrt[2 + Sqrt[3]])] +
+     2 Sqrt[3 (2 - Sqrt[2 + Sqrt[3]])] + Sqrt[
+     6 (2 - Sqrt[2 + Sqrt[3]])]);
+u13 = Sqrt[2/3] ;
+ u21 = -Sqrt[1/6 (2 - Sqrt[2 + Sqrt[3]])] ;
+ u22 = 1/
+   6 (-6 Sqrt[2 - Sqrt[2 + Sqrt[3]]] -
+     3 Sqrt[2 (2 - Sqrt[2 + Sqrt[3]])] -
+     2 Sqrt[3 (2 - Sqrt[2 + Sqrt[3]])] -
+     2 Sqrt[6 (2 - Sqrt[2 + Sqrt[3]])]) ;
+ u31 = 1/
+   2 (2 Sqrt[2 - Sqrt[2 + Sqrt[3]]] + Sqrt[
+     2 (2 - Sqrt[2 + Sqrt[3]])] + Sqrt[3 (2 - Sqrt[2 + Sqrt[3]])] +
+     Sqrt[6 (2 - Sqrt[2 + Sqrt[3]])]) ;
+ u32 = -(1/2) Sqrt[2 - Sqrt[2 + Sqrt[3]]];
+
+U2to1s = FullSimplify[ U2to1 ]
+
+
+FullSimplify[U2to1s . Conjugate[Transpose[U2to1s ]]]
+
+TeXForm[U2to1s]
+
+FullSimplify[(Transpose[U2to1s].(Ux.U2to1s)).{1,0,0}]
+
+
+(*
+
+\left(
+\begin{array}{ccc}
+ \frac{1}{2} \sqrt{\frac{1}{3} \left(2-\sqrt{2+\sqrt{3}}\right)}
+   & \frac{1}{2} \sqrt{\frac{1}{3}
+   \left(2+\sqrt{2+\sqrt{3}}\right)} & \sqrt{\frac{2}{3}} \\
+ -\sqrt{\frac{1}{6} \left(2-\sqrt{2+\sqrt{3}}\right)} &
+   -\sqrt{\frac{1}{6} \left(2+\sqrt{2+\sqrt{3}}\right)} &
+   \frac{1}{\sqrt{3}} \\
+ \frac{1}{2} \sqrt{2+\sqrt{2+\sqrt{3}}} & -\frac{1}{2}
+   \sqrt{2-\sqrt{2+\sqrt{3}}} & 0 \\
+\end{array}
+\right)
+
+
+*)
+
+FullSimplify[(Transpose[U2to1s].(Ux.U2to1s))]
+
+
+
+
+
+
+
+(****************************************)
+
+
+
+Ux = (1/2) {{1, Sqrt[2], 1}, {Sqrt[2], 0, -Sqrt[2]}, {1, -Sqrt[2], 1}};
+
+
+(*
+
+cc={{c11,c12,c13},{c21,c22,c23},{c31,c32,c33}};
+
+Reduce[{cc .
+    Ux == (1/Sqrt[2]) {{1, 1, 0}, {1, -1, 0}, {0, 0, Sqrt[2]}} ,
+  Transpose[cc] . cc == {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}}, {c11, c12,
+   c13, c21, c22, c23, c31, c32, c33}]
+
+*)
+
+cc=1/(2*Sqrt[2]){
+{Sqrt[2]+1,Sqrt[2],-Sqrt[2]+1},
+{-Sqrt[2]+1,Sqrt[2],Sqrt[2]+1},
+{Sqrt[2],-2,Sqrt[2]}
+}
+
+FullSimplify[Transpose[cc].cc]
+
+FullSimplify[cc.Ux]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Dear Mr. Rohan Jadhav,
+thank you for your kind consideration/technical check of
+
+Manuscript Title: Binary Quantum Random Number Generator Based on Value Indefinite Observables
+Manuscript ID: 2d9c0c51-61f0-4f94-b791-11c938162433 v1.0
+
+I shall answer inline and directly to the issues raised (this has also been directly submitted to the editorial manager):
+
+
+1. Please number all tables sequentially, using whole numbers. E.g. 1, 2, 3 etc, rather than using roman numbers
+
+There are *no* tables in the main manuscript. However we *refer to* papers which include roman table numberings, and there is very little we can do about these existing publications.
+
+2. We notice that table 1-3 has been referenced in the main text of your manuscript file but this table has not been included with your submission. Please either include this table in your manuscript file in an editable Word or TeX/LaTex format along with its legend or update the references to this table in the main text of your manuscript accordingly.
+
+Same as above. All tables referred to occur elsewhere in published form.
+
+3. Please number all figures sequentially, using whole numbers and alphabets for subfigures. for E.g. 1, 2, 3 etc, rather than (1a), (1b), (1c), etc. We noticed that one figure is refered as Fig. 24.2.a , Please correct this.
+
+* Figures are now labeled with arabic numerals.
+
+* Subfigures are quoted according your scheme.
+
+* Please note that Fig. 24.2.a is an external figure of Ref. 30 It is now quoted as Figure (24.2.a); same for Figure (24.2.b).
+
+
+4. Please provide "Data availability statement" on the submission system under "Data availability" in the Declaration section.
+ÂData availabilityÂ statements can take one of the following forms (or a combination of more than one if required for multiple datasets):
+
+Â The datasets generated and/or analysed during the current study are available in the [NAME] repository, [PERSISTENT WEB LINK TO DATASETS]
+Â The datasets used and/or analysed during the current study available from the corresponding author on reasonable request.
+Â All data generated or analysed during this study are included in this published article [and its supplementary information files].
+Â The datasets generated and/or analysed during the current study are not publicly available due [REASON WHY DATA ARE NOT PUBLIC] but are available from the corresponding author on reasonable request.
+Â The data that support the findings of this study are available from [third party name] but restrictions apply to the availability of these data, which were used under license for the current study, and so are not publicly available. Data are however available from the authors upon reasonable request and with permission of [third party name].
+
+Please note that if you do wish to share your raw data and do not have consent from all patients to publish this data, it will need to be de-identified.
+
+Done: "All data generated or analysed during this study are included in this published article"
+
+Please note that I also used a "one column" style (was previously two columns), and updated some references.
+
+Please do not hesitate to contact me again should further revisions/clarifications be necessary.
+
+Thank you for your kind efforts and attention!
+
+With kind regards,
+
+Karl Svozil
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Editor comments
+Minor edits needed before a final decision can be made. Please consider comments by the reviewers and I suggest merging Sec. I and Sec. II.
+
+
+
+Reviewer Comments:
+
+Reviewer 1
+This paper discusses the relationship between the Kochen-Specker theorem and quantum random number generators (QRNGs). In this paper, the authors construct QRNGs that produce binary outputs with the same randomness properties as ternary outputs, which are maximally unpredictable.
+
+Since the Kochen-Specker theorem holds only in Hilbert spaces of three or more dimensions, it is important to construct a value indefinite state in three-dimensional Hilbert spaces.
+
+This paper is an important contribution to the study of quantum random number generators.
+
+
+Reviewer 2
+The paper titiled Binary Quantum Random Number Generator Based on Value Indefinite Observables  studies how to use three-dimensional value indefinite observable to generate more binary quantum random outputs. I recommend it to published in «Scientific Reports» if the following questions are revised.
+
+1) The introduction should be well organized. The introduction in the draft is too short. The Sec.II and Sec.III maybe included in the introduction.
+
+2) The main scheme is presented in Sec.IV , but it is too long. It is advisable to add a secondary heading so that the reader can understand it more clearly.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Dear Professor Hosseini,
+
+Thank you and the two Reviewers for the evaluation of our manuscript.
+
+In response to the feedback provided by the Editor and Reviewer 2, we have diligently revised our manuscript.
+Specifically, we have amalgamated Sections I and II as suggested, while retaining the Nomenclature in what is now Section II.
+By merging these sections,  we aimed to enhance the overall organization and coherence of our paper,
+emphasizing its main topic and motivation more effectively.
+
+
+Reviewer 2 suggested:
+
+"1) The introduction should be well organized. The introduction in the draft is too short. The Sec.II and Sec.III maybe included in the introduction."
+
+We have, as already mentioned, merged Sections I and II and left the nomenclature in (what is now) Section II.
+
+In merging those two sections we have attempted to improve the organization of both sections, and stress the main topic and motivation for this paper.
+
+"2) The main scheme is presented in Sec.IV , but it is too long. It is advisable to add a secondary heading so that the reader can understand it more clearly."
+
+We have done exactly that: we added a secondary heading on "principles" and an "example" of (now) Section III.
+
+We hope that, with these two amendments, the paper can be published.
+
+Once again, we express our gratitude to you and the Referees for your and their kind evaluations and suggestions; they are very much appreciated and strengthen the presentation.
+
+With kind regards,
+
+Karl Svozil (in coordination with the first author, Christian S. Calude)

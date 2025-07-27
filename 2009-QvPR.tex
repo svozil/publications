@@ -1,0 +1,1847 @@
+\documentclass[%
+ %reprint,
+ %superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ preprint,
+ showpacs,
+ showkeys,
+ preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+ amsmath,amssymb,
+ aps,
+ prl,
+ % pra,
+ % prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+ %floatfix,
+ %lengthcheck,%
+ ]{revtex4-1}
+ \bibliographystyle{apsrev4-1long}
+
+ \usepackage{graphicx}% Include figure files
+
+ \begin{document}
+
+\title{How Random Is Quantum Randomness? \\ An Experimental Approach}
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage[]{http://www.cs.auckland.ac.nz/~cristian}
+
+\author{Michael J. Dinneen}
+\email{mjd@cs.auckland.ac.nz}
+\homepage[]{http://www.cs.auckland.ac.nz/~mjd}
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+\author{Monica Dumitrescu}
+\affiliation{Faculty of Mathematics and Computer Science, University of Bucharest,
+Str. Academiei 14, 010014 Bucharest, Romania}
+\email{mdumi@fmi.unibuc.ro}
+\homepage[]{http://fmi.unibuc.ro/ro/dumitrescu_monica}
+
+
+\author{Karl Svozil}
+\affiliation{Institute for Theoretical Physics, University of Technology Vienna,
+Wiedner Hauptstrasse 8-10/136, 1040 Vienna,  Austria}
+\email{svozil@tuwien.ac.at}
+\homepage[]{http://tph.tuwien.ac.at/~svozil}
+
+
+\date{\today}
+
+\begin{abstract}
+Our aim is to experimentally study the possibility of distinguishing between quantum sources of randomness---recently proved to be theoretically incomputable---and  some well-known computable sources of  pseudo-randomness. Incomputability is a necessary, but not sufficient ``symptom'' of ``true randomness.'' We base our experimental approach on algorithmic information theory which provides characterizations of algorithmic random sequences in terms of the degrees of incompressibility of their finite prefixes. Algorithmic random sequences are incomputable, but the converse implication is false. We have performed tests of randomness on pseudo-random strings (finite sequences) of length $2^{32}$ generated with software (Mathematica, Maple), which are cyclic (so, strongly computable), the bits of $\pi$, which is computable, but not cyclic, and strings produced by quantum measurements  (with the commercial device Quantis and  by the Vienna IQOQI group). Our empirical tests indicate quantitative differences, some statistically significant,  between computable and incomputable sources of ``randomness.''
+\end{abstract}
+
+\pacs{03.67.Lx, 05.40.-a, 03.65.Ta, 03.67.Ac, 03.65.Aa}
+\keywords{quantum randomness, quantum indeterminism, random processes, quantum algorithms}
+\preprint{CDMTCS preprint nr. 372/2009}
+\maketitle
+
+\section{Introduction}
+\thispagestyle{empty}
+
+From the 16th century onwards, following Galilei, Kepler, Leibniz, Newton and others,
+the rise of determinism culminated around the time of the French and American Revolutions
+with Laplace's research on the stability of the solar system without divine intervention~\cite{frank}.
+In the late 19th century, first indications of potential limits to
+the pure deterministic research program emerged, in particular with Poincar{\'{e}}'s contribution~\cite{poincare14,Diacu96} to the
+solution of the three-~\cite{Sundman12} and general $n$-body problem~\cite{Wang91,Wang01,Diacu96},
+which is often considered as a precursor of chaos theory~\cite{eckmann1,Diacu96-ce}.
+
+Soon, and despite the reluctance and opposition of many of its creators,
+most notably Planck~\cite{born-55}, Einstein~\footnote{
+Recall Einstein's {\it dictum} in a letter to Born, dated December~12th, 1926~\cite[p.~113]{born-69},
+``In any case I am convinced that he [[the Old One]] does not throw dice.''
+(In German: ``Jedenfalls bin ich {\"{u}}berzeugt, dass der [[Alte]] nicht w{\"{u}}rfelt.'')},
+Schr\"odinger and De Brogli,
+quantum mechanics began to be accepted as an irreducibly probabilistic theory,
+postulating an indispensable ``objective'' (in distinction to ``epistemic;'' cf. below) random behavior of individual particles,
+while their probabilities follow deterministic laws.
+With the rise of quantum mechanics (and later on also chaos theory), the {\em principle of sufficient reason}
+--- stating that every phenomenon has its explanation and cause ---
+had to be partially abandoned.
+Indeed,  indeterminism and randomness in quantum mechanics,
+as postulated by Born, Heisenberg, Bohr and Pauli~\cite[p.~115]{pauli-probaphysics}
+is commonly believed, accepted and canonized to the extent  that~\cite{zeil-05_nature_ofQuantum}
+``the discovery that individual events are
+irreducibly random is probably one of the
+most significant findings of the twentieth
+century. [[$\ldots$]]~for the individual event in quantum physics, not only do we not know the cause, there is no cause.''
+
+
+However, insufficient causation needs not be perceived merely negatively as a lack of prediction or control.
+Today it is widely acknowledged that certified randomness can be a valuable resource
+(e.g., for testing primality~\cite{ch-schw-78,Granville-92}), and that under various circumstances
+a lack of randomness may have negative consequences (e.g., erroneous numerical calculations~\cite{PhysRevE.69.055702}).
+The pitfalls of software-generated pseudo-randomness~\cite{v-neumann-50}
+are well-known~\cite{Marsaglia-68,DBLP:journals/ibmrd/Pickover91,Bowman1995315,PhysRevE.69.055702}.
+%\marginpar{examples}
+In John von Neumann's words~\cite{von-neumann1}:
+``Anyone who considers arithmetical methods of producing random digits is, of course, in a state of sin.''
+
+Classical physical processes are subject to difficulties with ``subjective''  or ``epistemic'' randomness
+(a criticism often attributed to Heisenberg~\cite{zeil-05_nature_ofQuantum})
+---
+people consider events to be random when they cannot detect
+any regularities characterizing the structure of those events,
+yet the events {\em could} still be causally described if they
+would  know enough about the evolution of the system
+---
+or even bias; the typical example being coin tosses~\cite{diaconis:211}.
+Several methods to generate random sequences from physical processes have been proposed~\cite{csw:prg},
+among them the coding of electric pulses~\cite{0022-3735-3-8-303},
+or semiconductor devices~\cite{Agnew-87,Aware,Araneus,comscire,LavaRnd,dynes:031109,Ma:05,stipcevic045104,Wayne-09}.
+%http://randomnumber.org/links.htm
+%http://www.cs.berkeley.edu/~daw/rnd/
+The first book~\cite{rand-55} containing a  million  of random digits  using a physical source of randomness
+was published by The RAND Corporation in  1955~\footnote{According to The RAND Corporation's disclosure,
+``The random digits in this book were produced by re-randomization of a basic table generated
+by an electronic roulette wheel. Briefly, a random frequency pulse source,
+providing on the average about 100,000 pulses per second, was gated about once
+per second by a constant frequency pulse. Pulse standardization circuits passed
+the pulses through a 5-place binary counter. In principle the machine was a 32-place
+roulette wheel which made, on the average, about 3000 revolutions per trial and produced
+one number per second. A binary-to-decimal converter was used which converted 20 of the 32 numbers
+(the other twelve were discarded) and retained only the final digit of two-digit numbers;
+this final digit was fed into an IBM punch to produce finally a punched card table of random digits.''
+}.
+
+
+
+
+
+Currently there are two main sources capable of generating very fast large amounts of  ``random''
+bits: software-generated randomness
+(pseudo-randomness) and quantum randomness. Quantum randomness has been used as an ``objective'' resource of randomness
+through various processes, in particular the decay of meta-stable states~\cite{PhysRevLett.54.1023,er-put:85,erber-95}
+(for a criticism, see~\cite{knight-86}) or radioactive decays~\cite{schmidt:462,walker-hotbits},
+arrival times~\cite{stipcevic4442,stipcevic045104,dynes:031109,Ma:05,Wayne-09},
+or the passage through some beam splitter~\cite{svozil-qct,rarity-94,zeilinger:qct,stefanov-2000,0256-307X-21-10-027,wang:056107,fiorentino:032334,svozil-2009-howto,Kwon:09}.
+
+How different are these sources? Recently it has been proved that quantum randomness is incomputable (see more details in  Section~\ref{incomput}). Incomputability is a necessary, but not sufficient ``symptom''
+of ``true randomness.''  Can we
+ experimentally  distinguish between
+quantum  and   computable
+sources of  ``randomness?''
+In what follows, we   answer this question in the affirmative using an experimental approach based on algorithmic information theory
+which provides characterizations of algorithmic random sequences in terms of the degrees of incompressibility of their finite prefixes. Algorithmic random sequences are incomputable, but the converse implication is false.
+
+
+
+We have performed tests of randomness on pseudo-random strings (finite sequences) of length $2^{32}$ generated with software
+(Mathematica, Maple), which are  cyclic (so, strongly computable), the bits of $\pi$, which is computable, but not cyclic, and strings produced by quantum measurements  (with the commercial device Quantis and  by the Vienna IQOQI group).
+
+The paper is organized as follows. In the following section we present quantum randomness;
+in Section~\ref{tests} we present the main tests and results; Section~\ref{conclusion} includes our conclusions.
+
+\section{Quantum randomness}
+
+
+
+In three distinct but intricately interlinked ways, the evolution of quantum mechanics ordained the abandonment
+of absolute determinism, and has established a clearly defined mixture of determinism and indeterminism,
+at least in the mainstream perception of the formalism~\cite{jammer:89,jammer1,feynman-law,fuchs-peres,clauser-talkvie}:
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\item
+random occurrence of individial events~\cite{born-26-1,born-26-2} or outcomes for quantized systems
+which are in a superposition of eigenstates of the hermitean operator
+corresponding to the observable;
+i.e., randomness from projection measurements on superposition states;
+\item
+complementarity, as proposed by Pauli~\cite{pauli:58}, Heisenberg, Dirac and Bohr;
+\item
+value indefiniteness~\cite{peres222} as implied by the theorems of Bell, Kochen \& Specker and Greenberger, Horne \& Zeilinger~\cite{mermin-93}.
+\end{enumerate}
+
+
+
+
+\subsection{Random individual measurement outcomes}
+
+With respect to the perception of certain individual outcomes of measurements,
+the year 1926 marked the emergence of Born's acausal, indeterministic and
+probabilistic interpretation of
+Schr\"odinger's wave function as a complete and maximal description of a quantum mechanical state.
+Born states that (cf.~\cite[p.~866]{born-26-1}, English translation in Ref.~\cite[p.~54]{wheeler-Zurek:83})~\footnote{
+{ ``Vom Standpunkt unserer Quantenmechanik gibt es keine Gr\"o\ss e, die im {\em Einzelfalle} den Effekts eines Sto\ss es
+kausal festlegt; aber auch in der Erfahrung haben wir keinen Anhaltspunkt daf\"ur, da\ss~ es innere Eigenschaften
+der Atome gibt, die einen bestimmten Sto\ss erfolg bedingen.
+Sollen wir hoffen, sp\"ater solche Eigenschaften
+[[$\ldots$]] zu entdecken und im Einzelfalle zu bestimmen?
+Oder sollen wir glauben, dass die \"Ubereinstimmung von Theorie und Erfahrung
+in der Unf\"ahigkeit, Bedingungen f\"ur den kausalen Ablauf anzugeben, eine pr\"astabilisierte Harmonie ist,
+die auf der Nichtexistenz solcher Bedingungen beruht?
+Ich selber neige dazu,die Determiniertheit in der atomaren Welt aufzugeben.''
+}
+},
+\begin{quote}
+{  ``From the standpoint of our quantum mechanics, there is no quantity
+which in any individual case causally fixes the consequence of the collision;
+but also experimentally we have so far no reason to believe that there are some inner properties of the atom
+which condition a definite outcome for the collision.
+Ought we to hope later to discover such properties [[$\ldots$]]  and determine them in individual cases?
+Or ought we to believe that the agreement of theory and experiment --- as to the impossibility
+of prescribing conditions? I myself am inclined to give up determinism in the world of atoms.''
+}
+\end{quote}
+While postulating a probabilistic behavior of individual particles,
+Born offers a deterministic evolution of the wave function
+(cf.~\cite[p.~804]{born-26-2}, English translation in Ref.~\cite[p.~302]{jammer:89})~\footnote{
+{  ``Die Bewegung der Partikel folgt Wahrscheinlichkeitsgesetzen,
+die Wahrscheinlichkeit selbst aber breitet sich im Einklang mit dem Kausalgesetz  aus.
+[Das hei\ss t, da\ss~ die Kenntnis des Zustandes in allen Punkten in einem Augenblick
+die Verteilung des Zustandes zu allen sp{\"a}teren Zeiten festlegt.]''
+}
+},
+\begin{quote}
+{  ``The motion of particles conforms to the laws of probability, but the probability itself
+is propagated in accordance with the law of causality.
+[This means that knowledge of a state in all points in a given time determines the distribution of
+the state at all later times.]''
+}
+\end{quote}
+
+
+At the time of writing this statement Born did not specify the formal notion of ``indeterminism'' he was relating to.
+So far, no mathematical characterization of quantum randomness has been proven.
+In the absence of any indication to the contrary, it is mostly implicitly assumed
+that quantum randomness is of the strongest possible type;
+which amounts to postulating that the associated sequences are algorithmically incompressible.
+This does not exclude the possibility of weaker forms of randomness being generated by quantum measurements.
+
+
+Random individual outcomes may occur at least in two different ways:
+(i) either due to a context mismatch between preparation and measurement,
+(ii) or
+due to an ignorance of the state preparation resulting in a mixed state.
+In what follows, we shall discuss these issues in some detail.
+
+
+We shall consider normalized states.
+The superscript ``$T$'' indicates transposition.
+If not stated otherwise, we shall adopt the notation of Mermin's book on {\em Quantum Computer Science}
+\cite{mermin-07}.
+A quantum mechanical context~\cite{svozil-2008-ql}
+is a ``maximal collection of co-measurable observables'' constituting
+a ``classical mini-universe'' within the nondistributive structure of quantum propositions.
+It can be formalized by a single  ``maximal'' self-adjoint operator.
+Every collection of mutually compatible co-measurable operators (such as projections corresponding to yes--no propositions)
+are functions of such a maximal operator
+(e.g., Ref.~\cite[Sec.~II.10, p. 90, English translation p.~173]{v-neumann-49},
+Ref.~\cite[\S~2]{kochen1}, Ref.~\cite[pp.~227,228]{neumark-54}, and Ref.~\cite[\S~84]{halmos-vs}).
+
+
+\subsubsection{Mismatch between state preparation and measurement}
+\label{2009-QvPR-s-mismatch}
+
+There might be a {\em context} mismatch between state preparation and measurement;
+i.e.,  the system has been prepared in a pure state
+corresponding to a certain context (maximal observable),
+and is measured in another,  complementary (see below) context
+(maximal observable).
+In such a case, the state of the system --- in terms of the spectral decomposition
+of the measurement context --- is in a {\em coherent} superposition of at least some eigenstates of the preparation context.
+An ``irreversible'' measurement~\cite{hkwz,greenberger2} ``reduces'' the state to one of the eigenstates
+of the measurement context.
+According to the Born rule (e.g.,~\cite[Chapter~1]{mermin-07}),
+the probability of the occurrence of any such measurement outcome labelled by $i$
+is given by the absolute square of the scalar products
+$\vert \langle \psi_i \vert \varphi \rangle \vert^2$
+between the state $\vert \varphi \rangle$  in which the system has been prepared
+and the corresponding eigenstate $\vert \psi_i \rangle$
+of the context.
+Other than this probabilistic law, quantum mechanics renders no further prediction for the occurrence of single measurement
+outcomes.
+Note that the amount of indeterminacy (as measured by the lack of bias of measurement outcomes
+formalizable in terms of average algorithmic information increase per outcome)
+increases with the ``apartness'' of the preparation and measurement properties;
+i.e., with the magnitude of the context mismatch.
+On the average, conjugate bases~\cite[p.~86]{wiesner} assure the greatest context mismatch,
+and hence the greatest degree of randomness gain per experiment.
+
+
+Quantum realizations of the method have been proposed~\cite{svozil-qct,rarity-94}, patented~\footnote{
+See also the later patents at Refs.~\cite{dultz-98,dultz-99},
+as well as at Refs.~\cite{Ribordy-04,Ribordy-06}.}
+and realized~\cite[Fig.~1(b)]{zeilinger:qct} (see also~\cite{stefanov-2000})
+for a delayed choice Bell-type experiment~\cite{zeilinger-epr-98}.
+Note that in the latter experimental realization, in the second {\em modus operandi} of~\cite{zeilinger-epr-98},
+light of very low intensity --- the photon production rate should be much smaller than the corresponding coherence time ---
+is prepared by sending it through a linear polarizer, e.g., in the vertical direction $\updownarrow$,
+which guarantees that (ideally) only photons in a definite,
+pure state corresponding to the polarization direction $\updownarrow$ leave the polarizer.
+The photons impinge on a beam-splitting polarizer,
+which should (ideally) be maximally (anti)aligned at exactly $45^\circ$ ($\pi/4$~radians) in order to yield a 50:50 ratio of photons
+polarized in either one of the two orthogonal directions $\swarrow\mkern-18mu\nearrow$
+and $\searrow\mkern-18mu\nwarrow$ conveyed
+in the two output ports and detected thereafter, respectively.
+
+
+The process can be formalized as follows.
+For a two-state process, a two-dimension Hilbert space suffices.
+The role of the beam splitter can be described by a very general unitary transformation
+which
+can be represented by the product of a $U(1)$ phase $e^{-i\,\beta}$ and
+of a unimodular unitary
+matrix $SU(2)$~\cite{murnaghan}
+\begin{equation}
+\textsf{\textbf{ T}} (\omega ,\alpha ,\varphi )=
+\left(
+\begin{array}{cc}
+{e^{i\,\alpha }}\,\cos \omega
+&
+{-e^{-i\,\varphi }}\,\sin \omega
+\\
+{e^{i\,\varphi }}\,\sin \omega
+&
+{e^{-i\,\alpha }}\,\cos \omega
+ \end{array}
+\right)
+ \quad ,
+\label{2009-e-QvPRSU2}
+\end{equation}
+where $-\pi \le \beta ,\omega \le \pi$,
+$-\, {\pi \over 2} \le  \alpha ,\varphi \le {\pi \over 2}$.
+For our purpose, it suffices to consider a 50:50 beam splitter~\cite{Mandel-Ou1987118,green-horn-zei,zeilinger:882,svozil-2004-analog}
+of the Hadamard form
+$
+\textsf{\textbf{H}}= {1\over \sqrt{2}}
+\left(
+\begin{array}{rr}
+1&1\\
+1&-1
+\end{array}
+\right)$, which can be obtained from the general form by setting  $\omega =\frac{\pi}{4}$  and
+$\alpha = \beta = \gamma =-\frac{\pi}{2}$  in $e^{-i\,\beta}$ and in Eq.~(\ref{2009-e-QvPRSU2}).
+Note that $\textsf{\textbf{H}} \cdot \textsf{\textbf{H}} = \mathbb{I}_2$ is just the identity matrix in two dimensions.
+
+If
+$\vert \swarrow\mkern-18mu\nearrow \rangle \equiv (1,0)^T$ and
+$\vert \searrow\mkern-18mu\nwarrow \rangle \equiv (0,1)^T$
+--- alternatively, we could have used the notation $\vert 0 \rangle$  for $\vert \swarrow\mkern-18mu\nearrow \rangle$,
+and $\vert 1 \rangle$  for $\vert \searrow\mkern-18mu\nwarrow \rangle$ ---
+represent
+certain orthogonal (linear polarization) states measured,
+and the particle has been prepared for in a (linear polarization) state
+\begin{equation}
+\vert \updownarrow \rangle  =
+\textsf{\textbf{H}} \vert \swarrow\mkern-18mu\nearrow \rangle =
+\frac{1}{\sqrt{2}} \left( \vert \swarrow\mkern-18mu\nearrow \rangle
+  + \vert \searrow\mkern-18mu\nwarrow  \rangle \right) \equiv \frac{1}{\sqrt{2}} (1,1)^T,
+\end{equation}
+which is a 50:50 superposition of both of these states,
+then the probability to find the particle in either one of the detectors corresponding to
+$\vert \swarrow\mkern-18mu\nearrow \rangle $ and
+$\vert \searrow\mkern-18mu\nwarrow  \rangle $ is
+\begin{equation}
+\begin{array}{rcl}
+P_\updownarrow (0)
+&=&
+\textrm{Tr} \left[
+\vert \updownarrow \rangle \langle  \updownarrow \vert \cdot \vert \swarrow\mkern-18mu\nearrow \rangle \langle  \swarrow\mkern-18mu\nearrow \vert
+\right]
+\equiv
+\textrm{Tr}
+\left[
+\frac{1}{2}\left(
+\begin{array}{cc}
+1&1\\
+1&1
+\end{array}
+\right)
+\cdot
+\left(
+\begin{array}{cc}
+1&0\\
+0&0
+\end{array}
+\right)
+\right]
+=\frac{1}{2},\;\textrm{
+and }\\[4ex]
+P_\updownarrow (1)&=&
+\textrm{Tr} \left[
+\vert \updownarrow \rangle \langle  \updownarrow \vert \cdot \vert \searrow\mkern-18mu\nwarrow  \rangle \langle   \searrow\mkern-18mu\nwarrow \vert
+\right]
+\equiv
+\textrm{Tr}
+\left[
+\frac{1}{2}\left(
+\begin{array}{cc}
+1&1\\
+1&1
+\end{array}
+\right)
+\cdot
+\left(
+\begin{array}{cc}
+0&0\\
+0&1
+\end{array}
+\right)
+\right]
+=\frac{1}{2},
+\end{array}
+\end{equation}
+that is, one obtains  a 50:50 chance for the occurrence of outcome $0$ or $1$, respectively.
+
+In general it will be very difficult to establish and maintain an exact (anti)alignment of the polarizers,
+resulting in a bias towards either state
+$\vert \swarrow\mkern-18mu\nearrow \rangle $ or
+$\vert \searrow\mkern-18mu\nwarrow  \rangle $.
+If and only if this bias is stationary and the events are independent; i.e., uncorrelated,
+then the bias can be eliminated after the coding stage
+by von Neumann's normalization procedure~\footnote{
+``To cite a human example, for simplicity, in tossing a coin it is probably easier to make two consecutive tosses independent than to toss heads with probability exactly one-half.
+If independence of successive tosses is assumed, we can reconstruct a 50--50 chance out of even a badly biased coin by tossing twice.
+If we get heads-heads or tails-tails, we reject the tosses and try again. If we get heads-tails (or tails-heads),
+we accept the result as heads (or tails).''}:
+The biased raw sequence of zeroes and ones is partitioned into
+fixed subsequences of length two; then the even parity sequences ``$00$'' and ``$11$'' are discarded,
+and only the odd parity ones ``$01$'' and ``$10$'' are kept.
+In a second step, the remaining sequences could be mapped into the single symbols $01 \mapsto 0$ and  $10 \mapsto 1$,
+thereby extracting a new unbiased sequence at the cost of a loss of original bits~\cite[p. 768]{von-neumann1}
+(see Refs.~\cite{elias-72,PeresY-1992} for an improvement of this method,
+and Refs.~\cite{stipcevic4442,dichtl-2007,Lacharme-2008} for a discussion of other methods).
+%http://www.robertnz.net/hwrng.htm
+This method fails if the events are (temporally) correlated and thus not independent. Take, for instance,
+the sequences $010101 \cdots $ or $101010 \cdots $, which in the von Neumann scheme get transformed into $000\cdots$ or  $111\cdots$.
+Less spectacular failures of the von Neumann normalization can be constructed by considering convex combinations of these cases.
+
+For beam splitters, the independence of outcomes required by the von Neumann normalization translates into
+the assumption that there are no temporal correlations.
+In view of the Hanbury Brown Twiss effect (cf., Ref.~\cite[p.313]{chau} and Ref.~\cite[p.127 ff]{knight-qo}),
+this assumption is highly nontrivial, as effects of photon bunching might disturb the assumption of independence of subsequent ``quantum coin tosses.''
+In particular, it seems that the bit rate might affect the long term statistical independence.
+Note also that the von Neumann normalization (cf. above) would fail because of the lack of independence~\cite[p. 768]{von-neumann1} .
+Indeed, for ``very high'' (with respect to the regime of the Hanbury Brown Twiss effect) data rates, independence can no longer be assumed.
+
+
+\subsubsection{Ignorance resulting in a mixed state}
+
+A second, maybe faster and technically less demanding possibility to produce quantum random bits
+does not require any preparation step, but just {\em assumes}
+the input state to be principally unknowable and indeterminate.
+In this case, the system is in a non-pure, mixed state,
+reflecting our ignorance about the state prepared~\cite[2nd part, \S~10, p.~827]{schrodinger}.
+
+
+If the particle is in a totally mixed state,
+its density matrix is just proportional to the identity matrix
+$\rho_{\mathbb{I}_2 }=\frac{1}{2}\left(
+\vert 0 \rangle \langle  0 \vert + \vert 1  \rangle \langle  1 \vert
+\right) \equiv \frac{1}{2} \textrm{ diag}\left[\left(1,0 \right) +\textrm{ diag}\left(0,1 \right)\right] = \frac{1}{2}\mathbb{I}_2   $,
+and thus the probability to find the particle in either one of the detectors corresponding to
+$\vert 0 \rangle $ and
+$\vert 1  \rangle $ is
+\begin{equation}
+\begin{array}{rcl}
+P_{\rho_{\mathbb{I}_2 }}(0)&=&
+\textrm{Tr} \left[
+\rho_{\mathbb{I}_2 } \cdot \vert 0 \rangle \langle  0 \vert
+\right]
+\equiv
+\textrm{Tr}
+\left[
+\frac{1}{2}\mathbb{I}_2
+\cdot
+\textrm{ diag}\left(1,0 \right)
+\right]
+=\frac{1}{2},\;\textrm{
+and } \\[2ex]
+P_{\rho_{\mathbb{I}_2 }}(1)&=&
+\textrm{Tr} \left[
+\rho_{\mathbb{I}_2 } \cdot \vert 1  \rangle \langle  1 \vert
+\right]
+\equiv
+\textrm{Tr}
+\left[
+\frac{1}{2}\mathbb{I}_2
+\cdot
+\textrm{ diag}\left(0,1 \right)
+\right]
+=\frac{1}{2};
+\end{array}
+\end{equation}
+that is, one again obtains a 50:50 chance for the occurrence of outcome $0$ or $1$, respectively.
+
+
+
+Alas, is may be difficult to certify, control and assert ``ontologically objective,'' as compared to ``epistemically subjective,'' ignorance.
+Indeed, the experimenter
+preparing the system may {\em subjectively} assume to be ignorant,
+whereas the system may implicitly be in a pure state with respect to a certain context, of which
+the experimenter does not possess any knowledge, nor has any control.
+Also temporal correlations may interfere with randomness.
+
+Note also that any beam splitter is essentially a reversible, one-to-one
+``translation device'' ``funneling in'' particles in a certain state, thereby transforming
+the state and ``spitting out'' the particles in a bijective manner.
+This is reflected in the unitarity of its quantum mechanical description
+by the product of $e^{-i\,\beta}$ and  Eq.~(\ref{2009-e-QvPRSU2}).
+Ideally, the original signal can be reconstructed and recovered by the serial composition
+of the original beam splitter and its ``inverse'' beam splitter associated with the inverse unitary transformation.
+In this sense
+any quantum random number sequence based on beam splitters is as good as the original source of particles, regardless of the successive (quasi-irreversible) measurement by detectors.
+
+For the sake of demonstration, consider a ``black box'' which,
+for undisclosed reasons, contains an (unknown) cyclic particle source or,
+if one prefers, a mischievous demon  constantly
+releasing particles (emanating from the black box) whose states oscillate
+between
+$\vert 0' \rangle =
+\textsf{\textbf{H}} \vert 0 \rangle =
+({1}/{\sqrt{2}}) \left( \vert 0 \rangle
+  + \vert 1  \rangle \right) \equiv ({1}/{\sqrt{2}}) (1,1)^T$
+and
+$\vert 1' \rangle =
+\textsf{\textbf{H}} \vert 1 \rangle =
+({1}/{\sqrt{2}}) \left( \vert 0 \rangle
+  - \vert 1  \rangle \right) \equiv ({1}/{\sqrt{2}}) (1,-1)^T
+$, with some frequency $\nu$, such that the state as a function of time is
+either (pure case)
+\begin{equation}
+\vert \varphi_\nu (t) \rangle =  \sin (2\pi \nu t)
+\vert 0' \rangle
++
+ \cos (2\pi \nu t)
+\vert 1' \rangle ,
+\end{equation}
+or (mixed case)
+\begin{equation}
+\rho_\nu (t)  =  \sin (2\pi \nu t)
+\vert 0' \rangle \langle 0'  \vert
++
+ \cos (2\pi \nu t)
+\vert 1' \rangle \langle 1'  \vert
+.
+\end{equation}
+If the sampling frequency (or any integer multiple thereof)
+of this ``random'' sequence does not coincide with the oscillation frequency $\nu$,
+then it may be very difficult for an experimenter to determine the source's regular behavior,
+which --- through the beam splitter ---  translates one-to-one into the sequence generated,
+since
+$\textsf{\textbf{H}}
+\vert 0' \rangle
+= \textsf{\textbf{H}} \cdot \textsf{\textbf{H}}  \vert 0 \rangle =
+ \vert 0 \rangle
+$
+and
+$\textsf{\textbf{H}}
+\vert 1' \rangle
+=        \textsf{\textbf{H}} \cdot \textsf{\textbf{H}}  \vert 1 \rangle =
+\vert 1 \rangle
+$.
+
+Thus, it is not totally unjustified to state that claims of ``objective'' randomness
+have to be cautiously reviewed
+when particles emanating from an underspecified source are targeted directly towards some beam splitter,
+as seems to be the case in one of the two setups in Ref.~\cite[Fig.~1(a)]{zeilinger:qct}
+and for other devices\footnote{In its {\em White Paper on Random Numbers Generation
+using Quantum Physics}~\cite{Quantis}, {\em id Quantique} on p.~7 (in the caption to Fig.~1) announces that
+its {\em Quantis} device  uses a light emitting diode,
+while at the same time (top of p.~7) pointing out that the monitoring of a Zener diode is problematic:
+``Formally the evolution of these generators is not random, but just very complex. One
+could say that determinism is hidden behind complexity.''
+}.
+The quality of the quantum random
+sequences produced thus seems to depend on the quality of the light source~\cite{stefanov-2000}
+in combination with the beam splitter.
+While {\em ``for all practical purposes}''
+it may be justified to use a particular (or maybe even any type of) particle source
+in combination with a particular beam splitter, this
+falls short of a certified procedure to obtain truly random bits
+in accordance with Bohm's principle of indeterminacy.
+
+
+\subsection{Complementary contexts}
+
+Complementarity is a quantum resource for randomness
+which may be supporting the random occurrence of individual events
+dealing with a mismatch between state preparation and measurement,
+as has already been discussed in the Section~\ref{2009-QvPR-s-mismatch}.
+It is, however, no sufficient criterion for indeterminism, as can be seen from finite automata~\cite{e-f-moore} or generalized
+urn models~\cite{wright}, which are nondistributive but still allow a classical representation~\cite{svozil-2001-eua,svozil-2005-ln1e}.
+Whether or not complementarity is a necessary criterion for quantum indeterminism seems to be debatable.
+For the lack of necessity, it may suffice to refer to some recording of individual outcomes of
+``irreversible'' measurements associated with a ``state reduction,''
+or to some decay of a meta-stable state.
+Yet, in the first ``state reduction'' case, the existence of principally unpredictable outcomes
+seems to be linked to complementarity; at least from an operational point of view.
+And also decays of excited states, due to the quantum Zeno effect~\cite{misra:756},
+depend on the mode of their measurement, which may be linked to time and energy.
+We shall not discuss these issues related to necessity further.
+
+
+
+Early discussions of complimentary-type features of quantum mechanics \cite{Heisenberg-27,vonNeumann:1927:WAQ}
+concentrate on a finite form of paradoxical self-reference among complementary observables resembling recursion theoretic diagonalization. In the words of Dirac~\cite[\S 1]{dirac},
+\begin{quote}
+{  ``It is usually assumed that, by being careful, we may cut down the
+disturbance accompanying our observation to any desired extent.
+The concepts of big and small are then purely relative and refer to the
+gentleness of our means of observation as well as to the object being
+described. In order to give an absolute meaning to size, such as is
+required for any theory of the ultimate structure of matter, we have
+to assume that there is a limit to the fineness of our powers of observation
+and the smallness of the accompanying disturbance---a limit which is
+inherent in the nature cf things and can never be surpassed by improved
+technique or increased skill on the part of the observer. If the object under
+observation is such that the unavoidable limiting disturbance is negligible,
+then the object is big in the absolute sense and we may apply
+classical mechanics to it. If, on the other hand, the limiting disturbance
+is not negligible, then the object is small in the absolute
+sense and we require a new theory for dealing with it.
+
+A consequence of the preceding discussion is that we must revise
+our ideas of causality. Causality applies only to a system which is
+left undisturbed. If a system is small, we cannot observe it without
+producing a serious disturbance and hence we cannot expect to find
+any causal connexion between the results of our observations.
+Causality will still be assumed to apply to undisturbed systems and
+the equations which will be set up to describe an undisturbed system
+will be differential equations expressing a causal connexion between
+conditions at one time and conditions at a later time. These equations
+will be in close correspondence with the equations of classical
+mechanics, but they will be connected only indirectly with the results
+of observations. There is an unavoidable indeterminacy in the calculation
+of observational results, the theory enabling us to calculate in
+general only the probability of our obtaining a particular result when
+we make an observation.''}
+\end{quote}
+
+
+In 1933, Pauli gave the first explicit definition of complementarity stating that (cf.~\cite[p.~7]{pauli:58},
+partial English translation in Ref.~\cite[p.~369]{jammer:89})~\footnote{
+{  ``Bei der Unbestimmtheit einer Eigenschaft eines Systems bei einer bestimmten Anordnung
+(bei einem bestimmten Zustand eines Systems) vernichtet jeder Versuch, die betreffende Eigenschaft zu messen,
+(mindestens teilweise) den Einflu\ss~
+der fr{\"u}heren Kenntnisse vom System auf die (eventuell statistischen) Aussagen
+{\"u}ber sp{\"a}tere m{\"o}gliche Messungsergebnisse.
+[[$\ldots$]]
+So m{\"u}ssen, um den Ort eines Teilchens zu bestimmen und um seinen Impuls zu bestimmen,
+{\em einander ausschlie\ss ende Versuchsanordnungen benutzt werden.}
+[[$\ldots$]]
+Die Beeinflussung des Systems durch den Messaparat f{\"u}r den Impuls (Ort)
+ist eine solche, da\ss~ innerhalb der durch die Ungenauigkeitsrelationen gegebenen Grenzen
+die Benutzbarkeit der fr{\"u}heren Orts- (Impuls-)
+Kenntnis f{\"u}r die Voraussagbarkeit der Ergebnisse sp{\"a}terer Orts- (Impuls-) Messungen verlorengegangen ist.
+Wenn aus diesem Grunde die Benutzbarkeit {\em eines} klassischen Begriffes in einem
+ausschlie\ss enden Verh{\"a}ltnis zu einem {\em anderen} steht, nennen wir diese beiden Begriffe (z.B. Orts- und
+Impulskoordinaten eines Teilchens) mit Bohr {\em komplement{\"a}r.}
+[[$\ldots$]]
+Man wird sehen, dass diese ``Komplementarit{\"a}t'' kein Analogon in
+der klassischen Gastheorie besitzt, die ja auch mit statistischen
+Gesetzm\"a\ss igkeiten operiert.
+Diese Theorie enth{\"a}lt n{\"a}mlich nicht die erst durch die Endlichkeit des Wirkungsquantums
+geltend werdende Aussage, da\ss~ durch Messungen an einem System die durch fr{\"u}here Messungen gewonnenen Kenntnisse
+{\"u}ber das System unter Umst{\"a}nden notwendig verlorengehen m{\"u}ssen, d.h. nicht mehr verwertet werden k{\"o}nnen.''
+}
+},
+\begin{quote}
+{  ``In the case of  an indeterminacy of a property of a system at a certain configuration
+(at a certain state of a system), any attempt to measure the respective property (at least partially)
+annihilates the influence of the previous knowledge of system on the (possibly statistical) propositions
+about possible later measurement results.
+[[$\ldots$]]
+The impact
+on the system by the  measurement apparatus for momentum (position) is such that
+within the limits of the uncertainty relations
+the value of the knowledge of the previous position (momentum) for the
+prediction of later measurements of position and momentum is lost.
+If, for this reason, the applicability of {\em one} classical concept stands in the relation of
+exclusion to that of {\em another}, we call both of these
+concepts (e.g., the position and momentum coordinates of a particle) with Bohr {\em complementary.}
+[[$\ldots$]]
+One will see that this ``complementarity''
+has no analogy in the classical statistical theory of gases,
+which also operates with statistical laws.
+This theory does not contain the assertion --- which is only valid through the finiteness of the
+quantum of action --- that the measurement of a system may necessarily result in a loss
+of knowledge acquired through previous measurements; i.e., the previous
+measurements can no longer be used.''
+}
+\end{quote}
+
+Complementarity may thus be interpreted as a subtle kind of departure from
+classical omniscience:
+whereas it may in principle be possible to measure any single, individual context,
+or any (classically operational) observable within (or encompassing) a context,
+the direct measurement
+(not involving counterfactuals in Einstein-Podolsky-Rosen type configurations~\cite{epr,svozil-2006-omni})
+of two or more contexts, or of one context and some observable ``outside'' of it
+is impossible.
+
+Until the theorems by Bell, Kochen \& Specker and Greenberger, Horne \& Zeilinger, quantum indeterminism was thus either
+(i) ``believed'' and corroborated by the ``effective inability to disprove the contrary'' (i.e., determinism), or
+(ii) argued by ``intrinsic self-reference'' and the impossibility of the measurement process
+ to act ``softer than'' the quantum of action $h$ on the object.
+In the latter case, one could still believe that, contrary to (i), there exist {\em elements of physical reality}, which,
+in the sense of Einstein, Podolsky and Rosen~\cite{epr} could even be  measured and
+counterfactually~\cite{svozil-2006-omni} inferred simultaneously~\cite{svozil-2006-uniquenessprinciple}.
+
+
+\subsection{Value indefiniteness}
+
+In deriving the quantum probabilities
+---
+which have originally been postulated by Born's rule as an axiom of quantum mechanics
+---
+from a buildup of classical probabilities within contexts in Hilbert spaces of dimension greater than two,
+Gleason's theorem~\cite{Gleason,pitowsky:218,rich-bridge,r:dvur-93}
+has motivated many authors to derive
+nonlocal~\cite{bell,peres222,hey-red,ghz,mermin-93,zeilinger-epr-98}
+as well as local~\cite{specker-60,kochen1,ZirlSchl-65,Alda,Alda2,kamber64,kamber65,peres-91,svozil-tkadlec,cabello-96,cabello:210401}
+constraints on the existence of {\em global} truth functions (two-valued measures)
+on the {\em entire domain} of quantum observables.
+Bell's theorem already statistically indicated the
+impossibility of co-existence of certain observables
+``exceeding'' a single context, e.g.,
+by considering the statistics of listing of possible measurement outcomes
+and comparing them to the quantum expectations
+\cite{peres222}; and the
+Kochen-Specker theorem presented a finite proof (by contradiction)
+of the impossibility of their co-existence.
+
+When it comes to interpreting and understanding these results, one difficulty  is a fact
+already encountered in the study of complementarity:
+whereas the {\em totality} of contexts is not co-measurable,
+any {\em individual} context is measurable.
+In this sense,
+the Kochen-Specker and related~\cite{ghz,mermin-93}
+theorems  can be viewed to strengthen complementarity:  not only
+is it {\em operationally} impossible to directly~\cite{svozil-2006-uniquenessprinciple} measure
+more than a single context (despite counterfactual measurements of two contexts
+in Einstein-Podolsky-Rosen type configurations~\cite{epr,svozil-2006-omni}) ---
+it is provable impossible to consistently assume any co-existence of all quantum observables
+which could in principle be measured~\cite{peres222}. We shall refer to this as {\em value indefiniteness.}
+
+Of course, there are ways to ``cope'' with these findings quasi-classically (quasi-realistically)
+the most popular being the ``contextuality''
+assumption, which was first put forward by Bell
+in an attempt to save a kind of realism~\cite{bohr-1949,bell-66,hey-red,redhead}.
+It maintains the physical existence of all conceivable potential observables but assumes that the~\cite{bell-66}
+``$\ldots$
+result of an observation may reasonably depend
+not only on the state of the system  $\ldots$
+but also on the complete disposition  of the apparatus,''
+which could mean that the outcome of a measurement may depend on its context~\footnote{Other schemes to circumvent the quantum value indefiniteness are through
+probabilities defined via paradoxical set decompositions~\cite{pitowsky-82,pitowsky-83}
+or by considering certain dense subsets of scarcely interlinked quantum contexts~\cite{meyer:99}.}.
+
+Note that, due to the Born rule --- derivable by Gleason's theorem~\cite{Gleason,r:dvur-93,pitowsky:218} for three- and higher-dimensional Hilbert space ---
+the quantum mechanical expectation value $\langle E\rangle_\rho =\textrm{Tr} \left(\rho E\right)$ of an observable corresponding to a hermitean operator $E$
+and a physical state $\rho$
+does not depend on the context; in particular,  the expectation value $\langle E\rangle_\rho$  of a proposition corresponding to a projector $E$
+is independent of the particular choice of basis among the continuity of orthogonal bases which it may belong to~\cite{svozil:040102}.
+Thus, contextuality is restricted to {\em single, individual outcomes} of potential measurements.
+Stated differently, quantum mechanics does not determine a specific measurement outcome of an observable,
+but  determines the expectation value of that observable.
+In this respect, the quantum contextuality assumption is somewhat similar to Born's concept of deterministic evolution of the quantum state as compared to the
+indeterministic occurrence of single events; or the {\em outcome dependence {\it versus} parameter independence}
+for remote nonlocal~\cite{wjswz-98} correlated quantum events~\cite{shimony2}.
+
+The Kochen-Specker theorem is a rather strong indication of value indefiniteness
+and thus  of quantum indeterminism~\cite{2008-cal-svo} and randomness beyond Born's conjecture of the random occurrence of
+individual events, and even beyond complementarity; at least for multi-context configurations where Kochen \& Specker constructions are viable.
+
+Since a nontrivial interconnectedness of different bases
+is possible only for Hilbert spaces of dimension three onwards,
+the Gleason and the Kochen-Specker theorems apply only to Hilbert spaces
+of dimensions {\em higher than two} (see the related argument in Ref.~\cite[p.~193]{peres}); hence value indefiniteness can be proven
+only for systems of {\em three or more mutually exclusive outcomes}.
+For two-dimensional systems, one has still to rely purely on Born's indeterminacy postulate,
+solely backed by complementarity and the quantum uncertainty relations.
+We have to conclude that,
+as presently many  quantum random number generators using beam splitters (also the ones utilizing complementarity)
+operate with two exclusive outcomes,
+they are not backed by value indefiniteness in the sense of Bell, Kochen \& Specker and Greenberger, Horne \& Zeilinger.
+
+One may still argue that, although the Born rule for quantum probabilities and expectations
+cannot be proven from the (more elementary) assumptions of Gleason's theorem~\cite[\S~7.2]{peres}
+for two-dimensional Hilbert spaces by presently known mathematical methods, this
+does not exclude the possibility that some other methods exist which would  prove similar results
+related to value indefiniteness even for physical configurations with two
+mutually exclusive outcomes.
+For the sake of excluding this latter possibility, one should,
+for instance, find a counterexample
+(on the structure of quantum observables in two-dimensional Hilbert space)
+which
+(i) either is not in accordance with the Born rule but still
+in accordance with the additivity property upon which Gleasons's theorem is based;
+(ii) or is in accordance with the Born rule but allows
+two-valued states which may or may not be sufficient for a homeomorphic embedding into a Boolean algebra.
+A typical counterexample of the first type
+would be one in which an electron spin observable,
+for noncollinear directions, would always point ``up'' and ``down'' according to some algorithmic
+rule~\cite[pp.~70-72]{svozil-ql}).
+Formally, this is due to the fact that, for two-dimensional configurations, there exists a
+full, separating set of two-valued states.
+A counterexample of the second type appears to allow merely states which
+are singular only in a {\em single} pair of observables (indeed, this is true for arbitrary Hilbert space dimensions), and thus are insufficient for the particular purpose.
+
+\subsection{Incomputability of quantum randomness and empirical testing}
+\label{incomput}
+
+In~\cite{2008-cal-svo} it is proved that quantum randomness is not Turing computable.
+More precisely, suppose that a quantum experiment produces an infinite sequence of quantum random bits.
+Would such a sequence be computable by a Turing machine?
+If we accept value indefiniteness as expressed by the theorems of Bell, Kochen \& Specker and Greenberger, Horne \& Zeilinger,
+then the answer given in Ref.~\cite{2008-cal-svo} is negative;
+even more, {\it no Turing machine can enumerate an infinity of correct bits of such a sequence}.
+For example, an infinite sequence of quantum random bits may start with a billion of 0's,
+but cannot consist entirely of only 0's. The infinite sequence of  bits $0100011011000001\ldots$
+(Champernowne's constant) or the binary expansion of $\pi$ cannot be exactly reproduced by any quantum experiment.
+
+
+
+But is quantum randomness a ``true'' and ``objective'' form of randomness?
+First, and foremost, there is no such thing as ``true'' randomness as measure-theoretical arguments show~\cite{calude:02}.
+Secondly, {\it  it is an open question  whether quantum randomness satisfies the
+requirements of algorithmic randomness}~\cite{calude:02}.
+%\marginpar{started cris}
+
+
+
+Our aim is to experimentally study the possibility of distinguishing between
+quantum sources of randomness (proved to be theoretically incomputable) and  some well-known computable
+sources of  pseudo-randomness.
+%\footnote{We are not concerned with any practical applicability of the outputs produced by these sources.}
+ The  legitimacy of the experimental approach comes from algorithmic information theory
+which provides characterizations of algorithmic random sequences in terms of the degrees of incompressibility of their finite prefixes.
+More precisely, a sequence is algorithmic random iff  all its finite prefixes cannot be compressed by a universal prefix-free Turing machine by more than a fixed constant
+(which depends on the fixed machine and sequence and not on prefixes)~\cite{calude:02}.
+The degree of incompressibility of a string is measured with the prefix-complexity $H_{U}$ (which depends on the universal prefix-free Turing machine
+$U$). The best empirical test of randomness would be to calculate the prefix-complexity of all prefixes of  a given (long) string.
+This is impossible because the prefix-complexity is incomputable.
+However, there are computable, but weaker properties than incompressibility which can be tested on prefixes, for example, Borel normality (explained below).
+Of course, any such property is necessary, but not sufficient; hence  the (degree of) {\it absence of the property is significant.}
+
+
+
+We have performed
+tests of randomness on pseudo-random strings (finite sequences) of length $2^{32}$ generated with software
+(Mathematica, Maple),  which are not only computable, but also cyclic, the bits of $\pi$, which is computable, but not cyclic, and strings produced by quantum measurements with the commercial device Quantis, as well as  by the Vienna IQOQI group.
+
+
+
+The signals of the Vienna Institute for Quantum Optics and Quantum
+Information (IQOQI)
+group were generated with photons from a weak blue LED light source which impinged on a
+beam splitter
+without any polarization sensitivity with two output ports associated
+with the codes ``0'' and ``1,'' respectively~\cite{zeilinger:qct}.
+There was no pre- or post-processing of the raw data stream,
+however the output was constantly monitored
+(the exact method is subject to a patent pending).
+In very general terms, the setup needs to be running for at least one
+day to reach a stable operation.
+There is a regulation mechanism which keeps track of the bias between
+``0'' and ``1,''
+and  tunes the random generator for perfect symmetry.
+Each data file was created in one continuous run of the device
+lasting over hours.
+
+
+
+
+
+Our empirical tests indicate quantitative differences between computable
+and incomputable sources by examining (long, but)
+finite prefixes of infinite sequences.
+Such differences are guaranteed to exist by the result in Ref~\cite{2008-cal-svo}, but, because computability is an asymptotic property,
+there is no guarantee that
+finite tests can ``pick'' them  in the prefixes we have analyzed.
+We performed more tests than those described below, but discarded
+those for which the results were inconclusive  (cf. Ref.~\cite{Rukhin-nist}).
+In what follows we will describe
+a battery of ``non-standard'' randomness tests based on coding theory and
+algorithmic information theory results~\cite{calude:02}  which distinguish
+between the  computable
+and incomputable sources that we sampled.
+%http://modp.com/release/nist800-22/
+
+
+
+\section{Randomness tests}
+
+\label{tests}
+In order to avoid some ideological or metaphysical bias, all
+sequences have been treated on an equal footing by looking with
+``evenly-suspended attention'' at their phenomenological encoded
+phenotypes. No hidden ``meaning'' or ``message'' should be ascribed to them.
+This is conceptually related to the following scenario.
+
+Consider a couple of labeled ``black boxes,'' each being the source
+of binary sequences, emanated at a constant rate.
+In our case, we have two ``Born boxes'' operating under Born's
+assumption of quantum randomness (actually, Quantis is just that),
+a ``Pi box'' humming out binary digits of $\pi$, as well as some
+``Sinners'' (in von Neumann's judgment~\cite{von-neumann1})
+containing algorithms pretending to
+output random digits.
+
+Suppose that these boxes cannot be ``screwed open,'' and no clues
+about the origin of the symbolic sources are otherwise obtainable
+from the outside in any perceivable way.
+Suppose further that somebody (either a devil, or a malign colleague,
+or a cleaning agent) has erased the labels completely.
+Would we be able to tell which box is which by analyzing their bit
+renditions alone?
+In what follows, we shall present some tentative answers to this question
+based on data produced with these boxes.
+
+
+ \subsection{Data}
+Our data consist of 50 binary sample ``random'' strings  of length
+$2^{32}$: 10 pseudo-random strings  produced by Mathematica 6~\cite{MRG},
+10 pseudo-random strings  produced by  Maple 11~\cite{MAPLE}, 10 quantum random strings
+generated with  Quantis~\cite{Quantis}, 10 quantum random strings
+generated by the Vienna IQOQI group~\cite{Vienna},
+%2 pseudo-random strings  generated with the AES algorithm
+%\cite{MR1986943} (see~\cite{DBLP:journals/tomacs/HellekalekW03} for an empirical analysis),
+and  10 strings of $2^{32}$ bits from the binary expansion of $\pi$ obtained from~\cite{pi}.
+
+The process used to generate ten strings from $\pi$ is the following.   The input was given
+to us in hexadecimal format, with two decimal digits per byte; or one decimal digit per nibble.
+Two random decimal digits were selected to be omitted throughout the string~\footnote{For the curious, our ten pairs
+of deleted digits were $\{0,1\},\{0,5\},\{1,6\},\{2,3\},\{2,7\},\{3,8\},\{4,5\},\{4,9\},\{6,7\},$
+and $\{8,9\}$.} The remaining decimal digits are assigned a 3-bit binary number 0 to 7,
+which are output as 3 bits each.
+Processing continues until $2^{32}$  bits are output.
+The input source that we downloaded had 4,200,000,000 decimal digits so potentially up to
+$1.008\times 10^{10}$ bits can be extracted (which is about $2.347 \times 2^{32}$);
+thus
+almost all of these digits are needed to generate our 10 strings. The
+justification that these ``projected'' binary strings share the same randomness properties of
+$\pi$ is given by the following result~\cite{calude:02}: if in a random sequence over an alphabet $\{a_{1}, \ldots , a_{k}\}$, $k>2$, we remove all occurrences of a
+fixed symbol $a_{i}$, then the new sequence is also random (over
+an alphabet with $k-1$ symbols).
+
+\subsection{Descriptive statistics}
+
+  Our experiments have been uniformly performed on all these fifty sample strings.
+The tests presented below can be grouped into the following classes:
+\begin{enumerate}
+\item
+Borel normality test;
+\item
+test based on Shannon's information theory;
+\item
+two tests  based on algorithmic information theory; and
+\item
+test based on random walks.
+%\item
+%(limited) tests based on T-information.
+\end{enumerate}
+
+We present our test results using
+box-and-whisker plots which are compact graphical representations of
+groups of numerical data through five characteristic summaries:
+%the smallest observation (sample minimum), lower quartile (representing
+%one fourth of the sampled data), median, upper quartile, and largest
+%observation (sample maximum).
+ test minimum value, first quantile (representing one fourth of the test data), median or second quantile (representing half of the test data), third quantile (representing three fourths of the test data), and test maximum value.
+Mean and standard deviation of the data representing the results of the tests are calculated.
+For the reader who prefers ``numbers'' instead of ``pictures,'' tables containing
+all these seven elements of descriptive statistics are included for all five sources.
+
+Tables containing the experimental data and the programs used
+to generate the data can be downloaded from our extended paper~\cite{CDMTCS372}.
+
+\subsubsection{Borel normality test}
+
+Borel normality was the first mathematical definition of randomness~\cite{borel:09}.
+A sequence is (Borel) normal if every  binary string appears in the sequence with the right probability
+(which is $2^{-n}$ for a string of length $n$).
+A  sequence is normal if and only  it  is incompressible by any information lossless finite-state compressor~\cite{ZL:1978}, so  normal sequences are  those sequences  that appear random to any finite-state machine.
+
+
+Every algorithmic random infinite sequence is Borel normal~\cite{DBLP:conf/dlt/Calude93}.
+ The converse implication is not true:
+there exist computable normal sequences (e.g.,  Champernowne's constant).
+
+
+Normality is invariant under finite variations: adding, removing, or changing a finite number of bits in any normal sequence leaves it normal. Further, if a sequence satisfies the normality condition
+for strings of length $n+1$, then it also satisfies normality for strings of length $n$, but the converse is not true.
+
+Normality was transposed to  strings in Ref.~\cite{DBLP:conf/dlt/Calude93}. In this process one  has to replace limits with inequalities. As a consequence, the above two properties, which are valid for sequences, are no longer true for strings.
+
+
+
+%We denote by  $N_{i}(x)$ the number
+%of  occurrences of the letter $i\in \{0,1\}$ in the string $x$.
+%A  string $x$ is called
+% $\varepsilon${\bf -limiting} ($\varepsilon $ is a fixed positive real)
+%if it satisfies the inequality ($|x|$ is the length of $x$ considered as a string over $\{0,1\}$):
+%$| N_{i}(x)/|x| - 1/2| \leq \varepsilon$, for $i=1,2$.
+For any fixed  integer $m > 1$, consider the alphabet $B_{m} = \{0,1\}^{m}$ consisting of all binary strings of length $m$,
+ and for
+every $1 \leq i \leq 2^{m}$ denote by $N_{i}^{m}$ the
+ number of occurrences of the lexicographical $i$th binary string of length $m$ in the string $x$ (considered over the alphabet $B_{m}$).
+ By $|x|_{m}$ we denote the length of $x$.
+ A string $x$ is Borel normal if
+  for every natural $1 \leq m \leq \log_{2}\log_{2} |x|,$
+  \[
+\left| \frac{N_{j}^{m}(x)}{|x|_{m}} -  2^{-m} \right| \leq
+\sqrt\frac{\log_{2}|x|}{|x|}\raisebox{0.5ex}{,}\]
+for every $1 \leq j \leq 2^{m}$.
+In Ref.~\cite{DBLP:conf/dlt/Calude93}
+it is shown that almost all algorithmic random strings are Borel normal.
+
+
+In the first test
+we  count the maximum, minimum and difference of non-overlapping occurrences of  $m$-bit ($m=1,\ldots , 5$) strings  in
+each sample string.   Then we tested the Borel normality property for each sample string and found that
+almost all strings pass the  test,  with some notable exceptions.
+We found that several of the Vienna sequences failed the expected count range for
+$m=2$ and a few of the Vienna sequences were outside the expected range for $m=3$
+and $m=4$ (some less then the expected minimum count and some more than the expected
+maximum count).  The only other bit sequence that was outside the expected range
+count was one of the Mathematica sequences that had a too big of a count for $k=1$.
+%
+Figure~\ref{fig:example1} depicts a box-and-whisker plot of the
+results. This is followed by statistical (numerical) details
+in Table~\ref{tab:1}.
+
+
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=6in]{2009-QvPR-boxborelk2}
+   \caption{(Color online) Box-and-whisker plot for the results for tests of the Borel normality property.}
+   \label{fig:example1}
+\end{figure}
+
+\begin{table}
+\caption{Statistics for the results for tests of the Borel normality property.}\label{tab:1}
+\begin{center}
+\begin{tabular}
+[c]{c c c c c c c c c c c c c c c }%
+\hline\hline
+Descriptive statistics & min & Q1 & median & Q3 & max & mean & sd\\\hline
+Maple & 22430 & 47170 & 61990 & 76130 & 94510 & 60210 & 21933.52\\
+Mathematica & 8572 & 25500 & 40590 & 55650 & 86430 & 41870 & 23229.77\\
+Quantis & 146800 & 185100 & 210500 & 226600 & 260000 & 207200 & 33515.65\\
+Vienna & 77410 & 340200 & 350500 & 392500 & 260000 & 337100 & 103354.3\\
+$\pi$ & 14260 & 28860 & 40880 & 47860 & 79030 & 40220 & 17906.21\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\subsubsection{Test based on Shannon's information theory}
+
+The second test
+computes  ``sliding window'' estimations of the Shannon entropy $L_n^1, \ldots ,L_n^t$ according to the method described in
+\cite{Wyner}: a smaller  entropy is a symptom of  less randomness.
+The results are presented in
+%Table~\ref{table6} and
+Figure~\ref{fig:example2} and Table~\ref{tab:2}.
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=6in]{2009-QvPR-boxLentropy}
+   \caption{(Color online) Box-and-whisker plot for average results in ``sliding window'' estimations of the Shannon entropy.}
+   \label{fig:example2}
+\end{figure}
+
+
+\begin{table}
+\caption{Statistics for average results in ``sliding window''
+estimations of the Shannon entropy.}\label{tab:2}
+\begin{center}
+\begin{tabular}
+[c]{c c c c c c c c c c c c c c c }%
+\hline\hline
+Descriptive statistics & min & Q1 & median & Q3 & max & mean & sd\\\hline
+Maple & 0.9772 & 0.9781 & 0.9784 & 0.9787 & 0.9788 & 0.9783 & 0.0005231617\\
+Mathematica & 0.9776 & 0.9781 & 0.9783 & 0.9785 & 0.9800 & 0.9783 & 0.0006654936\\
+Quantis & 0.9779 & 0.9783 & 0.9783 & 0.9786 & 0.9795 & 0.9784 & 0.0004522699\\
+Vienna & 0.9772 & 0.9777 & 0.9784 & 0.9790 & 0.9792 & 0.9783 & 0.0006955834\\
+$\pi$ & 0.9779 & 0.9784 & 0.9788 & 0.9790 & 0.9799 & 0.9788 & 0.0006062724\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsubsection{Tests based on algorithmic information theory}
+
+The third test
+uses  the ``book stack'' (also known as ``move to front'') randomness
+test as proposed in Ref.~\cite{MR2099021,MR2162569}.
+% which is based on results and ideas coding theory.
+%The test rejects the randomness hypothesis if the string can be compressed
+%by a considered universal code asymptotically till the Shannon entropy per
+%symbol.
+More compression is a symptom of less randomness.
+The results, presented in
+%Table~\ref{table8} and
+Figure~\ref{fig:example3} and Table~\ref{tab:3}, are derived from the original count, the count after the application
+of the transformation, and the difference.  The key metric for this test is
+the count of ones after the transformation.  The book stack encoder does
+not compress data but instead rewrites each byte with its index (from
+the top/front) with respect to its input characters being
+stacked/moved-to-front.
+Thus, if a lot of repetitions occur (i.e., a symptom of
+non-randomness), then the output  contains more zeros than ones due to
+the sequence of indices generally being smaller numerically.
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=6in]{2009-QvPR-boxbookstack}
+   \caption{(Color online) Box-and-whisker plot for the results of  the ``book stack'' randomness test.}
+   \label{fig:example3}
+\end{figure}
+
+\begin{table}
+\caption{Statistics for the results of  the ``book stack'' randomness
+test.}\label{tab:3}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c c c }%
+\hline\hline
+Descriptive statistics & min & Q1 & median & Q3 & max & mean & sd\\\hline
+Maple & 7964 & 34490 & 49220 & 69630 & 108700 & 53410 & 33068.58\\
+Mathematica & 4508 & 13020 & 24110 & 43450 & 62570 & 27940 & 19406.03\\
+Quantis & 28600 & 60480 & 87780 & 106700 & 156100 & 89990 & 41545.76\\
+Vienna & 9110 & 38420 & 57720 & 73220 & 97660 & 53860 & 27938.92\\
+$\pi$ & 8551 & 35480 & 42100 & 52870 & 78410 & 41280 & 20758.46\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+The fourth test is   based solely on the behavior of algorithmic random strings (as
+selectors for Solovay-Strassen probabilistic primality test) and not on specific properties of randomness.
+
+To test whether  a positive integer
+$n$ is prime, we take $k$ natural numbers uniformly distributed between 1
+and $n - 1$, inclusive, and, for each one $i$, check whether the predicate
+$W (i, n)$ holds.  If this is the case we say that
+``$i$ is a witness of $n$'s compositeness''.
+If $W (i, n)$ holds for at least one $i$ then $n$ is
+composite; otherwise, the test is inconclusive, but in this case if one declares $n$ to be  prime then the
+ probability to be wrong is smaller than $ 2^{-k}$.
+
+ This is due to the fact that
+ at least half  $i$'s from $1$ to $ n - 1$ satisfy $W (i, n)$  if $n$ is indeed composite,
+ and {\it none} of them satisfy $W (i, n)$ if $n$ is prime~\cite{solovay:84}.
+Selecting $k$ natural numbers  between 1
+and $n - 1$ is the same as choosing a binary string $s$ of length $n-1$ with $k$ $1$'s
+such that the $i$th bit is 1 iff $i$ is selected.
+Ref.~\cite{ch-schw-78} contains a  proof that, if $s$ is a long enough   algorithmically random binary string,
+then $n$ is prime iff $Z(s,n)$ is true,
+where $Z$ is a predicate constructed directly from conjunctions of negations of  $W$~\footnote{
+In fact, every  ``decent'' Monte Carlo simulation algorithm in  which  tests are chosen according to an
+algorithmic random string produces a result
+which is not only true with high probability, but {\it rigorously correct}~\cite{MR757602}.}.
+
+A Carmichael number is a composite positive integer $k$ satisfying the congruence $b^{k-1} \equiv 1 ({\rm mod } \, k)$
+for all integers $b$ relative prime to $k$.
+Carmichael numbers are composite, but are difficult to factorize and thus are ``very similar'' to primes;
+they are sometimes called pseudo-primes.
+Carmichael numbers can fool Fermat's primality test, but less   the Solovay-Strassen test.
+With increasing values, Carmichael numbers
+become ``rare''~\footnote{There are 1,401,644 Carmichael numbers in the interval $[1, 10^{18}]$.}.
+
+
+
+The fourth test uses Solovay-Strassen probabilistic primality test for
+Carmichael numbers (composite) with prefixes of the sample strings as the binary
+string $s$. We used the Solovay-Strassen  test for all Carmichael numbers less
+than $10^{16}$---computed in Ref.~\cite{Pinch,Pinch07}---with numbers selected according to increasing prefixes of each sample string till the algorithm returns
+a non-primality verdict. The metric is given by the length of the sample used to
+reach the correct
+verdict of non-primality for all of the 246683 Carmichael numbers less than
+$10^{16}$.  [We started with $k=1$ tests (per each Carmichael number) and increase $k$
+until the metric goal is met; as $k$ increases we always use new bits (never
+recycle) from the sample source strings.]
+The results are presented in
+%Table~\ref{table5} and
+Figure~\ref{fig:example4} and Table~\ref{tab:4}.
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=6in]{2009-QvPR-boxsolovey}
+   \caption{(Color online) Box-and-whisker plot for the results based on the Solovay-Strassen probabilistic primality test.}
+   \label{fig:example4}
+\end{figure}
+
+\begin{table}
+   \caption{Statistics for the results based on the
+Solovay-Strassen probabilistic primality test.}\label{tab:4}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c c c }%
+\hline\hline
+Descriptive statistics & min & Q1 & median & Q3 & max & mean & sd\\\hline
+Maple & 93.0 & 96.0 & 101.0 & 113.5 & 120.0 & 104.9 & 10.57723\\
+Mathematica & 93.0 & 97.0 & 109.0 & 132.3 & 142.0 & 113.5 & 19.60867\\
+Quantis & 99.0 & 103.3 & 113.0 & 121.3 & 130.0 & 112.6 & 10.66875\\
+Vienna & 82.0 & 100.3 & 104.5 & 109.0 & 119.0 & 103.5 & 11.03781\\
+$\pi$ & 84.0 & 91.75 & 106.0 & 110.8 & 128.0 & 104.7 & 10.66875\\\hline  \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\subsubsection{Test based on random walks}
+
+%A string is  `more random' if the plot generated by viewing a sample sequence as
+%a 1D random walk meanders farther away
+%from the starting point (both ways); hence the max-min range is the metric.
+
+
+A symptom of non-randomness of a string is detected when the plot generated by viewing a sample sequence as
+a 1D random walk meanders less  away
+from the starting point (both ways); hence the max-min range is the metric.
+
+
+The fifth test
+is based on viewing a  random
+sequence as a 1D random walk.  Here the bits (indices along the $x$-axis) are
+interpreted as follows: 1=move up, 0=move down ($y$-axis).
+This test measures  how far away from the starting point (in either positive
+or negative) from the starting $y$-value of 0 that one can reach using
+successive bits of the sample sequence.
+%to move up or down.
+%Table~\ref{table9} and
+Figure~\ref{fig:example5} and Table~\ref{tab:5} summarize the results.
+
+
+
+
+
+
+\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+   \centering
+   \includegraphics[width=6in]{2009-QvPR-boxrandomwalk}
+   \caption{(Color online) Box-and-whisker plot for the results of the random walk tests.}
+   \label{fig:example5}
+\end{figure}
+
+\begin{table}
+\caption{Statistics for the results of the random walk tests.}\label{tab:5}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c c c }%
+\hline\hline
+Descriptive statistics & min & Q1 & median & Q3 & max & mean & sd\\\hline
+Maple & 67640 & 88730 & 126400 & 162500 & 180500 & 125300 & 42995.59\\
+Mathematica & 73500 & 84760 & 98110 & 103400 & 120300 & 96450 & 14685.34\\
+Quantis  & 138200 & 161600 & 209000 & 250200 & 294200 & 211300 & 55960.23\\
+Vienna & 92070 & 130200 & 155600 & 167600 & 226900 & 152900 & 36717.55\\
+$\pi$ & 58570 & 70420 & 82800 & 91920 & 107500 & 82120 & 14833.75\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Statistical analysis of randomness tests results}
+
+In what follows statistical tests are used to compare the probability
+distributions of results of randomness tests applied to the strings generated by the
+five sources.
+The Kolmogorov-Smirnov test  for two samples \cite{Conover}
+tries to determine if two datasets differ significantly.
+This test
+has the advantage of making no assumption about the distribution of data; i.e., it
+is non-parametric and distribution free.
+The Kolmogorov-Smirnov test returns a $p$-value,
+and the decision ``the difference between the two datasets is statistically
+significant" is accepted if the $p$-value {\em is less than $0.05$;}
+or, stated pointedly, if the
+probability of taking a wrong decision is less than $0.05$. Exact $p$-values are
+only available for the two-sided two-sample tests with no ties.
+
+In some cases we have tried to double-check the decision  ``no significant
+differences between the datasets"  at the price of a supplementary, plausible
+distribution assumption. Therefore, we have performed the Shapiro-Wilk test  for normality
+\cite{Shapiro-Wilk} and, if normality is not rejected, we have assumed that the
+datasets have normal (Gaussian) distributions.
+In order to be able to compare the expected values (means) of the two samples,
+the Welch $t$-test~\cite{Welch}, which is a version of Student's test, has been applied.
+
+The Shapiro-Wilk test axamines the null hypothesis that a sample
+$z_{1},\ldots ,z_{n}$ comes from a normally distributed population. This test is
+appropriate for small samples, since it is not an asymptotic test.
+As for each
+source ten independent strings have been studied, we have applied the
+Shapiro-Wilk test for a sample size $n = 10$.
+
+The Welch's $t$-test~\cite{Welch} is an adaptation of Student's $t$-test  used
+with two samples having possibly unequal variances. It is used to test the
+null hypothesis that the two population means are equal (using a two-tailed test).
+
+The calculations
+have been performed with the software {\em ``R''}~\cite{rproject}.
+In order to emphasize the relevance of p-values less than 0.05 associated with Kolmogorov-Smirnov,
+Shapiro-Wilk and Welch's $t$-tests, they are printed in boldface and discussed in the text.
+
+
+\subsubsection{Borel test of normality}
+
+
+
+The results of the Kolmogorov-Smirnov test are presented in Table~\ref{tab:5b}.
+
+\begin{table}
+\caption{Kolmogorov-Smirnov test for the Borel normality tests.}\label{tab:5b}
+ \begin{center}
+ \begin{tabular}
+[c]{ c c c c c }
+\hline\hline
+Kolmogorov-Smirnov test $p$-values & Mathematica & Quantis & Vienna & $\pi$ \\\hline
+Maple & 0.4175 &$\mathbf{< 10^{-4}}$%\bf{0.00001083}
+& \bf{0.0002}
+& 0.1678\\
+Mathematica &  & $\mathbf{< 10^{-4}}$% \bf{0.00001083}
+& \bf{0.0002} & 0.9945\\
+Quantis &  &  & \bf{0.0002} & $\mathbf{< 10^{-4}}$%0.00001083
+\\
+Vienna &  &  &  & \bf{0.0002}\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+Statistically significant differences are identified for
+(i) Quantis {\it versus}  Maple,  Maple, Mathematica and $\pi$;
+(ii) Vienna {\it versus}  Maple, Mathematica and $\pi$; and
+(iii) Quantis {\it versus}  Vienna.
+
+
+Note that
+
+\begin{enumerate}
+
+\item Pseudorandom strings pass the Borel normality test for comparable numbers of counts, relatively small:
+if the angle brackets   $\langle x \rangle$ stand for the statistical mean of tests on $x$, then
+ $\langle \text{Maple} \rangle  = 60210$, $\langle \text{Mathematica} \rangle  = 41870$,
+$\langle  \pi \rangle  = 40220$).
+
+
+\item Quantum strings pass the Borel normality test only for ``much larger numbers''
+of counts
+($\langle \text{Quantis} \rangle  = 207200$, $\langle \text{Vienna} \rangle  = 337100$),
+
+
+%\item Normality  was rejected by the Shapiro-Wilk test only for Vienna.
+
+
+%\item Statistically significant difference between the results of the BNTest applied for Vienna and Quantis is established by means of the ks.test for two samples
+
+\end{enumerate}
+
+As a result, the Borel normality test detects and identifies
+statistically significantly differences between all pairs of computable and incomputable  sources of ``randomness.''
+
+ \subsubsection{Test based on Shannon's information theory}
+
+ The results of the Kolmogorov-Smirnov test are presented in  Table~\ref{tab:6}.
+No significant differences are detected. The descriptive statistics
+data for the results of this test  indicates almost identical
+distributions corresponding to the five sources.
+
+
+\subsubsection{Tests based on algorithmic information theory}
+
+
+\begin{table}
+\caption{Kolmogorov-Smirnov test for Shannon's information theory tests.}\label{tab:6}
+ \begin{center}
+ \begin{tabular}
+[c]{ c c c c c }
+\hline\hline
+Kolmogorov-Smirnov test $p$-values & Mathematica & Quantis & Vienna & $\pi$ \\\hline
+Maple & 0.7870 & 0.7870 & 0.7870 & 0.1678\\
+Mathematica &  & 0.7870 & 0.4175 & 0.0525\\
+Quantis &  &  & 0.4175 & 0.1678\\
+Vienna &  &  &  & 0.4175\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+The results of the Shapiro-Wilk test are presented in Table~\ref{tab:7}.
+Since there is no clear
+pattern of normality for the data, the application of Welch's $t$-test is not
+appropriate.
+
+
+\begin{table}
+\caption{Shapiro-Wilk test for Shannon's information theory tests.}\label{tab:7}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c }\hline\hline
+Shapiro-Wilk test & Maple & Mathematica & Quantis  & Vienna  & $\pi$\\\hline
+$p$-value & 0.1962 & \bf{0.0189} &
+\bf{0.0345} & 0.3790 & 0.8774\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+
+
+The results of the Kolmogorov-Smirnov test associated with the ``book-stack" tests are enumerated in Table~\ref{tab:8}.
+Statistically significant differences are identified for
+Quantis {\it versus} Mathematica and $\pi$.
+
+
+
+\begin{table}
+\caption{Kolmogorov-Smirnov test for the ``book-stack'' tests.}\label{tab:8}
+ \begin{center}
+ \begin{tabular}
+[c]{ c c c c c }
+\hline\hline
+Kolmogorov-Smirnov test $p$-values & Mathematica & Quantis & Vienna & $\pi$ \\\hline
+Maple  & 0.4175 & 0.1678 & 0.9945 & 0.4175\\
+Mathematica &  & \bf{0.0021} & 0.1678 & 0.4175\\
+Quantis &  &  & 0.1678 & \bf{0.0123}\\
+Vienna &  &  &  & 0.4175\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+As more compression is a symptom of less randomness,  the corresponding ranking of
+samples is as follows:
+$\langle \text{Quantis} \rangle  = 89988.9 > \langle \text{Vienna} \rangle  = 53863.8  >  \langle \text{Maple} \rangle  =
+53411.6 > \langle  \pi \rangle  = 41277.5  >  \langle \text{Mathematica} \rangle  = 27938.3$.
+
+
+The Shapiro-Wilk tests results are presented in  Table~\ref{tab:9}.
+
+\begin{table}
+\caption{Shapiro-Wilk test for the ``book-stack'' tests.}\label{tab:9}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c }\hline\hline
+Shapiro-Wilk test & Maple & Mathematica & Quantis & Vienna  & $\pi$\\\hline
+$p$-value  & 0.7880 & 0.4819 & 0.7239 & 0.8146 &
+0.5172\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Since normality is not rejected for any string, we apply the Welch's $t$-test
+for the comparison of means. The results are enumerated in Table~\ref{tab:10}.
+Significant differences between the means are identified for the following sources:
+(i) Quantis {\it versus} all other sources (Maple, Mathematica, Vienna, $\pi$); and
+(ii)
+Vienna {\it versus} Mathematica and Maple (as already mentioned).
+
+
+
+\begin{table}
+\caption{Welch's $t$-test for the ``book-stack'' tests.}\label{tab:10}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c }\hline\hline
+$p$-value & Mathematica & Quantis & Vienna & $\pi$\\\hline
+Maple  & 0.0535 & \bf{0.0436} & 0.974 & 0.3412\\
+Mathematica &  & \bf{0.0009} & \bf{0.0283} & 0.1551\\
+Quantis  &  &  & \bf{0.0368} & \bf{0.0054}\\
+Vienna &  &  &  & 0.2690\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+
+
+The Kolmogorov-Smirnov test results are presented in Table~\ref{tab:11},
+where no significant differences are detected.
+The Shapiro-Wilk test results are presented in Table~\ref{tab:12}.
+Since there is no clear
+pattern of normality for the data, the application of Welch's $t$-test is not
+appropriate.
+
+
+\begin{table}
+\caption{Kolmogorov-Smirnov test for the algorithmic information theory tests.}\label{tab:11}
+ \begin{center}
+ \begin{tabular}
+[c]{ c c c c c }
+\hline\hline
+Kolmogorov-Smirnov test $p$-values & Mathematica & Quantis & Vienna & $\pi$ \\\hline
+Maple  & 0.7591 & 0.4005 & 0.7591 & 0.7591\\
+Mathematica &  & 0.7591 & 0.7591 & 0.7591\\
+Quantis &  &  & 0.4005 & 0.7591\\
+Vienna &  &  &  & 0.9883\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+
+\begin{table}
+\caption{Shapiro-Wilk test for the algorithmic information theory tests.}\label{tab:12}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c }\hline\hline
+Shapiro-Wilk test & Maple & Mathematica & Quantis  & Vienna  & $\pi$\\\hline
+$p$-value & 0.0696 & \bf{0.0363} &
+0.4378 & 0.6963 & 0.4315\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\subsubsection{Test based on random walks}
+
+
+The Kolmogorov-Smirnov test results are presented in Table~\ref{tab:13}.
+
+\begin{table}
+\caption{Kolmogorov-Smirnov test for the random walk tests.}\label{tab:13}
+ \begin{center}
+ \begin{tabular}
+[c]{ c c c c c }
+\hline\hline
+Kolmogorov-Smirnov test $p$-values & Mathematica & Quantis & Vienna & $\pi$ \\\hline
+Mathematica & 0.1678 & \bf{0.0123} & 0.4175 & 0.0525\\
+Quantis &  & $\mathbf{< 10^{-4}}$ & \bf{0.0021} & 0.1678\\
+Vienna &  &  & 0.0525 & $\mathbf{< 10^{-4}}$\\
+$\pi$ &  &  &  & \bf{0.0002}\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Statistically significant differences are identified for:
+(i) Quantis {\it versus} all other sources (Maple, Mathematica, Vienna and $\pi$);
+(ii) Vienna {\it versus} Mathematica, Vienna (as already
+mentioned) and  $\pi$;  and
+(iii) Maple {\it versus} $\pi$.
+
+
+Note that quantum strings move farther away from the starting point than the pseudorandom strings; i.e.,
+$\langle \text{Vienna} \rangle >\langle \text{Quantis} \rangle >\langle \text{Maple} \rangle >\langle \text{Mathematica} \rangle >\langle  \pi \rangle $.
+
+
+It was quite natural to double-check the conclusion  ``Quantis and Vienna don't
+exhibit significant difference.'' Hence we run the Shapiro-Wilk test which concludes
+that normality is not rejected; cf. Table~\ref{tab:14}.
+
+
+\begin{table}
+\caption{Shapiro-Wilk test for the random walk tests.}\label{tab:14}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c c }\hline\hline
+Shapiro-Wilk test & Maple & Mathematica & Quantis & Vienna  & $\pi$\\\hline
+$p$-value & 0.2006 & 0.9268 & 0.5464 & 0.8888 &
+0.9577\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Next, we apply the Welch's $t$-test for the comparison of means. The
+results are given in Table~\ref{tab:15}.
+Significant differences between the means are identified for the
+following sources:
+(i) Quantis {\it versus} all other sources (Maple, Quantis, Vienna, $\pi$);
+(ii)
+Vienna {\it versus} Mathematica), Quantis (as already mentioned) and $\pi$;
+(iii) Maple {\it versus} $\pi$.
+
+\begin{table}
+\caption{Welch's $t$-tests for the random walk tests.}\label{tab:15}
+\begin{center}
+\begin{tabular}
+[c]{ c c c c c }\hline\hline
+$p$-value & Mathematica & Quantis & Vienna & $\pi$\\\hline
+Maple & 0.06961 & \bf{0.0013} & 0.1409 & \bf{0.0119}\\
+Mathematica &  & $\mathbf{< 10^{-4}}$ & \bf{0.0007} & \bf{0.0435}\\
+Quantis &  &  & \bf{0.0143} & $\mathbf{< 10^{-4}}$\\
+Vienna &  &  &  & \bf{0.0001}\\\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\section{Conclusions}
+
+\label{conclusion}
+
+Our aim was to experimentally study the possibility of distinguishing between
+quantum sources of randomness---recently proved to be theoretically incomputable---and  some well-known computable
+sources of  pseudo-randomness. The experimental approach is based on algorithmic information theory
+which provides characterizations of algorithmic random sequences in terms of the degrees of
+randomness of their finite prefixes.
+In this theory the degree of incompressibility of a string is measured with the prefix-complexity, which, unfortunately, is incomputable.
+Fortunately, there are computable, but weaker properties than
+incompressibility which can be tested on prefixes.
+Of course, such a property is necessary but not sufficient, so the (degree of) absence of the property is significant.
+
+We have performed
+tests of randomness on pseudo-random strings (finite sequences) of length $2^{32}$ generated with software
+(Mathematica, Maple), which are  cyclic (so, strongly computable), the bits of $\pi$, which is computable, but not cyclic, and strings produced by quantum measurements  (with the commercial device Quantis and  by the Vienna IQOQI group).
+
+It is important to emphasize that our aim was to find tests capable of  distinguishing computable
+from incomputable sources of ``randomness'' by examining (long, but) finite prefixes of infinite sequences.
+Such differences are guaranteed to exist by the result in Ref~\cite{2008-cal-svo}, but,
+because computability is an asymptotic property,
+there was no guarantee that finite tests can ``pick'' them in the prefixes we have analyzed~\footnote{Many inconclusive tests have been discarded.}.
+%We performed more tests than those described in this paper, but discarded
+%those for which the results were inconclusive.
+
+
+With these {\em privisos}, our empirical randomness tests indicate quantitative differences between computable
+and incomputable sources of ``randomness;''
+more specifically:
+\begin{enumerate}
+\item
+pseudo-random strings perform very well on Borel normality---in fact, too well (some overestimate by more than 2\%
+of length), while the Vienna strings---which have not been post-processed---indicate
+deviations from Borel normality for test strings of small length (up to length 4);
+
+\item in computing Shannon's entropy for our sequences we observe that
+the average seems to be the same for all sources. However,
+the Vienna sources clearly show a much flatter ``Bell curve'' around
+its median; the Quantis results are somewhat peculiar in that the median is
+clearly not centered within the 50\% percentile of the entropies
+(indicating a skewed Bell curve) and the Mathematica sequences have
+a few outliers with large entropy;
+
+\item
+in the random walk test quantum random sources (both Vienna and Quantis)
+seem to move farther away from the starting point than the pseudo-generators.
+%This test seems to be one of the best from our collection for detecting
+%and differentiating between the computable and incomputable random sources;
+\item
+the test based on the correctness of probabilistic tests of primality is  more ``utilitarian,''
+as the metric reflects the length of the sample ``random'' string necessary for the Solovay-Strassen algorithm
+to reach the correct answer; overall, quantum random generators appear to be different from pseudo-random
+ generators; with the Vienna strings emerging as the clear outlier
+(in all tests with various degrees of confidence);
+
+\item
+the behavior of $\pi$ (computable, but not cyclic) is interesting: in tests 1, 4
+and 5 the results are closer to Mathematica and Maple, in tests 2 and 3 the
+results for $\pi$ stands out (above) of all others in the direction of possibly
+being ``more'' random (according to these test metrics).
+\end{enumerate}
+
+
+The statistical analysis of the randomness tests shows that the Borel normality test is the best test
+(from our collection) for detecting and differentiating between the computable and incomputable random sources;
+the random walk test and the ``book-stack''  follow in efficiency.
+  The Shannon test and the test based on probabilistic primality behavior~\cite{calude:02} do not produce
+ statistically significant results.
+In the first case the reason may come from the fact  that averages are the same for all samples. In the second case  the reason  may be due to the fact that the test is based solely on the behavior of algorithmic random strings and not on a specific property of randomness.
+
+ The pair of tests based on Borel normality and random walks seem to address complimentary properties helping to distinguish well between
+ computable and incomputable sources of ``randomness.''
+Pseudo-random strings perform better  than quantum strings for the Borel normality test.
+ One could speculate that pseudo-randomness incorporates
+the ``human'' perception of randomness, which is strongly associated with uniform distribution;
+in contrast, quantum randomness has no such bias.
+Quantum random bits  tend to take a longer time to reach
+``uniform distribution''---which is an asymptotical property---than pseudo-random strings.
+
+
+Our analysis indicate normality of the (finite) quantum sequences for longer test strings,
+but violations of normality for a few small length test strings (up to length 4).
+Notice that for finite sequences of quantum or other origin,
+normality needs not be satisfied for all test strings;
+hence the derivations cannot be taken as a clear signal of a violation of Borel normality
+stemming, say, from a lack of independence.
+With these caveats, a conceivable (speculative and  by no means necessary) physical explanation of this violation of normality
+for test strings of small length would be that, due to photon
+(Bose-Einstein) statistics and the Hanbury-Brown-Twiss effect
+(``photon bunching;'' i.e., the tendency of photons to arrive in identical states), independence and thus Borel
+normality might be violated for ``small" groups of data.
+In this line of thought,  for larger sequences a sort of ``late randomness'' becomes visible,
+as the short-term correlations disappear in time.
+In contrast, for the random walk test, which addresses a global type of behaviour rather than
+a local one, quantum strings perform better: they tend to  move farther away from the starting point.
+
+
+
+A few more caveats are in order.
+As expected, our results indicate some tendencies only.  As this is a first attempt to experimentally distinguish computable from incomputable sources
+of ``randomness,'' much more work is necessary to understand those differences.
+  New tests should be designed to reflect the asymptotic differences. We may work with  longer strings of bits to trespass the
+cyclicality of the pseudo-random generators~\footnote{Borel normality obviously  fails for
+longer strings.}. We suggest that there may be different types of ``quantum randomness''
+corresponding to different forms of quantum indeterminism (e.g.,
+entanglement, Bell's theorem, Kochen-Specker theorem).
+Finally, our experimental results clearly cannot, and do not aim, to ``prove'' in any formal way  the
+superiority of quantum random generators over the best pseudo-random ones for practical applications;
+the only superiority is asymptotic, and resides in the differences between computable and incomputable sources proven in Ref~\cite{2008-cal-svo}.
+
+
+
+
+
+\section*{Acknowledgements}
+We are grateful to  Thomas Jennewein and Anton Zeilinger for providing us with the quantum random bits produced at the University of Vienna by the Vienna IQOQI group, for the description of their method, critical comments and  interest in this research.
+
+We thank: a) Alastair Abbott, Hector Zenil and Boris Ryabko for interesting comments, b)
+Ulrich Speidel for his tests for which some partial results have been reported in our extended paper~\cite{CDMTCS372},
+c) Stefan Wegenkittl for critical comments of various drafts of this paper and his suggestions  to exclude  some tests.
+
+
+Cristian Calude gratefully  acknowledges the support of  the Hood Foundation (Fellowship Grant 2008--2009) and the  Technical University of Vienna (where his work was done during his visits in 2008 and 2009).
+Karl Svozil  gratefully  acknowledges support of the
+Centre for Discrete Mathematics and Theoretical Computer Science (CDMTCS) at the University of Auckland, as well as of the Ausseninstitut of the Vienna University of Technology.
+
+
+
+\bibliography{svozil}
+
+\end{document}
+
+
+Needs["StatisticalPlots`"]
+
+data1 = {163499, 67640, 180476, 144104, 108686, 159674, 106771, 168633, 82720, 70857};
+data2 = {82269, 92240, 96932, 101087, 73497, 81002, 99287, 113792, 120271, 104109};
+data3 = {155095, 239443, 180952, 149925, 283090, 253755, 294171, 138175, 222444, 195497};
+data4 = {126096, 92066, 142608, 157003, 226877, 178198, 154246, 169242, 162837, 119562};
+data5 = {68365, 84019, 91090, 58568, 107524, 92196, 67027, 76567, 81577, 94227};
+
+BoxWhiskerPlot[data1, data2, data3, data4, data5,
+ BoxOrientation -> Vertical, FrameStyle -> Directive[Black, 18],
+ AspectRatio -> 0.7,
+ FrameTicks -> {{{1, "Maple"},
+ {2, "Mathematica"}, {3, "Quantis"}, {4, "Vienna"}, {5, "\[Pi]"}}, {{55000,
+     ScientificForm[55000.0]}, {100000,
+     ScientificForm[100000.0]}, {150000,
+     ScientificForm[150000.0]}, {200000,
+     ScientificForm[200000.0]}, {250000,
+     ScientificForm[250000.0]}, {290000, ScientificForm[300000.0]}},
+   None, None},
+ BoxFillingStyle -> {Hue[0.25], Hue[0.25], Hue[0.5], Hue[0.5],
+   Hue[0.25]}, BoxMedianStyle -> {{Red, Thick}}]
+
+Export["i:/mytex/2009-QvPR-boxrandomwalk.eps", %, "EPS", ImageSize -> 500]
+
+(******************************************************************)
+
+sol1 = {96, 103, 120, 96, 112, 114, 93, 99, 96, 120};
+sol2 = {139, 108, 140, 100, 112, 95, 96, 93, 110, 142};
+sol3 = {101, 130, 110, 119, 104, 122, 103, 122, 99, 116};
+sol4 = {100, 101, 115, 101, 119, 108, 109, 82, 91, 109};
+sol5 = {100,   112,  128,  127,  105,  107,  88,  89,  107,  84};
+
+BoxWhiskerPlot[sol1, sol2, sol3, sol4, sol5,
+ BoxOrientation -> Vertical,
+FrameStyle -> Directive[Black, 18], AspectRatio -> 0.7,
+ BoxLabels -> {"Maple", "Mathematica", "Quantis", "Vienna", "\[Pi]"},
+ BoxFillingStyle -> {Hue[0.25], Hue[0.25], Hue[0.5], Hue[0.5],
+   Hue[0.25]}, BoxMedianStyle -> {{Red,Thick}}]
+
+
+Export["i:/mytex/2009-QvPR-boxsolovey.eps", %, "EPS",  ImageSize -> 500]
+
+(******************************************************************)
+
+book1 = {72007, 62480, 7964, 108708, 38888, 98352, 14247, 55366,  33028, 43076};
+book2 = {13838, 62573, 12750, 46178, 35267, 8080, 4508, 47968, 23936,  24285};
+book3 = {28602, 156094, 83102, 49548, 92463, 151787, 100500, 108711,   56417, 72665};
+book4 = {53202, 15692, 9110, 97657, 75516, 62242, 36805, 71305, 73864,   43245};
+book5 = {47816,  10319,  41887,  39543,  8551,  34127,  54560,  55254,  42310,  78408};
+
+
+BoxWhiskerPlot[book1, book2, book3, book4, book5,
+BoxOrientation -> Vertical,
+FrameStyle -> Directive[Black, 18], AspectRatio -> 0.7,
+FrameTicks -> {{{1, "Maple"}, {2, "Mathematica"}, {3, "Quantis"}, {4,
+    "Vienna"}, {5, "\[Pi]"}}, {{20000, ScientificForm[20000.0]}, {40000,
+    ScientificForm[40000.0]}, {60000,
+    ScientificForm[60000.0]}, {80000,
+    ScientificForm[80000.0]}, {100000,
+    ScientificForm[1000000.0]}, {120000,
+    ScientificForm[1200000.0]}, {140000, ScientificForm[1400000.0]}},
+  None, None},
+ BoxLabels -> {"Maple", "Mathematica", "Quantis", "Vienna", "\[Pi]"},
+ BoxFillingStyle -> {Hue[0.25], Hue[0.25], Hue[0.5], Hue[0.5],
+   Hue[0.25]}, BoxMedianStyle -> {{Red,Thick}}]
+
+
+Export["i:/mytex/2009-QvPR-boxbookstack.eps", %, "EPS",  ImageSize -> 500]
+
+(******************************************************************)
+
+borel1 = {67024, 76399, 94505, 46558, 56951, 75311, 36380, 77506, 49000, 22430};
+borel2 = {39205, 49794, 8572, 57601, 31807, 17631, 62243, 86430, 41983, 23403};
+borel3 = {185680, 214267, 184965, 146802, 242861, 206682, 260048, 180352, 222555, 228005};
+borel4 = {458580, 386315, 394588, 356342, 339870, 273687, 77413, 344591, 398306, 341092};
+borel5 = {26376, 42285, 36301, 79027, 41745, 22645, 14256, 49716, 49857, 40005};
+
+BoxWhiskerPlot[borel1, borel2, borel3, borel4, borel5,
+ BoxOrientation -> Vertical,
+  FrameStyle -> Directive[Black, 18], AspectRatio -> 0.7,
+FrameTicks -> {{{1, "Maple"}, {2, "Mathematica"}, {3, "Quantis"}, {4,
+      "Vienna"}, {5, "\[Pi]"}}, {
+     {0,"0"},
+     {100000,ScientificForm[100000.0]},
+     {200000,ScientificForm[200000.0]},
+     {300000,ScientificForm[300000.0]},
+     {400000,ScientificForm[400000.0]}},
+  None, None},
+ BoxLabels -> {"Maple", "Mathematica", "Quantis", "Vienna", "\[Pi]"},
+ BoxFillingStyle -> {Hue[0.25], Hue[0.25], Hue[0.5], Hue[0.5],
+   Hue[0.25]}, BoxMedianStyle -> {{Red,Thick}}]
+
+Export["i:/mytex/2009-QvPR-boxborelk2.eps", %, "EPS",  ImageSize -> 500]
+(******************************************************************)
+
+L1 = {0.977227838, 0.978468414, 0.978733, 0.978520949, 0.978369444,  0.978823949, 0.977641374, 0.97882497, 0.978270253, 0.978055283};
+L2 = {0.9784009, 0.97759909, 0.9785063, 0.97845532, 0.97843962,  0.97811941, 0.97822043, 0.97803142, 0.97763814, 0.97999276};
+L3 = {0.97864864, 0.97826469, 0.97825807, 0.97790241, 0.97953766,  0.97825144, 0.97863748, 0.97825765, 0.97849053, 0.97807963};
+L4 = {0.97769911, 0.97869949, 0.97906296, 0.97918648, 0.97904328,  0.97780733, 0.97857803, 0.97817371, 0.97722217, 0.97765397};
+L5 = {0.97953631, 0.97869124, 0.97902058, 0.97815903, 0.97895426,  0.97792903, 0.97890449, 0.97829445, 0.9799012, 0.97861807};
+
+BoxWhiskerPlot[L1, L2, L3, L4, L5, BoxOrientation -> Vertical,
+FrameStyle -> Directive[Black, 18], AspectRatio -> 0.7,
+FrameTicks -> {{{1, "Maple"}, {2, "Mathematica"}, {3, "Quantis"}, {4,
+      "Vienna"}, {5, "\[Pi]"}}, {0.9775,0.9780,0.9785,0.9790,0.9795,0.9800},
+  None, None},
+ BoxLabels -> {"Maple", "Mathematica", "Quantis", "Vienna", "\[Pi]"},
+ BoxFillingStyle -> {Hue[0.25], Hue[0.25], Hue[0.5], Hue[0.5],
+   Hue[0.25]}, BoxMedianStyle -> {{Red,Thick}}]
+
+Export["i:/mytex/2009-QvPR-boxLentropy.eps", %, "EPS",  ImageSize -> 500]
+
+(******************************************************************)
+

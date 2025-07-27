@@ -1,0 +1,1559 @@
+\documentclass{mscs}
+%\usepackage{hyperref}
+%\usepackage[normalem]{ulem}
+%\documentclass[pra,amsfonts,showpacs,showkeys,preprint,nofootinbib,numerical]{revtex4-1}
+\sloppy
+\usepackage{graphicx}% Include figure files
+\usepackage{epstopdf}
+%\usepackage{url}
+%\usepackage{eepic}
+\usepackage{xcolor}
+%\usepackage{braket}
+
+\usepackage{amsmath}
+%\usepackage{amsthm}
+
+% braket.sty          Macros for Dirac bra-ket <|> notation and sets {|}
+% Donald Arseneau     asnd@triumf.ca     Last modified 05-Dec-1999.
+% This is free, unencumbered, unsupported software.
+
+\def\bra#1{\mathinner{\langle{#1}|}}
+\def\ket#1{\mathinner{|{#1}\rangle}}
+\def\braket#1{\mathinner{\langle{#1}\rangle}}
+\def\Bra#1{\left<#1\right|}
+\def\Ket#1{\left|#1\right>}
+{\catcode`\|=\active
+  \gdef\Braket#1{\left<\mathcode`\|"8000\let|\BraVert {#1}\right>}}
+\def\BraVert{\egroup\,\mid@vertical\,\bgroup}
+
+{\catcode`\|=\active
+  \gdef\set#1{\mathinner{\lbrace\,{\mathcode`\|"8000\let|\midvert #1}\,\rbrace}}
+  \gdef\Set#1{\left\{\:{\mathcode`\|"8000\let|\SetVert #1}\:\right\}}}
+\def\midvert{\egroup\mid\bgroup}
+\def\SetVert{\egroup\;\mid@vertical\;\bgroup}
+
+
+
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+
+
+\RequirePackage{times}
+\RequirePackage{mathptm}
+
+
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Scolium}[Theorem]{Scolium}
+
+\newtheorem{Fact}[Theorem]{Fact}
+\newtheorem{Lemma}[Theorem]{Lemma}
+%\theoremstyle{definition}
+\newtheorem{Definition}[Theorem]{Definition}
+\newtheorem{Example}[Theorem]{Example}
+
+\newcommand{\xor}{\text{ ${\tt XOR}$ }}
+\newcommand{\wrong}[1]{\sout{\textcolor{red}{#1}}}
+
+%\newcommand{\set}[1]{\{#1\}}
+
+%\usepackage{cdmtcs}
+\begin{document}
+
+
+
+\title{A Quantum Random Number Generator Certified by Value Indefiniteness}
+
+\author[A. A. Abbott, C. S. Calude and K. Svozil]{A\ls L\ls A\ls S\ls T\ls A\ls I\ls R\ns A.\ns A\ls B\ls B\ls O\ls T\ls T$^1$,\ns C\ls R\ls I\ls S\ls T\ls I\ls A\ls N\ns S.\ns C\ls A\ls L\ls U\ls D\ls E$^1$\ns and\ns K\ls A\ls R\ls L\ns S\ls V\ls O\ls Z\ls I\ls L$^2$\\
+$^1$ Department of Computer Science,
+University of Auckland,\addressbreak
+Private Bag 92019, Auckland, New Zealand\addressbreak
+Email: {\tt aabb009@aucklanduni.ac.nz, cristian@cs.auckland.ac.nz}
+\addressbreak $^2$ Institut f\"ur Theoretische Physik, Vienna University of Technology,\addressbreak
+Wiedner Hauptstra\ss e 8-10/136, A-1040 Vienna, Austria\addressbreak
+Email: {\tt svozil@tuwien.ac.at}
+}
+
+\if01
+\author{Alastair A. Abbott}
+\email{aabb009@aucklanduni.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~aabb009}
+\author{Cristian S. Calude}
+\email{c.calude@auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+\affiliation{Department of Computer Science, University of Auckland,\\
+Private Bag 92019, Auckland, New Zealand}
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+\affiliation{Institut f\"ur Theoretische Physik, Vienna University of Technology,  \\  Wiedner Hauptstra\ss e 8-10/136, A-1040 Vienna, Austria}
+\fi
+
+\maketitle
+
+\begin{abstract}
+In this paper we propose a quantum random number generator (QRNG) which utilises an entangled photon pair in a Bell singlet state, and is certified explicitly by value indefiniteness. While ``true randomness'' is a mathematical impossibility, the certification by value indefiniteness ensures the quantum random bits are incomputable in the strongest sense. % (no bit of such a string can be computed by any Turing machine or equivalent device)---a form of randomness in itself.
+  This is the first QRNG setup in which a physical principle (Kochen-Specker value indefiniteness) guarantees that no single quantum bit produced can be classically computed (reproduced and validated), the mathematical form of bitwise physical unpredictability.
+
+The effects of various experimental imperfections are discussed in detail, particularly those related to detector efficiencies, context alignment and temporal correlations between bits. The analysis is to a large extent relevant for the construction of any QRNG based on beam-splitters. By measuring the two entangled photons in maximally misaligned contexts and utilising the fact that two rather than one bitstring are obtained, more efficient and robust unbiasing techniques can be applied.
+A robust and efficient procedure based on ${\tt XOR}$ing the bitstrings together---essentially using one as a one-time-pad for the other---is proposed to extract random bits in the presence of experimental imperfections, as well as a more efficient modification of the von Neumann procedure for the same task. Some open problems are also discussed.
+%A more efficient modification of the von Neumann procedure is presented, as well as a procedure based on ${\tt XOR}$ing the bitstrings together---essentially using one as a one-time-pad for the other---which is very efficient and robust to experimental imperfections.
+%By measuring the two entangled photons in maximally misaligned contexts, the resulting bitstrings are ${\tt XOR}$'d together---essentially using one as a one-time-pad for the other---which, as we show, considerably reduces the effects of unequal detector efficiencies and non-perfect context misalignment.
+\end{abstract}
+
+
+
+%\pacs{03.65.Ta,03.65.Ud}
+%\keywords{quantum randomness, value indefiniteness, incomputability, unbiasing}
+
+
+
+\section{Introduction}
+
+Random numbers have been around for more than 4,000 years, but never have they been in such demand as in our time. People use random numbers everywhere.
+Thereby, randomness is understood through various ``symptoms.'' Here are three of the largely accepted ones:
+\begin{enumerate}
+\item[(i)]
+{Unpredictability:} It is impossible to win against a random sequence in a fair betting game.
+\item[(ii)]
+{Incompressibility:}  It is impossible to  compress a random sequence.
+\item[(iii)]
+{Typicalness:} Random sequences pass every  statistical test of randomness.
+\end{enumerate}
+
+Can our intuition on randomness be cast in more rigorous terms? Randomness plays an essential role in probability theory, the mathematical calculus of random events. Kolmogorov axiomatic probability theory assigns probabilities to sets of outcomes and  shows how to calculate with such probabilities;   it assumes randomness, but does not distinguish between individually random and non-random elements.
+
+For example, under a uniform distribution, the outcome of $n$ zeros,
+$\underbrace{000\cdots 0}_{n\text{ times}}$,
+has the same probability as any other outcome of length $n$, namely $2^{-n}$. A similar situation appears in quantum mechanics: quantum randomness is postulated, not defined or deduced.
+
+Algorithmic information theory (AIT)~\citep{ch6}, developed in the 1960s, defines and studies individual random objects, like finite bitstrings or infinite sequences.
+AIT shows that ``pure randomness'' or ``true randomness'' does not exist from a
+mathematical point of view.
+For example, there is no infinite sequence passing all tests of randomness.
+Randomness cannot be mathematically proved: one can never be sure a sequence is random, there are only forms and degrees of randomness.
+
+Computers produce ``random numbers'' generated by algorithms.
+Computer scientists needed a long time to realize that randomness produced by software is  far from being random.
+This form of randomness---known as pseudo-randomness---mimics well the human perception of randomness, but its quality is rather low because computability destroys many symptoms of randomness,
+e.g.\ unpredictability.
+It is not totally unreasonable to put forward that pseudo-randomness rather reflects its creators' subjective ``understanding'' and ``projection''  of randomness \footnote{Psychologists have known for a long time that people tend to distrust streaks in a series of random bits,
+hence they imagine a coin flipping sequence alternates between heads and tails much too often for its own sake of ``randomness.''
+A simple illustration of this phenomenon, called the gambler's fallacy, is the belief that after a coin has landed on tails ten consecutive times there are more chances that the coin will land on heads at the next flip.}.
+And although no computer or software manufacturer claims that their products can generate truly random numbers, recently such formally unfounded claims have re-appeared
+for randomness produced with physical experiments
+suggesting that ``truly random numbers have been generated at last''~\citep{randomDotOrg,Merali:2014aa}.
+
+\section{Quantum Randomness}
+
+\subsection{Theoretical claims to quantum randomness}
+
+Quantum mechanics has a credible claim to be one of (if not) the best sources of randomness.
+There are many quantum phenomena which can be used for random number generation: nuclear decay radiation sources,
+the quantum mechanical noise in electronic circuits (known as shot noise), or photons traveling through a semi-transparent mirror.
+%The Quantis\footnote{\url{http://www.idquantique.com/true-random-number-generator}} device uses photons sent one by one through such a semi-transparent mirror or beam splitter; these are then detected in two exclusive positions (reflection/transmission), the device produces a stream of up to 16 Mega quantum random bits per second.
+
+What is the rationale for the claim that quantum randomness is indeed a better form of randomness than, say, pseudo-randomness?
+Besides quantum complementarity~\citep{pauli:58}
+(i.e. the impossibility of simultaneous measurements of certain complementary observables,
+resulting in a randomisation of one observable if the other observable is determined)
+and the randomness of certain individual measurement outcomes~\citep{born-69}, the
+Kochen-Specker Theorem~\citep{kochen1} tells us that, in a quantum mechanical system represented by a Hilbert space of dimension greater than two,
+for any hidden variable theory fulfilling the predictions of quantum mechanics the following two conditions are contradictory:
+value definiteness (the fact that there can, in general,
+be  co- or pre-existing definite values prescribable to certain sets of measurement outcomes~\citep{2008-cal-svo,svozil_2010-pc09})
+and  non-contextuality (the value corresponding to the outcome of a measurement of  an observable is independent of the other compatible observables measured alongside it).
+A quantum random experiment certified by value
+indefiniteness via the Kochen-Specker Theorem (i.e., an experiment in which the Kochen-Specker theorem guarantees value indefiniteness)
+generates an {\em infinite (strongly) incomputable sequence of bits}: every Turing machine can reproduce exactly only finitely many scattered digits of such an infinite sequence, i.e.\ the sequence is bi-immune~\citep{2008-cal-svo}.
+Such certification, as has already previously been pointed out~\citep{2008-cal-svo}, is based on the assumptions that there are no contextual hidden variables and that the uniformity and symmetry of the Kochen-Specker construction allows us to conclude strong value indefiniteness---that all observables are, in fact, value indefinite (except those which the state is in an eigenstate of).
+Actually, a stronger statement is true:  no Turing machine  can be proved to reproduce exactly any  digit of such an infinite sequence,
+i.e.\ it is Solovay bi-immune~\citep{Abbott:aa}.
+Indeed, if the value of a bit could be computed before measurement then we could assign a
+definite value to the observable, a  contradiction.
+The tricky part is that we need to look at infinite sequences to prove the incomputability of individual bits. It is this formal incomputability which corresponds to the physical notion of indeterminism in quantum mechanics---the inability {\em even in principle} to predict the outcome of certain quantum measurements---rather than the mathematically vacuous notion of ``true randomness.''
+
+Quantum random number generators (QRNGs) based on beam splitters~\citep{svozil-qct,rarity-94} have been realised by the Zeilinger group in Innsbruck and Vienna~\citep{zeilinger:qct}
+and applied for the sake of violation of {B}ell's inequality under strict {E}instein locality conditions (two space-like separated events cannot influence each other in any way)~\citep{zeilinger-epr-98}.
+
+The Gisin group in Geneva~\citep{stefanov-2000}, and in particular its spin-off {\it id Quantique}, produces and markets a commercial device called {\it Quantis}~\citep{Quantis}.
+In order to eliminate bias, the device employs von Neumann normalisation (actually a more efficient iterated version due to \citet{PeresY-1992} is used) which requires the {\em independence} of individual events: bits are grouped into pairs, equal pairs (00 or 11) are discarded and we replace 01 with 0 and 10 with 1~\citep{von-neumann1}.
+%~\footnote{``To cite a human example, for simplicity, in tossing a coin it is probably easier to make two consecutive tosses independent than to toss heads with probability exactly one-half. If independence of successive tosses is assumed, we can reconstruct a 50--50 chance out of even a badly biased coin by tossing twice. If we get heads-heads or tails-tails, we reject the tosses and try again. If we get heads-tails (or tails-heads), we accept the result as heads (or tails)''}
+
+A group in Shanghai and Beijing~\citep{wang:056107} has utilised a Fresnel multiple prism as polarising beam splitter.
+As a normalisation technique, previously generated experimental sequences have been used as one time pad to ``encrypt'' random sequences.
+
+QRNGs based on entangled photon pairs have been realised by a second Chinese group in Beijing and Ji'nan~\citep{0256-307X-21-10-027},
+who utilised spontaneous parametric down-conversion to produce entangled pairs of photons.
+One of the photons has been used as trigger, mostly to allow a faster data production rate by eliminating double counts.
+Again, von Neumann normalisation has been applied in an attempt to eliminate bias.
+
+A group from the Hewlett-Packard Laboratories in Palo Alto and Bristol~\citep{fiorentino:032334} has used entangled photon pairs
+in the Bell basis state $\vert H_1 V_2\rangle + \vert V_1 H_2\rangle$ (note that this is not a singlet state and attains this
+form only for one polarisation direction; in all the other directions the state contains also $V_1V_2$ as well as $H_1H_2$ contributions), where the outcomes $H_1,V_1$ and $H_2,V_2$
+refer to observables associated with unspecified (presumably identical for both particles) directions.
+In analogy to von Neumann normalisation, the coincidence events $H_1V_2$ and  $V_1H_2$ have been mapped into 0  and 1, respectively.
+Thereby, as the authors have argued, the 2-qubit space of the photon pair is effectively restricted
+to a two-dimensional Hilbert subspace described by an effective-qubit state.
+
+A more recent rendition of a QRNG~\citep{10.1038/nature09008}, although not based on photons and beamsplitters, utilises Boole-Bell-type setups ``secured by''
+Boole-Bell-type inequality violations
+%quantum value indefiniteness~\cite{2008-cal-svo,svozil-2009-howto} \marginpar{\tiny does \cite{10.1038/nature09008}  refer to VI?}
+in the spirit of quantum cryptographic protocols~\citep{ekert91,PhysRevLett.85.3313}.
+This provides some indirect ``statistical verification'' of value indefiniteness (again under the assumption of strong value indefiniteness),
+but falls short of providing certification of strong incomputability
+{\it via} value indefiniteness~\citep{2008-cal-svo,svozil-2009-howto}.
+%for the following two reasons.
+%(i)
+With regard to value indefiniteness,
+the difference between Boole-Bell-type inequalities  {\it versus} Kochen-Specker-type theorems is this:
+In the Boole-Bell-type case,
+the breach of value indefiniteness needs not happen at every single particle,
+whereas in the Kochen-Specker-type case this must happen {\em for every particle}~\citep{svozil_2010-pc09}.
+Pointedly stated, the Boole-Bell-type violation is statistical, but {\em not necessarily} on every quantum separately.
+Hence, because a Boole-Bell-type violation does not guarantee that every bit is certified by value indefiniteness,
+one could potentially produce sequences containing infinite computable subsequences
+``protected'' by Boole-Bell-type violations.
+Further,   given that such criticisms seem also to hold for the statistical verification of value indefiniteness~\citep{panbdwz,huang-2003,cabello:210401}, it seems unlikely that statistical tests of the measurement outcomes alone can fully certify such a QRNG.
+\if01
+Further, given the ability to simulate maximal violation of Bell-type inequalities with Mealy automata~\citep{Cabello:PC2010}, such ``certification'' fails to truly certify the incomputability of the QRNG; this incomputability is the formal manifestation of quantum indeterminism, and it is this which the QRNG must be certified for. Indeed, given that such criticisms seem also to hold for the statistical verification of value indefiniteness~\citep{panbdwz,huang-2003,cabello:210401}, it seems unlikely that statistical tests of the measurement outcomes alone can fully certify such a QRNG.
+\fi
+\if01
+(ii)   \marginpar{\small OK?}
+A device operating essentially in four-dimensional Hilbert space is protected by quantum value indefiniteness in the
+strongest Kochen-Specker-type form
+(subject to the validity of quantum theory and the willingness to accept proofs by contradiction
+as a valid physical argument).
+Alas, no proof exists that the binary sequences obtained when a measurement device or a subsequent algorithm,
+instead of the quaternary observable,
+produces {\em dichotomic} observables based on the former quaternary
+ones,
+inherits this strong form of value indefiniteness from the quaternary case.
+\fi
+
+\subsection{Shortcomings of current QRNGs}
+
+It is clear that any QRNG claiming a better quality of randomness has to produce at least an infinite incomputable sequence of outputs, preferably  a strongly incomputable one.
+Do the current proposals of QRNGs generate ``in principle'' strongly incomputable sequences of quantum random bits?
+To answer this question one has to check whether the QRNG is ``protected'' by value indefiniteness, the only physical principle currently known to guarantee incomputability; in most cases the answer is either negative or cannot be verified because of lack of information about the mechanism of the QRNG.
+
+In \citet{PhysRevA.82.022102} tests based on algorithmic information theory were used to analyse and compare quantum and non-quantum bitstrings.
+Ten strings of length $2^{32}$ bits each from two quantum sources (the commercial {\em Quantis} device \citep{Quantis} and the Vienna Institute for Quantum Optics and Quantum Information group~\citep{ThomasJennewein}) and three classical sources (Mathematica, Maple and the binary expansion of $\pi$) were analysed.
+No distribution was assumed for any of the sources, yet a test based on Borel-normality was able to distinguish between the quantum and non-quantum sources of random numbers. It is known that almost all algorithmically random strings are Borel-normal \citep{calude:02}, although the converse is not true. Indeed, the tests found the quantum sources to be less normal than the pseudo-random  ones. Is this a property of quantum randomness, or evidence of flaws in the tested QRNGs?
+%Ten strings of length $2^{32}$ bits from the commercial QRNG {\em Quantis} produced by id Quantique \cite{idQuantique} and from the Vienna Institute for Quantum Optics and Quantum Information (IQOQI) group~\cite{ThomasJennewein} were analysed alongside bitstrings produced by the computer programs Mathematica and Maple, as well as bitstrings from the binary expansion of $\pi$.
+%It was found that tests based on Borel-normality were able to distinguish between quantum and non-quantum sources of random numbers. For finite bitstrings to be Borel-normal each substring of length $k\le \log \log n$ must occur equally often (within some tolerance). It is known that all algorithmically random strings are Borel-normal \cite{calude:02}, although the converse is not true.
+
+In \citet{AbbottCalude10} the probability distribution for an ideal QRNG was discussed: not surprisingly, such devices are seen to sample from the uniform distribution.
+%Since most (how many?) strings are Borel-normal, for sufficiently long strings testing if a QRNG samples from the expected uniform distribution is very closely related to testing if the strings produced are Borel-normal. However, unlike as in \cite{PhysRevA.82.022102} where no distribution was assumed, we can use the distribution to revisit the analysis of the bitstrings.
+Testing the same strings as in~\citet{PhysRevA.82.022102} against this expected distribution, strong evidence was found that the QRNGs tested are {\em not} sampling from the correct distribution. Further, weaker evidence suggests the pseudo-random sources of randomness---Mathematica and Maple---are, on the contrary, too normal. The results of the analysis are presented in Table~\ref{pvalues}.
+%For bitstrings of length $n$ sampled from the uniform distribution, the probability distribution function for the number of occurrences of substrings of length $k$ can be seen to follow a multinomial distribution: we view each bitstring as over the alphabet $B^k$ with length $\lfloor n/k \rfloor$, and view this as $\lfloor n/k \rfloor$ tosses of a fair $2^k$ sided dice. For the strings used in \cite{PhysRevA.82.022102} we have $n=10\cdot 2^{32}$, and we can approximate the multinomial distribution by a multivariate normal distribution, and use a $\chi^2$-test to test the null-hypothesis that the dice is fair, i.e. that each substring of length $k$ has equal probability.
+
+%This is related to the Borel-normality tests, but not identical. Under the uniform distribution not all generated strings will be Borel-normal, so testing the normality does not guarantee us anything about the quality of the source. Rather, we test the likelihood the string came from the uniform distribution, and note that since most strings are Borel-normal (how many???), for strings of length $2^{32}$ to pass the statistical test they must (almost?) certainly be Borel-normal.
+
+\begin{table}
+\begin{center}
+\caption{$p$-values for the $\chi^2$ test that the bitstring is sampled from the uniform distribution. Bold values indicate statistically significant evidence that the strings are not sampled from the uniform distribution.}
+\begin{tabular}{cccccc}
+\hline\hline
+QRNG &  $k=1$ & $k=2$ & $k=3$ & $k=4$ & $k=5$\\
+\hline
+{\bf Maple} & 0.79 & 0.15 & 0.83 & 0.47 & 0.97\\
+{\bf Mathematica} & 0.18 & 0.38 & 0.35 & 0.45 & 0.99\\
+{\bf $\pi$} & 0.38 & 0.27 & 0.05 & 0.62 & 0.21\\
+{\bf Quantis} & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$\\
+{\bf Vienna} & 0.12 & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$ & $\mathbf{< 10^{-10}}$\\
+\hline\hline
+\end{tabular}
+\end{center}
+\label{pvalues}
+\end{table}
+
+
+%We find that for all the non-quantum sources (Mathematica, Maple, $\pi$) we have $p\ge 0.01$, so we have no evidence against the hypothesis that each substring is equally probable at the $1\%$ significance level. Certainly these sources are not being ``sampled'' in the same sense as the quantum strings, but we note that nonetheless any pseudo-random number generator should satisfy these requirements. Indeed, for longer bitstrings (k=5 for Maple, Mathematica), we have $p>.95$, indicating that these sources are potentially {\it too normal}, trying too hard to be ``random''. We also note that for $\pi$ any evidence against it being from the uniform distribution would be evidence against normality and would run against our knowledge of $\pi$, even though it is not proven to be Borel-normal (such proofs are notoriously hard in general).
+
+%For the quantum sources we find, except for one notable exception, with extremely significant results ($p < 10^{-17}$) that the strings are not sampled from the uniform distribution. The exception is that of the $k=1$ case for the Vienna bits. This is a strong indicator that current QRNGs are not sampling well from the expected distribution. The Quantis QRNG utilises von Neumann normalisation. In \cite{AbbottCalude10} it is shown that if bits are produced independently with constant bias then von Neumann normalisation produces the uniform distribution. As such, the results for quantis indicate either that the device is not stable over time, or that the bits are not produced independently. The bits produced by the IQOQI group appear unbiased at the $k=1$ level, but not for $k>2$. This indicates non-independence of bits which, since the bits are raw (un-normalised) output, could be due to experimental feedback designed to control the output of the QRNG. It appears good performance at the 1-bit level has been achieved at the sacrifice of the performance at the $k\ge 2$ level.
+
+The notable exception to these findings are the Vienna bits which, when viewed at the single-bit level, appear unbiased.
+%This indicates non-independence of bits which, since the bits are raw (un-normalized) output,
+%could be due to experimental feedback designed to control the output of the QRNG.
+It appears that the good performance at the 1-bit level has been achieved (perhaps through experimental feedback control) at the sacrifice of the performance at the $k\ge 2$ level, a property much harder to control without post-processing.
+The {\it Quantis} QRNG uses iterated von Neumann normalisation in an attempt to unbias the output; the fact that this is not completely successful indicates either a significant variation in bias over time, or non-independence of successive bits~\citep{AbbottCalude10}.
+
+These results highlight the need to pay extra attention in the design process to the distribution produced by a QRNG. Normalisation techniques are an effective way to remove bias, but to have the desired effect assumptions about independence and constancy of bias must be satisfied~\citep{AbbottCalude10}. While experiments will never realize the ideal QRNG, one needs to be aware of how much affect experimental imperfections have.
+%In \cite{AbbottCalude10} the effect of a varying bias was quantified, and such bounds should be kept in mind in experiment design. Further, careful design can help lessen or avoid non-independence of successive bits.
+Any credible QRNG should take these issues into account, as well as the need of explicit certification of randomness  by some physical law, e.g.\ value indefiniteness.
+
+\section{The scheme under ideal conditions}%An Ideal scheme}
+
+In what follows, a proposal for a QRNG depicted in Fig.~\ref{2010-qxor-f1}, previously put forward in~\citet{svozil-2009-howto}, will be discussed in detail.
+It utilises the singlet state of two two-state particles (e.g., photons of linear polarisation) proportional to  $\vert H_1 V_2\rangle - \vert V_1 H_2\rangle$, which is form invariant in all measurement directions.
+
+A single photon light source (presumably an LED) is attenuated so more than one photons are rarely in the beam path at the same time.
+These photons impinge on a source of singlet states of photons (presumably by spontaneous parametric down-conversion in a nonlinear medium).
+The two resulting entangled photons are then analysed with respect to their linear polarisation state at some directions which are $\pi /4$ radians  ``apart,''
+symbolised by ``$\oplus$'' and ``$\otimes$,''
+respectively.
+
+\begin{figure}
+\begin{center}
+
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 1mm % = 2.845pt
+\linethickness{0.4pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(104,55.75)(0,0)
+\put(16.75,19){\framebox(20,15.75)[cc]{}}
+%Bell source
+\put(26.75,29.5){\makebox(0,0)[cc]{Bell singlet}}
+\put(26.75,24.5){\makebox(0,0)[cc]{source}}
+\thicklines
+%\vector[middle](.25,28)(18.5,28)
+\put(9.375,28){\vector(1,0){.07}}\put(.25,28){\line(1,0){14.25}}
+%\end
+%\vector[middle]{dash}{1}(39.75,29)(59.5,42)
+\put(49.625,35.5){\vector(3,2){.07}}\multiput(39.68,28.93)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(41.26,29.97)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(42.84,31.01)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(44.42,32.05)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(46,33.09)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(47.58,34.13)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(49.16,35.17)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(50.74,36.21)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(52.32,37.25)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(53.9,38.29)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(55.48,39.33)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(57.06,40.37)(.049375,.0325){16}{\line(1,0){.049375}}
+\multiput(58.64,41.41)(.049375,.0325){16}{\line(1,0){.049375}}
+%\end
+%\vector[middle]{dash}{1}(39.75,27)(59.5,14)
+\put(49.625,20.5){\vector(3,-2){.07}}\multiput(39.68,26.93)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(41.26,25.89)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(42.84,24.85)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(44.42,23.81)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(46,22.77)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(47.58,21.73)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(49.16,20.69)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(50.74,19.65)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(52.32,18.61)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(53.9,17.57)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(55.48,16.53)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(57.06,15.49)(.049375,-.0325){16}{\line(1,0){.049375}}
+\multiput(58.64,14.45)(.049375,-.0325){16}{\line(1,0){.049375}}
+%\end
+\put(67.5,42.75){\makebox(0,0)[cc]{{\Huge $\oplus$}}}
+\put(67.25,12.5){\makebox(0,0)[cc]{{\Huge $\otimes$}}}
+\thinlines
+%\vector[middle]{dot}(75.75,44.5)(94.5,55.5)
+\put(85.125,50){\vector(3,2){.07}}\multiput(75.68,44.43)(.81522,.47826){24}{{\rule{.4pt}{.4pt}}}
+%\end
+%\vector[middle]{dot}(75.75,11.5)(94.5,.5)
+\put(85.125,6){\vector(3,-2){.07}}\multiput(75.68,11.43)(.81522,-.47826){24}{{\rule{.4pt}{.4pt}}}
+%\end
+%\vector[middle]{dot}(75.75,43)(94.5,32)
+\put(85.125,37.5){\vector(3,-2){.07}}\multiput(75.68,42.93)(.81522,-.47826){24}{{\rule{.4pt}{.4pt}}}
+%\end
+%\vector[middle]{dot}(75.75,13)(94.5,24)
+\put(85.125,18.5){\vector(3,2){.07}}\multiput(75.68,12.93)(.81522,.47826){24}{{\rule{.4pt}{.4pt}}}
+%\end
+\put(104,55.75){\makebox(0,0)[cc]{$D^\oplus_0$}}
+\put(104,32.5){\makebox(0,0)[cc]{$D^\oplus_1$}}
+\put(104,23.5){\makebox(0,0)[cc]{$D^\otimes_0$}}
+\put(104,.25){\makebox(0,0)[cc]{$D^\otimes_1$}}
+\end{picture}
+\end{center}
+\caption{Scheme of a quantum random number generator~\citep{svozil-2009-howto}.}
+\label{2010-qxor-f1}
+\end{figure}
+
+Due to the required four-dimensional Hilbert space, this  QRNG
+is ``protected'' by Bell- as well as Kochen-Specker- and Greenberger-Horne-Zeilinger-type value
+indefiniteness \footnote{Note that this is not the case for current QRNGs based on beam-splitters,
+which operate in a Hilbert space of dimension two.}.
+%, although perhaps by viewing such a state in the Fock-space where the photon-modes are entangled could justify certification via KS even in this case.
+The protocol utilises all three principal types of quantum indeterminism:
+(i) the indeterminacy of individual outcomes of single events as proposed by Born and Dirac;
+(ii)  quantum complementarity (due to the use of conjugate variables), as put forward by Heisenberg, Pauli and Bohr; and
+(iii) value indefiniteness due to Bell, Kochen \& Specker, and Greenberger, Horne \& Zeilinger.
+
+This, essentially, is the same experimental configuration as the one used for a measurement of the correlation function at the angle of $\pi /4$ radians ($45^\circ$).
+Whereas the correlation function averages over ``a large number'' of single contributions, a random sequence can be obtained by concatenating these single pairs of outcomes via addition modulo~2.
+
+Formally, suppose that for the $i$th experimental run, the two outcomes are
+$O^\oplus_i \in \{0,1\}$ corresponding to $D^\oplus_0$ or  $D^\oplus_1$,
+and
+$O^\otimes_i \in \{0,1\}$  corresponding to $D^\otimes_0$ or  $D^\otimes_1$.
+These two outcomes $O^\oplus_i $ and  $O^\otimes_i$, which themselves form two sequences of random bits,
+are subsequently combined by the ${\tt XOR}$ operation, which amounts to their parity, or to the addition modulo 2 according to Table~\ref{2010-qxor-t1} (in what follows, depending on the formal context,
+ ${\tt XOR}$ refers to either a binary function
+of two binary observables, or to the logical operation).
+Stated differently, one outcome is used as a {\em one time pad} to ``encrypt'' the other outcome,
+and {\it vice versa}.
+\begin{table}
+\begin{center}
+	\caption{The logical exclusive or operation.}
+\begin{tabular}{cccccc}
+\hline\hline
+$O^\oplus_i $ &  $O^\otimes_i$ & $O^\oplus_i $ ${\tt XOR}$  $O^\otimes_i$\\
+\hline
+0 & 0 & 0 \\
+0 & 1 & 1 \\
+1 & 0 & 1 \\
+1 & 1 & 0 \\
+\hline\hline
+\end{tabular}
+\end{center}
+
+\label{2010-qxor-t1}
+\end{table}
+As a result, one obtains a sequence $x=x_1x_2\ldots x_n$ with
+\begin{equation}
+x_i=O^\oplus_i + O^\otimes _{i} \text{ mod }2 .
+\label{2010-qxor-e1}
+\end{equation}
+
+For the ${\tt XOR}$d sequence to still be certifiably incomputable (via value indefiniteness), one must prove this certification is preserved under ${\tt XOR}$ing---indeed strong incomputability itself is {\em not} necessarily preserved. By necessity any QRNG certified by value indefiniteness must operate non-trivially in a Hilbert space of dimension $n\ge 3$. To transform the $n$-ary (incomputable) sequence into a binary one, a function $f: \{0,1,\dots, n-1\} \to \{0,1,\lambda\}$ must be used ($\lambda$ is the empty string); to claim certification, the strong incomputability of the bits must still be guaranteed after the application of $f$. This is a fundamental issue which has to be checked for  existing QRNGs such as that in~\citet{10.1038/nature09008}; without it one cannot claim to produce truly indeterministic bits. In general incomputability itself is not preserved by $f$; however by consideration of the value indefiniteness of the source the certification can be seen to hold under ${\tt XOR}$ as well as when discarding bits~\citep{Abbott:aa}.
+\if01
+In order to be certified by the strongest form of Kochen-Specker-type quantum value indefiniteness,
+the device has to be constantly monitored
+for such strong violations of value definiteness \citep{panbdwz,huang-2003,cabello:210401}.
+(Note that, as has been argued earlier, due to the statistical character of Boole-Bell-type violations of value definiteness,
+monitoring for violations of Boole-Bell type inequalities is insufficient.)
+Note also that it it is still an open question wether or not the ``degradation''
+of $n$-ary to two outcomes preserves value indefiniteness.
+One strategy might be to {\em assume} (without proof)
+that, for $n>2$,   the $n$-ary sequence $s=s_1,s_2,s_3,\cdots $ based on $n$-ary outcomes is asymptotically random.
+Then, the binary sequence $s'=s_1',s_2',s_3',\cdots $ with $s_i\in \{0,1,\ldots, n-1\}$
+obtained through the omission of $n-2$ symbols
+
+\begin{equation*}
+s_i' =
+	\begin{cases}
+		s_i, & \mbox{if } s_i\in \{0,1\},\\
+		\emptyset, & \mbox{else }
+	\end{cases}
+\end{equation*}
+remains asymptotically random \citep{calude:02}.
+ \marginpar{\small OK?}
+\fi
+
+\section{``Random'' errors or systematic errors}
+
+In what follows we shall discuss possible ``random'' (no pun) or systematic errors in experimental realisations of this QRNG (many of these errors may appear in other types of photon-based QRNGs.)  Our aim is to draw attention to the specific nature of such errors and how they affect the resulting bitstrings. A good QRNG must, in addition to the necessary certification (e.g.\ by value indefiniteness), take into account the nature of these errors and be carefully designed (along with any subsequent post-processing) so that the resultant distribution of bitstrings the QRNG samples from is as close as possible to the expected uniform distribution~\citep{AbbottCalude10}. Both the uniformity of the source and incomputability are ``independent symptoms'' of randomness, and care must be taken to obtain both properties.
+
+\subsection{Double counting}
+
+One conceivable problem is that
+the detectors analysing the different polarisation directions do not respond to photons of the same pair,
+but to two photons belonging to different pairs.
+This seems to be no drawback for the application of the ${\tt XOR}$ operation since
+(at least in the absence of temporal correlations between bits)
+the postulates of quantum mechanics state that
+the individual outcomes occur independently and indeterministically (the last property is mathematically  modelled by strong incomputability~\citep{2008-cal-svo,Abbott:aa}).
+If, however, events are not independent then more care is needed. However, correlation between events is an undesirable property in itself, and as long as care is made, it is unlikely to be made worse by double counting.
+
+
+\subsection{Non-singlet states}
+
+The state produced by the  spontaneous parametric down-conversion may not be exactly a singlet.
+This may give rise to a systematic bias of the combined light source-analyser setup in a very similar way as for beam splitters.
+
+\subsection{Non-alignment of polarisation measurement angles}\label{sec:nonalignment}
+
+No experimental realisation will attain a ``perfect anti-alignment'' of the polarisation analysers  at angles $\pi /4$ radians apart.
+Only in this ideal case are the bases conjugate and the correlation function will be exactly zero.
+Indeed, ``tuning'' the angle to obtain equi-balanced sequences of zeroes and ones may be a method to properly anti-align the polarisers.
+However, one has to keep in mind that any such ``tampering'' with the raw sequence of data
+to achieve  Borel normality (e.g.\ by readjustments of the experimental setup)
+may introduce unwanted (temporal) correlations or other bias~\citep{PhysRevA.82.022102}.
+
+
+Incidentally, the angle $\pi /4$ is one of the three points at angles $0$, $\pi /4$ and $\pi /2$ in the interval $[0, \pi /2]$
+in which the classical and quantum correlation functions coincide.
+For all other angles, there is a higher ratio of different or identical pairs than could be expected classically.
+Thus, ideally, the QRNG could be said to operate in the ``quasi classical'' regime,
+albeit fully certified by quantum value indefiniteness.
+
+Quantitatively, the expectation function of the sum of the two outcomes modulus~2 can be defined by  averaging over the sum modulo~2 of the outcomes $O^0_i, O^\theta _i\in \{0,1\}$ at angle $\theta$ ``apart''
+in the $i$th experiment, over a ``large number'' of experiments; i.e.,
+\begin{equation*}
+E_{\tt XOR}(\theta )=\lim_{N \rightarrow \infty} {1\over N}\sum_{i=1}^N \left( O^0_i + O^\theta _i \text{ mod }2\right).
+\end{equation*}
+This is related to the standard correlation function,
+\begin{equation*}
+	C(\theta)=\lim_{N\to \infty}{1\over N}\sum_{i=1}^N O^0_i \cdot O^\theta_i
+\end{equation*}
+by
+\begin{equation*}
+	E_{\tt XOR}(\theta)=\frac{|C(\theta)-1|}{2} \raisebox{0.5ex}{,}
+\end{equation*}
+where
+\begin{equation*}
+	O^0_i \cdot O^\theta_i =
+	\begin{cases}
+		1, & \mbox{if }O^0_i = O^\theta_i,\\
+		-1, & \mbox{if }O^0_i \neq O^\theta_i.
+	\end{cases}
+\end{equation*}
+A detailed calculation yields the classical linear expectation function
+$E^{\text{cl}} _{\tt XOR}(\theta ) = {1-2 \theta / \pi}$,
+and the quantum expectation function
+$E_{\tt XOR}(\theta ) = (1/2)(1+\cos 2\theta )$.
+\begin{figure}[h]
+\begin{center}
+	\includegraphics[scale=0.7]{2010-qxor-f1}
+\end{center}
+\caption{(Color online) The classical and quantum expectation functions and the linear quantum approximation around $\pi/4$.}
+\label{corrFuncs}
+\end{figure}
+
+Thus, for angles ``far apart'' from $\pi /4$, the ${\tt XOR}$ operation actually {\em deteriorates} the two random signals taken from the two analysers {\em separately.}
+The deterioration is even {\em greater quantum mechanically than classically,} as the entangled particles are more correlated and thus ``less independent.''
+Potentially, this could be utilised to ensure a $\pi/4$ mismatch more accurately than possible through classical means.
+This will be discussed in section~\ref{ss-orthogonality} below.
+
+In order to avoid this negative feature while generating bits, instead of ${\tt XOR}$ing outcomes of {\em identical} partner pairs, one could ${\tt XOR}$  time-shifted outcomes; e.g., instead of the expression in Eq.~(\ref{2010-qxor-e1})
+one may consider
+\begin{equation}
+x_i=O^0_i + O^\theta _{i+j} \text{ mod }2, \text{ with } j> 0.
+\label{2010-qxor-e2}
+\end{equation}
+One should make $j$ large enough so that, taking in to account double counting, there is no chance of accidentally causing two offset but correlated outcomes to be ${\tt XOR}$'d together. Theoretical analysis of the effects of experimental imperfections and the ${\tt XOR}$ operation are discussed later in the paper, and ${\tt XOR}$ing shifted pairs is an efficient and effective procedure for reducing such errors.
+
+\subsection{Different detector efficiencies}
+
+Differences in detector efficiencies result in a bias of the sequence. This  complicating effect is separate from non-perfect misalignment of polarisation context.
+Suppose that the probabilities of detection are denoted by
+$p_{H_1}$,
+$p_{H_2}$,
+$p_{V_1}$,
+$p_{V_2}$. Since  $p_{H_1}+p_{V_1}=p_{H_2}+p_{V_2}=1$,
+the probability to find pairs adding up to 0 and 1 modulo~2 are
+$p_{H_1}p_{H_2}+ p_{V_1}p_{V_2}=1 - (p_{H_1}+p_{H_2}) + 2p_{H_1}p_{H_2}$
+and
+$p_{H_1}p_{V_2}+ p_{V_1}p_{H_2}=p_{H_1}+p_{H_2} - 2p_{H_1}p_{H_2}$, respectively (adding up to 1). If both $p_{H_1}\neq p_{V_1}$ and $p_{H_2}\neq p_{V_2}$ then the resulting ${\tt XOR}$'d sequence is biased. The two obtained sequences could be unbiased before or after ${\tt XOR}$ing by the von Neumann method \citep[p. 768]{von-neumann1}, although any temporal correlations would violate the condition of independence required by this method. One should keep in mind, however, that the von Neumann normalisation procedure necessarily discards many bits (more efficient methods exist~\citep{PeresY-1992}). The efficiency can be increased by utilising both strings more carefully, and such a method is discussed in Section~\ref{sec:crits}.
+%If such temporal correlations could be removed as part of the {\tt XOR}ing process, then von Neumann normalisation could be applied afterwards to unbias the {\tt XOR}'d sequence.
+
+\subsection{Unstable detector bias}
+
+Von Neumann type normalisation procedures will only remove bias due to detector efficiencies if the bias remains constant over time. If the bias drifts over time due to instability in the detectors, the resulting normalised sequence will not be unbiased but instead will simply be less biased~\citep{AbbottCalude10}. It is difficult to overcome this, as experimental instability is inevitable. However, bounds on the bias of the normalised sequence based on reasonable experimental parameters~\citep{AbbottCalude10} can be used to determine the length for which the source samples ``closely enough'' from the uniform distribution.
+
+If the bias varies independently between detectors, the ${\tt XOR}$ing process should serve to reduce the impact of varying detector efficiencies and applying von Neumann normalisation to the ${\tt XOR}$'d bitstring is advantageous compared working with a single bitstring from a source of varying bias.
+
+
+\subsection{Temporal correlations, photon clustering and ``bunching''}
+
+Due to the Hanbury-Brown-Twiss effect, the photons may be temporally correlated and thus arrive clustered or ``bunched.''
+Temporal correlations appear also at ``double-slit analogous experiments'' in the time domain~\citep{PhysRevLett.95.040401},
+in which the role of the slits is played by windows in time of attosecond duration.  This can, to an extent, be avoided by ensuring successive photons are sufficiently separated, although this poses a limit on the bitrate of such a device. However, since the case where two or more singlet pairs are in the beam path at once is potentially of sufficient importance, this effect needs further careful consideration.
+
+Another conceivable source of temporal correlations is due to the detector dead-time, $T_d$, during which the detector is inactive after measurement~\citep{stefanov-2000}. If we measure $O^\oplus_i=0$, the detector $D^\oplus_0$ corresponding to $0$ is unable to detect another photon for a small amount of time, significantly increasing the chance of detecting a photon at the other detector during this time, obtaining a $1$. This leads to higher than expected chances of $01$ and $10$ being measured. This is problematic as such a correlation will not be removed by ${\tt XOR}$ing, even with an offset of $j$. However, this can be avoided by discarding any measurements within time $T_d$ from the previous measurement.
+
+In view of conceivable temporal correlations, it would be interesting to test the quality of the random signal as $j$ is varied in Eq.~(\ref{2010-qxor-e2}). As previously mentioned, any temporal correlations  will violate the condition of independence needed for von Neumann normalisation making it difficult to remove any bias in the output;  if the dependence can be bounded then unbiasing techniques such as that proposed by \citet{18499} could be used instead of von Neumann's procedure. It seems desirable and simpler to avoid temporal correlations with carefully designed experimental methodology as opposed to post-processing where possible.
+
+\subsection{Fair sampling}
+
+As in most optical tests of Bell's inequalities~\citep{clauser,chau},
+the inefficiency of photon detection requires us to make the {\em fair sampling assumption}~\citep{PhysRevD.35.3831,PhysRevA.57.3304,Pearle:1970fk,PhysRevA.81.012109}:  the loss is independent of the measurement settings, so the ensemble of detected systems provides a fair statistical sample of the total ensemble. In other words, we must exclude the possibility of a ``demon'' in the measuring device conspiring against us in choosing which bits to reject.
+
+The strength of the proposed QRNG relies crucially on value indefiniteness,
+ so without this fair sampling assumption we would forfeit the assurance of bitwise incomputability of the generated sequence.
+As an example let us consider the extreme case that the detection efficiency is less that 50\%;
+our supposed demon could reject all bits detected as 0 and be within the bounds given by this efficiency,
+while the produced sequence would be computable. In the more general case for any  efficiency $\rho < 1$
+ the demon could reject bits to ensure every $\left(1/(1-\rho)\right)$'th bit is a zero;
+ this would introduce an infinite computable subsequence, a property violating the strong incomputability of the output bitstring
+ produced by our QRNG,
+ and still be consistent with the detection efficiency.
+
+Note that this condition is stronger than the fair sampling assumption required in tests for violation of Bell-type inequalities because, without this assumption,  {\it any} inefficiency can lead to a loss of randomness.
+
+
+
+
+\section{Better-than-classical operationalization of spatial orthogonality}
+\label{ss-orthogonality}
+
+
+
+As has already been pointed out, for no temporal offset and
+in the regime of relative spatial angles around $\pi/4$ --- i.e., at almost half orthogonal measurement directions ---
+the classical linear expectation function
+$E^{\text{cl}} _{\tt XOR}(\theta ) = {1-2 \theta / \pi}$,
+for $0 < \theta < \pi /4$
+is strictly {\em smaller},
+and for $\pi /4 < \theta < \pi /2$ is strictly {\em greater}
+than the quantum expectation function
+$E_{\tt XOR}(\theta ) = (1/2)(1+\cos 2\theta )$.
+This can be demonstrated by rewriting
+$\theta =\pi /4 \pm \Delta \theta$,
+and by considering  a Taylor series expansion around $\pi /4$
+for small $\Delta \theta  \ll 1$, which yields
+$E_{\tt XOR}(\pi/4\pm \Delta \theta  ) \approx (1/2) \mp  \Delta \theta $,
+whereas
+$E^{\text{cl}} _{\tt XOR}(\pi/4\pm \Delta \theta ) = (1/2) \mp (2 / \pi )\Delta \theta $ (see Fig.~\ref{corrFuncs}).
+
+
+
+Phenomenologically this indicates
+less-than-classical numbers of equal pairs of outcomes ``0--0'' as well as   ``1--1,''
+and
+more-than-classical non-equal pairs of outcomes ``0--1'' as well as   ``1--0,'' respectively,
+for the quantum case in the region $0 < \theta < \pi /4$; as well as the reverse behaviour in the region $\pi /4 < \theta < \pi /2$.
+This  in turn results in ``less zeroes'' and ``more ones'' of the resulting sequence obtained by ${\tt XOR}$ing the pairs of outcomes in the region $0 < \theta < \pi /4$,
+as well as in ``more zeroes'' and ``less ones'' in the region $\pi /4 < \theta < \pi /2$ as compared to classical non-entangled systems~\citep{peres222}.
+Hence, with increasing aberration from misalignment  $\Delta \theta$ the quantum device ``drifts off'' into biasedness of the output  ``faster'' than any classical device.
+As a result, Borel normality is expected to be broken more strongly and quickly quantum mechanically than classically.
+
+This effect could in principle be used to operationalize spatial orthogonality through the fine-tuning of angular directions yielding Borel normality.
+In the resulting protocols, quantum mechanics outperforms any classical scheme due to the differences in the correlation functions.
+
+
+\section{Theoretical analysis on generated bitstrings}
+
+%Here we analyse the output distribution of the proposed QRNG and the effect of the ${\tt XOR}$ process in a  more rigorous setting.
+Here we analyse the output distribution of the proposed QRNG and the ability to extract uniformly distributed bits from the two generated bitstrings in the presence of experimental imperfections.
+
+\subsection{Probability space construction}
+
+With reference to Fig.~\ref{2010-qxor-f1} for the setup,
+we write the generated Bell singlet state with respect the top (``$\oplus$'') measurement context
+(this is arbitrary as the singlet is form invariant in all measurement directions) as
+$\frac{1}{\sqrt{2}}(\ket{01} - \ket{10})$.
+ The lower (``$\otimes$'') polariser is at an angle of $\theta$ to the top one. After beam splitters we have the state
+$$\frac{1}{\sqrt{2}}\left[\cos \theta(\ket{00}-\ket{11}) - \sin \theta (\ket{01} + \ket{10})\right],$$
+ so we measure the same outcome in both contexts with probability $\cos^2\theta$ and different outcomes with probability $\sin^2\theta$.
+
+
+
+
+
+
+\if01
+\begin{Fact}\label{fact:TrigBinom}
+	For any $k > 0$, $0\le \theta < 2\pi$ and $x\in B^k$ we have $$\sum_{y\in B^k}(\sin^2 \theta)^{d(x,y)}(\cos^2\theta)^{k-d(x,y)} = 1,$$ where $d(x,y)$ is the Hamming distance, i.e. the number of places at which $x$ and $y$ differ.
+\end{Fact}
+\begin{proof}
+	We have
+	\begin{align*}
+		\sum_{y\in B^k}(\sin^2 \theta)^{d(x,y)}(\cos^2\theta)^{k-d(x,y)} &= \sum_{i=0}^k\binom{k}{i}(\sin^2 \theta)^{i}(\cos^2\theta)^{k-i}\\
+		&= (\cos^2\theta + \sin^2\theta)^k\\
+		&= 1.
+	\end{align*}
+\end{proof}
+\begin{Proposition}\label{outputProbSpace}
+	The probability space produced by the QRNG is $(B^n\times B^n,2^{B^n\times B^n},P_{n^2})$ where $P_{n^2}: 2^{B^n\times B^n} \to [0,1]$ is defined for all $X\subseteq B^n\times B^n$ as:
+	$$P_{n^2}(X)=\sum_{(x,y)\in X}2^{-n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)},$$
+	where $d(x,y)$ is the standard Hamming distance.
+\end{Proposition}
+We check easily that this is indeed a valid probability space (i.e.\ that is satisfies the Kolmogorov axioms~\citep{Billingsley:1979aa}).
+\begin{enumerate}
+	\item $P_{n^2}(\emptyset) = 0$, trivially true;
+	\item $P_{n^2}(B^n\times B^n) = 2^{-n}\sum_{(x,y)\in B^n\times B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)} = 2^{-n} 2^n = 1$ by Fact~\ref{fact:TrigBinom};
+	\item For $X,Y\subseteq B^n\times B^n$, $X\cap Y=\emptyset \implies P_{n^2}(X \cup Y) = P_{n^2}(X) + P_{n^2}(Y)$, trivially true.
+\end{enumerate}
+
+\begin{Fact}
+	For any $x\in B^n$ we have
+	\begin{align*}
+		P_{n^2}(\{x\} \times B^n) &= P_{n^2}(B^n \times \{x\})\\
+		&= 2^{-n}\sum_{k=0}^n\binom{n}{k}(\sin^2\theta)^k(\cos^2\theta)^{n-k}\\
+		&= 2^{-n}.
+	\end{align*}
+\end{Fact}
+So we see that each string taken separately is uniformly distributed; if we discard one string and use the QRNG to generate one bit string only then the output will be uniformly distributed.
+
+\subsection{Independence of the QRNG probability space}
+If we were to discard one string it is clear the other string is produced independently (since it is uniformly distributed). However, we would like to extend our notion of independence defined in~\citep{AbbottCalude10} to this 2-string probability space.
+
+\begin{Definition}\label{defn:independence}
+	We say the probability space $(B^n\times B^n,2^{B^n\times B^n},R_{n^2})$ is independent if for all $1\le k \le n$ and $x_1,\dots,x_k$, $y_1,\dots,y_k \in B^k$ we have
+	\begin{align*}
+		R_{n^2}(x_1\dots x_k B^{n-k} \times y_1\dots y_k B^{n-k})=&R_{n^2}(x_1\dots x_{k-1} B^{n-k+1} \times y_1\dots y_{k-1} B^{n-k+1})\\
+		&\times R_{n^2}(B^{k-1}x_k B^{n-k} \times B^{k-1} y_k B^{n-k}).
+	\end{align*}
+\end{Definition}
+
+\begin{Lemma}\label{independenceLemma}% (5)
+	For all $x,y \in B^{|x|}$ and $0\le k + |x| \le n$ we have $$R_{n^2}(B^{n-k}xB^{n-k-|x|} \times B^{n-k}yB^{n-k-|x|}) = 2^{-|x|}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{|x|-d(x,y)}.$$
+\end{Lemma}
+\begin{proof}
+	We have
+	\begin{align*}
+		R_{n^2}(B^{n-k}xB^{n-k-|x|} \times B^{n-k}yB^{n-k-|x|}) =& \sum_{a_1,a_2 \in B^{n-k}}\sum_{b_1,b_2\in B^{n-k-|x|}}R_{n^2}\left((a_1 x b_1,a_2 y b_2) \right)\\
+		=& 2^{-n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{|x|-d(x,y)}\\&\cdot\sum_{a_1,a_2,b_1,b_2}(\sin^2\theta)^{d(a_1b_1,a_2b_2)}(\cos^2\theta)^{n-|x| -d(a_1b_1,a_2b_2)}\\
+		=& 2^{-n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{|x|-d(x,y)}2^{n-|x|}\\
+		=& 2^{-|x|}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{|x|-d(x,y)}
+	\end{align*}
+\end{proof}
+
+\begin{Fact}%independence
+	The probability space $P_{n^2}$  defined in Proposition~\ref{outputProbSpace} is independent.
+\end{Fact}
+\begin{proof}
+	This follows from Lemma~\ref{independenceLemma} and the fact that the Hamming distance is additive, i.e.\ $d(x_1\dots x_k, y_1\dots y_k)=d(x_1\dots x_{k-1},y_1\dots y_{k-1})+d(x_k,y_k)$.
+\end{proof}
+
+\subsection{XOR application}
+
+We now consider the situation where the two output strings $x$ and $y$ are XOR'd against each other (effectively using one as a one-time pad for the other) to produce a single string, and we investigate the distribution of this resulting string.
+
+For $j\ge 0$ and $x,y \in B^{n+j}$ define $X_j: B^{n+j} \times B^{n+j} \to B^n$ as $X_j(x,y) = z$ where $z_i = x_i \oplus y_{i+j}$ for $i=1,\dots,n$. For $z \in B^n$ let
+\begin{align*}
+	A_j(z) &= \{(x,y) \mid x,y \in B^{n+j}, X_j(x,y)=z \}\\
+	&= \{(ua,b(u \text{ \tt XOR } z) \mid u \in B^n, a,b\in B^j \}.
+\end{align*}
+\begin{Proposition}
+ The probability space of interest is $(B^n,2^{B^n},Q_{n,j})$, where $Q_{n,j}: 2^{B^n} \to [0,1]$ is defined for all $X\subseteq B^n$ as:
+\begin{align*}
+	Q_{n,j}(X) =& \sum_{z\in X}P_{(n+j)^2}(A(z)).
+\end{align*}
+\end{Proposition}
+We note that $|A(z)| = 2^{n+2j}$ and check this is a valid probability space:
+\begin{enumerate}
+	\item $Q_{n,j}(\emptyset) = 0$, trivially true.
+	\item $Q_{n,j}(B^n) = \sum_{z\in B^n}P_{(n+j)^2}(A(z)) = P_{(n+j)^2}(\bigcup_z A(z)) = P_{(n+j)^2}(B^{n+j}\times B^{n+j}) = 1$, where we have noted that all $A(z)$ are disjoint and thus $|\bigcup_z A(z)| = 2^n 2^{n+2j} = (2^{n+j})^2$ and hence $\bigcup_z A(z) = B^{n+j}\times B^{n+j}$.
+	\item For $X,Y \subseteq B^n$, $X\cap Y = \emptyset \implies Q_{n,j}(X\cup Y) = Q_{n,j}(X) + Q_{n,j}(Y)$, trivially true.
+\end{enumerate}
+
+\begin{Theorem}
+	For $j>0$, $Q_{n,j}=U_n$, the uniform distribution, and for $j=0$, $Q_{n,j} = P_n$, the constantly biased distribution from the von Neumann note with $p_0 = \cos^2\theta$ and $p_1 = 1-p_0 = \sin^2\theta$.
+\end{Theorem}
+\begin{proof}
+	Let $z \in B^n$ and $j \ge 0$. Then we have
+	\begin{align*}
+		Q(z) =& P_{n^2}(A(z))\\
+		=& \sum_{a,b\in 2^j}\sum_{u\in 2^n}P_{n^2}((ua,b(u \text{ \tt xor } z))\\
+		=& 2^{-n-j}\sum_{u\in 2^n}(\sin^2\theta)^{d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}(\cos^2\theta)^{n-j-d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}\\&\cdot \sum_{a\in 2^j}(\sin^2\theta)^{d(a,(u\text{ \tt xor } z)[n-j+1,n])}(\cos^2\theta)^{j-d(a,(u\text{ \tt xor } z)[n-j+1,n])} \\&\cdot\sum_{b\in 2^j}(\sin^2\theta)^{d(u[1,j],b)}(\cos^2\theta)^{j-d(u[1,j],b)}\\
+		=& 2^{-n-j}\sum_{u\in 2^n}(\sin^2\theta)^{d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}(\cos^2\theta)^{n-j-d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])},
+	\end{align*}
+	where the last line follows from Fact~\ref{fact:TrigBinom}. Now note that for $j=0$, $d(u,(u\text{ \tt xor } z)) = \#_1(z)$. Hence for $j=0$ we have
+\begin{align*}
+	Q(z) &= 2^{-n}\sum_{u\in 2^n}(\sin^2\theta)^{\#_1(z)}(\cos^2\theta)^{\#_0(z)}\\
+	&= (\sin^2\theta)^{\#_1(z)}(\cos^2\theta)^{\#_0(z)}.
+\end{align*}
+
+For $j>0$ we now have
+\begin{align*}
+	Q(z) =& 2^{-n-j}\sum_{u_n\in B}\cdots \sum_{u_{n-j}\in B}(\sin^2\theta)^{u_n \oplus z_{n-j}\oplus u_{n-j}}(\cos^2\theta)^{1-u_n \oplus z_{n-j}\oplus u_{n-j}}\cdots\\&\times \sum_{u_1 \in B} (\sin^2\theta)^{u_j+1 \oplus z_{1}\oplus u_{1}}(\cos^2\theta)^{1-u_j+1 \oplus z_{1}\oplus u_{1}}\\
+	=& 2^{-n-j}\sum_{u_n\in B}\cdots \sum_{u_{n-j}\in B}(\sin^2\theta + \cos^2\theta)\cdot \sum_{u_1 \in B}(\sin^2\theta + \cos^2\theta)\\
+	=& 2^{-n-j}\sum_{u_{n-j+1}\dots u_n \in B^j}1\\
+	=& 2^{-n-j}2^j\\
+	=& 2^{-n}.
+\end{align*}
+Hence for $j>0$  the resulting probability space is uniformly distributed.
+\end{proof}
+\fi
+
+
+%\section{Theoretical analysis on generated strings}
+
+More formally, the QRNG generates two strings simultaneously, so the probability space contains pairs of strings of length $n$. Let $e_x^\oplus,e_y^\otimes$ for $x,y=0,1$ be the detector efficiencies of the $D_x^\oplus$ and $D_y^\otimes$ detectors respectively. For perfect detectors, i.e\ $e_x^\oplus = e_y^\otimes$, we would expect a pair of bits $(a,b)$ to be measured with probability $2^{-1} (\sin^2\theta)^{a \oplus b}(\cos^2\theta)^{1-a \oplus b}$; non-perfect detectors alter this probability depending on the values of $a,b$.
+
+Let $B=\{0,1\}$, and for $x,y \in B^n$ let $d(x,y)$ be the Hamming distance between the strings $x$ and $y$, i.e\ the number of positions at which $x$ and $y$ differ, and let $\#_b(x)$ be the number of $b$s in $x$.
+
+%\begin{Proposition}\label{outputProbSpaceNonIdeal}
+	The probability space \footnote{$B^{n}$ is the set of bitstrings  $x$ of length $|x|=n$; $2^{X}$ is the set of all subsets of the set $X$.} of bitstrings produced by the QRNG is $(B^n\times B^n,2^{B^n\times B^n},P_{n^2})$, where the probability $P_{n^2}: 2^{B^n\times B^n} \to [0,1]$ is defined for all $X\subseteq B^n\times B^n$ as follows:
+	$$P_{n^2}(X)=\frac{1}{Z_n}\sum_{(x,y)\in X}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)},$$
+	
+\noindent	and the term
+	\begin{align*}
+		Z_n&=\sum_{(x,y)\in B^n\times B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)}\\
+		&= \left[(\sin^2\theta(e_0^\oplus e_1^\otimes + e_1^\oplus e_0^\otimes)+\cos^2\theta(e_0^\oplus e_0^\otimes + e_1^\oplus e_1^\otimes)  \right]^n
+	\end{align*}
+ensures normalisation.
+
+%\end{Proposition}
+We can check easily that this is indeed a valid probability space (i.e.\ that is satisfies the Kolmogorov axioms~\citep{Billingsley:1979aa}).
+\if01
+\begin{enumerate}
+	\item $P_{n^2}(\emptyset) = 0$, trivially true;
+	\item $P_{n^2}(B^n\times B^n) = 1$ by by definition of $Z_n$;
+	\item For $X,Y\subseteq B^n\times B^n$, $X\cap Y=\emptyset \implies P_{n^2}(X \cup Y) = P_{n^2}(X) + P_{n^2}(Y)$, trivially true.
+\end{enumerate}
+\fi
+%Note that for equal detector efficiencies we recover the definition of the ideal probability space in Proposition~\ref{outputProbSpace}.
+Note that for equal detector efficiencies we have
+\begin{align*}
+	Z_n&=(e^\oplus)^n(e^\otimes)^n\sum_{(x,y)\in B^n\times B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}=2^n(e^\oplus)^n(e^\otimes)^n,
+\end{align*}
+hence the probability has the simplified form
+$$P_{n^2}(X)=\sum_{(x,y)\in X}2^{-n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}.$$
+%\begin{Fact}\label{discardOneString}
+
+Given that the proposed QRNG produces two (potentially correlated) strings, it is worth considering the distribution of each string taken separately. Given the rotational invariance of the singlet state this should be uniformly distributed. However, because the detector efficiencies may vary in each detector, this is not, in general, the case.
+	For every bitstring $x\in B^n$ we have
+	\begin{align}
+		P_{n^2}(\{x\} \times B^n) &= \frac{1}{Z_n}\sum_{y\in B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)}\notag\\
+		&= \frac{(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}}{Z_n}\sum_{y\in B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)}\notag\\
+		&= \frac{1}{Z_n}\left(e_0^\oplus (e_1^\otimes\sin^2\theta+e_0^\otimes\cos^2\theta) \right)^{\#_0(x)}\left( e_1^\oplus (e_0^\otimes\sin^2\theta+e_1^\otimes\cos^2\theta) \right)^{\#_1(x)}.\label{discardOneStrDis}
+	\end{align}
+%\end{Fact}
+
+
+We see that each bitstring taken separately appears to come from a constantly biased source where the probabilities that a bit is 0 or 1, $p_0,p_1$, are given by the formulae
+$$p_0 = e_0^\oplus (e_1^\otimes\sin^2\theta+e_0^\otimes\cos^2\theta)/Z_1, \, p_1 = e_1^\oplus (e_0^\otimes\sin^2\theta+e_1^\otimes\cos^2\theta)/Z_1.$$
+This can alternatively be viewed as the distribution obtained if we were to discard one bitstring after measurement.
+%\marginpar{\tiny \tiny Is this better than $e_0/(e_0+e_1)$?}
+Note that if either $e_0^\otimes = e_1^\otimes$ or we have perfect misalignment (i.e.\ $\theta=\pi/4$) then the probabilities have the simpler formulae: $$p_x=e_x^\oplus/(e_0^\oplus + e_1^\oplus), x\in\{0,1\}.$$ In this case, if we further have that $e_0^\oplus = e_1^\oplus$, we obtain the uniform distribution by discarding one string after measurement.
+
+The analogous result for the symmetrical case $P_{n^2}\left(B^n \times \{y\} \right)$ also holds.
+%Note that if either $e_0^\otimes = e_1^\otimes$ or we have perfect misalignment (i.e\ $\theta=\pi/4$) then we have $p_0=p_1$ and we obtain the uniform distribution by discarding one string after measurement.
+
+\subsection{Independence of the QRNG probability space}
+If we were to discard one bitstring it is clear the other bitstring is generated independently in a statistical sense since the probability distribution source producing it is  constantly biased and independent~\citep{AbbottCalude10}. However, we would like to extend our notion of independence defined \citet{AbbottCalude10} to this 2-bitstring probability space.
+
+%\begin{Definition}\label{defn:independence}
+	We say the probability space $(B^n\times B^n,2^{B^n\times B^n},R_{n^2})$ is {\it independent} if for all $1\le k \le n$ and $x_1,\dots,x_k$, $y_1,\dots,y_k \in B$ we have
+	\begin{align*}
+		R_{n^2}(x_1\dots x_k B^{n-k} \times y_1\dots y_k B^{n-k})=& \, R_{n^2}(x_1\dots x_{k-1} B^{n-k+1} \times y_1\dots y_{k-1} B^{n-k+1})\\
+		&\times R_{n^2}(B^{k-1}x_k B^{n-k} \times B^{k-1} y_k B^{n-k}).
+	\end{align*}
+%\end{Definition}
+
+%\begin{Lemma}\label{independenceLemmaNonIdeal}% (5)
+	For all $x,y \in B^{|x|}$ and $0\le k + |x| \le n$ we have
+	$$P_{n^2}(B^{n-k}xB^{n-k-|x|} \times B^{n-k}yB^{n-k-|x|}) = P_{|x|^2}((x,y)).$$
+%\end{Lemma}
+%\begin{proof}
+	Indeed, using the additivity of the Hamming distance and the $\#_x$ functions, e.g. $d(x_1\dots x_k, y_1\dots y_k)=d(x_1\dots x_{k-1},y_1\dots y_{k-1})+d(x_k,y_k)$, we have:
+	\begin{align*}
+		P_{n^2}(B^{n-k}xB^{n-k-|x|} \times B^{n-k}yB^{n-k-|x|}) =& \sum_{a_1,a_2 \in B^{n-k}}\sum_{b_1,b_2\in B^{n-k-|x|}}P_{n^2}\left((a_1 x b_1,a_2 y b_2) \right)\\
+		=& P_{|x|^2}((x,y))\sum_{a_1,a_2 \in B^{n-k}}\sum_{b_1,b_2\in B^{n-k-|x|}}P_{(n-|x|)^2}\left((a_1 b_1,a_2 b_2) \right)\\
+		=& P_{|x|^2}((x,y)) P_{(n-|x|)^2}(B^{n-|x|}\times B^{n-|x|})\\
+		=& P_{|x|^2}((x,y)).
+	\end{align*}
+
+%\end{proof}
+
+
+%In light of Lemma~\ref{independenceLemmaNonIdeal} the following Fact is evident.
+%\begin{Fact}%independence
+	As a direct consequence we deduce that the probability space $P_{n^2}$  defined above
+	%in Proposition~\ref{outputProbSpaceNonIdeal}
+	is independent.
+%\end{Fact}
+%\begin{proof}
+%	This follows from Lemma~\ref{independenceLemmaNonIdeal} and the additivity of the Hamming distance and the $\#_x$ functions.
+%\end{proof}
+
+\subsection{XOR application}
+
+We now consider the situation where the two output bitstrings $x$ and $y$ are ${\tt XOR}$'d against each other (effectively using one as a one-time pad for the other) to produce a single bitstring, and we investigate the distribution of the resulting bitstring. Rather than only considering the effect of ${\tt XOR}$ing paired (and potentially correlated) bits, we also consider ${\tt XOR}$ing outcomes shifted by $j>0$ bits as described in Section~\ref{sec:nonalignment}.
+
+For $j\ge 0$ and $x,y \in B^{n+j}$ define the offset-${\tt XOR}$ function $X_j: B^{n+j} \times B^{n+j} \to B^n$ as $X_j(x,y) = z$ where $z_i = x_i \oplus y_{i+j}$ for $i=1,\dots,n$. For $z \in B^n$ the set of pairs $(x,y)$ which produce $z$ when ${\tt XOR}$'d with offset $j$ is
+%\begin{align*}
+\[	A_j(z) = \{(x,y) \mid x,y \in B^{n+j}, X_j(x,y)=z \}%&
+	= \{(ua,b(u \xor z) \mid u \in B^n, a,b\in B^j \}.\]
+%\end{align*}
+%\begin{Proposition}
+ The probability space of the output produced by the QRNG is $(B^n,2^{B^n},Q_{n,j})$, where $Q_{n,j}: 2^{B^n} \to [0,1]$ is defined for all $X\subseteq B^n$ as:
+\begin{align}\label{QProbDefn}
+	Q_{n,j}(X) =& \sum_{z\in X}P_{(n+j)^2}(A_j(z)).
+\end{align}
+%\end{Proposition}
+
+We note that $|A_j(z)| = 2^{n+2j}$ and check this is a valid probability space. Indeed,
+%\begin{enumerate}
+	%\item
+	 $Q_{n,j}(\emptyset) = 0$, is trivially true,
+	%\item
+	$$Q_{n,j}(B^n) = \sum_{z\in B^n}P_{(n+j)^2}(A_j(z)) = P_{(n+j)^2}\left(\bigcup_z A_j(z)\right) = P_{(n+j)^2}\left(B^{n+j}\times B^{n+j}\right) = 1,$$ because all $A_j(z)$ are disjoint and thus $$|\bigcup_z A_j(z)| = 2^n 2^{n+2j} = (2^{n+j})^2, \mbox{  so  }  \bigcup_z A_j(z) = B^{n+j}\times B^{n+j},$$ and
+	%\item
+	for disjoint  $X,Y \subseteq B^n$ we have $ Q_{n,j}(X\cup Y) = Q_{n,j}(X) + Q_{n,j}(Y)$.
+%\end{enumerate}
+
+We now explore the form of the ${\tt XOR}$'d distribution $Q_{n,j}$  for  $j=0$ and $j>0$.
+
+%\begin{Theorem}
+%	For $j>0$, $Q_{n,j}=U_n$, the uniform distribution, and for $j=0$, $Q_{n,j} = P_n$, the constantly biased distribution from the von %Neumann note with $p_0 = \cos^2\theta$ and $p_1 = 1-p_0 = \sin^2\theta$.
+%\end{Theorem}
+%\begin{proof}
+	Let $z \in B^n$ and $j \ge 0$. By $z[m,k]$ we denote the substring $z_m\dots z_k, 1\le m \le k\le n$. We have
+	\begin{align*}
+		Q_{n,j}(z) =& P_{(n+j)^2}(A_j(z)))\\
+		=& \sum_{a,b\in 2^j}\sum_{u\in 2^n}P_{(n+j)^2}((ua,b(u\xor z))\\
+		=& \sum_{u\in 2^n}P_{(n-j)^2}\left((u[j+1,n],(u\xor z)[1,n-j])\right)  \\
+		&\cdot \sum_{a\in 2^j}P_{j^2}\left((a,(u\xor z)[n-j+1,n])\right)  \sum_{b\in 2^j}P_{j^2}\left((u[1,j],b)\right).
+		%=& 2^{-n-j}\sum_{u\in 2^n}(\sin^2\theta)^{d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}(\cos^2\theta)^{n-j-d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}\\&\cdot \sum_{a\in 2^j}(\sin^2\theta)^{d(a,(u\text{ \tt xor } z)[n-j+1,n])}(\cos^2\theta)^{j-d(a,(u\text{ \tt xor } z)[n-j+1,n])} \\&\cdot\sum_{b\in 2^j}(\sin^2\theta)^{d(u[1,j],b)}(\cos^2\theta)^{j-d(u[1,j],b)}\\
+		%=& 2^{-n-j}\sum_{u\in 2^n}(\sin^2\theta)^{d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}(\cos^2\theta)^{n-j-d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])},
+	\end{align*}
+	%where the last line follows from Fact~xx. Now note that for $j=0$, $d(u,(u\text{ \tt xor } z)) = \#_1(z)$.
+	For $j=0$, we note that $d(u, u\xor z) = \#_1(z)$, and thus we have:
+\begin{align*}
+	Q_{n,0}(z) &= \sum_{u\in 2^n}P_{n^2}\left((u,(u\xor z))\right) \\
+		&= \frac{1}{Z_n}(\sin^2\theta)^{\#_1(z)}(\cos^2\theta)^{\#_0(z)} \sum_{u\in B^n} (e_0^\oplus)^{\#_0(u)}(e_1^\oplus)^{\#_1(u)}(e_0^\otimes)^{\#_0(u\xor z)}(e_1^\otimes)^{\#_1(u\xor z)}\\
+		&= \frac{1}{Z_n}\left(\sin^2\theta (e_0^\oplus e_1^\otimes + e_1^\oplus e_0^\otimes) \right)^{\#_1(z)}\left(\cos^2\theta (e_0^\oplus e_0^\otimes + e_1^\oplus e_1^\otimes) \right)^{\#_0(z)}.
+\end{align*}
+We recognise this as a constantly biased source where $$p_0 = \cos^2\theta (e_0^\oplus e_0^\otimes + e_1^\oplus e_1^\otimes)/Z_1,\, p_1 = \sin^2\theta (e_0^\oplus e_1^\otimes + e_1^\oplus e_0^\otimes)/Z_1.$$ It is interesting to compare the form of $Q_{n,0}$ to the distribution of the constantly biased source Eq.~\eqref{discardOneStrDis} by discarding one output string---the former is more sensitive to misalignment, the latter to differences in detection efficiencies. In the case of perfect/equal detector efficiencies (but non-perfect misalignment), discarding one string produces uniformly distributed bitstrings, whereas ${\tt XOR}$ing does not.
+
+We now look at the case where $j>0$. For the ideal situation of $\theta=\pi/4$ we have the same result as for the $j=0$ case, while if we have equal detector efficiencies then we get the uniform distribution. We show this as follows (note that $Z_{n+j}=2^{n+j}$ in this case):
+\begin{align*}
+	Q_{n,j}(z) =& 2^{-n-j}\sum_{u_n\in B}\cdots \sum_{u_{n-j}\in B}(\sin^2\theta)^{u_n \oplus z_{n-j}\oplus u_{n-j}}(\cos^2\theta)^{1-u_n \oplus z_{n-j}\oplus u_{n-j}}\cdots\\&\times \sum_{u_1 \in B} (\sin^2\theta)^{u_j+1 \oplus z_{1}\oplus u_{1}}(\cos^2\theta)^{1-u_j+1 \oplus z_{1}\oplus u_{1}}\\
+	=& 2^{-n-j}\sum_{u_n\in B}\cdots \sum_{u_{n-j}\in B}(\sin^2\theta + \cos^2\theta)\cdot \sum_{u_1 \in B}(\sin^2\theta + \cos^2\theta)\\
+	=& 2^{-n-j}\sum_{u_{n-j+1}\dots u_n \in B^j}1\\
+%	=& 2^{-n-j}2^j\\
+	=& 2^{-n}.
+\end{align*}
+%\end{proof}
+However, in the more general case of non-equal detector efficiencies, the distribution is no longer independent, although in general is much closer to the uniform distribution than the $j=0$ case.
+(Recall that independence is a sufficient but not necessary condition for uniform distribution~\citep{AbbottCalude10}.) It is indeed this ``closeness''---the total variation distance given by $\Delta(U_n,Q_{n,j}) = \frac{1}{2}\sum_{x\in B^n}|2^{-n} - Q_{n,j}(x)|$---which is the important quantity ($U_n$ is the uniform distribution on $n$-bit strings). However, since $Q_{n,j}$ for $j>0$ is not independent, von Neumann normalisation cannot be applied to guarantee the uniform distribution; indeed the dependence is not even bounded to a fixed number of preceding bits.
+%Simple testing indicates that indeed we get again the uniform distribution.
+%Thorough numerical testing reveals the following: for $j>0$ the distribution is much closer to the uniform distribution than for $j=0$. Furthermore, it is much closer to the uniform distribution than the distribution in Eq.~\eqref{discardOneStrDis} obtained by discarding one string. Increasing beyond $j=1$ appears to have little if no extra effect to the distribution obtained.\marginpar{\tiny examples}
+\begin{table}
+\begin{center}
+
+	\caption{Empirical evidence for the quality of ${\tt XOR}$ing with $j>0$ compared to $j=0$ and configuration settings of $\theta=\pi/5$, $e_0^\oplus=0.30$, $e_1^\oplus=0.33$, $e_0^\otimes=0.29$, $e_1^\otimes=0.30$ --- this is probably much worse (further from the ideal case) that one would expect in an experimental setup. The (small) value of $n=10$ has been used as, unfortunately, the distribution is very costly to calculate numerically. Here $\text{bin}(m)$ denotes the (10-bit zero-extended) binary representation of $m$. For example, $\text{bin}(1)=0000000001$, $\text{bin}(2)=0000000010$, etc. }
+\begin{tabular}{cccc}
+\hline\hline
+$x$ & $\text{bin}(174)$ & $\text{bin}(487)$ & $\text{bin}(973)$\\
+\hline
+$Q_{10,0}(x)$ & $5.90\times 10^{-4}$ & $9.70\times 10^{-4}$ & $1.64\times 10^{-4}$\\
+$Q_{10,1}(x)$ & $9.75\times 10^{-4}$ & $9.71\times 10^{-4}$ & $9.71\times 10^{-4}$\\
+$Q_{10,2}(x)$ & $9.78\times 10^{-4}$ & $9.70\times 10^{-4}$ & $9.70\times 10^{-4}$\\
+$U_{10}(x)$ & $9.77\times 10^{-4}$   & $9.77\times 10^{-4}$ & $9.77\times 10^{-4}$\\
+\hline\hline
+\end{tabular}
+	\end{center}
+\label{SampleQValues}
+\end{table}
+\begin{table}
+\begin{center}
+	\caption{The variation from the uniform distribution of the distributions $Q_{10,j}$, using the same parameters as Table~\ref{SampleQValues}.}
+\begin{tabular}{cccc}
+\hline\hline
+$\Delta(Q_{10,0},U_{10})$ & 0.770271 &&\\
+$\Delta(Q_{10,1},U_{10})$ & \phantom{0.} 0.00441399 &&\\
+$\Delta(Q_{10,1},U_{10})$ & \phantom{0.} 0.00440061 &&\\
+\hline\hline
+\end{tabular}
+\end{center}
+
+\label{QDistEx}
+\end{table}
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.9]{2010-qxor-SpreadFromUD}
+\end{center}
+\caption{(Color online) A plot of $Q_{10,j}-2^{-10}$ for each of the $2^{10}$ strings of length 10. The two cases $j=0$ (blue) and $j=1$ (red) show how much closer the probabilities given by $Q_{10,1}$ are to that expected from the uniform distribution than for $Q_{10,0}$. The same experimental configuration as in Table~\ref{QDistEx} has been used.}
+\label{VarFromUD}
+\end{figure}
+
+\subsection{Criticisms and alternative operationalizations}\label{sec:crits}
+
+This given, one may ask why not simply discard one string to give the distribution in Eq.~\eqref{discardOneStrDis} and apply von Neumann normalisation to obtain uniformly distributed bitstrings. There are two primary answers to this question.
+
+(i) As discussed previously the effect of drift in bias and temporal correlations will ensure this method will not produce the uniform distribution anyway. Indeed, the distribution $Q_{n,j}$ for $j>0$ should be more robust to those effects ($Q_{n,j}$ for example is less sensitive to detector bias than that in Eq.~\eqref{discardOneStrDis}). It is extremely plausible that $Q_{n,j}$ gives as good results as discarding one string in practice; it is indeed very close to the uniform distribution as can be seen from Table~\ref{QDistEx} and Fig.~\ref{VarFromUD}. To compare properly the distributions, the following \emph{open question} must be answered: what is the bound $\rho$ depending on $e_x^\oplus,e_y^\otimes$ and $\theta$ such that $\Delta(U_n,Q_{n,j})\le \rho$, and how does that compare to that given in~\citep{AbbottCalude10} for normalisation of a source with varying bias?
+
+Further, $Q_{n,j}$ produces bitstrings of length $n$, whereas applying von Neumann to a single string produces a string with expected length at most $n/4$ bits.
+% (which can be increased to the entropy bound of $n/2$ via Peres' iterated method~\cite{PeresY-1992}).
+This is a significant increase in efficiency, making the shifted ${\tt XOR}$ing process extremely appealing for a high bitrate, un-normalized QRNG.
+Even the $j=0$ case with von Neumann applied after ${\tt XOR}$ing would often be preferable to discarding one string, since it is less sensitive to detector efficiency (the hardware limit) and more sensitive to to misalignment (which is controlled by the experimenter).
+
+(ii) If one insists on a perfect theoretical distribution in the presence of non-ideal misalignment and unequal detector efficiencies, or perhaps the $Q_{n,j}$ distribution is not sufficient for particular requirements, then one can still operationalize both strings to improve the efficiency of the QRNG over discarding a single string by a simple modification of von Neumann's procedure. To do so, note that the pair of pairs $(a_1 a_2, b_1 b_2)$ have the same probability as the pairs $(a_2 a_1, b_2 b_1)$. By mapping those with $a_1 b_1 < a_2 b_2$ (lexicographically)  to $0$, those with $a_1 b_1 > a_2 b_2$ to 1, and discarding those with $a_1 b_1 = a_2 b_2$, one will obtain the uniform distribution as for von Neumann's procedure. The key advantage is that this will obtain strings of expected length up to $3n/8$, while maintaining the desired property of sampling from the  uniform distribution.
+
+The problem of determining how best to obtain the maximum amount of information from the QRNG is largely a problem of randomness extractors~\citep{Gabizon:2010uq}, and is a trade off between the number of uniformly distributed bits obtained and the processing cost---a suitable extractor needs to operate in real-time for most purposes. As we have seen, the fact that two (potentially correlated) bitstrings are obtained allows more efficient operation than a QRNG using single-photons. We have shown how the proposed QRNG can be operationalize in more than one way: either by using shifted ${\tt XOR}$ing of bits to sample from a distribution which is close to (equal to in the ideal limit) the uniform distribution and efficient and robust to various errors, or by utilising both produced bitstrings to allow a more efficient normalisation procedure giving (in absence of the aforementioned temporal effects) the uniform distribution. Many more operationalizations are undoubtedly possible.
+
+%\section{Strengths and limits of the proposed QRNG}
+
+%Every QRNG  claiming to produce a better form of randomness than pseudo-randomness must firstly be certified by some physical law implying the incomputability of the output bitstrings; value indefiniteness is one such example. Most existing proposals of QRNGs are based on single beam splitters and work in a dimension-two Hilbert space, so they cannot be certified by value indefiniteness given by  the Kochen-Specker theorem (which holds only in a Hilbert space of dimension greater than 2). By using two entangled photons the proposed QRNG satisfies the requirements for certification. Since this QRNG produces two bitstring, we have proposed ${\tt XOR}$ing its outputs to get a better protection against experimental imperfections.
+
+%As we have seen, if we assume perfect detectors then the ${\tt XOR}$ing process seems to offer no advantage to simply discarding one bitstring because imperfect context misalignment is not important due to the rotational invariance of the singlet state used. However, if we look at the joint effects of misalignment and imperfect detectors, the ${\tt XOR}$ing process ``smoothes'' out some of the bias and results in a distribution closer to the expected uniform distribution, another important symptom of randomness.
+
+%Many existing QRNGs use von Neumann normalisation to remove bias. This produces the uniform distribution as long as the bias is constant and the bits are produced independently~\cite{AbbottCalude10}. As we have seen, there is evidence this is not the case in existing QRNGs, and the ${\tt XOR}$ing process, possibly in conjunction with von Neumann normalisation, seems a promising method to make the output distribution more robust to these errors. As the initial bitstring before normalisation will be less biased than without ${\tt XOR}$ing, the normalisation procedure will further be more efficient and mean the QRNG will produce more bits (after normalisation).
+
+
+
+
+
+
+%\section{(Experimental) Analysis of the generated series}
+
+%Analyses of sequences generated by the proposed QRNG should be conducted, utilising the knowledge of the expected distribution, as in~\cite{PhysRevA.82.022102}. In particular, the quality of both the individual strings produced should be compared with that of the ${\tt XOR}$'d sequence, both with and without von Neumann normalisation applied.
+
+%Further, in view of conceivable temporal correlations between bits, the quality of the random bits should be tested as $j$ is varied in Eq.~\eqref{QProbDefn}. Since this has little effect on the bias of the resultant string (and normalisation can subsequently remove this), it would allow investigation of the effect of these conceivable temporal correlations.
+
+\section{Summary}
+
+Every QRNG  claiming to produce a better form of randomness than pseudo-randomness must firstly be certified by some physical law implying the incomputability of the output bitstrings; value indefiniteness is one such example. Most existing proposals of QRNGs are based on single beam splitters and work in a dimension-two Hilbert space, so they cannot be certified by value indefiniteness given by  the Kochen-Specker theorem (which holds only in a Hilbert space of dimension greater than 2).
+%By using two entangled photons the proposed QRNG satisfies the requirements for certification.
+%Since this QRNG produces two bitstring, we have proposed ${\tt XOR}$ing its outputs to get a better protection against experimental imperfections and utilise the benefit of these two strings over simply using one.
+In this paper we have proposed a QRNG which, by  utilising an entangled photon singlet-state in four-dimensional Hilbert space, is certified by value indefiniteness which implies strong incomputability, the mathematical property corresponding to physical indeterminism. While this is an ingredient of fundamental importance in any reasonable QRNG, we have recognised that experimental imperfections will always prevent the QRNG from producing exactly the theoretical uniform probability distribution, another essential symptom of randomness (independent of incomputability). The form and effects of these conceivable experimental errors have been discussed, and care has been taken to make the proposed QRNG robust to these effects.
+
+Since this QRNG produces two bitstrings, we have proposed ${\tt XOR}$ing the bitstrings produced---using one as a one-time pad for the other---to obtain better protection against experimental imperfections, particularly non-ideal misalignment and unequal detector efficiencies, and to utilise the benefit of these two strings over simply using one. Rather than ${\tt XOR}$ing corresponding bits, bits $x_i$ and $y_{i+j}$ are ${\tt XOR}$'d (for fixed $j>0$) as this not only provides much better results, but also mitigates the effects of temporal correlations between adjacent bits. Further, we have proposed an alternative normalisation method based on von Neumann's procedure which uses both bitstrings. This procedure is significantly more efficient yet still guarantees uniformly distributed strings in the presence of non-ideal misalignment and unequal detector efficiencies.
+%In particular, the two certified bitstrings produced are ${\tt XOR}$'d together---using one as a one-time pad for the other---to reduce the effects of differing detector bias and non-ideal misalignment between the two measurement contexts employed. Rather than ${\tt XOR}$ing corresponding bits, bits $x_i$ and $y_{i+j}$ are ${\tt XOR}$'d (for fixed $j>0$) as this not only provides much better results, but also to mitigate the effects of temporal correlations between adjacent bits.
+We leave it as an \emph{open question} to improve upon the time-shifted ${\tt XOR}$ method and find a technique to extract bits which are provably uniformly distributed  and is more efficient than the improved von Neumann method discussed.
+
+Analyses of sequences generated by the proposed QRNG should be conducted, utilising the knowledge of the expected uniform distribution, as in~\citet{PhysRevA.82.022102}. In particular, the quality of both the individual strings produced should be compared with that of the ${\tt XOR}$'d sequence, both with and without von Neumann normalisation applied, as well as the sequence produced by our improved von Neumann method.
+
+Further, in view of conceivable temporal correlations between bits, the quality of the random bits should be tested as $j$ is varied in Eq.~\eqref{QProbDefn}. Since this has little effect on the bias of the resultant string (and normalisation can subsequently remove this), it would allow investigation of the effect and significance of these conceivable temporal correlations.
+
+
+The proposed QRNG produces bits which are certified via value indefiniteness and, based on our theoretical analysis, should be distributed more uniformly than those produced by existing QRNGs based on beam splitters.
+ It will be interesting to experimentally test the quality of bits produced via this method against existing classical and quantum sources of randomness.
+
+\section*{Acknowledgment} We thank A. Cabello, G. Longo and A. Zeilinger for many interesting discussions about quantum randomness.
+
+%\bibliographystyle{apalike}
+%\bibliography{svozil}
+%\if01
+\begin{thebibliography}{}
+
+\bibitem[Abbott and Calude, 2010]{AbbottCalude10}
+Abbott, A.~A. and Calude, C.~S. (2010)
+\newblock {V}on {N}eumann normalisation of a quantum random number generator.
+\newblock Report {CDMTCS}-392, Centre for Discrete Mathematics and Theoretical
+  Computer Science, University of Auckland, Auckland, New Zealand.
+
+\bibitem[Abbott et~al., 2010]{Abbott:aa}
+Abbott, A.~A., Calude, C.~S., and Svozil, K. (2010)
+\newblock Incomputability of quantum randomness.
+\newblock {\em in preparation}.
+
+\bibitem[Bechmann-Pasquinucci and Peres, 2000]{PhysRevLett.85.3313}
+Bechmann-Pasquinucci, H. and Peres, A. (2000)
+\newblock Quantum cryptography with 3-state systems.
+\newblock {\em Phys. Rev. Lett.} {\bf 85} (15), 3313--3316.
+
+\bibitem[Berry et~al., 2010]{PhysRevA.81.012109}
+Berry, D.~W., Jeong, H., Stobi\'{n}ska, M., and Ralph, T.~C. (2010)
+\newblock Fair-sampling assumption is not necessary for testing local realism.
+\newblock {\em Phys. Rev. A} {\bf 81} (1), 012109.
+
+\bibitem[Billingsley, 1979]{Billingsley:1979aa}
+Billingsley, P. (1979)
+\newblock {\em Probability and Measure}.
+\newblock John Wiley \& Sons, New York, Toronto, London.
+
+\bibitem[Blum, 1986]{18499}
+Blum, M. (1986)
+\newblock Independent unbiased coin flips from a correlated biased source: a
+  finite state {M}arkov chain.
+\newblock {\em Combinatorica} {\bf 6} (2), 97--108.
+
+\bibitem[Born, 1969]{born-69}
+Born, M. (1969)
+\newblock {\em Physics in My Generation}.
+\newblock Springer, New York, second edition.
+
+\bibitem[Cabello, 2008]{cabello:210401}
+Cabello, A. (2008)
+\newblock Experimentally testable state-independent quantum contextuality.
+\newblock {\em Phys. Rev. Lett.} {\bf 101} (21), 210401.
+
+\bibitem[Calude, 2002]{calude:02}
+Calude, C. (2002)
+\newblock {\em Information and Randomness---An Algorithmic Perspective}.
+\newblock Springer, Berlin, second edition.
+
+\bibitem[Calude et~al., 2010]{PhysRevA.82.022102}
+Calude, C.~S., Dinneen, M.~J., Dumitrescu, M., and Svozil, K. (2010)
+\newblock Experimental evidence of quantum randomness incomputability.
+\newblock {\em Phys. Rev. A} {\bf 82} (2), 022102.
+
+\bibitem[Calude and Svozil, 2008]{2008-cal-svo}
+Calude, C.~S. and Svozil, K. (2008)
+\newblock Quantum randomness and value indefiniteness.
+\newblock {\em Adv. Sci. Lett.} {\bf 1} (2), 165--168.
+
+\bibitem[Chaitin, 1977]{ch6}
+Chaitin, G.~J. (1977)
+\newblock Algorithmic information theory.
+\newblock {\em IBM J. Res. and Dev.}, {\bf 21}, 350--359, 496.
+\newblock Reprinted in \citet{chaitin2}.
+
+\bibitem[Chaitin, 1990]{chaitin2}
+Chaitin, G.~J. (1990)
+\newblock {\em Information, Randomness and Incompleteness}.
+\newblock World Scientific, Singapore, second edition.
+\newblock This is a collection of G. Chaitin's early publications.
+
+\bibitem[Clauser and Shimony, 1978]{clauser}
+Clauser, J.~F. and Shimony, A. (1978)
+\newblock {B}ell's theorem: experimental tests and implications.
+\newblock {\em Rep. Prog. Phys.} {\bf 41}, 1881--1926.
+
+\bibitem[Ekert, 1991]{ekert91}
+Ekert, A.~K. (1991)
+\newblock Quantum cryptography based on {B}ell's theorem.
+\newblock {\em Phys. Rev. Lett.} {\bf 67}, 661--663.
+
+\bibitem[Fiorentino et~al., 2007]{fiorentino:032334}
+Fiorentino, M., Santori, C., Spillane, S.~M., Beausoleil, R.~G., and Munro,
+  W.~J. (2007)
+\newblock Secure self-calibrating quantum random-bit generator.
+\newblock {\em Phys. Rev. A} {\bf 75} (3), 032334.
+
+\bibitem[Gabizon, 2010]{Gabizon:2010uq}
+Gabizon, A. (2010)
+\newblock {\em Deterministic Extraction from Weak Random Sources}.
+\newblock Springer, Berlin Heidelberg.
+
+\bibitem[Garg and Mermin, 1987]{PhysRevD.35.3831}
+Garg, A. and Mermin, D.~N. (1987)
+\newblock Detector inefficiencies in the {E}instein-{P}odolsky-{R}osen
+  experiment.
+\newblock {\em Phys. Rev. D} {\bf 35} (12), 3831--3835.
+
+\bibitem[Garrison and Chiao, 2008]{chau}
+Garrison, J.~C. and Chiao, R.~Y. (2008)
+\newblock {\em Quantum Optics}.
+\newblock Oxford University Press, Oxford.
+
+\bibitem[Haahr, 2010]{randomDotOrg}
+Haahr, M. (2010)
+\newblock True random number generator.
+\newblock http://www.random.org.
+
+\bibitem[Hai-Qiang et~al., 2004]{0256-307X-21-10-027}
+Hai-Qiang, M., Su-Mei, W., Da, Z., Jun-Tao, C., Ling-Ling, J., Yan-Xue, H., and
+  Ling-An, W. (2004)
+\newblock A random number generator based on quantum entangled photon pairs.
+\newblock {\em Chin. Phys. Lett.} {\bf 21} (10), 1961--1964.
+
+\bibitem[Huang et~al., 2003]{huang-2003}
+Huang, Y.-F., Li, C.-F., Zhang, Y.-S., Pan, J.-W., and Guo, G.-C. (2003)
+\newblock Experimental test of the {K}ochen-{S}pecker theorem with single
+  photons.
+\newblock {\em Phys. Rev. Lett.} {\bf 90} (25), 250401.
+
+\bibitem[{ID Quantique SA}, 2010]{Quantis}
+{ID Quantique} (2001-2010)
+\newblock {\em {QUANTIS}. Quantum number generator}.
+\newblock idQuantique, Geneva, Switzerland.
+
+\bibitem[Jennewein, 2009]{ThomasJennewein}
+Jennewein, T.
+\newblock Private communication to authors, 18 February 2009.
+
+\bibitem[Jennewein et~al., 2000]{zeilinger:qct}
+Jennewein, T., Achleitner, U., Weihs, G., Weinfurter, H., and Zeilinger, A.
+  (2000)
+\newblock A fast and compact quantum random number generator.
+\newblock {\em Rev. Sci. Instrum.} {\bf 71}, 1675--1680.
+
+\bibitem[Kochen and Specker, 1967]{kochen1}
+Kochen, S. and Specker, E.~P. (1967)
+\newblock The problem of hidden variables in quantum mechanics.
+\newblock {\em J. Math. Mech. (now Indiana Univ.
+  Math. J.)} {\bf 17} (1), 59--87.
+\newblock Reprinted in~\citet[pp. 235--263]{specker-ges}.
+
+\bibitem[Larsson, 1998]{PhysRevA.57.3304}
+Larsson, J.-A. (1998)
+\newblock Bell's inequality and detector inefficiency.
+\newblock {\em Phys. Rev. A} {\bf 57} (5), 3304--3308.
+
+\bibitem[Lindner et~al., 2005]{PhysRevLett.95.040401}
+Lindner, F., Sch\"atzel, M.~G., Walther, H., Baltu\v{s}ka, A., Goulielmakis,
+  E., Krausz, F., Milo\v{s}evi\'{c}, D.~B., Bauer, D., Becker, W., and Paulus,
+  G.~G. (2005)
+\newblock Attosecond double-slit experiment.
+\newblock {\em Phys. Rev. Lett.} {\bf 95} (4), 040401.
+
+\bibitem[Merali, 2010]{Merali:2014aa}
+Merali, Z. (2010)
+\newblock A truth test for randomness.
+\newblock {\em Nature News},
+Published online 14 April 2010 | Nature | doi:10.1038/news.2010.181.
+
+\bibitem[Pan et~al., 2000]{panbdwz}
+Pan, J.-W., Bouwmeester, D., Daniell, M., Weinfurter, H., and Zeilinger, A.
+  (2000)
+\newblock Experimental test of quantum nonlocality in three-photon
+  {G}reenberger-{H}orne-{Z}eilinger entanglement.
+\newblock {\em Nature} {\bf 403}, 515--519.
+
+\bibitem[Pauli, 1958]{pauli:58}
+Pauli, W. (1958)
+\newblock {D}ie allgemeinen {P}rinzipien der {W}ellenmechanik.
+\newblock In Fl{\"{u}}gge, S., editor, {\em {H}andbuch der {P}hysik. {B}and
+  {V}, {T}eil 1. {P}rinzipien der {Q}uantentheorie {I}}, 1--168.
+  Springer, Berlin, G{\"{o}}ttingen and Heidelberg.
+
+\bibitem[Pearle, 1970]{Pearle:1970fk}
+Pearle, P.~M. (1970)
+\newblock Hidden-variable example based upon data rejection.
+\newblock {\em Phys. Rev. D} {\bf 2} (8), 1418--1425.
+
+\bibitem[Peres, 1978]{peres222}
+Peres, A. (1978)
+\newblock Unperformed experiments have no results.
+\newblock {\em Am. J. Phys.} {\bf 46}, 745--747.
+
+\bibitem[Peres, 1992]{PeresY-1992}
+Peres, Y. (1992)
+\newblock Iterating von {N}eumann's procedure for extracting random bits.
+\newblock {\em Ann. Stat.} {\bf 20} (1), 590--597.
+
+\bibitem[Pironio et~al., 2010]{10.1038/nature09008}
+Pironio, S., Ac{\'\i}n, A., Massar, S., {Boyer de la Giroday}, A., Matsukevich,
+  D.~N., Maunz, P., Olmschenk, S., Hayes, D., Luo, L., Manning, T.~A., and
+  Monroe, C. (2010)
+\newblock Random numbers certified by {B}ell's theorem.
+\newblock {\em Nature} {\bf 464}, 1021--1024.
+
+\bibitem[Rarity et~al., 1994]{rarity-94}
+Rarity, J.~G., Owens, M. P.~C., and Tapster, P.~R. (1994)
+\newblock Quantum random-number generation and key sharing.
+\newblock {\em J. Mod. Opt.} {\bf 41}, 2435--2444.
+
+\bibitem[Specker, 1990]{specker-ges}
+Specker, E. (1990)
+\newblock {\em Selecta}.
+\newblock Birkh{\"{a}}user Verlag, Basel.
+
+\bibitem[Stefanov et~al., 2000]{stefanov-2000}
+Stefanov, A., Gisin, N., Guinnard, O., Guinnard, L., and Zbinden, H. (2000)
+\newblock Optical quantum random number generator.
+\newblock {\em J. Mod. Opt.} {\bf 47}, 595--598.
+
+\bibitem[Svozil, 1990]{svozil-qct}
+Svozil, K. (1990)
+\newblock The quantum coin toss---testing microphysical undecidability.
+\newblock {\em Phys. Lett. A} {\bf 143}, 433--437.
+
+\bibitem[Svozil, 2009]{svozil-2009-howto}
+Svozil, K. (2009)
+\newblock Three criteria for quantum random-number generators based on beam
+  splitters.
+\newblock {\em Phys. Rev. A} {\bf 79} (5), 054306.
+
+\bibitem[Svozil, 2010]{svozil_2010-pc09}
+Svozil, K. (2010)
+\newblock Quantum value indefiniteness.
+\newblock {\em Nat. Comput.}, online first, 1--12.
+
+\bibitem[{Von Neumann}, 1951]{von-neumann1}
+{Von Neumann}, J. (1951)
+\newblock Various techniques used in connection with random digits.
+\newblock {\em National Bureau of Standards Appl. Math Ser.} {\bf 12}, 36--38.
+\newblock Reprinted in {\sl John {von Neumann}, Collected Works, (Vol. V)}, A.
+  H. Traub, editor, MacMillan, New York, 1963, p. 768--770.
+
+\bibitem[Wang et~al., 2006]{wang:056107}
+Wang, P.~X., Long, G.~L., and Li, Y.~S. (2006)
+\newblock Scheme for a quantum random number generator.
+\newblock {\em J. Appl. Phys.} {\bf 100} (5), 056107.
+
+\bibitem[Weihs et~al., 1998]{zeilinger-epr-98}
+Weihs, G., Jennewein, T., Simon, C., Weinfurter, H., and Zeilinger, A. (1998)
+\newblock Violation of {B}ell's inequality under strict {E}instein locality
+  conditions.
+\newblock {\em Phys. Rev. Lett.} {\bf 81}, 5039--5043.
+
+\end{thebibliography}
+%\fi
+
+
+\end{document}
+\end
+
+
+
+(* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *)
+(* ~~~~~~~~~~~~~~~~~~Start Mathematica Code~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *)
+(* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *)
+
+(*<<Algebra`ReIm`*)
+
+Normalize[z_]:= z/Sqrt[z.Conjugate[z]];
+
+(*Definition of the Tensor Product*)
+TensorProduct[a_, b_] :=
+  Table[(*a,b are nxn and mxm-matrices*)
+   a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*
+    b[[s - Floor[(s - 1)/Length[b]]*Length[b],
+      t - Floor[(t - 1)/Length[b]]*Length[b]]], {s, 1,
+    Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(*Definition of the Tensor Product between two vectors*)
+
+TensorProductVec[x_, y_] :=
+  Flatten[Table[
+    x[[i]] y[[j]], {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(*Definition of the Dyadic Product*)
+
+DyadicProductVec[x_] :=
+  Table[x[[i]] Conjugate[x[[j]]], {i, 1, Length[x]}, {j, 1,
+    Length[x]}];
+
+(*Definition of the sigma matrices*)
+
+
+vecsig[r_, tt_, p_] :=
+ r*{{Cos[tt], Sin[tt] Exp[-I p]}, {Sin[tt] Exp[I p], -Cos[tt]}}
+
+(*Definition of some vectors*)
+
+BellBasis = (1/Sqrt[2]) {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, -1,
+     0}, {1, 0, 0, -1}};
+
+Basis = {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
+
+
+
+(*~~~~~~~~~~~~~~~~~~~~~~~~~  2  PARTICLES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*)
+(*~~~~~~~~~~~~~~~~~~~~~~~~~  2  PARTICLES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*)
+(*~~~~~~~~~~~~~~~~~~~~~~~~~  2  PARTICLES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*)
+
+
+
+(*~~~~~~~~~~~~~~~~~~~~~~~~~  2  State System ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+% ~~~~~~~~~~~~~~~   2 x 2
+% ~~~~~~~~~~~~~~~   2 x 2
+% ~~~~~~~~~~~~~~~   2 x 2
+% ~~~~~~~~~~~~~~~   2 x 2
+% ~~~~~~~~~~~~~~~   2 x 2
+% ~~~~~~~~~~~~~~~   2 x 2
+
+*)
+
+
+(*Definition of singlet state*)
+vp = {1,0};
+vm = {0,1};
+psi2s = (1/Sqrt[2])*(TensorProductVec[vp, vm] -
+    TensorProductVec[vm, vp])
+
+DyadicProductVec[psi2s]
+
+(*Definition of operators*)
+
+(* Definition of one-particle operator *)
+
+M2X = (1/2) {{0, 1}, {1, 0}};
+M2Y = (1/2) {{0, -I}, {I, 0}};
+M2Z = (1/2) {{1, 0}, {0, -1}};
+
+
+Eigenvectors[M2X]
+Eigenvectors[M2Y]
+Eigenvectors[M2Z]
+
+S2[t_, p_] := FullSimplify[M2X *Sin[t] Cos[p] + M2Y *Sin[t] Sin[p] + M2Z *Cos[t]]
+
+FullSimplify[S2[\[Theta], \[Phi]]] // MatrixForm
+
+FullSimplify[ComplexExpand[S2[Pi/2, 0]]] // MatrixForm
+FullSimplify[ComplexExpand[S2[Pi/2, Pi/2]]] // MatrixForm
+FullSimplify[ComplexExpand[S2[0, 0]]] // MatrixForm
+
+Assuming[{0 <= \[Theta] <= Pi, 0 <= \[Phi] <= 2 Pi}, FullSimplify[Eigensystem[S2[\[Theta], \[Phi]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]]
+
+
+
+FullSimplify[
+ Normalize[
+  Eigenvectors[S2[\[Theta], \[Phi]]][[1]]], {Element[\[Theta], Reals],
+   Element[\[Phi], Reals]}]
+
+ES2M[\[Theta]_,\[Phi]_] := {-E^(-I \[Phi]) Tan[\[Theta]/2], 1}*Cos[\[Theta]/2]*E^(I \[Phi]/2)
+ES2P[\[Theta]_,\[Phi]_] := {E^(-I \[Phi]) Cot[\[Theta]/2], 1}*Sin[\[Theta]/2]*E^(I \[Phi]/2)
+
+FullSimplify[ES2M[\[Theta],\[Phi]] .Conjugate[ES2M [\[Theta],\[Phi]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+FullSimplify[ES2P[\[Theta],\[Phi]] .Conjugate[ES2P [\[Theta],\[Phi]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+FullSimplify[ES2P[\[Theta],\[Phi]] .Conjugate[ES2M[\[Theta],\[Phi]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+
+ProjectorES2M[\[Theta]_,\[Phi]_] := FullSimplify[DyadicProductVec[ES2M[\[Theta],\[Phi]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+ProjectorES2P[\[Theta]_,\[Phi]_] := FullSimplify[DyadicProductVec[ES2P[\[Theta],\[Phi]]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+ ProjectorES2M[\[Theta],\[Phi]] //MatrixForm
+ ProjectorES2P[\[Theta],\[Phi]] //MatrixForm
+
+
+(* verification of spectral form *)
+
+FullSimplify[(-1/2)ProjectorES2M[\[Theta],\[Phi]] + (1/2)ProjectorES2P[\[Theta],\[Phi]], {Element[\[Theta], Reals],
+  Element[\[Phi], Reals]}]
+
+
+SingleParticleSpinOneHalfeObservable[x_, p_] :=   FullSimplify[(1/2) (IdentityMatrix[2] + vecsig[1, x, p])] ;
+
+SingleParticleSpinOneHalfeObservable[\[Theta], \[Phi]] // MatrixForm
+
+Eigensystem[FullSimplify[SingleParticleSpinOneHalfeObservable[x, p]]]
+
+
+(*Definition of single operators for occurrence of spin up*)
+
+SingleParticleProjector2first[x_, p_, pm_] :=   TensorProduct[1/2 (IdentityMatrix[2] + pm*vecsig[1, x, p]),  IdentityMatrix[2]]
+
+SingleParticleProjector2second[x_, p_, pm_] :=  TensorProduct[IdentityMatrix[2], 1/2 (IdentityMatrix[2] + pm*vecsig[1, x, p])]
+
+
+
+(*Definition of two-particle joint operator for occurrence of spin up \
+and down*)
+
+JointProjector2[x1_, x2_, p1_, p2_, pm1_, pm2_] :=  TensorProduct[1/2 (IdentityMatrix[2] + pm1*vecsig[1, x1, p1]),  1/2 (IdentityMatrix[2] + pm2*vecsig[1, x2, p2])]
+
+
+(*Definition of probabilities*)
+
+
+(*Probability of concurrence of two equal events for two-particle \
+probability in singlet Bell state for occurrence of spin up*)
+
+JointProb2s[x1_, x2_, p1_, p2_, pm1_, pm2_] :=
+ FullSimplify[
+  Tr[DyadicProductVec[psi2s].JointProjector2[x1, x2, p1, p2, pm1,
+     pm2]]]
+
+JointProb2s[x1, x2, p1, p2, pm1, pm2]
+
+JointProb2s[x1, x2, p1, p2, pm1, pm2] // TeXForm
+
+(*sum of joint probabilities add up to one*)
+
+FullSimplify[
+ Sum[JointProb2s[x1, x2, p1, p2, pm1, pm2], {pm1, -1, 1, 2}, {pm2, -1,
+    1, 2}]]
+
+(*Probability of concurrence of two equal events*)
+
+P2Es[x1_, x2_, p1_, p2_] =
+  FullSimplify[
+   Sum[UnitStep[pm1*pm2]*
+     JointProb2s[x1, x2, p1, p2, pm1, pm2], {pm1, -1, 1, 2}, {pm2, -1,
+      1, 2}]];
+
+P2Es[x1, x2, p1, p2]
+
+(*Probability of concurrence of two non-equal events*)
+
+P2NEs[x1_, x2_, p1_, p2_] =
+  FullSimplify[
+   Sum[UnitStep[-pm1*pm2]*
+     JointProb2s[x1, x2, p1, p2, pm1, pm2], {pm1, -1, 1, 2}, {pm2, -1,
+      1, 2}]];
+
+P2NEs[x1, x2, p1, p2]
+
+(*Expectation function*)
+
+Expectation2s[x1_, x2_, p1_, p2_] :=
+ FullSimplify[0*P2Es[x1, x2, p1, p2] + P2NEs[x1, x2, p1, p2]]
+
+Plot[Expectation2s[Pi/2, Pi/2, 0, p2], {p2, 0, Pi/2}]
+
+
+(* ~~~~~~~~~~~~~~~~~~~~~~~ generalization ~~~~~~~~~~~~~~~~~~~~~~~ *)
+
+ OperatorGEN[\[Theta]_,\[Phi]_] = FullSimplify[LM * ProjectorES2M[\[Theta],\[Phi]] + LP * ProjectorES2P[\[Theta],\[Phi]], {Element[\[Theta], Reals],  Element[\[Phi], Reals]}];
+
+ OperatorGEN[\[Theta],\[Phi]] //MatrixForm
+
+ JointProjector2GEN[x1_, x2_, p1_, p2_] :=  TensorProduct[OperatorGEN[x1,p1],OperatorGEN[x2,p2]];
+
+Expectation2sGEN[x1_, x2_, p1_, p2_] := FullSimplify[ Tr[DyadicProductVec[psi2s].JointProjector2GEN[x1, x2, p1, p2]]];
+
+Expectation2sGEN[x1, x2, p1, p2]
+
+
+(* ~~~~~~~~~~~ natural spin observables ~~~~~~~~~~~~~~~~~~~~~ *)
+
+
+
+JointProjector2NAT[x1_, x2_, p1_, p2_] :=  TensorProduct[S2[x1,p1],S2[x2,p2]];
+
+Expectation2sNAT[x1_, x2_, p1_, p2_] := FullSimplify[ Tr[DyadicProductVec[psi2s].JointProjector2NAT[x1, x2, p1, p2]]];
+
+Expectation2sNAT[x1, x2, p1, p2]
+
+
+(* ------------- CODE FOR TESTING XOR'd PROBABILITY SPACE ----------------------- *)
+(* ------------------------------------------------------------------------------ *)
+
+(* Hamming distance between two binary strings*)
+d[x_, y_] := Count[BitXor[x, y], 1];
+
+(*Probability space given in Proposition 1*)
+p[n_, x_, y_, \[Theta]_,
+  e_] := ((Sin[\[Theta]]^2)^d[x, y]*(Cos[\[Theta]]^2)^(n - d[x, y])*
+    e[[1]]^Count[x, 0]*e[[2]]^Count[x, 1]*e[[3]]^Count[y, 0]*
+    e[[4]]^Count[y, 1])/
+     (Sin[\[Theta]]^2*(e[[1]]*e[[4]] + e[[2]]*e[[3]]) +
+     Cos[\[Theta]]^2*(e[[1]]*e[[3]] + e[[2]]*e[[4]]))^n
+
+
+bin[x_, n_] := IntegerDigits[x, 2, n]
+
+(*just calculates the prob for a pair of strings*)
+Manipulate[
+ p[n, x, y, \[Theta], {e1, e2, e3, e4}], {{\[Theta], Pi/4}, 0,
+  Pi/2}, {{e1, 1}, 0, 1}, {{e2, 1}, 0, 1}, {{e3, 1}, 0, 1}, {{e4, 1},
+  0, 1}]
+
+(*Verification of Fact 2*)
+Manipulate[
+ Sum[p[n, IntegerDigits[z, 2, n],
+   IntegerDigits[y, 2, n], \[Theta], {e1, e2, e3, e4}], {y, 0,
+   2^n - 1}], {{\[Theta], Pi/4}, 0, Pi/2}, {{e1, 1}, 0, 1}, {{e2, 1},
+  0, 1},
+   {{e3, 1}, 0, 1}, {{e4, 1}, 0, 1}, {{z, 0}, 0, 2^n - 1, 1}]
+
+(*Testing out Thm 8 (XOR prob space)*)
+Manipulate[
+ Sum[p[n + j, Join[bin[u, n], bin[a, j]],
+   Join[bin[b, j], BitXor[bin[u, n], bin[z, n]]], \[Theta], {e1, e2,
+    e3, e4}], {a, 0, 2^j - 1}, {b, 0, 2^j - 1}, {u, 0, 2^n - 1}],
+   {{\[Theta], Pi/4}, 0, Pi/2}, {{e1, 1}, 0, 1}, {{e2, 1}, 0,
+  1}, {{e3, 1}, 0, 1}, {{e4, 1}, 0, 1}, {{z, 0}, 0, 2^n - 1,
+  1}, {{j, 0}, 0, Floor[n/2], 1}]
+
+
+(*Testing XORd space vs discarding one string*)
+Manipulate[{Abs[
+   Sum[p[n + j, Join[bin[u, n], bin[a, j]],
+      Join[bin[b, j], BitXor[bin[u, n], bin[z, n]]], \[Theta], {e1,
+       e2, e3, e4}], {a, 0, 2^j - 1}, {b, 0, 2^j - 1}, {u, 0,
+      2^n - 1}] -
+         2^(-n)],
+  Abs[Sum[p[n, bin[z, n], bin[y, n], \[Theta], {e1, e2, e3, e4}], {y,
+      0, 2^n - 1}] - 2^(-n)],
+  Abs[e1^Count[bin[z, n], 0]*(e2^Count[bin[z, n], 1]/(e1 + e2)^n) -
+    2^(-n)]},
+   {{\[Theta], Pi/4}, 0, Pi/2}, {{e1, 1}, 0, 1}, {{e2, 1}, 0,
+  1}, {{e3, 1}, 0, 1}, {{e4, 1}, 0, 1}, {{z, 0}, 0, 2^n - 1,
+  1}, {{j, 0}, 0, Floor[n/2], 1}]
+
+
+(* Plots *)
+
+Plot[{(1/2) (1 + Cos[2 t]), 1 - 2 t/Pi, 1/2 + Pi/4 - t}, {t, 0, Pi/2},
+  Frame -> True, AspectRatio -> 2/Pi, PlotRange -> {0, 1},
+ PlotStyle -> {{Hue[0, 1, 1], Dashing[{0.04, 0.02}],
+    Thickness[0.01]}, {Hue[0.65, 1, 1],
+    Dashing[{0.04, 0.02, 0.005, 0.02}],
+    Thickness[0.01]}, {Hue[0, 1, 1], Thickness[0.005]}, {Hue[0.2]}},
+ FrameLabel -> {Style["\[Theta] [rad]", FontSize -> 26],
+   Style["E(\[Theta])", FontSize -> 26]},
+ BaseStyle -> {FontFamily -> "Times", FontSize -> 24},
+ FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2,
+    3 \[Pi]/4, \[Pi]}, {-1, -1/2, {0.0001, "0"}, 1/2, 1}, None, None}]
+
+Export["c:/mytex/2010-qxor-f1.ps", Out[17], "EPS", ImageSize -> 500]

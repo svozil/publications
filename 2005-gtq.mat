@@ -1,0 +1,479 @@
+(* << Algebra`ReIm` *)
+
+(* Definition of the Tensor Product *)
+
+TensorProduct[a_, b_] :=    Table[(*a, b are nxn and mxm - matrices*)
+a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*b[[s - Floor[(s -
+1)/Length[b]]*Length[b],t - Floor[(t - 1)/Length[b]]*Length[b]]], {s,
+  1,Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(* Definition of the Tensor Product between two vectors *)
+
+TensorProductVec[x_, y_] := Flatten[Table[ x[[i]] y[[j]] , {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(* Definition of the Dyadic Product *)
+
+DyadicProductVec[x_] :=    Table[x[[i]] Conjugate[x[[j]]], {i, 1, Length[x]}, {j, 1,  Length[x]}];
+
+(* Definition of the sigma matrices *)
+
+
+vecsig[r_, tt_, p_ ]:= r * { {Cos[tt], Sin[tt] Exp[-I p]}, {Sin[tt] Exp[I p], -Cos[tt]}}
+
+(* Definition of some vectors *)
+
+BellBasis = (1/Sqrt[2]) {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, -1, 0}, {1, 0, 0,-1}};
+
+Basis =  {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0,1}};
+
+vp = {0,1};
+vm = {1,0};
+
+(* 2 PARTICLES *)
+
+
+(* Definition of singlet state *)
+
+psi2s =(1/Sqrt[2])* (TensorProductVec[{0, 1}, {1, 0}] - TensorProductVec[{1, 0}, {0, 1}]);
+
+(* Definition of operators *)
+
+(* Definition of single operators for occurrence of spin up *)
+
+SingleParticleProjector2first[x_,p_,pm_] :=   TensorProduct[1/2(IdentityMatrix[2] + pm * vecsig[1, x, p]), IdentityMatrix[2]]
+
+SingleParticleProjector2second[x_,p_,pm_] :=   TensorProduct[IdentityMatrix[2], 1/2(IdentityMatrix[2] + pm * vecsig[1, x, p])]
+
+
+
+(* Definition of two-particle joint operator for occurrence of spin up and down  *)
+
+JointProjector2[x1_, x2_,p1_,p2_,pm1_,pm2_] :=       TensorProduct[
+                 1/2(IdentityMatrix[2] + pm1 * vecsig[1, x1, p1]),
+                 1/2(IdentityMatrix[2] + pm2 * vecsig[1, x2, p2]) ]
+
+
+(* Definition of probabilities *)
+
+
+(* Probability of concurrence of two equal events for two - particle probability in singlet Bell state
+   for occurrence of spin up
+ *)
+
+JointProb2s[x1_, x2_,p1_,p2_,pm1_,pm2_] := FullSimplify[
+      Tr[DyadicProductVec[psi2s].JointProjector2[x1,x2,p1,p2,pm1,pm2]] ]
+
+(* sum of joint probabilities add up to one *)
+
+FullSimplify[
+  Sum[JointProb2s[x1, x2, p1, p2, pm1, pm2], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}]]
+
+(* Probability of concurrence of two equal events
+ *)
+
+P2Es[x1_, x2_,p1_,p2_] = FullSimplify[
+       Sum[UnitStep[pm1*pm2]*JointProb2s[x1, x2, p1, p2, pm1, pm2],
+           {pm1, -1, 1, 2}, {pm2, -1, 1, 2}]];
+
+(* Probability of concurrence of two non-equal events
+ *)
+
+P2NEs[x1_, x2_,p1_,p2_] = FullSimplify[
+       Sum[UnitStep[-pm1*pm2]*JointProb2s[x1, x2, p1, p2, pm1, pm2],
+           {pm1, -1, 1, 2}, {pm2, -1, 1, 2}]];
+
+
+(* Expectation function
+ *)
+
+Expectation2s[x1_, x2_,p1_,p2_] = FullSimplify[
+         P2Es[x1,x2,p1,p2] - P2NEs[x1,x2,p1,p2] ]
+
+
+(************************************************************************)
+
+(* 3 PARTICLES GHZM *)
+
+(*Definition of three -
+    particle joint operators for occurrence of spin up or down*)
+
+JointProjector3[p1_, p2_, p3_, x1_, x2_, x3_, x1pm_, x2pm_, x3pm_] =
+    TensorProduct[
+      TensorProduct[1/2(IdentityMatrix[2] + x1pm*vecsig[1, x1, p1]),
+        1/2(IdentityMatrix[2] + x2pm*vecsig[1, x2, p2])],
+      1/2(IdentityMatrix[2] + x3pm*vecsig[1, x3, p3])];
+
+(* GHZM-state
+ *)
+
+psiGHZM3 = (1/Sqrt[2]) (TensorProductVec[TensorProductVec[vm, vm], vm] +
+        TensorProductVec[TensorProductVec[vp, vp], vp]);
+
+(* probability *)
+
+P4PMGHZM3[p1_, p2_, p3_, x1_, x2_, x3_, x1pm_, x2pm_, x3pm_] =
+    Simplify[Tr[
+        DyadicProductVec[psiGHZM3].JointProjector3[p1, p2, p3, x1, x2, x3, x1pm,
+            x2pm, x3pm]]];
+
+(* probabilities add up to one *)
+
+Simplify[Sum[
+    P4PMGHZM3[\[Phi]1, \[Phi]2, \[Phi]3, \[Alpha], \[Beta], \[Gamma], pm1,
+      pm2, pm3], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}]]
+
+(* Probability with no selection of third particle by sign *)
+
+FullSimplify[
+  Sum[UnitStep[pm1*pm2]*
+      P4PMGHZM3[\[Phi]1, \[Phi]2, \[Phi]3, \[Alpha], \[Beta], \[Gamma], pm1,
+        pm2, pm3], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}]]
+
+(* Probability selection of third particle by sign *)
+
+FullSimplify[
+  Sum[UnitStep[pm1*pm2]*
+      P4PMGHZM3[\[Phi]1, \[Phi]2, \[Phi]3, \[Alpha], \[Beta], \[Gamma], pm1,
+        pm2, pm], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}]]
+
+(* Expectation with no selection of third particle by sign *)
+
+FullSimplify[
+  Sum[pm1*pm2*
+      P4PMGHZM3[\[Phi]1, \[Phi]2, \[Phi]3, \[Alpha], \[Beta], \[Gamma], pm1,
+        pm2, pm3], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}]]
+
+(* Expectation selection of third particle by sign *)
+
+FullSimplify[
+  Sum[pm1*pm2*
+      P4PMGHZM3[\[Phi]1, \[Phi]2, \[Phi]3, \[Alpha], \[Beta], \[Gamma], pm1,
+        pm2, pm], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}]]
+
+
+(************************************************************************)
+
+(* 4 PARTICLES *)
+
+
+(* Definition of operators *)
+
+
+(*Definition of four -
+    particle joint operators for occurrence of spin up or down*)
+  JointProjector4[x1_, x2_, x3_, x4_, p1_, p2_, p3_, p4_, x1pm_, x2pm_, x3pm_,
+      x4pm_] :=
+    TensorProduct[
+      TensorProduct[
+        TensorProduct[1/2(IdentityMatrix[2] + x1pm*vecsig[1, x1, p1]),
+          1/2(IdentityMatrix[2] + x2pm*vecsig[1, x2, p2])],
+        1/2(IdentityMatrix[2] + x3pm*vecsig[1, x3, p3])],
+      1/2(IdentityMatrix[2] + x4pm*vecsig[1, x4, p4])];
+
+
+(* Definition of the two four-particle singlet states *)
+
+(* psi4s1 = DyadicProductVec[
+          TensorProductVec[
+           (1/Sqrt[2]) {0, 1, -1, 0}, (1/Sqrt[2]) {0, 1, -1,0}
+                          ]
+                ]; *)
+
+psi4s1v = TensorProductVec[(1/Sqrt[2]) (TensorProductVec[vm, vp] -
+          TensorProductVec[vp, vm]), (1/Sqrt[2]) (TensorProductVec[vm, vp] -
+          TensorProductVec[vp, vm])];
+
+psi4s1 = DyadicProductVec[psi4s1v];
+
+
+psi4s2v = (1/Sqrt[6]) (
+          Sqrt[2]*(
+          TensorProductVec[  TensorProductVec[  TensorProductVec[vm,vm],vp],vp]+
+          TensorProductVec[  TensorProductVec[  TensorProductVec[vp,vp],vm],vm]
+                  )-
+          (1/Sqrt[2])*(
+          TensorProductVec[  TensorProductVec[  TensorProductVec[vm,vp],vm],vp]+
+          TensorProductVec[  TensorProductVec[  TensorProductVec[vm,vp],vp],vm]+
+          TensorProductVec[  TensorProductVec[  TensorProductVec[vp,vm],vm],vp]+
+          TensorProductVec[  TensorProductVec[  TensorProductVec[vp,vm],vp],vm]
+                      )               );
+
+
+psi4s2 = DyadicProductVec[psi4s2v];
+
+
+psi4sv[\[Tau]_] = Cos[\[Tau]]* psi4s1v + Sin[\[Tau]]*psi4s2v;
+
+psi4s[\[Tau]_] = FullSimplify[DyadicProductVec[Cos[\[Tau]]*psi4s1v + Sin[\[Tau]]*psi4s2v]];
+
+(* Probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet states
+ *)
+
+P4PM[x1_, x2_, x3_, x4_, p1_, p2_, p3_, p4_, x1pm_, x2pm_, x3pm_, x4pm_] = Simplify[ComplexExpand[
+Tr[psi4s1.JointProjector4[x1, x2, x3, x4, p1, p2, p3, p4, x1pm, x2pm, x3pm, x4pm]]]];
+
+P4PMs2[x1_, x2_, x3_, x4_, p1_, p2_, p3_, p4_, x1pm_, x2pm_, x3pm_, x4pm_] = Simplify[ComplexExpand[
+Tr[psi4s2.JointProjector4[x1, x2, x3, x4, p1, p2, p3, p4, x1pm, x2pm, x3pm, x4pm]]]];
+
+P4PMs[\[Tau]_,x1_, x2_, x3_, x4_, p1_, p2_, p3_, p4_, x1pm_, x2pm_, x3pm_, x4pm_] = Simplify[ComplexExpand[
+Tr[psi4s[\[Tau]].JointProjector4[x1, x2, x3, x4, p1, p2, p3, p4, x1pm, x2pm, x3pm, x4pm]]]];
+
+
+
+(* All the probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet states sum up to 1
+ *)
+
+FullSimplify[ComplexExpand[
+    Sum[P4PM[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+        pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,2}
+       ]
+            ]            ]
+
+FullSimplify[ComplexExpand[
+  Sum[P4PMs2[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+      pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,2}
+       ]
+            ]            ]
+
+Simplify[
+  Sum[P4PMs[\[Tau],\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+      pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,2}
+       ]
+            ]
+
+(* Probabilities of odd or even number of negative outcomes of
+   four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet on the left (particles 1&2) and right (particles 3&4) hand side
+ *)
+
+SumP4Plus[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] = FullSimplify[ComplexExpand[Sum[
+    UnitStep[pm1*pm2*pm3*pm4]*
+      P4PM[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+        pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,
+      2}]]                ]
+
+SumP4Minus[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] = FullSimplify[ComplexExpand[Sum[
+    UnitStep[-pm1*pm2*pm3*pm4]*
+      P4PM[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+        pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,
+      2}]]              ]
+
+SumP4s2Plus[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[UnitStep[pm1*pm2*pm3*pm4]*
+        P4PMs2[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]          ]
+
+SumP4s2Minus[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[UnitStep[-pm1*pm2*pm3*pm4]*
+        P4PMs2[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]           ]
+
+
+
+SumP4sPlus[\[Tau]_,\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[UnitStep[pm1*pm2*pm3*pm4]*
+        P4PMs[\[Tau] ,\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]         ]
+
+SumP4sMinus[\[Tau]_,\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[UnitStep[-pm1*pm2*pm3*pm4]*
+        P4PMs[\[Tau] ,\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]          ]
+
+(* The associated expectation values
+ *)
+
+
+P4PPMMGB[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[pm1*pm2*pm3*pm4*
+        P4PM[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]           ]
+
+(* Cos[\[Alpha] - \[Beta]] Cos[\[Gamma] - \[Delta]] *)
+
+
+P4PPMMGBs2[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[pm1*pm2*pm3*pm4*
+        P4PMs2[\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]            ]
+
+P4PPMMGBs[\[Tau]_,\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_,\[CurlyPhi]1_,\[CurlyPhi]2_,\[CurlyPhi]3_,\[CurlyPhi]4_] =
+  FullSimplify[ComplexExpand[
+    Sum[pm1*pm2*pm3*pm4*
+        P4PMs[\[Tau] ,\[Alpha], \[Beta], \[Gamma], \[Delta],
+             \[CurlyPhi]1,\[CurlyPhi]2,\[CurlyPhi]3,\[CurlyPhi]4, pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]         ]
+
+
+(********  expectation functions after selection  **********)
+
+P4PPMMGBs2SELPM4[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_, \[CurlyPhi]1_, \
+\[CurlyPhi]2_, \[CurlyPhi]3_, \[CurlyPhi]4_] =
+  Simplify[ComplexExpand[
+      Sum[pm1*pm2*pm3*
+          P4PMs2[\[Alpha], \[Beta], \[Gamma], \[Delta], \[CurlyPhi]1, \
+\[CurlyPhi]2, \[CurlyPhi]3, \[CurlyPhi]4, pm1, pm2, pm3, pm4], {pm1, -1, 1,
+          2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}]]]
+
+
+(* PLOTS *)
+
+Plot[{SumP4Plus[\[Theta], 0, 0, 0], SumP4Minus[\[Theta], 0, 0, 0],
+    SumP4Plus[\[Theta], 0, 0, 0] - SumP4Minus[\[Theta], 0, 0, 0]}, {\[Theta],
+    0, Pi},
+  PlotStyle -> {{Hue[0.65, 1, 1], Dashing[{0.04, 0.02}],
+      Thickness[0.01]}, {Hue[0, 1, 1], Dashing[{0.04, 0.02, 0.005, 0.02}],
+      Thickness[0.01]}, {Hue[0.5, 1, 0],
+      Thickness[0.01]}, {Hue[0.2]}}, PlotRange -> {-1.03, 1.03},
+  PlotRange -> {-1.03, 1.03}, Frame -> True, DefaultFont -> {"Times", 24},
+  FrameLabel -> {"\[Theta] [rad]", "E(\[Theta])"}, AspectRatio -> 1,
+  FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2,
+        3 \[Pi]/4, \[Pi]}, {-1, -1/2, {0.0001, "0"}, 1/2, 1}, None, None}]
+
+Export["c:/mytex/2005-gtq-fr1-1.ps",Out[109],"EPS",ImageSize\[Rule]500]
+
+
+Plot[{SumP4Plus[\[Theta],0,0,\[Pi]],SumP4Minus[\[Theta],0,0,\[Pi]],
+    SumP4Plus[\[Theta],0,0,\[Pi]]-SumP4Minus[\[Theta],0,0,\[Pi]]},{\[Theta],0,Pi},
+  PlotStyle -> {{Hue[0.65, 1, 1], Dashing[{0.04, 0.02}],
+      Thickness[0.01]}, {Hue[0, 1, 1], Dashing[{0.04, 0.02, 0.005, 0.02}],
+      Thickness[0.01]}, {Hue[0.5, 1, 0],
+      Thickness[0.01]}, {Hue[0.2]}}, PlotRange -> {-1.03, 1.03},
+  PlotRange\[Rule]{-1.03,1.03},Frame\[Rule]True,
+  DefaultFont\[Rule]{"Times",24},
+  FrameLabel\[Rule]{"\[Theta] [rad]","E(\[Theta])"},AspectRatio\[Rule]1,
+  FrameTicks\[Rule]{{{0.0001,"0"},\[Pi]/4,\[Pi]/2,
+        3 \[Pi]/4,\[Pi]},{-1,-1/2,{0.0001,"0"},1/2,1},None,None}]
+
+Export["c:/mytex/2005-gtq-fr1-2.ps",Out[111],"EPS",ImageSize\[Rule]500]
+
+Plot[{SumP4sPlus[\[Pi]/2, \[Theta], \[Theta], -\[Theta], \[Theta]],
+    SumP4sMinus[\[Pi]/2, \[Theta], \[Theta], -\[Theta], \[Theta]],
+    SumP4sPlus[\[Pi]/2, \[Theta], \[Theta], -\[Theta], \[Theta]] -
+      SumP4sMinus[\[Pi]/
+          2, \[Theta], \[Theta], -\[Theta], \[Theta]]}, {\[Theta], 0, Pi},
+  PlotStyle -> {{Hue[0.65, 1, 1], Dashing[{0.04, 0.02}],
+        Thickness[0.01]}, {Hue[0, 1, 1], Dashing[{0.04, 0.02, 0.005, 0.02}],
+        Thickness[0.01]}, {Hue[0.5, 1, 0], Thickness[0.01]}, {Hue[0.2]}},
+  PlotRange -> {-1.03, 1.03}, PlotRange -> {-1.03, 1.03}, Frame -> True,
+  DefaultFont -> {"Times", 24},
+  FrameLabel -> {"\[Theta] [rad]", "E(\[Theta])"}, AspectRatio -> 1,
+  FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2,
+        3 \[Pi]/4, \[Pi]}, {-1, -1/2, {0.0001, "0"}, 1/2, 1}, None, None}]
+
+Export["c:/mytex/2005-gtq-fr1-3.ps",Out[109],"EPS",ImageSize\[Rule]500]
+
+Plot[{SumP4sPlus[\[Pi]/2, \[Theta], Pi/4, -\[Theta], \[Theta]],
+    SumP4sMinus[\[Pi]/2, \[Theta], Pi/4, -\[Theta], \[Theta]],
+    SumP4sPlus[\[Pi]/2, \[Theta], Pi/4, -\[Theta], \[Theta]] -
+      SumP4sMinus[\[Pi]/2, \[Theta], Pi/4, -\[Theta], \[Theta]]}, {\[Theta],
+    0, Pi}, PlotStyle -> {{Hue[0.65, 1, 1], Dashing[{0.04, 0.02}],
+        Thickness[0.01]}, {Hue[0, 1, 1], Dashing[{0.04, 0.02, 0.005, 0.02}],
+        Thickness[0.01]}, {Hue[0.5, 1, 0], Thickness[0.01]}, {Hue[0.2]}},
+  PlotRange -> {-1.03, 1.03}, PlotRange -> {-1.03, 1.03}, Frame -> True,
+  DefaultFont -> {"Times", 24},
+  FrameLabel -> {"\[Theta] [rad]", "E(\[Theta])"}, AspectRatio -> 1,
+  FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2,
+        3 \[Pi]/4, \[Pi]}, {-1, -1/2, {0.0001, "0"}, 1/2, 1}, None, None}]
+
+Export["c:/mytex/2005-gtq-fr1-4.ps",Out[109],"EPS",ImageSize\[Rule]500]
+
+Plot[{SumP4sPlus[\[Pi]/4, \[Theta], Pi/4, -\[Theta], \[Theta]],
+    SumP4sMinus[\[Pi]/4, \[Theta], Pi/4, -\[Theta], \[Theta]],
+    SumP4sPlus[\[Pi]/4, \[Theta], Pi/4, -\[Theta], \[Theta]] -
+      SumP4sMinus[\[Pi]/4, \[Theta], Pi/4, -\[Theta], \[Theta]]}, {\[Theta],
+    0, Pi}, PlotStyle -> {{Hue[0.65, 1, 1], Dashing[{0.04, 0.02}],
+        Thickness[0.01]}, {Hue[0, 1, 1], Dashing[{0.04, 0.02, 0.005, 0.02}],
+        Thickness[0.01]}, {Hue[0.5, 1, 0], Thickness[0.01]}, {Hue[0.2]}},
+  PlotRange -> {-1.03, 1.03}, PlotRange -> {-1.03, 1.03}, Frame -> True,
+  DefaultFont -> {"Times", 24},
+  FrameLabel -> {"\[Theta] [rad]", "E(\[Theta])"}, AspectRatio -> 1,
+  FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2,
+        3 \[Pi]/4, \[Pi]}, {-1, -1/2, {0.0001, "0"}, 1/2, 1}, None, None}]
+
+Export["c:/mytex/2005-gtq-fr1-5.ps",Out[109],"EPS",ImageSize\[Rule]500]
+
+
+Plot[{SumP4sPlus[\[Pi]/4, \[Theta], 0, -\[Theta], \[Theta]],
+    SumP4sMinus[\[Pi]/4, \[Theta], 0, -\[Theta], \[Theta]],
+    SumP4sPlus[\[Pi]/4, \[Theta], 0, -\[Theta], \[Theta]] -
+      SumP4sMinus[\[Pi]/4, \[Theta], 0, -\[Theta], \[Theta]]}, {\[Theta], 0,
+    Pi}, PlotStyle -> {{Hue[0.65, 1, 1], Dashing[{0.04, 0.02}],
+        Thickness[0.01]}, {Hue[0, 1, 1], Dashing[{0.04, 0.02, 0.005, 0.02}],
+        Thickness[0.01]}, {Hue[0.5, 1, 0], Thickness[0.01]}, {Hue[0.2]}},
+  PlotRange -> {-1.03, 1.03}, PlotRange -> {-1.03, 1.03}, Frame -> True,
+  DefaultFont -> {"Times", 24},
+  FrameLabel -> {"\[Theta] [rad]", "E(\[Theta])"}, AspectRatio -> 1,
+  FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2,
+        3 \[Pi]/4, \[Pi]}, {-1, -1/2, {0.0001, "0"}, 1/2, 1}, None, None}]
+
+Export["c:/mytex/2005-gtq-fr1-6.ps",Out[109],"EPS",ImageSize\[Rule]500]
+
+(*****************************)
+
+(* GHZM states *)
+
+psiGHZM = (1/ Sqrt[2]) (TensorProductVec[
+          TensorProductVec[TensorProductVec[vm, vm], vm], vm] +
+        TensorProductVec[TensorProductVec[TensorProductVec[vp, vp], vp], vp])
+
+P4PMGHZM[x1_, x2_, x3_, x4_, x1pm_, x2pm_, x3pm_, x4pm_] =
+    Simplify[Tr[
+        DyadicProductVec[psiGHZM].JointProb4[x1, x2, x3, x4, x1pm, x2pm, x3pm,
+             x4pm]]];
+
+Simplify[Sum[
+    P4PMGHZM[\[Alpha], \[Beta], \[Gamma], \[Delta], pm1, pm2, pm3,
+      pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,
+      2}]]
+
+(* Expectation *)
+Simplify[Sum[
+    pm1*pm2*pm3*pm4*
+      P4PMGHZM[\[Alpha], \[Beta], \[Gamma], \[Delta], pm1, pm2, pm3,
+        pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,
+      2}]]
+
+(* Cos[\[Alpha]] Cos[\[Beta]] Cos[\[Gamma]] Cos[\[Delta]] +
+  Sin[\[Alpha]] Sin[\[Beta]] Sin[\[Gamma]] Sin[\[Delta]] *)
+
+(* Expectation for two particles (cf. Krenn & Zeilinger) *)
+
+Simplify[Sum[
+    pm1*pm2*P4PMGHZM[\[Alpha], \[Beta], \[Gamma], \[Delta], pm1, pm2, pm3,
+        pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1,
+      2}]]
+
+(*
+Export["c:/mytex/2005-gtq-fr1-1.ps", Out[28], "EPS", ImageSize -> 500]
+
+http://mathworld.wolfram.com/HeavisideStepFunction.html
+ *)

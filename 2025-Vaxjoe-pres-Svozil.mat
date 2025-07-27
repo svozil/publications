@@ -1,0 +1,180 @@
+Travis34=
+{
+{1,0, 0, 0, 1, 0, 0, 0, 0 },
+{1,0, 0, 0, 0, 1, 0, 0, 0 },
+{0,1, 0, 0, 1, 0, 0, 1, 0 },
+{0,1, 0, 0, 1, 0, 0, 0, 1 },
+{0,1, 0, 0, 0, 1, 0, 1, 0 },
+{0,1, 0, 0, 0, 1, 0, 0, 1 },
+{0,1, 0, 0, 0, 0, 1, 0, 0 },
+{0,0, 1, 0, 1, 0, 0, 1, 0 },
+{0,0, 1, 0, 1, 0, 0, 0, 1 },
+{0,0, 1, 0, 0, 1, 0, 1, 0 },
+{0,0, 1, 0, 0, 1, 0, 0, 1 },
+{0,0, 1, 0, 0, 0, 1, 0, 0 },
+{0,0, 0, 1, 0, 0, 0, 1, 0 },
+{0,0, 0, 1, 0, 0, 0, 0, 1 }
+};
+
+MatrixForm[Travis34]
+
+AffineTravis34 = Table[ If[ Travis34[[i,j]] == 0, -1, 1 ],
+{i, 1, Length[ Travis34 ]},
+{j, 1, Length[ Travis34[[1]] ]}
+];
+
+MatrixForm[AffineTravis34]
+
+CorrEdgesAffineTravis34 = Table[ { AffineTravis34[[i,1]] * AffineTravis34[[i,4]], AffineTravis34[[i,4]] * AffineTravis34[[i,7]], AffineTravis34[[i,1]] * AffineTravis34[[i,7]] }   ,
+{i, 1, Length[ Travis34 ]}
+];
+
+MatrixForm[CorrEdgesAffineTravis34]
+
+
+######################################################
+
+
+import cdd
+mat = cdd.Matrix([
+ [1, -1, 1, -1],
+ [1, -1, 1, -1],
+ [1, 1, 1, 1],
+ [1, 1, 1, 1],
+ [1, 1, 1, 1],
+ [1, 1, 1, 1],
+ [1, 1, -1, -1],
+ [1, 1, 1, 1],
+ [1, 1, 1, 1],
+ [1, 1, 1, 1],
+ [1, 1, 1, 1],
+ [1, 1, -1, -1],
+ [1, -1, -1, 1],
+ [1, -1, -1, 1]
+])
+poly = cdd.Polyhedron(mat)
+ine = poly.get_inequalities()
+print(ine)
+
+
+H-representation
+begin
+ 4 4 rational
+ 1 -1 -1 1
+ 1 1 -1 -1
+ 1 -1 1 -1
+ 1 1 1 1
+end
+
+########################################################
+
+(*Definition of "my" Tensor Product*)(*a,b are nxn and mxm-matrices*)
+
+MyTensorProduct[a_, b_] :=
+  Table[a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*
+    b[[s - Floor[(s - 1)/Length[b]]*Length[b],
+      t - Floor[(t - 1)/Length[b]]*Length[b]]], {s, 1,
+    Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+(*Definition of the Dyadic Product*)
+
+DyadicProductVec[x_] :=
+  Table[x[[i]]  Conjugate[x[[j]]], {i, 1, Length[x]}, {j, 1,
+    Length[x]}];
+
+(*Commutator*)
+
+Commutator[a_, b_] := a . b - b . a;
+
+
+(*************************************************************************************)
+
+yJ = MyTensorProduct[PauliMatrix[2], IdentityMatrix[2]];
+Jy = MyTensorProduct[IdentityMatrix[2], PauliMatrix[2]];
+yx = MyTensorProduct[PauliMatrix[2], PauliMatrix[1]];
+xy = MyTensorProduct[PauliMatrix[1], PauliMatrix[2]];
+
+
+zJ = MyTensorProduct[PauliMatrix[3], IdentityMatrix[2]];
+Jz = MyTensorProduct[IdentityMatrix[2], PauliMatrix[3]];
+zz = MyTensorProduct[PauliMatrix[3], PauliMatrix[3]];
+
+Jx = MyTensorProduct[IdentityMatrix[2], PauliMatrix[1]];
+xJ = MyTensorProduct[PauliMatrix[1], IdentityMatrix[2]];
+xx = MyTensorProduct[PauliMatrix[1], PauliMatrix[1]];
+
+zx = MyTensorProduct[PauliMatrix[3], PauliMatrix[1]];
+xz = MyTensorProduct[PauliMatrix[1], PauliMatrix[3]];
+yy = MyTensorProduct[PauliMatrix[2], PauliMatrix[2]];
+
+
+(*
+
+Print["Commutators"]
+
+
+Commutator[zx, xz]
+Commutator[zx, yy]
+Commutator[xz, yy]
+
+
+MatrixForm[Commutator[zJ, zx]]
+
+*)
+
+Print["Eigensystem by matrix pencil calculation"]
+
+Eigensystem[a   yJ + b   Jy + c   yy]
+
+Eigensystem[a   Jx + b   xJ + c   xx]
+
+Eigensystem[a   zx + b   xz + c   yy]
+
+Eigensystem[a   zJ + b   Jx + c   zx]
+
+Eigensystem[a   Jz + b   xJ + c   xz]
+
+Eigensystem[a   zz + b   xx + c   yy]
+
+
+###########################################################################
+
+Triangle in dimension 4 extended
+10 atoms
+ 4 blocks
+ 0 proper subsets of blocks
+ 4   1  2  3  4
+ 4   4  5  6  7
+ 4   7  8  9  1
+ 4   1  4  7 10
+14 2-valued evaluations of atoms:
+1 0 0 0 1 0 0 0 0 0
+1 0 0 0 0 1 0 0 0 0
+0 1 0 0 1 0 0 1 0 1
+0 1 0 0 1 0 0 0 1 1
+0 1 0 0 0 1 0 1 0 1
+0 1 0 0 0 1 0 0 1 1
+0 1 0 0 0 0 1 0 0 0
+0 0 1 0 1 0 0 1 0 1
+0 0 1 0 1 0 0 0 1 1
+0 0 1 0 0 1 0 1 0 1
+0 0 1 0 0 1 0 0 1 1
+0 0 1 0 0 0 1 0 0 0
+0 0 0 1 0 0 0 1 0 0
+0 0 0 1 0 0 0 0 1 0
+
+set of 2-valued evaluations of atoms:
+nonempty: yes
+unital: yes
+separating atoms: yes
+separating: yes
+1s on nonorthogonal atoms (=OD if no noncomplete block): yes
+order determining: yes
+
+
+
+
+
+vecfind -4d  -nk -vgen=1,-1,0  0<triangle-extended.in
+#1 pass:: 1234,4567,7891,147A.{1={1,1,1,1},2={0,0,1,-1},3={1,-1,0,0},4={1,1,-1,-1},5={1,0,0,1},6={0,1,1,0},7={1,-1,1,-1},8={1,0,-1,0},9={0,1,0,-1},A={1,-1,-1,1}}
+

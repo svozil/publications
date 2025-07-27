@@ -1,0 +1,521 @@
+\PassOptionsToPackage{usenames,dvipsnames}{xcolor}
+%\documentclass[amsmath,table,sans,amsfonts, handout]{beamer}
+\documentclass[amsmath,table,sans,amsfonts,hyperref={colorlinks,citecolor=blue,linkcolor=blue,urlcolor=purple}]{beamer}
+\usepackage[T1]{fontenc}
+%%\usepackage{beamerthemeshadow}
+%%\usepackage[headheight=1pt,footheight=10pt]{beamerthemeboxes}
+%%\addfootboxtemplate{\color{structure!80}}{\color{white}\tiny \hfill Karl Svozil (TU Vienna)\hfill}
+%%\addfootboxtemplate{\color{structure!65}}{\color{white}\tiny \hfill mur.sat \hfill}
+%%\addfootboxtemplate{\color{structure!50}}{\color{white}\tiny \hfill Graz, 2010-12-11\hfill}
+%\usepackage[dark]{beamerthemesidebar}
+%\usepackage[headheight=24pt,footheight=12pt]{beamerthemesplit}
+%\usepackage{beamerthemesplit}
+%\usepackage[bar]{beamerthemetree}
+\usepackage{graphicx}
+\usepackage{pgf}
+%\usepackage{eepic}
+%\newcommand{\Red}{\color{Red}}  %(VERY-Approx.PANTONE-RED)
+%\newcommand{\Green}{\color{Green}}  %(VERY-Approx.PANTONE-GREEN)
+
+\definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}
+
+\usepackage{fourier-orns}  %fancy symbols https://mirror.easyname.at/ctan/fonts/fourier-GUT/doc/fourier-orns-doc.pdf
+
+%\usepackage{musixtex}
+
+\newcommand{\Abschnitt}[1]{{\section #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{iftex}
+\ifxetex
+\usepackage{fontspec}% Schriftumschaltung mit den nativen XeTeX-Anweisungen
+                     % vornehmen. Voreinstellung: Latin Modern
+%\usepackage[ngerman]{babel}% Sprachumschaltung: Deutsch nach neuer Rechtschreibung
+
+
+
+%
+% XeLaTeX
+%
+\XeTeXinputencoding cp1252
+\usepackage{fontspec}
+%%\setmainfont{Times New Roman}
+\setmainfont{Garamond}
+\setsansfont{Garamond}
+%\setmainfont{EB Garamond}
+%\setsansfont{EB Garamond}
+%
+\else
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\RequirePackage[german]{babel}
+%\selectlanguage{german}
+%\RequirePackage[isolatin]{inputenc}
+
+%\pgfdeclareimage[height=0.5cm]{logo}{tu-logo}
+%\logo{\pgfuseimage{logo}}
+\beamertemplatetriangleitem
+%\beamertemplateballitem
+
+\beamerboxesdeclarecolorscheme{alert}{red}{red!15!averagebackgroundcolor}
+%\begin{beamerboxesrounded}[scheme=alert,shadow=true]{}
+%\end{beamerboxesrounded}
+
+%\beamersetaveragebackground{yellow!10}
+
+%\beamertemplatecircleminiframe
+
+\newtheorem{question}{Question}
+\newtheorem{conjecture}[question]{Principle}
+\newtheorem{challenge}[question]{Challenge}
+\usepackage{tikz}
+\newcommand{\bra}[1]{\left< #1 \right|}
+\newcommand{\ket}[1]{\left| #1 \right>}
+
+\newcommand{\iprod}[2]{\langle #1 | #2 \rangle}
+\newcommand{\mprod}[3]{\langle #1 | #2 | #3 \rangle}
+\newcommand{\oprod}[2]{| #1 \rangle\langle #2 |}
+
+\newcommand{\proj}[3]{\begin{smallmatrix} #1 & #2 & #3 \end{smallmatrix}}
+\newcommand{\projbf}[3]{\begin{smallmatrix} \mathbf{#1} & \mathbf{#2} & \mathbf{#3} \end{smallmatrix}}
+
+\sloppy
+\parskip .7em %vskip between paragraphs
+
+\newcommand{\seq}[1]{\mathbf{#1}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\m}[1]{\widetilde{#1}}
+%\newcommand{\p}[1]{\scriptsize\textcolor{black}{$[#1]$}}
+
+\usepackage[most]{tcolorbox}
+\begin{document}
+
+\title{\textcolor{black}{\bf Emergent Relativity: Transcribing Hilbert into Configuration Space}}
+\subtitle{
+\small \url{http://tph.tuwien.ac.at/~svozil/publ/2023-DG-pres.pdf}
+ \\
+\small based on \href{https://arxiv.org/abs/2308.09715}{arXiv:2308.09715}
+}
+\author{\textcolor{black}{Karl Svozil}}
+\institute{\textcolor{black}{\small Institute for Theoretical Physics, TU Wien}\\
+\textcolor{black}{\small karl.svozil@tuwien.ac.at}
+%{\tiny Disclaimer: Die hier vertretenen Meinungen des Autors verstehen sich als Diskussionsbeiträge und decken sich nicht notwendigerweise mit den Positionen der Technischen Universität Wien oder deren Vertreter.}
+}
+\date{{\color{purple}\small {\color{black}presented on September 28, 2023, at} \\
+From GHZ to Tic Tac Toe:
+A symposium to celebrate Danny
+Greenberger's 90th birthday, \\
+Vienna, Austria, September 27--29, 2023}}
+\maketitle
+
+
+% \frame{
+% \frametitle{Contents}
+% \tableofcontents
+% }
+
+\section{Category formation -- the `bigger' picture}
+
+\begin{frame}
+ \frametitle{What I have learned from Danny Greenberger}
+
+Danny inspired and encouraged me (after experiencing some mild PTSD after my studies in Vienna and Heidelberg) to
+\begin{itemize}
+\item[$\bullet$]
+$\ldots$ perceive physical categories as historical and temporal. Eg, from my memory at the `Solar Eclipse Workshop, August 8 - 11, 1999':
+{\it ``{\color{purple}In four hundred years from now, everything we know in physics today will appear laughable}.''}
+
+\item[$\bullet$]
+learn from magicians to create {\bf \it \color{purple} `mind-boggling'} physical situations:
+I was once invited to stay in Suzy's and Danny's New York home, and I lodged in the library with a HUGE stack of books on
+{\color{purple}magic}.
+
+\item[$\bullet$]
+%$\ldots$ think lightweightedly about the world, and, in particular, about physics! Take nothing as granted!
+$\ldots$ to, in Dyson's words, {\color{purple}`pursue the unfashionable'}.
+
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{Ontologic versus epistemic Magic?}
+
+Here is a metaphysical question: {\color{purple}Is the quantum magic ontologic or epistemic?}
+
+Or, stated differently: {\color{purple} Are our current limitations and ignorance about fundamental aspects of nature reducible,
+or do they represent an irreducible 'hard impenetrable core'?}
+
+Or, in terms of theology and Philip Frank: {\color{purple} Are we experiencing creatio continua -- gaps in the laws of Nature -- on a massive scale?}
+
+{\color{blue} \footnotesize Beware: there is only a small gap between practical magic à la Husimi and the hocus-pocus and abra-kadabra of charlatans!
+As with all the arts, such as music, painting, architecture, or theater, the range of bearable aesthetic complexity lies within a relatively narrow bracket, bounded by monotony and chaos.
+Physicists are like Odysseus, navigating between Scylla and Charybdis, between neurosis and psychosis,
+between Nietzsche's Apollonian \& Dionysian traits.
+}
+
+
+\end{frame}
+
+\begin{frame} [shrink=8]
+\frametitle{Some rants on `transcribing quantum Hilbert into classical configuration space'}
+
+This title is just `too good to be true' currently. So I shall rather present some rants or thoughts on the subject.
+
+I share with Pascal the feeling that `I have made this longer' than necessary  because I lack both ability and time to make it shorter.
+
+I shall talk about:
+\begin{itemize}
+\item[$\bullet$]
+System science, SI conventions and Alexandrov's Theorem
+
+\item[$\bullet$]
+The conundrum of persistance of relational properties without local value definiteness
+
+\item[$\bullet$]
+Bell inequalities for arbitrary space-time separations
+
+\item[$\bullet$]
+After seeing the title of Adan's talk I hereby  advertize a recent paper ``Generalized Greenberger-Horne-Zeilinger (GHZ) Arguments
+from Quantum Logical Analysis'' \href{https://doi.org/10.1007/s10701-021-00515-z}{DOI: 10.1007/s10701-021-00515-z};
+which contains a quantum logical analysis, as well as generalized GHZ games.
+for Danny, in particular: ``Stranger-than-Quantum GHZ Games''.
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[shrink=8]
+ \frametitle{Intrinsic perception and the complementarity-versus-contextuality game}
+
+In 1978 Tommaso Toffoli published `The Role of the Observer in Uniform Systems'  \url{https://doi.org/10.1007/978-1-4757-0555-3_29} :
+
+{\it ``$\ldots$~ certain problems that arise when one tries to model a given system as an
+{\color{purple}object embedded in a uniform medium}.''}
+
+Are we such objects embedding in, say, a computational universe, such as Zuse's cellular `{\color{purple}Rechnender Raum}'?
+Very few of us realize that such computational universes are subject to `{\color{purple}computational complementarity}' akin to Wright's `geberalized urn models'
+(cf. partition logics).
+
+Or is the stuff we and our experiments are made of, according to the Church of the Large(r) Hilbert Space, some {\color{purple}vectors} in some tensor product space, according to von Neumann's quantization-by-Hilbert-space?
+Whereas such supposedly  {\color{purple}indecomposable vectors  akin to `entangled states' may be value definite}, a {\color{purple}classical re-interpretation forced upon them cannot be value definite}
+-- cf Kochen \& Specker's Theorem~0: `separability by truth assignments as demarcation criterion'.
+
+\end{frame}
+
+
+
+
+\begin{frame}%[shrink=8]
+ \frametitle{Category formation and Hertz'es `images or symbols of external objects'}
+
+ {\color{black}
+Evolutionary biology and psychology `pushed' or `stipulated' a particular `worldview'
+or formation of categories of perception  in terms of what we might call `objects' or `mental images'
+of our thinking.
+
+Cf Hertz: {\it ``We form for ourselves {\color{purple}images} or symbols of external objects;
+and the form which we give them is such that the necessary
+consequents of the images in thought are always the images of
+the necessary consequents in nature of the things pictured. In
+order that this requirement may be satisfied, there must be a
+certain {\color{purple}conformity between nature and our thought}.''}
+
+Those objects have no stringent ontological status, although we might believe so.
+In particular, space-time frames are such `images'.
+We need to be careful in conceptualizing them in physical terms,
+and thereby {\color{purple}separate the `chaff from the wheat'}: the conventions and assumptions from the physical content.
+}
+
+\end{frame}
+
+\section{Challenges to space-time formation for `non-localized' contextuality}
+
+
+
+\begin{frame}[shrink=10]
+ \frametitle{Alexandrov's Theorem of Incidence Geometry}
+\href{https://www.mathnet.ru/eng/rm/v5/i3/p187}{1949 Communication} by Alexandrov:
+
+{\it ``Lorentz transformations can be defined
+as mutually single-valued transformations
+of four-dimensional space on itself, translating any [[light]] cone
+$
+(x_1-x_1^0)^2
++
+(x_2-x_2^0)^2
++
+(x_3-x_3^0)^2
+-
+(x_4-x_4^0)^2
+=0$
+into a cone of the same kind.''}
+
+So, if constancy of light (and uniqueness) is assumed---as is \href{https://doi.org/10.1038/303373a0}
+{currently the case within the SI system}---then the Lorentz transformation follow.
+
+As \href{https://doi.org/10.1038/312010b0}{Peres dryly remarked}:
+{\it ``Now, this has become a
+definition and the corresponding empirical
+fact is that the length of a solid body
+depends neither on its spatial orientation,
+nor on the inertial frame where that body is
+at rest.''}
+
+The physical content is in the form invariance of the equations of motion, eg, the Maxwell equations.
+
+(Alexandrov's result remained unnoticed and thus has been re-derived multiple times;
+cf Lester's review \href{https://doi.org/10.1016/B978-044488355-1/50018-9}{DOI: 10.1016/B978-044488355-1/50018-9}.)
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}[shrink=10]
+ \frametitle{Challenges to space-time formation for `non-localized' contextuality}
+
+ {\color{black}
+`Non-localized' contextuality exploiting entanglement---ie non-factorizable quantum states---present a potential problem to classical space-time constructions,
+eg via Einstein synchronization in conjunction with randomness of the outcomes:
+
+\begin{itemize}
+\item[$\bullet$]
+The (pure) quantum state of the entangled constituents essentially
+(due to non-local unitary transformation of localized product states) re-encodes or scrambles those state to be {\color{purple} relational}
+and (unlike classical states) {\color{purple} devoid of indidual definite `localized' properties or local shares}---only
+the relational properties among its constituents are value definite.
+
+\item[$\bullet$]
+If any single random outcome, under strict Einstein locality conditions,
+is somehow only subjected to or influenced by the `local' environment of the particle constituent's
+environment, and at the same time (see earlier) the entire state lacks any individual local property or local share of the constituent particles whatsoever---then~$\ldots$
+
+\item[$\bullet$]
+{\color{purple} How come relationality is maintained and strictly observed?}
+
+\end{itemize}
+}
+\end{frame}
+
+
+\frame{
+ \frametitle{Challenges to space-time formation for `non-localized' contextuality cntd.}
+
+{\color{black}
+
+This kind of  of `relationality without individual definiteness', without any kind of local shares, between space-time regions
+(defined via standard Poincar\'e-Einstein radar coordinates) that
+spacially separated under strict Einstein locality conditions,
+seems to be the gist of the conundrum.
+
+Recall that classical states, as for instance pointed out by Peres in `unperformed experiments have no result',
+perform relationally by {\color{purple} possessing correllated and value definite local shares},
+which are revealed by measurements, and, therefore, may even result in (perfect) relational correllations.
+
+(Even cosine-type correlations are insufficient; but communication of contexts are: cf. \url{https://arxiv.org/abs/2209.09590})
+}
+}
+
+
+
+\begin{frame}%[shrink=8]
+ \frametitle{Challenges to space-time formation for `non-localized' contextuality cntd.}
+
+ {\color{black}
+In order to reasonably categorize space-time (frames) we need to take
+quantum mechanics as primary, and develop and operationalize space-time frames entirely by quantum means.
+
+This is different from Newtonian (versus Leibnitzian) and possibly Kantian conceptualizations of space-time
+`theatre' as `intuited a priori'.
+
+As a consequence we need to observe what, in quantum terms, may be considered {\color{purple} separate}, and what not.
+
+I postulate that constituents in entangled states {\color{purple} as well as measurement outcomes on such states cannot be considered separate}.
+
+}
+
+\end{frame}
+\begin{frame}%[shrink=8]
+ \frametitle{Challenges to space-time formation for `non-localized' contextuality cntd.}
+
+ {\color{black}
+
+Therefore, at least in the entangled observables, the constituents are not spatially separated at all: in other words,
+for such `affected' observables, spatial distances shrink to zero.
+
+This does not necessarily mean that with respect to other observables of these constituents, the separation is zero.
+
+In this view {\color{purple} spatial separation is means relative}, and thus {\color{purple}  space-time frames are means relative} with respect to
+the quantum shares involved.
+
+}
+
+\end{frame}
+
+\begin{frame}%[shrink=8]
+ \frametitle{`Generalized' Boole-Bell type inequalities for generalized space-time locatedness}
+
+ We aim to encompass time-like entanglement.  This type of entanglement can---in the customary space-time frames that
+we assume to be ad hoc creations of certain nonentangled elements, such as light rays of classical optics,
+in the standard Poincar\'e-Einstein `radar' synchronization protocols---be generated through processes such as delayed-choice entanglement swapping.
+Formally, achieving this involves reordering the product $\vert \Psi^-_{12} \Psi^-_{34} \rangle$,
+expressed in terms of the four individual product states
+$\vert \Psi^+_{14}   \Psi^+_{23}  \rangle$,
+$\vert \Psi^-_{14}   \Psi^-_{23}  \rangle$,
+$\vert \Phi^+_{14}   \Phi^+_{23}  \rangle$, and
+$\vert \Phi^-_{14}   \Phi^-_{23}  \rangle$
+of the Bell bases of the `outer' (14) and `inner' (23)
+particles.
+Bell state measurements of the latter, `inner' particles yield a rescrambling of the `outer'
+correlations. Hence, postselecting the `inner' pair (23) results in the desired `outer'
+Bell states (14), respectively.
+
+\end{frame}
+
+\begin{frame} [shrink=10]
+ \frametitle{Mixed Boole-Bell type inequalities for generalized space-time locatedness}
+
+ In more detail, in terms of the  Bell basis,
+\begin{equation}
+\begin{split}
+\vert \Psi_{12}^- \Psi_{34}^- \rangle &=   \frac{1}{2} \left(\vert \Psi_{14}^+ \Psi_{23}^+  \rangle - \vert \Psi_{14}^- \Psi_{23}^-  \rangle     - \vert \Phi_{14}^+ \Phi_{23}^+  \rangle + \vert \Phi_{14}^- \Phi_{23}^- \rangle \right), \\
+\vert \Psi_{12}^+ \Psi_{34}^+ \rangle &=   \frac{1}{2} \left(\vert \Psi_{14}^+ \Psi_{23}^+  \rangle - \vert \Psi_{14}^- \Psi_{23}^-  \rangle     + \vert \Phi_{14}^+ \Phi_{23}^+  \rangle - \vert \Phi_{14}^- \Phi_{23}^- \rangle \right), \\
+\vert \Phi_{12}^- \Phi_{34}^- \rangle &=   \frac{1}{2} \left(-\vert \Psi_{14}^+ \Psi_{23}^+  \rangle - \vert \Psi_{14}^- \Psi_{23}^-  \rangle   + \vert \Phi_{14}^+ \Phi_{23}^+  \rangle + \vert \Phi_{14}^- \Phi_{23}^- \rangle \right), \\
+\vert \Phi_{12}^+ \Phi_{34}^+ \rangle &=   \frac{1}{2} \left(\vert \Psi_{14}^+ \Psi_{23}^+  \rangle + \vert \Psi_{14}^- \Psi_{23}^-  \rangle   + \vert \Phi_{14}^+ \Phi_{23}^+  \rangle + \vert \Phi_{14}^- \Phi_{23}^- \rangle \right).
+\end{split}
+\label{2023-st-MagicBellBasisstates1factoring}
+\end{equation}
+In the `magic' Bell basis where $\vert \Psi^- \rangle $ and $\vert \Phi^+ \rangle $
+are multiplied by the imaginary unit  $i$, the relative phases change accordingly.
+
+Delay lines serve as essential components for temporal entanglement.
+These delay lines could, in principle, also lead to mixed temporal-spatial quantum correlations.
+
+\end{frame}
+
+
+
+\section{Suggestions for a new protocol of clock synchronization}
+\frame{
+ \frametitle{Suggestions for a new protocol of clock synchronization}
+
+ {\color{black}
+For entangled shares I therefore suggest to abandon Einstein clock synchronization by exchanges of (light) signals.
+
+I suggest to employ a Bennett-Brassard-Eckert-type protocol utilizing random outcomes of entangled multi-partite states
+as a time standard.
+Thereby, local entangled time is successively made precise and generated by the correlated outcomes of entangled states.
+
+As a result, relativity theory is `relativized' further by into a multitude of means relative `patches' of space-time (frames).
+
+}
+
+}
+
+\frame{
+
+\centerline{\Large {\color{purple} Thank you for your attention!}}
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{Scilla-and-Charybdis1.jpeg}
+\\
+{\color{purple} Non est ad astra mollis e terris via\\
+-- per aspera ad astra}
+\\
+\color{orange}
+$\widetilde{\qquad \qquad }$
+$\widetilde{\qquad \qquad}$
+$\widetilde{\qquad \qquad }$
+\end{center}
+ }
+ \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{ }
+
+\frame{
+ \frametitle{ }
+
+\begin{itemize}
+\item[$\bullet$] {
+%\color{purple}
+}
+\pause
+\item[$\bullet$] {
+%\color{purple}
+}
+\end{itemize}
+}
+
+\section{ }
+
+\frame{
+ \frametitle{ }
+
+\begin{itemize}
+\item[$\bullet$] {
+%\color{purple}
+}
+\pause
+\item[$\bullet$] {
+%\color{purple}
+}
+\end{itemize}
+}
+
+\section{ }
+
+\frame{
+ \frametitle{ }
+
+\begin{itemize}
+\item[$\bullet$] {
+%\color{purple}
+}
+\pause
+\item[$\bullet$] {
+%\color{purple}
+}
+\end{itemize}
+}
+
+\section{ }
+
+\frame{
+ \frametitle{ }
+
+\begin{itemize}
+\item[$\bullet$] {
+%\color{purple}
+}
+\pause
+\item[$\bullet$] {
+%\color{purple}
+}
+\end{itemize}
+}
+

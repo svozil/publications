@@ -1,0 +1,14 @@
+copy 20231213_132128-contentaware-rotated-A4.jpg               image-20231213_132128-contentaware-rotated-A4.jpg
+copy 2023-bb-20231214_164131-contentaware.jpg                  image-2023-bb-20231214_164131-contentaware.jpg
+copy 2023-bb-20231218_134531.jpg                               image-2023-bb-20231218_134531.jpg
+copy 2023-bb-20231218_143939.jpg                               image-2023-bb-20231218_143939.jpg
+copy 2023-bb-Banjon-20231223_134921.jpg                        image-2023-bb-Banjon-20231223_134921.jpg
+copy 2023-bb-20231220_190915.jpg                               image-2023-bb-20231220_190915.jpg
+copy 2023-bb-20231231_122109.jpg                               image-2023-bb-20231231_122109.jpg
+copy 2023-bb-20231216_094817.jpg                               image-2023-bb-20231216_094817.jpg
+copy 2023-bb-20240101_113626.jpg                               image-2023-bb-20240101_113626.jpg
+copy 2023-bb-20231217_162207.jpg                               image-2023-bb-20231217_162207.jpg
+copy 2023-bb-20231215_151852.jpg                               image-2023-bb-20231215_151852.jpg
+copy 2023-bb-20231215_140758.jpg                               image-2023-bb-20231215_140758.jpg
+copy 2023-bb-20231231_141824.jpg                               image-2023-bb-20231231_141824.jpg
+copy 2023-bb-VeroHiti.jpg                                      image-2023-bb-VeroHiti.jpg

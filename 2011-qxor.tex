@@ -1,0 +1,404 @@
+\documentclass[%
+ %reprint,
+ %superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ preprint,
+ showpacs,
+ showkeys,
+ preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+  amsmath,amssymb,
+  aps,
+ % prl,
+ pra,
+ %prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+  floatfix,
+  %lengthcheck,%
+ ]{revtex4-1}
+\usepackage{hyperref}
+
+%\documentclass[pra,amsfonts,showpacs,showkeys,preprint,nofootinbib,numerical]{revtex4-1}
+\sloppy
+\usepackage{graphicx}% Include figure files
+\usepackage{epstopdf}
+\usepackage{eepic}
+\usepackage{xcolor}
+\usepackage{braket}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\RequirePackage{times}
+\RequirePackage{mathptm}
+
+
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Scolium}[Theorem]{Scolium}
+
+\newtheorem{Fact}[Theorem]{Fact}
+\newtheorem{Lemma}[Theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{Definition}[Theorem]{Definition}
+\newtheorem{Example}[Theorem]{Example}
+
+\newcommand{\xor}{\text{ ${\tt XOR}$ }}
+
+%\usepackage{cdmtcs}
+\begin{document}
+
+
+%\cdmtcsauthor{Karl Svozil}
+%\cdmtcstitle{Proposed direct test of quantum contextuality}
+%\cdmtcsaffiliation{Vienna University of Technology}
+%\cdmtcstrnumber{348}
+%\cdmtcsdate{February 2009}
+%\colourcoverpage
+
+\title{A Quantum Random Number Generator Certified by Entanglement and Value Indefiniteness}
+
+\author{Alastair A. Abbott}
+\email{aabb009@aucklanduni.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~aabb009}
+\author{Cristian S. Calude}
+\email{c.calude@auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+\affiliation{Department of Computer Science, University of Auckland,\\
+Private Bag 92019, Auckland, New Zealand}
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+\affiliation{Institut f\"ur Theoretische Physik, Vienna University of Technology,  \\  Wiedner Hauptstra\ss e 8-10/136, A-1040 Vienna, Austria}
+
+\begin{abstract}
+We present and analize a novel protocol for a quantum random number generator secured by the indeterminacy of individual quanta in an entangled state, as well as by quantum value indefiniteness.
+\end{abstract}
+
+
+
+\pacs{03.65.Ta,03.65.Ud}
+\keywords{quantum randomness, value indefiniteness, incomputability, unbiasing}
+
+\maketitle
+
+\section{Introduction}
+
+In physicist, ``randomness''~\footnote{The brackets indicate an intuitive, nonformal and heuristic understanding of the term randomness,
+in contrast to the formalized notions based on algorithmic information theory and statistics.}
+has often been perceived negatively as a disadvantage indicating an absence of control, predictability, and knowability.
+Only recently there seems to have emerged an understanding of random behaviour of a physical system as a valuable resource and capacity.
+Indeed, any system postulated to behave randomly outperforms (universal) computers and thus represents a concrete instance of actual hypercomputation.
+
+Whether and how physical randomness could be given a precise formalization,
+in particular, by considering a uniform, deterministic, unitary evolution of the quantum state,
+appears to be a problem deeply rooted in, and related to, the quantum measurement problem~\cite{schroedinger-interpretation}.
+In addition to foundational issues,
+one should keep in mind that the inevitable finiteness of the strings generated makes impossible the application of transfinite arguments often encountered in formal definitions.
+Even the assumption of independence of two events is questionable, since quantum mechanics does not exclude the
+entanglement of events inside a sufficiently large joint causal light cone.
+It is thus assumed that quantum systems perform ``randomly'' for all practical purposes~\cite{PhysRevA.82.022102}.\footnote{
+Actually, in a formally precise sense, any finite prefix sequence that is subjectively considered ``random'' or not, is consistent with formal randomness in a transfinite regime.}
+
+
+In what follows we propose a random number generator utilizing two nonclassical aspects of quantum mechanics.
+{\em Quantum entanglement}~\cite{schrodinger,CambridgeJournals:1737068,CambridgeJournals:2027212} ensures that the information is encoded into multipartite states~\cite{zeil-99}.
+Thereby it manifests itself in the joint properties of the quanta.
+The states and properties of single quanta remain inherently undefined and undetermined.
+
+Under the assumption of noncontextuality, {\em quantum value indefiniteness} ensures the impossibility to ascribe definite elements of physical reality~\cite{epr}
+to certain even finite (counterfactual) observables in systems with three or more mutually exclusive outcomes~\cite{kochen1}.
+Quantum value definiteness occurs for complementary sets of observables.
+In such a regime, incomputability of the generated sequences is guaranteed by the underlying physical assumptions and principles~\cite{2008-cal-svo}.
+
+The quantum random number generators  have exploited sone of these aspects.
+Quantum complementarity has motivated realizations by
+beam splitters~\cite{svozil-qct,rarity-94,zeilinger-epr-98,zeilinger:qct,stefanov-2000,wang:056107}.
+Entangled photon pairs have been used in more devices~\cite{0256-307X-21-10-027,fiorentino:032334,10.1038/nature09008}; the latter one utilizing
+Boole-Bell-type inequality violations
+%quantum value indefiniteness~\cite{2008-cal-svo,svozil-2009-howto} \marginpar{\tiny does \cite{10.1038/nature09008}  refer to VI?}
+in the spirit of quantum cryptographic protocols~\cite{ekert91,PhysRevLett.85.3313}.
+
+With regard to the relevance of quantum violations of Boole-Bell type inequalities to ``randomness,''
+whereas such violations may provide some indirect  statistical verification  of value indefiniteness (again under the assumption of noncontextuality),
+they fall short of providing certification of strong incomputability
+{\it via} value indefiniteness~\cite{2008-cal-svo,svozil-2009-howto}.
+The difference between violations of Boole-Bell-type inequalities  {\it versus} Kochen-Specker-type theorems is this:
+In the Boole-Bell-type case,
+the breach of value indefiniteness needs not happen at every single particle,
+whereas in the Kochen-Specker-type case this must happen {\em for every particle}~\cite{svozil_2010-pc09}.
+Pointedly stated, the Boole-Bell-type violation is statistical, but {\em not necessarily} on every quantum separately.
+Alas, because a Boole-Bell-type violation does not guarantee that every bit is certified by value indefiniteness,
+potentially such sequences containing infinite computable subsequences
+protected by Boole-Bell-type violations could be produced.
+Such criticisms seem also to hold for the statistical verification of value indefiniteness~\cite{panbdwz,huang-2003,cabello:210401}.
+Thus it seems unlikely that statistical tests of the measurement outcomes alone can fully certify such a quantum random number generator.
+
+
+In what follows, a proposal for a quantum random number generator previously put forward in Ref.~\cite{svozil-2009-howto}, will be discussed in detail.
+It utilizes the singlet state of two two-state particles -- e.g., photons of linear polarization -- proportional to  $\vert \Psi^- \rangle = \vert H_1 V_2\rangle - \vert V_1 H_2\rangle$,
+presumably by spontaneous parametric down-conversion in a nonlinear medium.
+Ideally, the two resulting entangled photons are then analyzed with respect to their linear polarization state at some directions which are exactly $\pi /4$ radians  apart,
+symbolized by ``$\oplus$'' and ``$\otimes$,''
+respectively.
+
+Due to the required four-dimensional Hilbert space, this  quantum random number generator
+is protected by value indefiniteness.
+It is also protected by the individual measurements of quanta which are in an entangled state
+encoded to represent opposite linear polarization in all spatial directions.
+
+Formally, suppose that for the $i$th experimental run, the two outcomes are
+$O^\oplus_i \in \{0,1\}$ corresponding to $D^\oplus_0$ or  $D^\oplus_1$,
+and
+$O^\otimes_i \in \{0,1\}$  corresponding to $D^\otimes_0$ or  $D^\otimes_1$.
+These two outcomes $O^\oplus_i $ and  $O^\otimes_i$, which themselves form two sequences of random bits,
+are subsequently combined by the ${\tt XOR}$ operation, which amounts to their parity, or to the addition modulo 2
+(in what follows, depending on the formal context,  ${\tt XOR}$ refers to either a binary function of two binary observables, or to the logical operation).
+Stated differently, one outcome is used as a {\em one time pad} to ``encrypt'' the other outcome,
+and {\it vice versa}.
+As a result, one obtains a sequence $x=x_1x_2\ldots x_n$ with
+\begin{equation}
+x_i=O^\oplus_i + O^\otimes _{i} \text{ mod }2 .
+\label{2010-qxor-e1}
+\end{equation}
+
+For the ${\tt XOR}$d sequence to still be certifiably incomputable (via value indefiniteness), one must prove this certification is preserved under ${\tt XOR}$ing --
+indeed strong incomputability itself is {\em not} necessarily preserved.
+By necessity any quantum random number generator certified by value indefiniteness must operate non-trivially in a Hilbert space of dimension $n\ge 3$.
+To transform the $n$-ary (incomputable) sequence into a binary one, a function $f: \{0,1,\dots, n-1\} \to \{0,1,\lambda\}$ must be used ($\lambda$ is the empty string);
+to claim certification, the strong incomputability of the bits must still be guaranteed after the application of $f$.
+This is a fundamental issue which has to be checked for  existing quantum random number generators such as that in Ref.~\cite{10.1038/nature09008};
+without it one cannot claim to produce truly indeterministic bits. In general incomputability itself is not preserved by $f$;
+however by consideration of the value indefiniteness of the source the certification can be seen to hold under ${\tt XOR}$ as well as when discarding bits~\cite{Abbott:aa}.
+
+
+The protocol is a good example of the fact that quantum mechanical correlations may contribute to larger systematic errors than in the classical case.
+As no experimental realization will attain a ``perfect anti-alignment'' of the polarization analyzers  at angles $\pi /4$ radians apart.
+Only in this ideal case are the bases conjugate and the correlation function will be exactly zero.
+Indeed, ``tuning'' the angle to obtain equi-balanced sequences of zeroes and ones may be a method to properly anti-align the polarizers.
+However, one has to keep in mind that any such ``tampering'' with the raw sequence of data
+to achieve  Borel normality (e.g.\ by readjustments of the experimental setup)
+may introduce unwanted (temporal) correlations or other bias~\cite{PhysRevA.82.022102}.
+
+
+Incidentally, the angle $\pi /4$ is one of the three points at angles $0$, $\pi /4$ and $\pi /2$ in the interval $[0, \pi /2]$
+in which the classical and quantum correlation functions coincide.
+For all other angles, there is a higher ratio of different or identical pairs than could be expected classically.
+Thus, ideally, the quantum random number generator could be said to operate in the ``quasi classical'' regime,
+albeit fully certified by quantum value indefiniteness.
+
+Quantitatively, the expectation function of the sum of the two outcomes modulus~2 can be defined by  averaging over the sum modulo~2 of the outcomes $O^0_i, O^\theta _i\in \{0,1\}$ at angle $\theta$ ``apart''
+in the $i$th experiment, over a  large number  of experiments; i.e.,
+$
+E_{\tt XOR}(\theta )=\lim_{N \rightarrow \infty} {(1/ N)}\sum_{i=1}^N \left( O^0_i + O^\theta _i \text{ mod }2\right).
+$
+This is related to the standard correlation function,
+$
+	C(\theta)=\lim_{N\to \infty}{(1/ N)}\sum_{i=1}^N O^0_i \cdot O^\theta_i
+$
+by
+$
+	E_{\tt XOR}(\theta)=({|C(\theta)-1|})/{2}
+$,
+where
+\begin{equation*}
+	O^0_i \cdot O^\theta_i =
+	\begin{cases}
+		1, & \mbox{if }O^0_i = O^\theta_i,\\
+		-1, & \mbox{if }O^0_i \neq O^\theta_i.
+	\end{cases}
+\end{equation*}
+A detailed calculation yields the classical linear expectation function
+$E^{\text{cl}} _{\tt XOR}(\theta ) = {1-2 \theta / \pi}$,
+and the quantum expectation function
+$E_{\tt XOR}(\theta ) = (1/2)(1+\cos 2\theta )$.
+
+Thus, for angles ``far apart'' from $\pi /4$, the ${\tt XOR}$ operation  {\em deteriorates} the two random signals taken from the two analyzers {\em separately.}
+The deterioration is even {\em greater quantum mechanically than classically,} as the entangled particles are more correlated and thus ``less independent.''
+Potentially, this could be utilized to ensure a $\pi/4$ mismatch more accurately than possible through classical means.
+
+
+In what follows we analyze the output distribution of the proposed quantum random number generator and the ability to extract uniformly distributed bits from the two generated bitstrings in the presence of experimental imperfections.
+
+
+We may write the generated Bell singlet state with respect the top (``$\oplus$'') measurement context
+(this is arbitrary as the singlet is form invariant in all measurement directions) as
+$({1}/{\sqrt{2}})(\ket{01} - \ket{10})$.
+ One (``$\otimes$'') polarizer is at an angle of $\theta$ to the other one. After the beam splitters we have the state
+$\frac{1}{\sqrt{2}}\left[\cos \theta(\ket{00}-\ket{11}) - \sin \theta (\ket{01} + \ket{10})\right]$,
+ so we measure the same outcome in both contexts with probability $\cos^2\theta$ and different outcomes with probability $\sin^2\theta$.
+
+
+More formally, the quantum random number generator generates two strings simultaneously, so the probability space contains pairs of strings of length $n$. Let $e_x^\oplus,e_y^\otimes$ for $x,y=0,1$ be the detector efficiencies of the $D_x^\oplus$ and $D_y^\otimes$ detectors respectively. For perfect detectors, i.e\ $e_x^\oplus = e_y^\otimes$, we would expect a pair of bits $(a,b)$ to be measured with probability $2^{-1} (\sin^2\theta)^{a \oplus b}(\cos^2\theta)^{1-a \oplus b}$; non-perfect detectors alter this probability depending on the values of $a,b$.
+
+Let $B=\{0,1\}$, and for $x,y \in B^n$ let $d(x,y)$ be the Hamming distance between the strings $x$ and $y$, i.e\ the number of positions at which $x$ and $y$ differ, and let $\#_b(x)$ be the number of $b$s in $x$.
+
+%\begin{Proposition}\label{outputProbSpaceNonIdeal}
+	The probability space \footnote{$B^{n}$ is the set of bitstrings  $x$ of length $|x|=n$; $2^{X}$ is the set of all subsets of the set $X$.} of bitstrings produced by the quantum random number generator is $(B^n\times B^n,2^{B^n\times B^n},P_{n^2})$, where the probability $P_{n^2}: 2^{B^n\times B^n} \to [0,1]$ is defined for all $X\subseteq B^n\times B^n$ as follows:
+	$$P_{n^2}(X)=\frac{1}{Z_n}\sum_{(x,y)\in X}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)},$$
+	
+\noindent	and the term
+	\begin{align*}
+		Z_n&=\sum_{(x,y)\in B^n\times B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)}\\
+		&= \left[(\sin^2\theta(e_0^\oplus e_1^\otimes + e_1^\oplus e_0^\otimes)+\cos^2\theta(e_0^\oplus e_0^\otimes + e_1^\oplus e_1^\otimes)  \right]^n
+	\end{align*}
+ensures normalization.
+
+%\end{Proposition}
+We can check easily that this is indeed a valid probability space (i.e.\ that is satisfies the Kolmogorov axioms~\cite{Billingsley:1979aa}).
+\if01
+\begin{enumerate}
+	\item $P_{n^2}(\emptyset) = 0$, trivially true;
+	\item $P_{n^2}(B^n\times B^n) = 1$ by by definition of $Z_n$;
+	\item For $X,Y\subseteq B^n\times B^n$, $X\cap Y=\emptyset \implies P_{n^2}(X \cup Y) = P_{n^2}(X) + P_{n^2}(Y)$, trivially true.
+\end{enumerate}
+\fi
+%Note that for equal detector efficiencies we recover the definition of the ideal probability space in Proposition~\ref{outputProbSpace}.
+Note that for equal detector efficiencies we have
+\begin{align*}
+	Z_n&=(e^\oplus)^n(e^\otimes)^n\sum_{(x,y)\in B^n\times B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}=2^n(e^\oplus)^n(e^\otimes)^n,
+\end{align*}
+hence the probability has the simplified form
+$$P_{n^2}(X)=\sum_{(x,y)\in X}2^{-n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}.$$
+%\begin{Fact}\label{discardOneString}
+
+Given that the proposed quantum random number generator produces two (potentially correlated) strings, it is worth considering the distribution of each string taken separately. Given the rotational invariance of the singlet state this should be uniformly distributed. However, because the detector efficiencies may vary in each detector, this is not, in general, the case.
+	For every bitstring $x\in B^n$ we have
+	\begin{align}
+		P_{n^2}(\{x\} \times B^n) &= \frac{1}{Z_n}\sum_{y\in B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)}\notag\\
+		&= \frac{(e_0^\oplus)^{\#_0(x)}(e_1^\oplus)^{\#_1(x)}}{Z_n}\sum_{y\in B^n}(\sin^2\theta)^{d(x,y)}(\cos^2\theta)^{n-d(x,y)}(e_0^\otimes)^{\#_0(y)}(e_1^\otimes)^{\#_1(y)}\notag\\
+		&= \frac{1}{Z_n}\left(e_0^\oplus (e_1^\otimes\sin^2\theta+e_0^\otimes\cos^2\theta) \right)^{\#_0(x)}\left( e_1^\oplus (e_0^\otimes\sin^2\theta+e_1^\otimes\cos^2\theta) \right)^{\#_1(x)}.\label{discardOneStrDis}
+	\end{align}
+%\end{Fact}
+
+
+We see that each bitstring taken separately appears to come from a constantly biased source where the probabilities that a bit is 0 or 1, $p_0,p_1$, are given by the formulae
+$$p_0 = e_0^\oplus (e_1^\otimes\sin^2\theta+e_0^\otimes\cos^2\theta)/Z_1, \, p_1 = e_1^\oplus (e_0^\otimes\sin^2\theta+e_1^\otimes\cos^2\theta)/Z_1.$$
+This can alternatively be viewed as the distribution obtained if we were to discard one bitstring after measurement.
+%\marginpar{\tiny \tiny Is this better than $e_0/(e_0+e_1)$?}
+Note that if either $e_0^\otimes = e_1^\otimes$ or we have perfect misalignment (i.e.\ $\theta=\pi/4$) then the probabilities have the simpler formulae: $$p_x=e_x^\oplus/(e_0^\oplus + e_1^\oplus), x\in\{0,1\}.$$ In this case, if we further have that $e_0^\oplus = e_1^\oplus$, we obtain the uniform distribution by discarding one string after measurement.
+
+The analogous result for the symmetrical case $P_{n^2}\left(B^n \times \{y\} \right)$ also holds.
+%Note that if either $e_0^\otimes = e_1^\otimes$ or we have perfect misalignment (i.e\ $\theta=\pi/4$) then we have $p_0=p_1$ and we obtain the uniform distribution by discarding one string after measurement.
+
+If we were to discard one bitstring it is clear the other bitstring is generated independently in a statistical sense since the probability distribution source producing it is  constantly biased and independent~\cite{AbbottCalude10}. However, we would like to extend our notion of independence defined in~\cite{AbbottCalude10} to this 2-bitstring probability space.
+
+%\begin{Definition}\label{defn:independence}
+	We say the probability space $(B^n\times B^n,2^{B^n\times B^n},R_{n^2})$ is {\it independent} if for all $1\le k \le n$ and $x_1,\dots,x_k$, $y_1,\dots,y_k \in B$ we have
+	\begin{align*}
+		R_{n^2}(x_1\dots x_k B^{n-k} \times y_1\dots y_k B^{n-k})=& \, R_{n^2}(x_1\dots x_{k-1} B^{n-k+1} \times y_1\dots y_{k-1} B^{n-k+1})\\
+		&\times R_{n^2}(B^{k-1}x_k B^{n-k} \times B^{k-1} y_k B^{n-k}).
+	\end{align*}
+%\end{Definition}
+
+%\begin{Lemma}\label{independenceLemmaNonIdeal}% (5)
+	For all $x,y \in B^{|x|}$ and $0\le k + |x| \le n$ we have
+	$$P_{n^2}(B^{n-k}xB^{n-k-|x|} \times B^{n-k}yB^{n-k-|x|}) = P_{|x|^2}((x,y)).$$
+%\end{Lemma}
+%\begin{proof}
+	Indeed, using the additivity of the Hamming distance and the $\#_x$ functions, e.g. $d(x_1\dots x_k, y_1\dots y_k)=d(x_1\dots x_{k-1},y_1\dots y_{k-1})+d(x_k,y_k)$, we have:
+	\begin{align*}
+		P_{n^2}(B^{n-k}xB^{n-k-|x|} \times B^{n-k}yB^{n-k-|x|}) =& \sum_{a_1,a_2 \in B^{n-k}}\sum_{b_1,b_2\in B^{n-k-|x|}}P_{n^2}\left((a_1 x b_1,a_2 y b_2) \right)\\
+		=& P_{|x|^2}((x,y))\sum_{a_1,a_2 \in B^{n-k}}\sum_{b_1,b_2\in B^{n-k-|x|}}P_{(n-|x|)^2}\left((a_1 b_1,a_2 b_2) \right)\\
+		=& P_{|x|^2}((x,y)) P_{(n-|x|)^2}(B^{n-|x|}\times B^{n-|x|})\\
+		=& P_{|x|^2}((x,y)).
+	\end{align*}
+
+%\end{proof}
+
+
+%In light of Lemma~\ref{independenceLemmaNonIdeal} the following Fact is evident.
+%\begin{Fact}%independence
+	As a direct consequence we deduce that the probability space $P_{n^2}$  defined above
+	%in Proposition~\ref{outputProbSpaceNonIdeal}
+	is independent.
+%\end{Fact}
+%\begin{proof}
+%	This follows from Lemma~\ref{independenceLemmaNonIdeal} and the additivity of the Hamming distance and the $\#_x$ functions.
+%\end{proof}
+
+
+We now consider the situation where the two output bitstrings $x$ and $y$ are ${\tt XOR}$'d against each other (effectively using one as a one-time pad for the other)
+to produce a single bitstring, and we investigate the distribution of the resulting bitstring.
+Rather than only considering the effect of ${\tt XOR}$ing paired (and potentially correlated) bits,
+we also consider ${\tt XOR}$ing outcomes shifted by $j>0$ bits..
+
+For $j\ge 0$ and $x,y \in B^{n+j}$ define the offset-${\tt XOR}$ fucntion $X_j: B^{n+j} \times B^{n+j} \to B^n$ as $X_j(x,y) = z$ where $z_i = x_i \oplus y_{i+j}$ for $i=1,\dots,n$. For $z \in B^n$ the set of pairs $(x,y)$ which produce $z$ when ${\tt XOR}$'d with offset $j$ is
+%\begin{align*}
+\[	A_j(z) = \{(x,y) \mid x,y \in B^{n+j}, X_j(x,y)=z \}%&
+	= \{(ua,b(u \xor z) \mid u \in B^n, a,b\in B^j \}.\]
+%\end{align*}
+%\begin{Proposition}
+ The probability space of the output produced by the quantum random number generator is $(B^n,2^{B^n},Q_{n,j})$, where $Q_{n,j}: 2^{B^n} \to [0,1]$ is defined for all $X\subseteq B^n$ as:
+\begin{align}\label{QProbDefn}
+	Q_{n,j}(X) =& \sum_{z\in X}P_{(n+j)^2}(A_j(z)).
+\end{align}
+%\end{Proposition}
+
+We note that $|A_j(z)| = 2^{n+2j}$ and check this is a valid probability space. Indeed,
+%\begin{enumerate}
+	%\item
+	 $Q_{n,j}(\emptyset) = 0$, is trivially true,
+	%\item
+	$$Q_{n,j}(B^n) = \sum_{z\in B^n}P_{(n+j)^2}(A_j(z)) = P_{(n+j)^2}\left(\bigcup_z A_j(z)\right) = P_{(n+j)^2}\left(B^{n+j}\times B^{n+j}\right) = 1,$$ bcause all $A_j(z)$ are disjoint and thus $$|\bigcup_z A_j(z)| = 2^n 2^{n+2j} = (2^{n+j})^2, \mbox{  so  }  \bigcup_z A_j(z) = B^{n+j}\times B^{n+j},$$ and
+	%\item
+	for disjoint  $X,Y \subseteq B^n$ we have $ Q_{n,j}(X\cup Y) = Q_{n,j}(X) + Q_{n,j}(Y)$.
+%\end{enumerate}
+
+We now explore the form of the ${\tt XOR}$'d distribution $Q_{n,j}$  for  $j=0$ and $j>0$.
+
+%\begin{Theorem}
+%	For $j>0$, $Q_{n,j}=U_n$, the uniform distribution, and for $j=0$, $Q_{n,j} = P_n$, the constantly biased distribution from the von %Neumann note with $p_0 = \cos^2\theta$ and $p_1 = 1-p_0 = \sin^2\theta$.
+%\end{Theorem}
+%\begin{proof}
+	Let $z \in B^n$ and $j \ge 0$. By $z[m,k]$ we denote the substring $z_m\dots z_k, 1\le m \le k\le n$. We have
+	\begin{align*}
+		Q_{n,j}(z) =& P_{(n+j)^2}(A_j(z)))\\
+		=& \sum_{a,b\in 2^j}\sum_{u\in 2^n}P_{(n+j)^2}((ua,b(u\xor z))\\
+		=& \sum_{u\in 2^n}P_{(n-j)^2}\left((u[j+1,n],(u\xor z)[1,n-j])\right)  \\
+		&\cdot \sum_{a\in 2^j}P_{j^2}\left((a,(u\xor z)[n-j+1,n])\right)  \sum_{b\in 2^j}P_{j^2}\left((u[1,j],b)\right).
+		%=& 2^{-n-j}\sum_{u\in 2^n}(\sin^2\theta)^{d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}(\cos^2\theta)^{n-j-d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}\\&\cdot \sum_{a\in 2^j}(\sin^2\theta)^{d(a,(u\text{ \tt xor } z)[n-j+1,n])}(\cos^2\theta)^{j-d(a,(u\text{ \tt xor } z)[n-j+1,n])} \\&\cdot\sum_{b\in 2^j}(\sin^2\theta)^{d(u[1,j],b)}(\cos^2\theta)^{j-d(u[1,j],b)}\\
+		%=& 2^{-n-j}\sum_{u\in 2^n}(\sin^2\theta)^{d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])}(\cos^2\theta)^{n-j-d(u[j+1,n],(u\text{ \tt xor } z)[1,n-j])},
+	\end{align*}
+	%where the last line follows from Fact~xx. Now note that for $j=0$, $d(u,(u\text{ \tt xor } z)) = \#_1(z)$.
+	For $j=0$, we note that $d(u, u\xor z) = \#_1(z)$, and thus we have:
+\begin{align*}
+	Q_{n,0}(z) &= \sum_{u\in 2^n}P_{n^2}\left((u,(u\xor z))\right) \\
+		&= \frac{1}{Z_n}(\sin^2\theta)^{\#_1(z)}(\cos^2\theta)^{\#_0(z)} \sum_{u\in B^n} (e_0^\oplus)^{\#_0(u)}(e_1^\oplus)^{\#_1(u)}(e_0^\otimes)^{\#_0(u\xor z)}(e_1^\otimes)^{\#_1(u\xor z)}\\
+		&= \frac{1}{Z_n}\left(\sin^2\theta (e_0^\oplus e_1^\otimes + e_1^\oplus e_0^\otimes) \right)^{\#_1(z)}\left(\cos^2\theta (e_0^\oplus e_0^\otimes + e_1^\oplus e_1^\otimes) \right)^{\#_0(z)}.
+\end{align*}
+We recognize this as a constantly biased source where $$p_0 = \cos^2\theta (e_0^\oplus e_0^\otimes + e_1^\oplus e_1^\otimes)/Z_1,\, p_1 = \sin^2\theta (e_0^\oplus e_1^\otimes + e_1^\oplus e_0^\otimes)/Z_1.$$ It is interesting to compare the form of $Q_{n,0}$ to the distribution of the constantly biased source Eq.~\eqref{discardOneStrDis} by discarding one output string---the former is more sensitive to misalignment, the latter to differences in detection efficiencies. In the case of perfect/equal detector efficiencies (but non-perfect misalignment), discarding one string produces uniformly distributed bitstrings, whereas ${\tt XOR}$ing does not.
+
+We now look at the case where $j>0$. For the ideal situation of $\theta=\pi/4$ we have the same result as for the $j=0$ case, while if we have equal detector efficiencies then we get the uniform distribution. We show this as follows (note that $Z_{n+j}=2^{n+j}$ in this case):
+\begin{align*}
+	Q_{n,j}(z) =& 2^{-n-j}\sum_{u_n\in B}\cdots \sum_{u_{n-j}\in B}(\sin^2\theta)^{u_n \oplus z_{n-j}\oplus u_{n-j}}(\cos^2\theta)^{1-u_n \oplus z_{n-j}\oplus u_{n-j}}\cdots\\&\times \sum_{u_1 \in B} (\sin^2\theta)^{u_j+1 \oplus z_{1}\oplus u_{1}}(\cos^2\theta)^{1-u_j+1 \oplus z_{1}\oplus u_{1}}\\
+	=& 2^{-n-j}\sum_{u_n\in B}\cdots \sum_{u_{n-j}\in B}(\sin^2\theta + \cos^2\theta)\cdot \sum_{u_1 \in B}(\sin^2\theta + \cos^2\theta)\\
+	=& 2^{-n-j}\sum_{u_{n-j+1}\dots u_n \in B^j}1\\
+%	=& 2^{-n-j}2^j\\
+	=& 2^{-n}.
+\end{align*}
+%\end{proof}
+However, in the more general case of non-equal detector efficiencies, the distribution is no longer independent, although in general is much closer to the uniform distribution than the $j=0$ case.
+(Recall that independence is a sufficient but not necessary condition for uniform distribution~\cite{AbbottCalude10}.) It is indeed this ``closeness''---the total variation distance given by $\Delta(U_n,Q_{n,j}) = \frac{1}{2}\sum_{x\in B^n}|2^{-n} - Q_{n,j}(x)|$---which is the important quantity ($U_n$ is the uniform distribution on $n$-bit strings). However, since $Q_{n,j}$ for $j>0$ is not independent, von Neumann normalization cannot be applied to guarantee the uniform distribution; indeed the dependence is not even bounded to a fixed number of preceding bits.
+%Simple testing indicates that indeed we get again the uniform distribution.
+%Thorough numerical testing reveals the following: for $j>0$ the distribution is much closer to the uniform distribution than for $j=0$. Furthermore, it is much closer to the uniform distribution than the distribution in Eq.~\eqref{discardOneStrDis} obtained by discarding one string. Increasing beyond $j=1$ appears to have little if no extra effect to the distribution obtained.\marginpar{\tiny examples}
+
+
+
+
+The problem of determining how best to obtain the maximum amount of information from the quantum random number generator is largely a problem of randomness extractors~\cite{Gabizon:2010uq}, and is a trade off between the number of uniformly distributed bits obtained and the processing cost---a suitable extractor needs to operate in real-time for most purposes. As we have seen, the fact that two (potentially correlated) bitstrings are obtained allows more efficient operation than a quantum random number generator using single-photons. We have shown how the proposed quantum random number generator can be operationalized in more than one way: either by using shifted ${\tt XOR}$ing of bits to sample from a distribution which is close to (equal to in the ideal limit) the uniform distribution and efficient and robust to various errors, or by utilizing both produced bitstrings to allow a more efficient normalization procedure giving (in absence of the aforementioned temporal effects) the uniform distribution. Many more operationalizations are undoubtedly possible.
+
+
+\bibliography{svozil}
+
+
+\end{document}

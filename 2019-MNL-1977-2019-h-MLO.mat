@@ -1,0 +1,106 @@
+MLO = ReadList["C:\\mytex\\2019-MNL-1977-2019-h-MLO.txt",
+   Number, RecordLists -> True];
+
+MLOYearTemp =
+  Table[If[MLO[[i, 9]] == -999.9, 1, {MLO[[i, 1]], MLO[[i, 9]]}], {i,
+    1, Length[MLO], 1}];
+
+MLOYearTempDel = DeleteCases[MLOYearTemp, 1];
+
+(*******************************************)
+
+MLOTemp = Table[ MLOYearTempDel[[i,2]], {i, Length[MLOYearTempDel]}];
+
+
+ListPlot[MLOTemp, PlotRange -> All,
+ Frame -> True,
+ Axes -> False,
+ FrameStyle -> Directive[Blue, 12],
+ FrameTicks -> {
+   {{-10, -5, 0, 5, 10, 15, 20}, None},
+   {{{1, "1977"}, {Length[MLOTemp]/2,"1998"}, {Length[MLOTemp], "2019"}}, None}
+               },
+ FrameTicksStyle -> Green,
+ FrameLabel -> {"year", "T(°C)"}]
+
+(*******************************************)
+
+
+Ye = Table[ MLOYearTempDel[[i,1]], {i, 1, Length[MLOYearTempDel],1}];
+Years = Union[ Ye ];
+
+AvYearlyTempAux = Table[ 0 , {iyears,1,Length[Years]}];
+AvYearlyTempnum = Table[ 0 , {iyears,1,Length[Years]}];
+
+Do[
+  Do[
+  If[ MLOYearTempDel[[i,1]] == iyears+Years[[1]]-1,
+      AvYearlyTempAux1 = AvYearlyTempAux[[iyears]] + MLOYearTempDel[[i,2]];
+      AvYearlyTempAux[[iyears]]=AvYearlyTempAux1;
+      AvYearlyTempnum[[iyears]]++ ]
+  ,{iyears,1,Length[Years]}]
+, {i, 1, Length[MLOYearTempDel],1}];
+
+
+AverageYearTemp = Table[  AvYearlyTempAux[[iyears]] / AvYearlyTempnum[[iyears]]
+                       ,{iyears,1,Length[Years]}]
+
+
+
+(*******************************************)
+
+DataAverageYearTemp = Table[{iyears,AverageYearTemp[[iyears]]},{iyears,1,Length[Years]}]
+
+DataModelAverageYearTemp = LinearModelFit[DataAverageYearTemp,x,x];
+Normal[DataModelAverageYearTemp]
+
+Show[{ListPlot[AverageYearTemp,
+ PlotRange -> All,
+ Axes -> False,
+ Frame -> True,
+ FrameStyle -> Directive[Blue, 12],
+ FrameTicks -> {
+   {{6,6.5,7,7.5,8,8.5}, None},
+   {{
+    {1, "1977"},
+    {11, "1987"},
+    {21, "1997"},
+    {31, "2007"},
+    {41, "1017"}
+     }, None}
+               },
+ FrameTicksStyle -> Green,
+ FrameLabel -> {"year", "T(°C)"},
+ Joined->True],
+Plot[DataModelAverageYearTemp[x],{x,1,Length[Years]},
+      Frame -> False,
+      Axes->False,PlotStyle -> {Orange, Dashed, Thick}]}]
+
+
+DataAverageTemp = Table[{i,MLOTemp[[i]]},{i,1,Length[MLOTemp]}]
+
+DataModelAverageTemp = LinearModelFit[DataAverageTemp,x,x];
+Normal[DataModelAverageTemp]
+
+Show[{
+ListPlot[MLOTemp,
+ PlotRange -> All,
+ Frame -> True,
+ FrameStyle -> Directive[Blue, 12],
+ FrameTicks -> {
+   {{-10, -5, 0, 5, 10, 15, 20}, None},
+   {{{1, "1977"}, {Length[MLOTemp]/2,"1998"}, {Length[MLOTemp], "2019"}}, None}
+               },
+ FrameTicksStyle -> Green,
+ FrameLabel -> {"year", "T(°C)"},
+ Axes->False,
+ Joined->True],
+Plot[DataModelAverageTemp[x],{x,1,Length[MLOTemp]},
+      Frame -> False,
+      Axes->False,PlotStyle -> {Orange, Dashed, Thick}]
+}]
+
+
+
+(****************************************)
+

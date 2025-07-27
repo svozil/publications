@@ -1,0 +1,1808 @@
+\documentclass[%
+ %reprint,
+ %superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ preprint,
+ showpacs,
+ showkeys,
+ %preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+ amsmath,
+ amssymb,
+ aps,
+ % prl,
+ pra,
+ % prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+ %floatfix,
+ %lengthcheck,%
+ ]{revtex4-1}
+ %\bibliographystyle{apsrev4-1}
+
+% \usepackage{hyperref}
+ \usepackage{graphicx}% Include figure files
+\usepackage[dvipsnames]{xcolor}
+%\usepackage{cdmtcs}
+\usepackage{tikz}
+
+\usepackage{amsthm}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}[Theorem]{Proposition}
+\newtheorem{Corollary}[Theorem]{Corollary}
+\newtheorem{Comment}[Theorem]{Comment}
+\newtheorem{Fact}[Theorem]{Fact}
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Assumption}{Assumption}
+\theoremstyle{definition}
+\newtheorem{Definition}[Theorem]{Definition}
+\newtheorem{Example}[Theorem]{Example}
+
+\setlength{\itemsep}{0pt}
+\setlength{\topsep}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\newcommand{\bra}[1]{\left< #1 \right|}
+\newcommand{\ket}[1]{\left| #1 \right>}
+
+\newcommand{\iprod}[2]{\langle #1 | #2 \rangle}
+\newcommand{\mprod}[3]{\langle #1 | #2 | #3 \rangle}
+\newcommand{\oprod}[2]{| #1 \rangle\langle #2 |}
+
+\newcommand{\proj}[3]{\begin{smallmatrix} #1 & #2 & #3 \end{smallmatrix}}
+\newcommand{\projbf}[3]{\begin{smallmatrix} \mathbf{#1} & \mathbf{#2} & \mathbf{#3} \end{smallmatrix}}
+
+%\parskip .7em %vskip between paragraphs
+
+\newcommand{\seq}[1]{\mathbf{#1}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\m}[1]{\widetilde{#1}}
+%\newcommand{\p}[1]{\scriptsize\textcolor{black}{$[#1]$}}
+
+\begin{document}
+
+
+%\cdmtcsauthor{Cristian S. Calude, Michael J. Dinneen, Monica Dumitrescu and Karl Svozil}
+%\cdmtcstitle{Experimental Evidence of Quantum Randomness Incomputability}
+%\cdmtcsaffiliation{Department of Computer Science, University of Auckland, \\ Faculty of Mathematics and Computer Science, University of Bucharest, \\Vienna University of Technology}
+%\cdmtcstrnumber{382}
+%\cdmtcsdate{April 2010}
+%\colourcoverpage
+\sloppy
+
+\title{Kochen-Specker Theorem Revisited and Strong Incomputability of Quantum Randomness}
+
+\author{Alastair A. Abbott}
+\email{a.abbott@auckland.ac.nz}
+
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+
+\author{Jonathan Conder}
+\email{jcon068@aucklanduni.ac.nz}
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+
+\author{Karl Svozil}
+\affiliation{Institute for Theoretical Physics,
+Vienna  University of Technology,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna ,  Austria}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+
+
+\date{\today}
+
+\begin{abstract}
+The Kochen-Specker theorem shows the impossibility for a hidden variable theory to consistently assign truth values to certain (finite) sets of observables in a way that is non-contextual and consistent with quantum mechanics.
+If we require non-contextuality, the consequence is that many observables must not have pre-existing definite values.
+However, the Kochen-Specker theorem does not allow one to determine \emph{which} observables must be value indefinite.
+In this paper we present an improvement on the Kochen-Specker theorem which allows one to actually locate observables which are \emph{provably value indefinite}.
+
+Various technical and subtle aspects relating to this formal proof and its connection to quantum mechanics are discussed in the clear formal framework we provide.
+This result is then utilised for the proposal and certification of a dichotomic quantum random number generator operating in a three-dimensional Hilbert space.
+\end{abstract}
+
+\pacs{03.67.Lx, 05.40.-a, 03.65.Ta, 03.67.Ac, 03.65.Aa}
+\keywords{Kochen-Specker theorem, quantum value indefiniteness, quantum randomness, quantum indeterminism, random processes}
+\preprint{CDMTCS preprint nr. 422/2012}
+\maketitle
+
+
+\section{Located quantum value indefiniteness}
+
+While Bell's theorem \cite{bell-66} expresses the impossibly for a local hidden variable theory to give the same statistical results as quantum mechanics, the Kochen-Specker theorem \cite{specker-60,kochen1} proves the impossibility for a hidden variable theory to even assign truth values to certain (finite) sets of observables in a way that is non-contextual and consistent with quantum mechanics.
+More precisely, it expresses a contradiction between the following presuppositions:
+\begin{itemize}
+        \item[(P1)]
+        the set of observables in question \footnote{Which, due to complementarity, may not be all simultaneously co-measurable (i.e. formally, commuting)} have pre-assigned definite values,
+        \item[(P2)]
+        the outcomes of measurements of observables are non-contextual; that is, they are independent of whatever other
+co-measurable observables are measured alongside them,
+\end{itemize}
+along with the requirement that the relationship between hidden variables associated with sets of co-measurable observables behave quasi-classically, as is expected from quantum mechanics.
+This requirement means that in any ``complete'' set of mutually co-measurable yes-no propositions (represented by mutually orthogonal projectors spanning the Hilbert space) exactly one proposition should be assigned the value ``yes''.
+
+Thereby, the Kochen-Specker theorem does {\em not explicitly identify}
+certain particular observables which violate one or more of these presuppositions.
+Indeed, the Kochen-Specker theorem has not been designed to actually
+{\em locate} the particular observable(s) which would violate the assumptions.
+This is not seen as a deficiency of the theorem,
+because its content suffices for the many (mostly metaphysical)
+purposes it has been designed for and applied to.
+
+In what follows we shall pursue a threefold agenda.
+First, we shall make explicit and formalize the physical notions involved,
+in particular, value (in-)definiteness and contextuality.
+We shall thereby remain within the formalism of quantum logic,
+as outlined by Birkhoff and von Neumann \cite{v-neumann-55,birkhoff-36},
+as well as by Kochen and Specker \cite{kochen2,kochen3}.
+
+This enables us to specify exactly the actual
+{\em location of breakdown of classicality} within the set of Kochen-Specker observables;
+that is, we  identify the observables for which classicality
+indadvertedly renders complete contradictions,
+no matter what their (classical) outcome or value may be.
+In order to do this, we prove a modified version of the original
+Kochen-Specker theorem in which we obtain a contradiction between
+the presupposition (P2) and a crucially weaker version of (P1).
+%Just like in the original Kochen-Specker proof by contradiction,
+%in order to avoid these complete contradictions,
+%one of the presuppositions (P1)--(S3) must be abandoned.
+
+Second, we will clarify in what sense the Kochen-Specker and Bell-type theorems imply
+the violation of the non-contextuality assumption (P2).
+Formalization has become necessary because in the literature the term ``contextuality''
+is often identified with violations of certain Bell-type inequalities
+on single quanta \cite{hasegawa:230401,Bartosik-09,kirch-09,PhysRevLett.103.160405}
+in the absence of strict locality conditions \cite{cabello:210401}.
+
+We point out that, while from a purely logical point of view,  violation of the non-contextuality assumption (P2)
+is {\em sufficient} to interpret the Kochen-Specker theorem,
+it is by no means {\em necessary} for, or implied by,
+the Kochen-Specker theorem.
+Indeed, violation of the primary assumption of value definiteness (P1) presents a viable (albeit also not necessary, as other, more
+exotic, possibilities demonstrate; e.g., Ref. \cite{pitowsky-82}) option to interpret the Kochen-Specker theorem.
+
+Third, we shall also consider which  collections of observables do not render Kochen-Specker contradictions.
+Restricting ourselves to these very limited collections would allow maintenance of assumptions (P1) and (P2)
+about quantized systems, but would also reduce the domain of conceivable observables dramatically.
+
+The results presented can be interpreted as one natural consequence of,
+and advancement beyond, the Kochen-Specker theorem.
+They may be particularly important if we  investigate the concrete ``underpinning'' of the Kochen-Specker theorem:
+exactly why and where a quantized system disobeys   classicality.
+
+Apart from foundational issues,
+there is also a concrete application which profits from such quantum information theoretic findings.
+Contemporary quantum random number generators can no longer be based upon and certified by
+our conviction in the quantum postulate of {\em complementarity} alone.
+They should also be certified by
+strictly stronger forms of non-classicality than complementarity,
+{\em quantum value indefiniteness} being one of them \footnote{Note that there exist models of complementarity such as automaton logic or generalised urn models which are value definite \cite{svozil-2001-eua}.}.
+For these purposes, the Kochen-Specker theorem, as well as other Bell-type theorems,
+serve merely as {\em indications} that  quantum value indefiniteness possibly ``happens somewhere'' because it cannot be excluded that particular individual quanta \footnote{In the Bell-type cases all observables,
+and in the Kochen-Specker case ``many'' observables.} could still be value definite.
+
+Unfortunately, by their very design, these theorems cannot guarantee that a particular observable actually {\em is} value indefinite.
+One could, for instance, not exclude that a ``demon'' could act in such a way that all observables actually measured would be value definite,
+whereas other observables which are not measured would be value indefinite.
+
+However, for quantum random number generators we need certification of value indefiniteness on the {\em particular observables utilised for that purpose}.
+Thus, one needs a different, in the sense of locatedness of violation of non-classicality, stronger type of theorem
+than Kochen and Specker present, an argument that could (formally) {\em assure} that, if quantum mechanics is correct,
+the particular quantum observables used for the generation of random number sequences are {\em provably value indefinite,} hence  the measured quantum sequences cannot refer to any consistent property of the measured quanta alone.
+
+This communication presents such an argument, which will be utilised for a dichotomic quantum random number generator operating
+in a three-dimensional Hilbert space.
+By now it should be clear that such a device would be strictly preferential to previous proposals
+using merely quantum complementarity, or, in addition to that, some type of non-located violations of global value definiteness.
+
+In what follows we shall first present the basic definitions, then state and prove the aforementioned result,
+and subsequently apply this result to
+the proposal of a quantum random number generator based on {\em located quantum value indefiniteness} which produces, as we prove, a strongly incomputable sequence of bits.
+
+
+
+\section{Definitions}% and Relevant Results}
+
+\subsection{Notation and formal framework}
+
+%We denote the set of natural numbers (in which we include 0) by $\mathbb{N}=\{0,1,2,\dots\}$, the positive integers by $\mathbb{N}^+=\mathbb{N}\setminus\{0\}$, and
+As usual we denote the set of complex numbers by $\mathbb{C}$
+and use the standard quantum mechanical bra-ket notation;
+that is, we denote vectors in the Hilbert space $\mathbb{C}^n$ by $\ket{\cdot}$.
+%If we fix an orthonormal basis for $\mathbb{C}^n$ as $\{\ket{a_1},\dots,\ket{a_n}\}$, then an arbitrary $\ket{\psi}\in\mathbb{C}^n$ can be written $\ket{\psi}=\sum_{i=1}^n c_i\ket{a_i}$ where $c_i\in \mathbb{C}$ for $1\le i \le n$.
+%If $\ket{\phi}=\sum_{i=1}^n d_i\ket{a_i}$ is another vector in $\mathbb{C}^n$, then the inner product of $\ket{\psi}$ and $\ket{\phi}$ is $\iprod{\phi}{\psi}=\sum_{i=1}^n c_i d_i^*$.
+%The outer product $\oprod{\psi}{\phi}$ is an $n\times n$ complex  matrix where the entry at row $i$ and column $j$ is $(\oprod{\psi}{\phi})_{i,j}=c_i d_j^*$.
+We will have particular interest in the projection operators %(represented by Hermitian matrices)
+ projecting on to the linear subspace spanned by a non-zero vector $\ket{\psi}$, namely $P_\psi = \frac{\oprod{\psi}{\psi}}{\iprod{\psi}{\psi}}\raisebox{.3mm}{;}$
+we will use this notation for projection operators throughout this paper.
+We briefly note that in this paper we only consider pure quantum states, and will accordingly not explicitly specify quantum states as pure states as opposed to mixed states.
+
+%\subsection{Formal framework}
+
+%This formal framework is presented for the purpose of our discussion of hidden variable theories in quantum mechanics.
+
+In order to discuss hidden variable theories precisely and without any of the ambiguity that is common in such discussion, we present an explicit formal framework in which we will work in.
+
+We fix a positive integer $n$.
+Let $\mathcal{O} \subseteq \{ P_\psi \mid \ket{\psi} \in \mathbb{C}^n \}$ be a nonempty set of projection observables in the Hilbert space $\mathbb{C}^n$ and $\mathcal{C}\subseteq \{\{P_1,P_2,\dots P_n\} \mid P_i \in \mathcal{O} \text{ and } \iprod{i}{j}=0 \text{ for } i\neq j \}$ a set of measurement contexts over $\mathcal{O}$.
+A context $C\in\mathcal{C}$ is thus a maximal set of compatible (i.e. they can be simultaneous measured) projection observables.
+Let $v : \{(o,C) \mid o\in \mathcal{O}, C\in\mathcal{C}\text{ and } o\in C \} \xrightarrow{o} \{0,1\}$ be a partial function, i.e.\ it may be undefined for some values in its domain.
+For some $o,o'\in \mathcal{O}$ and $C,C'\in\mathcal{C}$ we say $v(o,C)=v(o',C')$ if $v(o,C),v(o',C')$ are both defined and have equal values.
+If either $v(o,C)$ or $v(o',C')$ are not defined or they are both defined but have different values, then $v(o,C)\neq v(o',C')$.
+We will call $v$ an \emph{assignment function}, and it expresses the notion of a hidden variable: it specifies in advance the result obtained from the measurement of an observable.
+
+%So far the framework is completely abstract, but, in order to discuss quantum mechanics, we need to remove some of this abstraction and specify some components.
+%In particular, we consider quantum mechanical projection observables acting on a Hilbert space, and contexts are complete sets of compatible observables (i.e.\ sets of $n$ orthogonal projectors; see below).
+
+%The assignment function $v$ expresses the notion of a hidden variable: it specifies in advance the result obtained from the measurement of an observable.
+
+
+%Formally we fix our framework as follows: with $n$ fixed we consider the Hilbert space $\mathbb{C}^n$.
+%The observables $\mathcal{O} \subseteq \{ P_\psi \mid \ket{\psi} \in \mathbb{C}^n \}$ are projections onto one-dimensional linear subspaces of $\mathbb{C}^n$.
+%These operators can be shown to commute exactly when the corresponding subspaces are orthogonal (or equal).
+%Consequently, the relation $\perp$ on $\mathcal{O} \times \mathcal{O}$ is defined by: $P_\psi\perp P_\phi$ if and only if $\ket{\psi}$ is orthogonal to $\ket{\phi}$ (i.e. $\iprod{\psi}{\phi}=0$).
+%Therefore $P_\psi\perp P_\phi$ implies that $P_\psi$ and $P_\phi$ are compatible, so contexts can be viewed as maximal sets of mutually compatible projection operators.
+
+An observable $o\in C$ is \emph{value definite} in the context $C$ under $v$ if $v(o,C)$ is defined.
+Otherwise $o$ is \emph{value indefinite} in $C$.
+If $o$ is value definite in all contexts $C\in \mathcal{C}$ for which $o\in C$ then we simply say that $o$ is value definite under $v$.
+Similarly, if $o$ is value indefinite in all such contexts $C$ then we say that $o$ is value indefinite under $v$.
+The set $\mathcal{O}$ is \emph{value definite} under $v$ if every observable $o\in\mathcal{O}$ is value definite under $v$.
+This notion of value definiteness corresponds to the classical notion of determinism:
+an observable is value definite if $v$ assigns it a definite value---i.e.\ we are able to predict in advance the value obtained via measurement.
+
+An observable $o\in \mathcal{O}$ is \emph{non-contextual} under $v$ if for all contexts $C,C' \in \mathcal{C}$ with $o\in C,C'$ we have $v(o,C)=v(o,C')$. Otherwise, $v$ is \emph{contextual}.
+Note that an observable which is value indefinite in a context is always contextual even if it takes the same value in every context in which it is value definite.
+On the other hand, if an observable is value definite in all contexts that it is in, it can be either contextual or not (and in the latter case its value is constant in all contexts containing it) depending on $v$.
+The set of observables $\mathcal{O}$ is \emph{non-contextual} under $v$ if every observable $o\in\mathcal{O}$ which is not value indefinite (i.e.\ value definite in \emph{some} context) is non-contextual under $v$.
+Otherwise, the set of observables $\mathcal{O}$ is \emph{contextual}.
+Further, we say that the set of observables $\mathcal{O}$ is \emph{strongly contextual} under $v$ if every observable $o\in\mathcal{O}$ is contextual under $v$.
+Non-contextuality corresponds to the classical notion that the value obtained via measurement is independent of other compatible observables measured alongside it.
+
+Every strongly contextual set of observables under $v$ is contextual under $v$, provided that $v$ is not undefined everywhere.
+However the converse implication is false, as
+we will discuss in Section~\ref{sec:strongContextuality}.
+%will follow from Theorem~\ref{nostrongcontextuality}.
+
+If an observable $o$ is non-contextual then it is value definite, but this is not true for sets of observables: $\mathcal{O}$ can be non-contextual but not value definite if it contains an observable which is value indefinite.
+
+An assignment function $v$ is \emph{admissible} if the following hold for all $C \in \mathcal{C}$:
+\begin{itemize}
+        \item if there exists an $o\in C$ with $v(o,C)=1$, then $v(o',C)=0$ for all $o'\in C\setminus\{o\}$,
+        \item if there exists an $o\in C$ such that $v(o',C)=0$ for all $o'\in C\setminus \{o\}$, then $v(o,C)=1$.
+\end{itemize}
+
+In the discussion of hidden variables, we do not concern ourselves with the mechanism of $v$, but rather with its possible existence subject to certain constraints (specifically, the admissibility of $v$---we justify this more fully in Section~\ref{sec:interpretation}---requires that functions of the values associated with compatible observables satisfy the predictions of quantum theory).
+The notion of admissibility serves as an analogue to the notion of a \emph{two-valued (dispersionless) measure} that is used in quantum logic
+\cite{ZirlSchl-65,kalmbach-86,Alda,Alda2,pulmannova-91,svozil-tkadlec},
+the difference being that the definition is sound even when not all observables are value definite.
+This distinction is subtle but, nevertheless, will allow us to formulate known results, such as the Kochen-Specker theorem
+%\cite{specker-60,kamber64,kamber65,ZirlSchl-65,kochen1,Alda,Alda2},
+\cite{kochen1},
+ as well as the stronger results which we will present in this paper.
+However, we stress that this is still a purely formal framework and that, in order to make a connection to physical reality, further assumptions must be made, specifically pertaining to the nature of measurement;
+we defer this connection to physical reality to Section~\ref{sec:interpretation}.
+
+
+
+We briefly note that this formal framework could be presented in an even more more abstract setting without reference to Hilbert spaces, but for the sake of concreteness we avoid this here.
+
+\subsection{Kochen-Specker theorem}
+
+Using the framework developed, the Kochen-Specker theorem~\cite{kochen1}, which we outlined and discussed in the introduction, can be presented in the following more rigorous form:
+if $n>2$ there exists a set of projection observables $\mathcal{O}$ on $\mathbb{C}^n$ and a set of contexts over $\mathcal{O}$ such that there is no admissible assignment function $v$ under which $\mathcal{O}$ is both non-contextual and value definite.
+This proves that it is impossible for all projection observables to be value definite and non-contextual.
+
+%The Kochen-Specker theorem~\cite{kochen1} shows that if $n>2$, then certain sets of observables in $\mathbb{C}^n$
+%cannot be both value definite and non-contextual under any admissible assignment function.
+%This proves that it is impossible for all projection observables to be value definite and non-contextual.
+%The Kochen-Specker theorem can be readily presented using the concepts developed above.\\
+
+%\begin{Theorem}[Kochen-Specker]
+%       If $n>2,$ there exists a set of projection observables $\mathcal{O}$ on $\mathbb{C}^n$ and a set of contexts over $\mathcal{O}$ such that there is no admissible assignment function $v$ under which $\mathcal{O}$ is both non-contextual and value definite.
+%\end{Theorem}
+
+\subsection{Strong contextuality can not be guaranteed}
+\label{sec:strongContextuality}
+
+How strong is the incompatibility between non-contextuality and value definiteness stated in the Kochen-Specker theorem?
+The theorem tells us that not every observable can be both non-contextual and value definite, but gives us no information as to how far this incompatibility goes.
+Here we show that this incompatibility cannot be maximal:
+no set of observables is strongly contextual under every admissible value definite assignment function on it.
+In other words, for any set of contexts over any set of observables, there exists an admissible assignment function under which the set of observables is value definite and at least one observable is non-contextual.\\
+% under some admissible assignment function.\\
+\begin{figure}[htbp] %[h]
+\begin{center}
+\includegraphics{2012-incomput-proofs_PRA-Figure1.eps}
+%\includegraphics{1_1.eps}
+\end{center}
+\caption{(Color online)
+Greechie orthogonality diagram\footnote{Observables are represented by circles/squares, contexts by smooth line segments.} of the contexts in $S_a$ with an overlaid value assignment reflecting the
+argument against strong-contextuality being guaranteed.
+%proof of Theorem~\ref{nostrongcontextuality}
+%associated with the configuration of contexts
+%$S_{a}=\{C \mid C\in \mathcal{C} \text{ and } a \in C \}\subseteq \mathcal{C}$.
+Different contexts $C_i$ are drawn in different colours, circles represent the value 0 and squares the value 1.
+}
+\label{2012-incomputability-proofs-f2}
+\end{figure}
+
+%\begin{Theorem}
+%\label{nostrongcontextuality}
+More precisely, let $\mathcal{O}$ be a set of projection observables and $\mathcal{C}$ a set of contexts over $\mathcal{O}$.
+Then for every $a\in \mathcal{O}$ there exists an admissible assignment function $v$ such that $v(a,C)=1$ for every context $C\in\mathcal{C}$ with $o \in C$, and $\mathcal{O}$ is value definite under $v$.
+%\end{Theorem}
+%\begin{proof}
+%Let $a\in\mathcal{O}$ be any observable, and
+To see this, consider the set $S_{a}=\{C \mid C\in \mathcal{C} \text{ and } a \in C \}\subseteq \mathcal{C}$ of contexts in which $a$ appears.
+If we define the assignment function $v_{a}$ for $C\in S_{a}$ by
+
+\begin{equation*}
+        v_{a}(o,C) =
+        \begin{cases}
+                1, & \text{for $o=a$,}\\
+                0, & \text{for  $o\neq a$.}\\
+        \end{cases}
+\end{equation*}
+
+
+It is clear this satisfies $\sum_{o\in C}v_{a}(o,C)=1$, for all $C\in S_{a}$.
+For $C\in \mathcal{C}\setminus S_{a}$, the function $v_{a}$ can be defined in any arbitrary contextual way to satisfy
+admissibility.
+%$\sum_{o\in C}v_{a}(o,C)=1$.
+The function $v_{a}$ is then admissible and assigns a definite value (namely 1) to the observable $a$ (which was arbitrarily chosen) in a non-contextual way---i.e.\ $v_a(a, C) = 1$ for all $C \in S_{a}$.
+%\end{proof}
+
+Note that the configuration of contexts   $S_{a}=\{C \mid C\in \mathcal{C} \text{ and } a \in C \}\subseteq \mathcal{C}$
+amounts to a ``star-shaped'' Greechie orthogonality diagram, with the common observable $a$ at the centre of the star,
+as depicted in Fig.~\ref{2012-incomputability-proofs-f2}.
+
+Indeed this should not be surprising in view of the predictions of quantum mechanics.
+Specifically, for a physical system prepared in the state $\ket{\psi}$, the Born rule predicts that measurement of the projection observable $P_\psi$ should give the value 1 (non-contextually) with probability 1.
+Nevertheless, it is important to place a bound on the degree of non-classicality~\cite{Elitzur199225,svozil-2011-enough} that we can guarantee.
+In fact, it is possible to go further than we have and define $v_a$ to non-contextually assign the value 0 to each observable appearing on a ``ray'' of the star in Fig.~\ref{2012-incomputability-proofs-f2}.
+This is a consequence of the fact no two observables on differing ``rays'' are compatible.
+
+However, in the following we show that one cannot go much further than this.
+%The probabilities determined by the Born rule are non-contextual in the sense that they depend on the relevant observable, but not the context in which it is measured.
+%For most purposes the probabilities 0 and 1 could be associated with definite values, which leads to the question of whether any other observables can be non-contextually value definite at the same time. The answer to this is unclear, except for those which share one or more eigenstates with a value definite observable. However, we can find some observables for which this is not the case.\\
+Specifically, in what are the main theoretical results of the paper, we show that there are pairs of observables (belonging to different contexts) such that at most one of them can be assigned the value 1 by an admissible assignment function under which $\mathcal{O}$ is non-contextual.
+This finding is somewhat stronger than a similar result by Kochen and Specker \cite{kochen1,pulmannova-91}
+derived from the (as Specker used to call them~\cite{Specker-priv}) ``bug''-type orthogonality diagrams (a sub-diagram of their diagram $\Gamma_1$), as not all observables are assumed to be value definite.
+Instead, an observable is only deduced to be value definite where the admissibility of $v$ requires it to be so.
+
+This difference allows us to deduce an even stronger result, with particular relevance to quantum random number generators: there are pairs of observables such that, if one of them is assigned the value 1 by an admissible assignment function under which $\mathcal{O}$ is non-contextual, the other must be {\em value indefinite}.
+%In light of Theorem~\ref{thm:noonevalueindefinite},
+This is the best guarantee of located value indefiniteness one could hope for, and we will make use of it in our proposal for a quantum random number generator.
+The proof relies on the weaker result described above, so we demonstrate that first, and deduce the main result as a corollary.
+Note that there are larger values than $\frac{3}{\sqrt{14}}$ for which these results are true.
+However, this number is more than sufficient for our purposes, and the larger values we found require significantly longer proofs.\\
+
+
+\begin{Theorem}
+\label{thm:twonotvaluedefinite}
+        Let $\ket{a}, \ket{b}\in \mathbb{C}^3$ be unit vectors such that $0 < |\iprod{a}{b}| \le \frac{3}{\sqrt{14}}\raisebox{.8mm}{.}$
+        Then there exists a set of projection observables $\mathcal{O}$ containing $P_a$ and $P_b$, and a set of contexts $\mathcal{C}$ over $\mathcal{O}$, such that there is no admissible assignment function under which $\mathcal{O}$ is non-contextual and $P_a$, $P_b$ have the value 1.
+\end{Theorem}
+\begin{proof}
+        We first show that the theorem holds under the equality $|\iprod{a}{b}|=\frac{3}{\sqrt{14}}\raisebox{.8mm}{,}$ and then, by means of a reduction to the case of equality, show it also holds for $0<|\iprod{a}{b}|<\frac{3}{\sqrt{14}}\raisebox{.8mm}{.}$
+
+        By choosing the basis appropriately, without loss of generality we may assume that $\ket{a}\equiv(1,0,0)$ and $\ket{b}\equiv\frac{1}{\sqrt{14}}(3,2,1)$.
+        Let $\ket{\psi}=(0,1,0)$ and $\ket{\phi}=(0,0,1)$.
+
+        In Table~\ref{2012-incomputability-proofs-table:greechie} we define 24 contexts $C_1, C_2, \dots, C_{24}$, which are numbered by the column headings.
+        Each row vector $\ket{\varphi}$ in the table is defined relative to the afore-chosen basis $\{ \ket{a}, \ket{\psi}, \ket{\phi} \}$, and is understood to represent the corresponding projection observable $P_\varphi$.
+        For brevity, we have omitted commas, brackets and normalisation constants from these vectors, and used the notation $\m{n} = -n$.
+        % for $n \in \mathbb{N}$.
+        As an example, $C_1 = \{ P_a, P_\psi, P_\phi \}$.
+        % The observables in each triple are mutually compatible, because the corresponding vectors are mutually orthogonal.
+
+
+        \begin{table}
+                \caption{Assignment table containing the representation of observable propositions (projectors), together with the contexts in which they appear.
+                         See Fig.~\ref{2012-incomputability-proofs-fig:greechie} for an illustration of these.}
+                \label{2012-incomputability-proofs-table:greechie}
+                \small
+                $$\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+                        \hline
+                        v & 1, 2        & 3, 4          & 5, 6      & 7, 8       & 9, 10      & 11, 12      & 13        & 14, 15      & 16, 17      & 18, 19      & 20, 21      & 22, 23      & 24      \\
+                        \hline
+                        1 & 1~0~0       & 1~0~0         & \bf 2~1~1 & 2~1~1        & \bf 2~0~1   & 2~0~1       &           & 1~1~0       & \bf 1~1~1   & 1~1~1       & \bf 1~0~1   & 1~0~1       &         \\
+                        0 & \bf 0~1~0   & \bf 0~1~1     & 1~\m1~\m1 & \bf 1~0~\m2  & 1~0~\m2     & \bf 1~1~\m2 &           & \bf 1~\m1~0 & 1~\m1~0     & \bf 1~0~\m1 & 1~0~\m1     & \bf 1~1~\m1 &         \\
+                        0 & \bf 0~0~1   & \bf 0~1~\m1   & 0~1~\m1   & 2~\m5~1      & 0~1~0       & 1~\m5~\m2   &           & 0~0~1       & 1~1~\m2     & 1~\m2~1     & 0~1~0       & 1~\m2~\m1   & 1~1~\m1 \\
+                          &             &               &           &              &             &             &           &             &             &             &             &             & 1~\m1~0 \\
+                        1 & 3~2~1       & 3~2~1         & \bf 3~2~0 & 3~2~0        & \bf 3~1~\m1 & 3~1~\m1     & \bf 1~1~0 & 1~1~0       & \bf 2~1~\m1 & 2~1~\m1     & \bf 2~0~\m1 & 2~0~\m1     & 1~1~2   \\
+                        0 & \bf 2~\m3~0 & \bf 1~\m1~\m1 & 2~\m3~0   & \bf 2~\m3~3  & 2~\m3~3     & \bf 1~\m1~2 & 1~\m1~2   & \bf 1~\m1~1 & 1~\m1~1     & \bf 1~0~2   & 1~0~2       & \bf 1~1~2   &         \\
+                        0 & 3~2~\m{13}  & 1~\m4~5       & 0~0~1     & 6~\m9~\m{13} & 0~1~1       & 1~\m7~\m4   & 1~\m1~\m1 & 1~\m1~\m2   & 0~1~1       & 2~\m5~\m1   & 0~1~0       & 1~\m5~2     &         \\
+                        \hline
+                \end{array}$$
+                \normalsize
+        \end{table}
+
+        Now let $\mathcal{C} = \{ C_1, C_2, \dots, C_{24} \}$ and $\mathcal{O} = \bigcup_{i = 1}^{24} C_i$.
+        Suppose there exists an admissible assignment function $v$ under which $\mathcal{O}$ is non-contextual and $v(P_a, C_1) = v(P_b, C_2) = 1$.
+        By continual application of the admissibility requirements, one can show that $v$ assigns certain values to all the observables in Table~\ref{2012-incomputability-proofs-table:greechie}.
+        This argument proceeds through the table from left to right, where the value assigned to each observable is noted in the leftmost column.
+        For example, in the first step we conclude that $v(P_\psi, C_1) = v(P_\phi, C_1) = 0$.
+        An observable whose value is determined by the others in the column is marked in bold, provided that the value given will be used later on.
+        This argument is also illustrated in Fig.~\ref{2012-incomputability-proofs-fig:greechie}.
+        We eventually obtain a contradiction, namely that $v(o, C_{24}) = 0$ for all $o \in C_{24}$ (the dotted line in Fig.~\ref{2012-incomputability-proofs-fig:greechie}).
+        Therefore there does not exist such admissible assignment function $v$.
+
+        \begin{figure}
+        \begin{center}
+\includegraphics{2012-incomput-proofs_PRA-Figure2}
+        \end{center}
+        \caption{(Color online) Greechie orthogonality diagram with an overlaid value assignment that can be used to visualise Table~\ref{2012-incomputability-proofs-table:greechie}.
+                 The circles and squares represent observables that will be given the values $0$ and $1$ respectively.
+                 They are joined by smooth lines which correspond to contexts, i.e.\ complete sets of compatible observables.}
+        \label{2012-incomputability-proofs-fig:greechie}
+        \end{figure}
+
+        We now show that if $0<|\iprod{a}{b}|<\frac{3}{\sqrt{14}}\raisebox{.8mm}{,}$ and $P_a$ and $P_b$ both have the value 1, then there is a third observable $P_c$ which must also have the value 1 and satisfies $|\iprod{a}{c}|=\frac{3}{\sqrt{14}}\raisebox{.8mm}{.}$
+        The above proof then applies to again show no admissible $v$ exists satisfying the requirements.
+
+        By scaling $\ket{b}$ by a phase factor if necessary, we may assume that $\iprod{a}{b} \in \mathbb{R}$.
+        Let $p = \iprod{a}{b}$ and $q = \sqrt{1 - p^2}$.
+        Then $(\ket{b} - \ket{a} p) \frac{1}{q}$ is a unit vector orthogonal to $\ket{a}$.
+        Taking a cross product, the set $\{ \ket{a}, (\ket{b} - \ket{a} p) \frac{1}{q}\raisebox{.8mm}{,} \ket{a} \times (\ket{b} - \ket{a} p) \frac{1}{q} \}$ forms an orthonormal basis for $\mathbb{C}^3$.
+        Relative to this basis, $\ket{a} \equiv (1, 0, 0)$ and $\ket{b} \equiv (p, q, 0)$.
+        Set $x = \frac{3}{\sqrt{14}}\raisebox{.8mm}{,}$ so that $p^2 < x^2$.
+        Then $$\frac{p^2 (1 - x^2)}{q^2 x^2} = \frac{p^2 - p^2 x^2}{q^2 x^2} < \frac{x^2 - p^2 x^2}{q^2 x^2} = \frac{(1 - p^2) x^2}{q^2 x^2} = 1.$$
+        Now set $y = \frac{p (1 - x^2)}{q x}\raisebox{.7mm}{,}$ so that $y^2 = \frac{p^2 (1 - x^2)}{q^2 x^2} (1 - x^2) < 1 - x^2$.
+        Then we can set $z = \sqrt{1 - x^2 - y^2} \in \mathbb{R}$.
+        This choice of $z$ makes $\ket{c} \equiv (x, y, z)$ a unit vector in $\mathbb{R}^3$.
+        Taking cross products, we define
+        \begin{align*}
+                \ket{\alpha} &= \ket{a} \times \ket{c} \equiv (1, 0, 0) \times (x, y, z) = (0, -z, y), \\
+                \ket{\beta} &= \ket{b} \times \ket{c} \equiv (p, q, 0) \times (x, y, z) = (q z, -p z, p y - q x),
+        \end{align*}
+        so that $\iprod{\alpha}{\beta} = (0, -z, y) \cdot (q z, -p z, p y - q x) = p z^2 + p y^2 - q x y = p (z^2 + y^2) - p (1 - x^2) = 0.$
+        Therefore $\{ \ket{\alpha}, \ket{\beta}, \ket{c} \}$ is an orthogonal basis for $\mathbb{C}^3$.
+        This implies that the projection observables $P_\alpha$, $P_\beta$ and $P_c$ associated with the subspaces of $\mathbb{C}^3$ spanned by $\ket{\alpha}$, $\ket{\beta}$ and $\ket{c}$ are mutually compatible, that is,  $C_{25} = \{ P_\alpha, P_\beta, P_c \}$ is a context.
+        Moreover, $\alpha$ is compatible with $a$ because $\iprod{\alpha}{a} = 0$.
+        Likewise, $\beta$ is compatible with $b$.
+        Hence there exist contexts $C_{26}$ and $C_{27}$ such that $P_\alpha, P_a \in C_{27}$ and $P_\beta, P_b \in C_{27}$.
+
+        Define unit vectors $\ket{\psi} \equiv (0, 2 y - z, y + 2 z) \frac{\sqrt{14}}{5}$ and $\ket{\phi} \equiv (0, y + 2 z, z - 2 y) \frac{\sqrt{14}}{5}\raisebox{.4mm}{.}$
+        Then it is easily checked that $\{ \ket{a}, \ket{\psi}, \ket{\phi} \}$ is an orthonormal basis for $\mathbb{C}^3$.
+        Note that
+        $$(\ket{a} 3 + \ket{\psi} 2 + \ket{\phi}) \tfrac{1}{\sqrt{14}} \equiv (\tfrac{3}{\sqrt{14}}\raisebox{.8mm}{,} (4 y - 2 z + y + 2 z) \tfrac{1}{5}\raisebox{.8mm}{,} (2 y + 4 z + z - 2 y) \tfrac{1}{5}) = (x, y, z) \equiv \ket{c},$$
+         so $\ket{c} \equiv (3, 2, 1) \frac{1}{\sqrt{14}}$ relative to the basis $\{ \ket{a}, \ket{\psi}, \ket{\phi} \}$.
+
+        Now let $\mathcal{C} = \{ C_1, C_2, \dots, C_{27} \}$ and $\mathcal{O} = \bigcup_{i = 1}^{27} C_i$.
+        Suppose there exists an admissible assignment function $v$ under which $\mathcal{O}$ is non-contextual and $v(P_a, C_{26}) = v(P_b, C_{27}) = 1$.
+        Since $v$ is admissible, it follows that $v(P_\alpha, C_{26}) = v(P_\beta, C_{27}) = 0$.
+        Therefore $v(P_\alpha, C_{25}) = v(P_\beta, C_{25}) = 0$, so by admissibility $v(P_c, C_{25}) = 1$.
+        This deduction is illustrated in Fig.~\ref{2012-incomputability-proofs-fig:greechie-mini}.
+        However, by interpreting the observables in Table~\ref{2012-incomputability-proofs-table:greechie} as being defined relative to the basis $\{\ket{a},\ket{\psi},\ket{\phi}\}$, it is immediately clear that again no such admissible function $v$ exists.
+\end{proof}
+
+        \begin{figure}[t]
+        \begin{center}
+\includegraphics{2012-incomput-proofs_PRA-Figure3}
+        \end{center}
+        \caption{(Color online) Greechie orthogonality diagram with an overlaid value assignment that illustrates the relationship between the contexts $C_1,$ $C_2$ and $C_3$ in Theorem~\ref{thm:twonotvaluedefinite}.
+                 The circles and squares represent observables that will be given the values $0$ and $1$ respectively.
+                 They are joined by smooth lines which represent contexts.}
+        \label{2012-incomputability-proofs-fig:greechie-mini}
+        \end{figure}
+
+
+
+
+
+\begin{Corollary}
+\label{cor:twonotvaluedefinite}
+        Let $\ket{a}, \ket{b}\in \mathbb{C}^3$ be unit vectors such that $\sqrt{\frac{5}{14}} \le |\iprod{a}{b}| \le \frac{3}{\sqrt{14}}\raisebox{.8mm}{.}$
+        Then there exists a set of projection observables $\mathcal{O}$ containing $P_a$ and $P_b$, and a set of contexts $\mathcal{C}$ over $\mathcal{O}$, such that there is no admissible assignment function under which $\mathcal{O}$ is non-contextual, $P_a$ has the value 1 and $P_b$ is value definite.
+\end{Corollary}
+\begin{proof}
+        Again scale $\ket{b}$ so that $\iprod{a}{b} \in \mathbb{R}$.
+        Let $p = \iprod{a}{b}$ and $q = \sqrt{1 - p^2}$.
+        As above we construct an orthonormal basis in which $\ket{a} \equiv (1,0,0)$ and $\ket{b} \equiv (p,q,0)$.
+        Define $\ket{\alpha} \equiv (0,1,0)$, $\ket{\beta} \equiv (0,0,1)$ and $\ket{c} \equiv (q,-p,0)$.
+        Then $\{ \ket{a}, \ket{\alpha}, \ket{\beta} \}$ and $\{ \ket{b}, \ket{c}, \ket{\beta} \}$ are orthonormal bases for $\mathbb{C}^3$, so we can define the contexts $C_1 = \{ P_a, P_\alpha, P_\beta \}$ and $C_2 = \{ P_b, P_c, P_\beta \}$.
+        Note that $p^2 \ge \frac{5}{14}$ and hence $$\iprod{a}{c} = q = \sqrt{1 - p^2} \le \sqrt{1 - \tfrac{5}{14}} = \tfrac{3}{\sqrt{14}}\raisebox{.8mm}{.}$$
+        From Theorem~\ref{thm:twonotvaluedefinite} it follows that there are sets of observables $\mathcal{O}_b$, $\mathcal{O}_c$ and contexts $\mathcal{C}_b$, $\mathcal{C}_c$ such that there is no admissible assignment function under which $\mathcal{O}_b$ ($\mathcal{O}_c$) is non-contextual and $a, b$ ($a, c$) have the value $1$.
+        We combine these sets to give $\mathcal{O} = \mathcal{O}_b \cup \mathcal{O}_c \cup \{ P_\alpha, P_\beta \}$ and $\mathcal{C} = \mathcal{C}_b \cup \mathcal{C}_c \cup \{ C_1, C_2 \}$.
+        Suppose there exists an admissible assignment function $v$ under which $\mathcal{O}$ is non-contextual, $v(P_a, C_1) = 1$ and $P_b$ is value definite.
+        Then $v(P_b, C_2) \neq 1$ by the definition of $\mathcal{O}_b$, so $v(P_b, C_2) = 0$.
+        Since $v(P_a, C_1) = 1$ and $v$ is admissible, $v(P_\beta, C_1) = 0$ and hence $v(P_\beta, C_2) = 0$ as well.
+        So by admissibility $v(P_c, C_2) = 1$, which is impossible by the definition of $\mathcal{O}_c$.
+        Therefore there does not exist such a function $v$.
+\end{proof}
+
+The difference between the above result and the Kochen-Specker theorem is subtle but critical.
+The Kochen-Specker theorem, under the assumption of non-contextuality, only finds a contradiction with the hypothesis that \emph{all} observables are value definite---it does not allow any specific observable to be proven value indefinite.
+Corollary~\ref{cor:twonotvaluedefinite}, however, allows just this---{\em specific value indefinite observables can be identified}.
+%This is more specific than the Kochen-Specker theorem, which only shows that not all of the observables in $\mathcal{O}$ can simultaneously be both non-contextual and value definite.
+%To obtain such a result we drop the assumption of value definiteness, which the Kochen-Specker Theorem finds to be in contradiction with non-contextuality, and instead only assume that $v$ is admissible.
+%In other words, we do not assume an observable is value definite unless admissibility requires it.
+While we delay the physical interpretation of this result until the following section, we mention that it applies to measurements of an observable on a physical system in an eigenstate of a different observable.
+
+\section{Physical Interpretation}
+\label{sec:interpretation}
+
+%The results of the previous section are presented in a general framework with only a superficial connection to physical reality.
+
+In order to make operational use  of the results of the previous section
+we connect the formal entities with measurement outcomes.
+%To relate to incomputability, we have to make explicit the connection between this formal framework and that of quantum mechanics.
+In the process of doing this, we make explicit the assumptions our results rely on.
+
+\subsection{The role of measurement}
+
+An inherent assumption in the attempt to attribute physical meaning to the Kochen-Specker theorem (as well as the other theorems we have proved), and one which we shall also make, is that measurement is actually a physically meaningful process.
+In particular, we assume:\\
+
+%\begin{Assumption}
+        \textbf{Measurement assumption.} Measurement yields a physically meaningful and unique result.
+%\end{Assumption}
+
+This may seem rather self-evident, but it is not true of interpretations of quantum mechanics such as the many-worlds interpretation, where measurement is just a process by which the apparatus or experimenter becomes entangled with the state being ``measured''.
+In such an interpretation it does not make sense to talk about the unique ``result'' of a measurement, let alone any definite values which one may pre-associate with them.
+\if01
+{\color{blue}
+Another scenario in which the measurement result is`meaningless' with regards to the physical object observed is
+the \emph{context translation principle} \cite{svozil-2003-garda}, according to which,
+in the case of a mismatch between preparation and measurement contexts,
+the outcome is strongly influenced by the many degrees of
+freedom of a macroscopic measurement apparatus, and therefore, as suggested by Bell \cite[p.~451]{bell-66}
+``the result of an observation may reasonably depend $\ldots$ on the complete disposition of the apparatus''.
+}
+
+To establish the relationship between the quantum system of interest and the function $v$ assigning definite values in advance, we need to restrict ourselves to assignment functions which agree with quantum mechanics.
+Specifically, definite values prescribed by the function should be just that; they must guarantee the result of a measurement. We thus have:\\
+
+\begin{Assumption}
+If, for a given physical system, an observable $o$ is value definite in a context $C\in\mathcal{C}$ under $v$, then the result of a measurement of $o$ in the context $C$ yields the value $v(o,C)$ with certainty.
+Furthermore, the state of the system ``collapses'' into the corresponding eigenstate of $o$.
+\end{Assumption}
+
+Any assignment function not meeting this condition surely does not capture the notion of assigning definite values and is hence of little interest.
+Of course, an assignment function which is defined nowhere meets this condition, but this complete indefiniteness does not fully capture our knowledge of a quantum system; we should at least be able to predict the outcomes of \emph{some} measurements.
+We discuss this issue of when to assign definite values in Section~\ref{sec:predImpliesVI}.
+\fi
+
+To establish the relationship between the quantum system of interest and the function $v$ assigning definite values in advance, we need to restrict ourselves to assignment functions which agree with quantum mechanics.
+Specifically, definite values prescribed by the function should be just that; they must guarantee the result of a measurement.\\
+%\begin{Definition}
+        Let $v$ be a value assignment function. We say that $v$ is a \emph{faithful} representation of a realisation $r_\psi$ of a state $\ket{\psi}$ if a measurement of observable $o$ in the context $C$ on the physical state $r_\psi$ yields the result $v(o,C)$ whenever $o$ has a definite value under $v$.
+        %if $o$ is value definite under $v$.
+%\end{Definition}
+Usually, it is implicitly assumed that a value assignment function is faithful---if it is not then it has no real relation to the physical system that it is meant to model and is of little interest.
+Nonetheless, since we intend to make all assumptions explicit here, we will make clear that we are referring to faithful assignment functions when necessary.
+Of course, an assignment function which is defined nowhere meets this condition, but this complete indefiniteness does not fully capture our knowledge of a quantum system; we should at least be able to predict the outcomes of \emph{some} measurements.
+We discuss this issue of when to assign definite values in Section~\ref{sec:predImpliesVI}.
+
+%\emph{From here on in, all assignment functions are assumed to be faithful.}
+
+\subsection{Value indefiniteness}
+
+The Kochen-Specker theorem leaves two possibilities: either we give up the idea that every observable should be simultaneously value definite, or we allow observables to be defined contextually. Of course, some combination of both options is also possible.
+Here we opt to assume non-contextuality of observables for which the outcome is predetermined, and thus give up the historic notion of complete determinism (classical omniscience).
+
+%{\color{blue}
+This assumption might be in contradiction to that of  physicists who,
+in the tradition of the realist Bell (see the oft-quoted text,~\cite{bell-66}),
+%(albeit often self-proclaimed believers in variants of Bohr's `Copenhagen interpretation'),
+tend to opt for contextuality.
+% rather than insisting on the non-contextuality of observables.
+%Nevertheless, in our viewpoint this is a desperate attempt to maintain realism by still allowing for the possibility
+%of the \emph{pre-existence} or at least \emph{determinateness} of all potentially measurable observable properties
+%even before the actual measurement.
+% albeit the (potential and actual) outcome must, at least for some of these potential observables, also be determined by the measurement context.
+%Pointedly stated, this might save a realistic omniscience and `contextual value definiteness'
+The option for contextuality saves realistic omniscience and ``contextual value definiteness'' at the price of introducing a more general dependence of at least some potential observables on the measurement context.
+In what follows we make no attempt to save realistic omniscience  and instead require the non-contextuality of any pre-determined properties.
+%, thereby obtaining value indefiniteness.
+%}
+
+%\begin{Assumption}
+        \textbf{Non-contextuality assumption.} The set of observables $\mathcal{O}$ is non-contextual.
+%\end{Assumption}
+
+While from the Kochen-Specker theorem and our discussion of strong-contexuality it is mathematically conceivable that only some observables are forced to be value indefinite, while others remain both non-contextual and value definite,
+this would be a rather strange scenario due to the overall uniformity and symmetry of these arguments.
+%this is a difficult stance to argue physically in favour of due to overall uniformity and symmetry.
+Regardless, if we can guarantee that one observable $a$ is value definite, with the value 1 (e.g.\ by preparing the system in an eigenstate of $a$ with eigenvalue 1), Corollary~\ref{cor:twonotvaluedefinite} gives us some observables that must be value indefinite.
+
+\subsection{Predictability implies value definiteness}
+\label{sec:predImpliesVI}
+
+
+A more subtle assumption relates to the question of when we should consider a physical observable to have a definite value associated with it, and the connection between these definite values and probability.
+Einstein, Podolsky and Rosen (EPR), in their seminal paper on the EPR paradox as it is now known, said~\cite[pp. 777]{epr}:
+\begin{quote}
+        If, without in any way disturbing a system, we can predict with certainty (i.e., with probability equal to unity)
+the value of a physical quantity, then there exists an element of physical reality \footnote{An element of physical reality corresponds
+to the notion of a definite value, possibly contextual,
+as outlined in this paper.} [(e.p.r.)]  corresponding to this physical quantity.
+\end{quote}
+
+From the physicist's point of view, the ability to predict the value of an observable with certainty seems sufficient to posit the existence of a definite value associated with that observable. However, the identification that EPR make between certainty and probability one is less sound.
+Mathematically, the statement is simply not true: for infinite  measure spaces probability zero events not only can, but must occur---every point has probability 0 under the Lebesgue measure. With a frequentist view of probability, the two notions cannot be united even for finite spaces. One can only say an event is certain if its complement is the empty set.
+
+With the formalism of quantum mechanics entirely based on probability spaces, what then can we say about any definite values in physical reality?
+A deterministic theory is based on a description of a state which is complete in that it specifies definite values for all observables.
+The state in quantum theory, however, is given as a wave function, which in turn is determined by the operators
+for which the system is an eigenstate of. Quantum theory is thus based on the notion that a physical state is
+``completely characterised by the wave function'',
+which is an eigenstate of some operator and is determined for any context containing the said operator; as EPR note,
+the ``physical quantity'' corresponding to that operator has ``with certainty'' the corresponding eigenvalue~\cite[pp. 778]{epr}.
+The theory then presents a probabilistic framework to express behaviour in other contexts.
+A reasonable assumption based on this principle is the following:
+
+%\begin{quote}
+\textbf{Eigenstate assumption.} Let $\ket{\psi}$ be a (normalised) quantum state and $v$ a faithful assignment function. Then $v(P_\psi,C)=1$ and $v(P_\phi,C)=0$ for
+%the projection observables $o=\oprod{\psi}{\psi}$ and $o'\perp o$, and
+any context $C\in\mathcal{C}$ with $P_\psi,P_\phi\in C$.
+%\end{quote}
+
+While this is a reasonable condition under which to assign an initial set of definite values,
+its use is restricted to contexts containing the ``preparation'' observable.
+In order to extend this, we must more carefully formulate the notion of being able to predict the value of an observable with certainty.
+
+%More formally, what does it mean to predict with certainty?
+
+Let us consider a system which we prepare, measure, rinse and repeat ad infinitum.
+Let $\seq{x}=x_1 x_2 \dots$ denote the infinite sequence produced by concatenating the outputs of these measurements.
+Fix a set of observables $\mathcal{O}$ and contexts $\mathcal{C}$ and let $o_i,C_i$ denote the observable and corresponding context of the $i$th measurement.
+We can predict with certainty the value of each measurement if there exists a computable function
+$f : \mathbf{N}\times \mathcal{O}\times \mathcal{C} \to \{0,1\}$ such that, for every $i$, $f(i,o_i,C_i)=x_i$.
+Why do we require that $f$ be computable?
+Since we must with every measurement obtain a result, there is guaranteed to be some function giving $\seq{x}$ from the measurements, but if it is not computable then this function offers no method to predict the values.
+Why do we formulate this for infinite sequences?
+The notion of computability, and thus concrete predictability, only makes sense for infinite sequences; it is clear that any technique which allows prediction of every measurement with certainty must also do so when the measurements are continued ad infinitum.
+
+The last assumption is the
+
+%\begin{quote}
+\textbf{Elements of physical reality (e.p.r.) assumption.} If
+there exists a computable function $f : \mathbf{N}\times \mathcal{O}\times \mathcal{C} \to \{0,1\}$ such that for every $i$ $f(i,o_i,C_i)=x_i$, then there is a definite value associated with $o_i$ at each step, i.e.\ $v_i(o_i,C_i)=f(i,o_i,C_i)$.
+%\end{quote}
+
+We note that the assumption above does not postulate the existence of an effective way to find or to compute
+ the computable function $f$: such a function simply exists.
+This is visible in classical hidden variable type theories such as   statistical mechanics for thermodynamics, where we can hardly claim to be able to even describe fully the momentum and position of each particle in a gas, but it is sufficient to know that we \emph{can} do so and that these hidden variables exist in the sense that they allow us, in principle,  to predict the outcome of any measurement in advance.
+Further, we follow EPR in noting that this is certainly only a sufficient condition for definite values to be present; it is by no means necessary.
+
+%Finally, we note that EPR and strong value indefiniteness assumptions that we make are independent of each other.
+
+\subsection{Connection to quantum theory}
+
+The final step is to justify our requirement of the admissibility of the assignment function.
+
+%We begin by stating the following well known fact about projection operators.\\
+%\begin{Fact}\label{fact:completeness}
+%       Let $\{\ket{\psi_1},\dots,\ket{\psi_n}\}$ be an orthonormal basis for $\mathbb{C}^n$. Then $\sum_{i=1}^n \oprod{\psi_i}{\psi_i}=\mathbf{1}$.\\
+%\end{Fact}
+
+
+We first note the following:
+%\begin{Lemma}
+%\label{lem:yes to no}
+%Let $\ket{\psi}$ and $\ket{\phi}$ be normalised pure states, and suppose that $\iprod{\psi}{\phi} = 0$.
+%Also suppose that $P_\psi=\oprod{\psi}{\psi}$ is given the value 1 in a non-contextual value assignment; i.e. $v_{NC}(P_\psi)=1$.
+%Then $P_\phi\oprod{\phi}{\phi}$ must be given the value 0; i.e. $v_{NC}(P_\phi)=1$.
+Let $C=\{P_1,\dots,P_n\}$ be a context of projection observables, $v$ a faithful assignment function and $v(P_1,C)=1$.
+%\end{Lemma}
+\if01
+%\begin{proof}
+Since $\oprod{\psi}{\psi}$ and $\oprod{\phi}{\phi}$ are co-measurable, if we measure them both, the system will collapse into an eigenstate of $\oprod{\psi}{\psi}$,
+corresponding to the eigenvalue 1, which is orthogonal to $\ket{\phi}$.
+Since this final state would also be an eigenvector of $\oprod{\phi}{\phi}$, Lemma~\ref{lem:spectrum} implies that it corresponds to 0.
+Therefore this measurement of $\oprod{\phi}{\phi}$ is predetermined to report the value 0, so by non-contextuality any measurement of $\oprod{\phi}{\phi}$ will have the same result.
+%\end{proof}
+\fi
+%\begin{proof}
+Since $P_1$ and $P_i$ ($i\neq 1$) are compatible (physically co-measurable), if we measure them both, the system will collapse into the eigenstate of $P_1$
+ corresponding to the eigenvalue 1.
+Since this final state would also be an eigenstate of $P_i$,
+ it follows from the fact that $\sum_{j=1}^n P_j=\mathbf{1}$ that this state corresponds to the eigenvalue 0 of $P_i$ and hence $v(P_i,C)=0$.
+Hence we conclude that $v(P_i,C)=0$ for all $2\le i \le n$.
+%\end{proof}
+%\begin{Lemma}
+%\label{lem:no to yes}
+%Let $\mathcal{B} = \{ \ket{\psi}, \dots \}$ be an orthonormal basis for the (presumably finite) state space, and $\mathcal{P} = \{ \oprod{\phi}{\phi} : \ket{\phi} \in \mathcal{B} \}$ be the corresponding set of commuting projection observables.
+%Suppose that each $P \in \mathcal{P} - \{ \oprod{\psi}{\psi} \}$ is given the value 0 in a non-contextual value assignment.
+%Then $\oprod{\psi}{\psi}$ must be given the value 1.
+By a similar argument, we see that if instead $v(P_i,C)=0$ for $2\le i \le n$ we must have $v(P_1,C)=1$.
+%Let $C=\{o_1,\dots,o_n\}$ be a context of projection observables and $v$ a faithful assignment function.
+% Suppose that for $2\le i \le n$ we have $v(o_i,C)=0$. Then we must have $v(o_1,C)=1$.
+%\end{Lemma}
+\if01
+%\begin{proof}
+From Lemma~\ref{lem:compatible}, we know that $\mathcal{P}$ is a collection of mutually co-measurable observables.
+If we measure them all, the system will collapse into an eigenstate (with eigenvalue 0) of every operator in $\mathcal{P}$, which by Lemma~\ref{lem:spectrum} will be orthogonal to every state in $\mathcal{B} - \{\ket{\psi}\}$.
+Let $\ket{\phi}$ be this state.
+Then $\ket{\phi} = \sum_{\ket{\beta} \in \mathcal{B}} \ket{\beta} \iprod{\beta}{\phi} = \ket{\psi} \iprod{\psi}{\phi}$, which implies (by Lemma~\ref{lem:compatible} again) that the eigenvalue of $\ket{\phi}$ for $\oprod{\psi}{\psi}$ is 1.
+Therefore this measurement of $\oprod{\psi}{\psi}$ (and any other one, by non-contextuality) will report the value 1.
+%\end{proof}
+\fi
+%\begin{proof}
+%Since $o_2$,\dots,$o_n$ are all compatible, if we measure them all the system will collapse into a simultaneous eigenstate of each of these operators corresponding, in every case, to the eigenvalue 0. Since this final state is also an eigenstate of $o_1$, it follows as in the previous Lemma that this state corresponds to the eigenvalue 1 of $o_1$ and hence $v(o_1,C)=1$.
+%\end{proof}
+
+%\begin{Theorem}
+%       \label{thm:admissible}
+        From these facts it follows directly that a faithful assignment function $v$ must be admissible,
+%\end{Theorem}
+%\begin{proof}
+%       The proof follows directly from the previous two Lemmata.
+%\end{proof}
+thus justifying our definition of an admissible $v$.
+Indeed, admissibility of $v$ is the direct generalisation of the ``sum rule'' used in proofs of the Kochen-Specker theorem~\cite{kochen1,Peres:1996fk} to the case where value definiteness is not assumed.
+In our deduction of the requirement of admissibility we are particularly careful in using our assumptions to show that admissibility is required if simple relations of projection observables are to be satisfied.\\
+
+As a consequence, we get the following useful form of Corollary~\ref{cor:twonotvaluedefinite} which we will utilise in the remainder of the paper.\\
+\begin{Corollary}
+        \label{col:VIContext}
+        Let $\ket{\psi} \in \mathbb{C}^3$ be a quantum state describing a system.
+        Also let $\ket{\phi} \in \mathbb{C}^3$ be any other state which satisfies $\sqrt{\frac{5}{14}} \le |\iprod{\psi}{\phi}| \le \frac{3}{\sqrt{14}}\raisebox{.8mm}{.}$
+        Then, assuming non-contextuality, $P_\phi$ cannot be assigned a definite value by a faithful assignment function.
+\end{Corollary}
+\begin{proof}
+        From the Eigenstate assumption, $P_\psi$ must be assigned the value 1. By Corollary~\ref{cor:twonotvaluedefinite} and the requirement for a faithful assignment function to be admissible, it follows that $P_\phi$ must be value indefinite.
+\end{proof}
+
+%\section{Incomputability}
+\section{A Random Number Generator}
+
+From our assumptions of non-contextuality along with our physical assumptions in the preceding section, we arrived at the key result of Corollary~\ref{col:VIContext}, which allows us to identify particular observables which must be value indefinite.
+This guarantee of indefiniteness, which both the Bell~\cite{bell-66} and Kochen-Specker theorems cannot yield, adds extra conviction to the widely accepted (but not proven) unpredictability of the result of quantum measurements.
+Since quantum random number generators (QRNGs)~\cite{Kwon:09,10.1038/nature09008,stefanov-2000,svozil-2009-howto,Wayne-09,stipcevic045104,Ma:05} depend entirely on this, it seems clear we should make use of this extra certification in their design.
+In this section we present such a design of a QRNG, and use Corollary~\ref{col:VIContext} to prove that such a device will produce strongly incomputable sequences of bits---a strong, explicit certification of the QRNG.
+
+\subsection{Random number generator design}
+
+%The experiment described above producing incomputable bits can be implemented by the setup shown in Fig.~\ref{fig:setup}.
+The QRNG setup is shown in Fig.~\ref{fig:setup}.
+Spin-1 particles are prepared in the $\textsf{S}_z=0$ state (thus, by the Eigenstate assumption, this operator has a definite value), and then the $\textsf{S}_x$ operator is measured.
+Since the preparation state is an eigenstate of the $\textsf{S}_x=0$ projector with eigenvalue 0, this outcome has a definite value and cannot be obtained.
+Thus, while the setup uses spin-1 particles, the outcomes are dichotomic and the $\textsf{S}_x=\pm 1$ outcomes can be assigned 0 and 1 respectively.
+Further, since $\iprod{\textsf{S}_z=0}{\textsf{S}_x=\pm 1}=1/\sqrt{2}$, it follows from Corollary~\ref{col:VIContext} that neither of the $\textsf{S}_x=\pm 1$ outcomes can have pre-assigned definite value.
+
+While this design is very simple, it has the two key properties we need from such a QRNG: it produces bits certified by value indefiniteness, and it produces the bits 0 and 1 independently and with 50/50 probability.
+%The binary sequence obtained by concatenating successive $S_x$ measurements thus satisfied the requirements to produce and incomputable sequence.
+
+
+\begin{figure}
+
+\begin{center}
+ \includegraphics{2012-incomput-proofs_PRA-Figure4}
+\end{center}
+\caption{Experimental setup of a configuration of quantum observables rendering random bits certified by quantum value indefiniteness.}
+        \label{fig:setup}
+\end{figure}
+
+
+
+\subsection{Certification via value indefiniteness}
+
+Consider the QRNG
+%\footnote{We consider a QRNG, as proposed in \cite{}, which for example repeatedly prepares the system in an eigenstate of an observable $A$ and measures the result of an observable $B$ satisfying $[A,B]\neq 0$.}
+described in the previous section, and let us consider that we run it repeatedly ``to infinity''---i.e. we use it repeatedly to generate bits and concatenate them together to produce, in the limit, the binary sequence $\seq{x}=x_1 x_2 \dots x_n \dots$.
+Here we consider the sequence $\seq{x}$ produced in such a manner and show that, under our assumptions, it is guaranteed to be {\em incomputable}.
+Note that we are using the Measurement assumption here, since we must assume that $\seq{x}$ is actually produced (not that, for example, all infinite sequences are generated in different universes).
+
+%{\color{cyan}
+Before presenting our argument we note that
+Martin-L\"of's theorem in algorithmic information theory~\cite{calude:02}
+shows that {\em there are no  pure, true or perfect random sequences}:
+there are patterns in every sequence,
+a deterministic provable fact which is much stronger than the typical
+highly probable results (facts true with probability one) proved in probability theory.
+As  we cannot speak about pure, true or perfect randomness
+we have no option but to study degrees and symptoms of randomness:
+some sequences are more random than others.
+Uniform distribution within a sequence (Borel normality \cite{borel:09}) is a symptom of randomness:
+however,  there exist
+computable uniformly distributed sequences, e.g.\ Champernowne
+ sequence~\cite{calude:02} which are far from being random in any meaningful way.
+Unpredictability is another symptom;
+(strong) incomputability is one mathematical way to express it.
+Uniform distribution and unpredictability
+are independent;
+while the lack of uniform distribution can be easily mitigated by procedures
+\`a la von Neumann~\cite{AbbottCalude10},
+transforming a computable sequence  into an incomputable one is a much more difficult problem.
+%}
+
+Quantum randomness is usually qualified in terms of the probability distribution of the source.
+This only allows for probabilistic claims about the outcomes of individual measurements.
+For example, with probability one any sequence of quantum random bits is incomputable; such a statement is
+ weaker than saying that the sequence is  provably incomputable.
+Nevertheless, claims made in different articles,
+even recent ones like~\cite{10.1038/nature09008,Merali:2014aa}
+or websites \cite{idQuantique,ANU}, according to which
+``perfect randomness can be obtained via quantum experiments'',
+are only of this statistical nature.
+Here we are able to prove the guaranteed  incomputability of quantum randomness;
+but, due to
+Martin-L\"of's theorem, even this result cannot be called ``perfect randomness''.
+
+For the sake of contradiction let us assume that $\seq{x}$ as described above is computable.
+Then, by definition, there must exist a Turing machine $T$ (and thus a computable function) that can be associated with $\seq{x}$ allowing us to predict with certainty every value $x_i$.
+From the e.p.r. assumption, it follows that each observable $o_i$ is value definite and $v_i(o_i,C)=x_i$.
+This contradicts the implications of Corollary~\ref{col:VIContext}.
+Thus we conclude that $\seq{x}$ must be incomputable.
+
+This proof can easily show the stronger claim: that $\seq{x}$ is {\em bi-immune}, that is, no infinite sub-sequence of $\seq{x}$ is computable.
+This can easily by seen by the same argument: if there was a computable subsequence then we could assign definite values to the observables giving rise to this subsequence, contradicting our assumption of value indefiniteness everywhere.
+
+
+%From the ternary sequence $\seq{x}$ we effectively compute the binary sequence $\seq{y}= y_{1}y_{2} \dots y_{m}\dots $ such that
+%$\sum_{n=1}^{\infty} x_{n}  3^{-n}= \sum_{m=1}^{\infty} y_{n} 2^{-m}$, and conversely. If follows that the bi-immunity of $\seq{x}$
+%implies bi-immunity of $\seq{y}$ too.
+
+We have proved:\\
+
+%\begin{Theorem}
+Assume Non-contextuality, Measurement, Eigenstate and e.p.r. assumptions.  Then there exits a QRNG which generates a bi-immune binary sequence.
+%\end{Theorem}
+
+We further note that this result is more general than that proved in
+\cite{svozil-2006-ran}
+and does not require any assumption about the uniformity of the bits produced.
+
+\subsection{Experimental robustness}
+\label{2012-incomput-proofsCJ-er}
+
+%{\color{cyan}
+Before we proceed to describe an explicit realisation of the QRNG described above, we wish to briefly make a couple of points on the robustness of this certification by value indefiniteness to experimental imperfections.
+
+We can describe the measurement context more generally by the spin observable $\textsf{S}(\theta,\phi)$,
+where $\theta$ and $\phi$ are the polar and azimuthal angles respectively, and we thus have $\textsf{S}_x=\textsf{S}(\pi/2,0)$
+and
+%{\color{blue}
+ $\textsf{S}_z=\textsf{S}(0,0)$.
+%}
+Explicitly, this operator is represented in matrix form as
+\begin{equation}
+\textsf{S}(\theta,\phi )
+=
+\left(
+\begin{array}{ccc}
+ \cos (\theta ) & \frac{e^{-i \phi } \sin (\theta )}{\sqrt{2}} & 0 \\
+ \frac{e^{i \phi } \sin (\theta )}{\sqrt{2}} & 0 & \frac{e^{-i \phi } \sin (\theta )}{\sqrt{2}} \\
+ 0 & \frac{e^{i \phi } \sin (\theta )}{\sqrt{2}} & -\cos (\theta )
+\end{array}
+\right).
+\end{equation}
+Misalignment and imperfection in the experimental setup will, in general, lead to angles $\theta$ and $\phi$ differing slightly from $\pi/2$ and 0 respectively.
+While a change in $\phi$ only induces a phase-shift and does not alter the probability of measuring any particular eigenvalue, a change in $\theta$ will alter the probabilities of detection.
+However, a detailed calculation shows that \begin{equation}\label{eqn:genProb}|\iprod{\textsf{S}_z=0}{\textsf{S}(\theta,\phi)=\pm 1}|=\sin\theta/\sqrt{2},\end{equation} and the difference in probabilities of measuring a bit as 0 or 1 is not affected by such a change in $\theta$.
+This is in distinct contrast to setups based on single beam-splitters, in which misalignment introduces bias into the distribution of bits.
+
+From Corollary~\ref{col:VIContext}, we see that the QRNG will provide bits by measurement of $\textsf{S}(\theta,\phi)$ that are certified by value indefiniteness whenever $\sqrt{\frac{5}{14}} \le |\iprod{\textsf{S}_z=0}{\textsf{S}(\theta,\phi)=\pm 1}| \le \frac{3}{\sqrt{14}}\raisebox{.8mm}{.}$
+This inequality is, from equation (\ref{eqn:genProb}), readily seen to be satisfied for angles $\frac{\pi}{3} \le \theta \le \frac{2 \pi}{3}\raisebox{.8mm}{.}$
+This has the important consequence of protecting against inevitable experimental misalignment: even in the presence of relatively significant misalignment, the device would produce bits which are certified by value indefiniteness.
+Otherwise, if the certification only held for the ideal case of $\frac{\pi}{2}\raisebox{.8mm}{,}$ any experimental imperfections would render this theoretical result inapplicable to any real experiment.
+
+Furthermore, calculation shows that $\iprod{\textsf{S}_z=0}{\textsf{S}(\theta,\phi)=0}=\cos\theta$, and since $\iprod{\textsf{S}_z=0}{\textsf{S}(\theta,\phi)=0}=0$ only when $\theta=\frac{\pi}{2}\raisebox{.8mm}{,}$ a third detector measuring the $\ket{\textsf{S}(\theta,\phi)=0}$ outcome could be employed to monitor the degree of misalignment present in the system.
+The number of counts at this detector would allow quantification of the angle $\theta$, and provide an experimental method to test that the condition of $\sqrt{\frac{5}{14}} \le \iprod{\textsf{S}_z=0}{\textsf{S}(\theta,\phi)=\pm 1}\le \frac{3}{\sqrt{14}}$ is indeed being realised.
+Without monitoring this third outcome, one could not determine from the $\ket{\textsf{S}(\theta,\phi)=\pm 1}$ counts alone if this is indeed the case.
+%}
+
+
+\section{Generalised Beam-Splitter Quantum Random Number Generator}
+\label{sec:experiment}
+
+In this section we describe a physical realisation of the QRNG described in the previous section.
+Since it is not particularly feasible to directly use spin-1 particles
+in a QRNG with an acceptably high bit-rate, the realisation we present uses photons and is expressed
+in terms of generalised beam-splitters \cite{rzbb,zukowski-97,svozil-2004-analog}.
+%{\color{blue}
+Generalised beam-splitters are based on the possibility to (de)compose
+an arbitrary unitary transformation $\textsf{U}_n$ in $n$-dimensional Hilbert space
+into two-dimensional transformations $\textsf{U}_2$ of two-dimensional subspaces thereof;
+a possibility that can be used to parameterize $\textsf{U}_n$ \cite{murnaghan}.
+In more physical terms, they amount to serial stacks of phase shifters and beam-splitters
+in the form of an interferometer with $n$ input and output ports,beam-splitter
+such that the beam-splitters affect only two (sub\nobreakdash-)paths
+which, together with the phase shifters (affecting single paths at any one time),
+realise the associated transformations in $U(2)$.
+These components can be conveniently arranged into ``triangle form''
+with $n$ in- and out-bound beam paths.
+
+For the sake of an explicit demonstration, consider an orthonormal cartesian standard basis
+$\vert 1\rangle \equiv (1,0,0)$,
+$\vert 0\rangle \equiv  (0,1,0)$, and
+$\vert -1\rangle \equiv  (0,0,1)$.
+Then, in order to realise observables such as the spin state observables
+$S(\theta,\phi)$
+and, in particular, spin states  measured along the $x$-axis;
+that is, for $\theta = \frac{\pi}{2}$ and $\phi = 0$,
+\begin{equation}
+\textsf{S}_x   =
+\textsf{S}\left(\frac{\pi}{2},0 \right)
+=
+\left(
+\begin{array}{ccc}
+ 0 & \frac{1}{\sqrt{2}} & 0 \\
+ \frac{1}{\sqrt{2}} & 0 & \frac{1}{\sqrt{2}} \\
+ 0 & \frac{1}{\sqrt{2}} & 0
+\end{array}
+\right)
+\end{equation}
+in terms of generalised beam-splitters, the
+associated normalised row eigenvectors
+\begin{equation}
+\begin{array}{l}
+ \ket{\textsf{S}_x : +1} \equiv  \frac{1}{2}\left(1,\sqrt{2},1\right),\\
+ \ket{\textsf{S}_x : 0} \equiv  \frac{1}{\sqrt{2}}\left(1,0,-1\right),\\
+ \ket{\textsf{S}_x : -1} \equiv  \frac{1}{2}\left(1,-\sqrt{2},1\right)
+\end{array}
+\end{equation}
+have to be ``stacked'' on top of one another \cite{rzbb}, thereby forming a unitary matrix $\textsf{U}_x $
+which corresponds to the spin state operator $\textsf{S}_x$ for spin state measurements along the $x$-axis;
+more explicitly,
+\begin{equation}
+\textsf{U}_x
+=
+\frac{1}{2}
+\left(
+\begin{array}{cccc}
+1&\sqrt{2}&1\\
+\sqrt{2}&0&-\sqrt{2}\\
+1&-\sqrt{2}&1
+\end{array}
+\right).
+\end{equation}
+
+While many variations on the unitary matrix to represent a beam-splitter exist~\cite{rzbb,zeilinger:882,Campos:1989fk,green-horn-zei}, without loss of generality we can represent an arbitrary $U(2)$ matrix realised by a beam-splitter and external phase shift as
+\begin{equation}
+        \begin{pmatrix}
+\sqrt{T} & i e^{i \phi}\sqrt{R}\\
+i\sqrt{R} & e^{i \phi}\sqrt{T}
+\end{pmatrix},
+\end{equation}
+where $\phi$ represents the phase of an external phase shifter on the second input port, and $T,R\in [0,1]$ are the transmittance and reflectance of the beam-splitter respectively (with $R+T=1$).
+The beam-splitter arrangement to realise $\textsf{U}_x$ can be found by transforming $\textsf{U}_x$ into the identity matrix $I_3$ by successive right-multiplication by adjoints of $U(2)$ matrices of the above form---each one making an individual off-diagonal element equal to zero---followed by a final set of phase shifters~\cite{rzbb}.
+
+In our specific case, we have
+\begin{equation}
+        \begin{pmatrix}
+        1 & 0 & 0\\
+        0 & -i & 0\\
+        0 & 0 & -i
+        \end{pmatrix}
+        \cdot
+        \begin{pmatrix}
+        \sqrt{\frac{1}{3}} & \sqrt{\frac{2}{3}} & 0\\
+        i\sqrt{\frac{2}{3}} & -i\sqrt{\frac{1}{3}} & 0\\
+        0 & 0 & 1
+        \end{pmatrix}
+        \cdot
+        \begin{pmatrix}
+        \sqrt{\frac{3}{4}} & 0 & -i\sqrt{\frac{1}{3}}\\
+        0 & 1 & 0\\
+        i\sqrt{\frac{1}{4}} & 0 & -\sqrt{\frac{3}{4}}
+        \end{pmatrix}
+        \cdot
+        \begin{pmatrix}
+        1 & 0 & 0\\
+        0 & \sqrt{\frac{1}{3}} & \sqrt{\frac{2}{3}}\\
+        0 & i\sqrt{\frac{2}{3}} & -i\sqrt{\frac{1}{3}}\\
+        \end{pmatrix}
+        =\textsf{U}_x.
+\end{equation}
+This corresponds to three beam-splitters with transmittances $T_{3,2}=T_{2,1}=\frac{1}{3}$, $T_{3,1}=\frac{3}{4}$, and phases $\phi_{3,2}=\phi_{2,1}=-\pi/2$, $\phi_{3,1}=\pi \raisebox{.8mm}{,}$
+where $T_{i,j}$ and $\phi_{i,j}$ are the parameters for the beam-splitter operating on beams $i$ and $j$ (beams 1,2,3 correspond to $\textsf{S}_z=+1,0,-1$ respectively).
+Two final phase shifts of $-\pi/2$ are needed on beams 2 and 3.
+The physical realisation of $\textsf{U}_x$ is depicted in Fig.~\ref{2012-incomput-proofsC-f1}.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics{2012-incomput-proofs_PRA-Figure5}
+\end{center}
+\caption{(Color online) Configuration of a random number generator
+with a preparation and a measurement stage, including filters blocking
+$\vert \textsf{S}_z : -1 \rangle$
+and
+$\vert \textsf{S}_z : +1 \rangle$.
+(For ideal beam-splitters, these filters would not be required.)
+The measurement stage (right array) realises a unitary quantum gate $\textsf{U}_x$, corresponding  to the projectors onto
+the $\textsf{S}_x$ state observables for spin state measurements along the $x$-axis,
+in terms of generalised beam-splitters..
+\label{2012-incomput-proofsC-f1}}
+\end{figure}
+
+This setup is equivalent to the spin-1 setup for which we are guaranteed value indefiniteness under the conditions discussed in the previous section.
+Even in the case of non-perfectly configured beam-splitters, as long as the observable corresponding to the unitary transformation implemented by the beam-splitters has eigenstates $\ket{a=\pm 1}$ (corresponding to output ports 1 and 3) which fall within the bounds $\sqrt{\frac{5}{14}} \le \iprod{\textsf{S}_z=0}{a=\pm 1}\le \frac{3}{\sqrt{14}}$ then the QRNG will still be protected by value indefiniteness.
+As discussed in the previous section, this allows for a considerable amount of error (more than would be desirable with respect to deviation from 50/50 bias) under which value indefiniteness is still guaranteed.
+
+\if01
+An inspection of the generalised beam-splitter setup reveals that it actually consists of a standard 50:50 beam-splitter device
+used for quantum coin tosses
+\cite{svozil-qct,rarity-94,zeilinger:qct,stefanov-2000,0256-307X-21-10-027,wang:056107,fiorentino:032334,svozil-2009-howto,10.1038/nature09008},
+with the addition of additional optical components remaining ``idle'' or ``dormant''
+in the case of ideal components.
+This is due to the effectively quasi two-dimensionality of the dichotomic outcome setup,
+which may be not so evident in the case of spin state measurements on spin one particles.
+However, one should keep in mind that
+the device is capable of performing transformations and rendering observables in full three dimensional Hilbert space,
+with all the counterfactual potentialities present.
+This in a sense, is not dissimilar to counterfactual computation  \cite{elitzur-vaidman:1}.
+
+{\color{blue}
+A more general configuration that involves experimental robustness discussed earlier in section \ref{2012-incomput-proofsCJ-er}
+can be obtained by considering
+\begin{equation}
+\begin{array}{l}
+ \ket{\textsf{S}(\theta ,0) : +1} \equiv     \left( \cos ^2 \frac{\theta }{2} , \frac{\sin   \theta   }{\sqrt{2}} ,\sin^2 \frac{\theta }{2} \right),\\
+ \ket{\textsf{S}(\theta ,0) : 0}  \equiv     \left( \frac{\sin  \theta}{\sqrt{2}} ,-   \cos  \theta    ,-\frac{\sin  \theta }{\sqrt{2}} \right),\\
+ \ket{\textsf{S}(\theta ,0) : -1} \equiv       \left( \sin ^2 \frac{\theta }{2} ,-\frac{\sin   \theta    }{\sqrt{2}} ,\cos^2 \frac{\theta }{2} \right),
+\end{array}
+\end{equation}
+thereby forming a unitary matrix $\textsf{U}_x $
+which correspond to the spin state operator $\textsf{S}(\theta ,0)$ for spin state measurements along $\theta$;
+more explicitly,
+\begin{equation}
+\textsf{U}(\theta ,0)
+=
+\left(
+\begin{array}{cccc}
+\cos ^2 \frac{\theta }{2} &\frac{\sin   \theta   }{\sqrt{2}} &\sin^2 \frac{\theta }{2} \\
+\frac{ \sin  \theta}{\sqrt{2}}  &-   \cos  \theta    &-\frac{\sin  \theta  }{\sqrt{2}}  \\
+ \sin ^2 \frac{\theta }{2} &-\frac{\sin   \theta   }{\sqrt{2}}  &\cos^2 \frac{\theta }{2}
+\end{array}
+\right).
+\end{equation}
+
+}
+\fi
+\section{Monitoring Value Indefiniteness}
+
+The rendition of value indefiniteness requires a quantised system with at least three mutually exclusive outcomes,
+corresponding to an associated Hilbert space dimension equal to the number of these outcomes---a direct consequence of the Kochen-Specker theorem.
+%as well as related \cite{PhysRevLett.103.050401} or unrelated \cite{Pit-94}
+%Bell-type inequalities representing classical bounds on joint probabilities.
+%The Kochen-Specker Theorem, in turn, is obtained by a proof by contradiction (or {\it ``reductio ad absurdum''}),
+%which appears to be a finite, constructive formal argument from a metamathematical point of view.
+
+Of course, if one is willing to accept physical value indefiniteness
+based purely on formal  Hilbert space models of quantum mechanics \cite{v-neumann-55},
+there is no further need of empirical evidence.
+In this line of thinking, Theorem~\ref{thm:twonotvaluedefinite}, and hence the quantum value indefiniteness resulting from it via Corollary~\ref{cor:twonotvaluedefinite}, needs no more empirical corroboration
+than the arithmetic fact that, in Peano arithmetic with standard addition, one plus one equals two.
+
+%{\color{cyan}
+%Nevertheless, given the highly nontrivial assumptions entering these results---in particular, the mutual physical coexistence of
+%complementary observables---and the practical inevitable experimental  imperfections, it is important to have amonitoring process.
+%}
+
+% it might be considered more appropriate to at least possess some indication, hints or limited certifications relating the nonclassical features
+%of these types of arguments with empirical findings; even if these findings do not constitute a proof
+%in the strict meaning of the term.
+
+\if01
+{\color{red}
+There are some indirectly obtained physical remedies which are often referred to as
+``proofs of the Kochen-Specker theorem,''
+or to ``proofs of quantum contextuality''
+\cite{hasegawa:230401,Bartosik-09,kirch-09,PhysRevLett.103.160405,Lapkiewicz-11}.
+Thus if one is
+willing to either accept as proofs certain Bell type arguments about a series of successive (``one-after-another'') outcomes \cite{PhysRevLett.103.160405},
+or to accept the type of nonclassical outcomes typically encountered in
+empirical realisations of Greenberger-Horne-Zeilinger type arguments \cite{PhysRevLett.82.1345,panbdwz},
+then indeed value indefiniteness or contextuality are physically provable.
+
+
+
+With this {\it caveat} we propose to {\em monitor} all protocols invoking value indefiniteness or contextuality by
+physical experiments testing the nonclassical nature of the quantised systems involved.
+This could be either achieved by invoking the aforementioned violations of Bell-type inequalities \cite{10.1038/nature09008}, or by
+experiments invoking  Greenberger-Horne-Zeilinger type measurements.
+The latter ones may be preferable, since, at least ideally, they do not involve any statistics,
+but require a violation of local realism at every triple of outcomes.
+Of course, in order to monitor this nonclassical behaviour, protocols must be adapted to
+include such measurements involving multipartite correlations.
+
+
+In the concrete beam-splitter configuration mentioned earlier one could monitor the nonclassicality of the setup
+by first producing the (only \cite{schimpf-svozil}) singlet state
+$\frac{1}{{\sqrt{3}}}\left(-|0,0\rangle+|-1,1\rangle+|1,-1\rangle\right)$,
+and then subjecting the two entangled quanta to beam-splitter analysis.
+We refer to Refs.~\cite{zukowski-97} and \cite{svozil-2004-analog} for two principal approaches.
+The Bell-type inequalities violated in this case are the two particle  three properties per particle
+inequalities derived in Refs.~\cite{2000-poly,collins-gisin-2003,sliwa-2003}.
+}
+\fi
+
+QRNGs which monitor Bell-inequality violation simultaneously with
+bit-generation have been proposed in the literature~\cite{10.1038/nature09008,Vazirani28072012}.
+Given the non-trivial assumptions used in the proof of  Theorem~\ref{thm:twonotvaluedefinite}---in particular, the mutual physical coexistence of
+complementary observables---should our QRNG be monitored in this way too, in addition to  value indefiniteness certification?
+
+First,  we stress that, in contrast with our proposed QRNG,  the aforementioned devices require an initial random seed and hence
+operate as secure randomness {\em expander}, rather than {\em generator}: the quality
+of randomness produced by such a device depends crucially upon the quality
+of randomness of the seed.
+
+Secondly, violation of Bell-inequalities alone is a purely statistical phenomenon and only
+indicates non-classical correlations: in no way does it necessitate a Hilbert-space
+structure and hence it cannot give the certification of (strong) incomputability
+ our proposal does via value indefiniteness.
+
+Thirdly, in the case that our QRNG is treated as an untrusted-device, as is common in
+cryptography (due to the users inability to verify the device's workings), the set up
+could be modified to test such inequalities. This is the scenario in which monitoring
+inequality violation has most to offer, since violation of Bell-inequalities
+can be derived from Kochen-Specker type arguments \footnote{Such violations are
+often referred  to as ``proofs of the Kochen-Specker theorem,'' or ``proofs of quantum contextuality''\cite{hasegawa:230401,Bartosik-09,kirch-09,PhysRevLett.103.160405,Lapkiewicz-11}.}
+and thus gives some indication of non-classicality in the absence of trust in the device,
+even if it cannot guarantee incomputability. An even better monitoring method---which might necessitate a revision of our current QRNG set up---may use the type of
+non-classical outcomes typically encountered in empirical realisations of Greenberger-Horne-Zeilinger
+type arguments \cite{PhysRevLett.82.1345,panbdwz}, as, at least ideally, they do not involve any statistics,
+but require a violation of local realism  at every triple of outcomes.
+
+To summarise, we have presented
+a formal conceptualisation of {\em value (in-)definiteness,}
+and proven that there always exists an admissible assignment function making a \emph{single} observable value definite; one cannot hope to prove \emph{all} observables are value indefinite.
+%and affirmatively answered the possibility of a {\em single} observable being value definite.
+We also showed that, in an extension of the Kochen-Specker theorem,
+after preparing a pure state in three dimensional Hilbert space,
+certain precisely identified observables are {\em provably value indefinite.}
+
+We have applied these results to a proposal to generate bit sequences by
+a quantum random number generator. Any such sequence is, as we showed, then ``certified by'' quantum value indefiniteness
+(in the sense of the Bell-, Greenberger-Horne-Zeilinger-, and Kochen-Specker theorems) to produce a strongly incomputable sequence of bits.
+
+
+%{\em How far}
+%one can in principle restrict the value definite co-existence of more than one context remains an open question.
+To what extent we can guarantee value indefiniteness remains an open question. We know that not all observables can be value indefinite, and at least those in the star-shaped setup of Fig.~\ref{2012-incomputability-proofs-f2} can be guaranteed to be, but how far does this value indefiniteness go?
+We conjecture that this is as far as one can go; that {\em only a single} observable in the Hilbert space can be assigned  the value one, and only those orthogonal to said observable can be assigned the value 0---any other observables must, under the assumption of non-contextuality be value indefinite.
+\section*{Acknowledgements}
+We are grateful to Kohtaro Tadaki for insightful comments which improved the paper, as well as the anonymous referees who provided helpful comments.
+We thank Michael Reck for the code producing the generalised beam-splitter setup for an arbitrary unitary transformation.
+Abbott, Calude and Svozil have been supported in part by Marie Curie FP7-PEOPLE-2010-IRSES Grant RANPHYS.
+Calude's contribution was done in part during his tenure as Visiting Fellow of the Isaac Newton Institute for Mathematical Sciences (June--July 2012). Conder has been supported in part by a University of Auckland Summer Scholarship (2012).
+Svozil's contribution was done in part during his visiting honorary appointment at the University of Auckland (February--March 2012),
+and a visiting professorship at the University of Cagliari (May--July 2012).
+
+%\bibliographystyle{plain}
+%\bibliography{svozil.bib}%,alastairBib,alastairBib.bib,hypercomputation.bib}
+
+
+%merlin.mbs apsrev4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+%Control: key (0)
+%Control: author (0) dotless jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (0) allowed
+%Control: page (1) range
+%Control: year (0) verbatim
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{55}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {Bell}(1966)}]{bell-66}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {John~S.}\ \bibnamefont
+  {Bell}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {On the problem of
+  hidden variables in quantum mechanics},}\ }\href {\doibase
+  10.1103/RevModPhys.38.447} {\bibfield  {journal} {\bibinfo  {journal}
+  {Reviews of Modern Physics}\ }\textbf {\bibinfo {volume} {38}},\ \bibinfo
+  {pages} {447--452} (\bibinfo {year} {1966})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Specker}(1960)}]{specker-60}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Ernst}\ \bibnamefont
+  {Specker}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {{D}ie {L}ogik
+  nicht gleichzeitig entscheidbarer {A}ussagen},}\ }\href {\doibase
+  10.1111/j.1746-8361.1960.tb00422.x} {\bibfield  {journal} {\bibinfo
+  {journal} {Dialectica}\ }\textbf {\bibinfo {volume} {14}},\ \bibinfo {pages}
+  {239--246} (\bibinfo {year} {1960})},\ \Eprint
+  {http://arxiv.org/abs/http://arxiv.org/abs/1103.4537}
+  {http://arxiv.org/abs/1103.4537} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kochen}\ and\ \citenamefont
+  {Specker}(1967)}]{kochen1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Simon}\ \bibnamefont
+  {Kochen}}\ and\ \bibinfo {author} {\bibfnamefont {Ernst~P.}\ \bibnamefont
+  {Specker}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The problem of
+  hidden variables in quantum mechanics},}\ }\href {\doibase
+  10.1512/iumj.1968.17.17004} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Mathematics and Mechanics (now Indiana University Mathematics
+  Journal)}\ }\textbf {\bibinfo {volume} {17}},\ \bibinfo {pages} {59--87}
+  (\bibinfo {year} {1967})}\BibitemShut {NoStop}%
+\bibitem [{Note1()}]{Note1}%
+  \BibitemOpen
+  \bibinfo {note} {Which, due to complementarity, may not be all simultaneously
+  co-measurable (i.e. formally, commuting)}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{von Neumann}}(1955)}]{v-neumann-55}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {John}\ \bibnamefont
+  {{von Neumann}}},\ }\href@noop {} {\emph {\bibinfo {title} {Mathematical
+  Foundations of Quantum Mechanics}}}\ (\bibinfo  {publisher} {Princeton
+  University Press},\ \bibinfo {address} {Princeton, NJ},\ \bibinfo {year}
+  {1955})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Birkhoff}\ and\ \citenamefont {{von
+  Neumann}}(1936)}]{birkhoff-36}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Garrett}\ \bibnamefont
+  {Birkhoff}}\ and\ \bibinfo {author} {\bibfnamefont {John}\ \bibnamefont {{von
+  Neumann}}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The logic of
+  quantum mechanics},}\ }\href {\doibase 10.2307/1968621} {\bibfield  {journal}
+  {\bibinfo  {journal} {Annals of Mathematics}\ }\textbf {\bibinfo {volume}
+  {37}},\ \bibinfo {pages} {823--843} (\bibinfo {year} {1936})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Kochen}\ and\ \citenamefont
+  {Specker}(1965{\natexlab{a}})}]{kochen2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Simon}\ \bibnamefont
+  {Kochen}}\ and\ \bibinfo {author} {\bibfnamefont {Ernst~P.}\ \bibnamefont
+  {Specker}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Logical
+  structures arising in quantum theory},}\ }in\ \href@noop {} {\emph {\bibinfo
+  {booktitle} {Symposium on the Theory of Models, Proceedings of the 1963
+  International Symposium at Berkeley}}}\ (\bibinfo  {publisher} {North
+  Holland},\ \bibinfo {address} {Amsterdam},\ \bibinfo {year} {1965})\ pp.\
+  \bibinfo {pages} {177--189}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kochen}\ and\ \citenamefont
+  {Specker}(1965{\natexlab{b}})}]{kochen3}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Simon}\ \bibnamefont
+  {Kochen}}\ and\ \bibinfo {author} {\bibfnamefont {Ernst~P.}\ \bibnamefont
+  {Specker}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The calculus of
+  partial propositional functions},}\ }in\ \href@noop {} {\emph {\bibinfo
+  {booktitle} {Proceedings of the 1964 International Congress for Logic,
+  Methodology and Philosophy of Science, Jerusalem}}}\ (\bibinfo  {publisher}
+  {North Holland},\ \bibinfo {address} {Amsterdam},\ \bibinfo {year} {1965})\
+  pp.\ \bibinfo {pages} {45--57}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Hasegawa}\ \emph {et~al.}(2006)\citenamefont
+  {Hasegawa}, \citenamefont {Loidl}, \citenamefont {Badurek}, \citenamefont
+  {Baron},\ and\ \citenamefont {Rauch}}]{hasegawa:230401}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Yuji}\ \bibnamefont
+  {Hasegawa}}, \bibinfo {author} {\bibfnamefont {Rudolf}\ \bibnamefont
+  {Loidl}}, \bibinfo {author} {\bibfnamefont {Gerald}\ \bibnamefont {Badurek}},
+  \bibinfo {author} {\bibfnamefont {Matthias}\ \bibnamefont {Baron}}, \ and\
+  \bibinfo {author} {\bibfnamefont {Helmut}\ \bibnamefont {Rauch}},\ }\bibfield
+   {title} {\enquote {\bibinfo {title} {Quantum contextuality in a
+  single-neutron optical experiment},}\ }\href {\doibase
+  10.1103/PhysRevLett.97.230401} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review Letters}\ }\textbf {\bibinfo {volume} {97}},\ \bibinfo {eid}
+  {230401} (\bibinfo {year} {2006})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bartosik}\ \emph {et~al.}(2009)\citenamefont
+  {Bartosik}, \citenamefont {Klepp}, \citenamefont {Schmitzer}, \citenamefont
+  {Sponar}, \citenamefont {Cabello}, \citenamefont {Rauch},\ and\ \citenamefont
+  {Hasegawa}}]{Bartosik-09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {H.}~\bibnamefont
+  {Bartosik}}, \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont {Klepp}},
+  \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Schmitzer}}, \bibinfo
+  {author} {\bibfnamefont {S.}~\bibnamefont {Sponar}}, \bibinfo {author}
+  {\bibfnamefont {A.}~\bibnamefont {Cabello}}, \bibinfo {author} {\bibfnamefont
+  {H.}~\bibnamefont {Rauch}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {Y.}~\bibnamefont {Hasegawa}},\ }\bibfield  {title} {\enquote {\bibinfo
+  {title} {Experimental test of quantum contextuality in neutron
+  interferometry},}\ }\href {\doibase 10.1103/PhysRevLett.103.040403}
+  {\bibfield  {journal} {\bibinfo  {journal} {Physical Review Letters}\
+  }\textbf {\bibinfo {volume} {103}},\ \bibinfo {pages} {040403} (\bibinfo
+  {year} {2009})},\ \Eprint {http://arxiv.org/abs/arXiv:0904.4576}
+  {arXiv:0904.4576} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kirchmair}\ \emph {et~al.}(2009)\citenamefont
+  {Kirchmair}, \citenamefont {Z{\"{a}}hringer}, \citenamefont {Gerritsma},
+  \citenamefont {Kleinmann}, \citenamefont {G{\"{u}}hne}, \citenamefont
+  {Cabello}, \citenamefont {Blatt},\ and\ \citenamefont {Roos}}]{kirch-09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
+  {Kirchmair}}, \bibinfo {author} {\bibfnamefont {F.}~\bibnamefont
+  {Z{\"{a}}hringer}}, \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont
+  {Gerritsma}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Kleinmann}}, \bibinfo {author} {\bibfnamefont {O.}~\bibnamefont
+  {G{\"{u}}hne}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Cabello}}, \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont {Blatt}}, \
+  and\ \bibinfo {author} {\bibfnamefont {C.~F.}\ \bibnamefont {Roos}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {State-independent
+  experimental test of quantum contextuality},}\ }\href {\doibase
+  10.1038/nature08172} {\bibfield  {journal} {\bibinfo  {journal} {Nature}\
+  }\textbf {\bibinfo {volume} {460}},\ \bibinfo {pages} {494--497} (\bibinfo
+  {year} {2009})},\ \Eprint {http://arxiv.org/abs/arXiv:0904.1655}
+  {arXiv:0904.1655} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Amselem}\ \emph {et~al.}(2009)\citenamefont
+  {Amselem}, \citenamefont {R\aa{}dmark}, \citenamefont {Bourennane},\ and\
+  \citenamefont {Cabello}}]{PhysRevLett.103.160405}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Elias}\ \bibnamefont
+  {Amselem}}, \bibinfo {author} {\bibfnamefont {Magnus}\ \bibnamefont
+  {R\aa{}dmark}}, \bibinfo {author} {\bibfnamefont {Mohamed}\ \bibnamefont
+  {Bourennane}}, \ and\ \bibinfo {author} {\bibfnamefont {Ad\'an}\ \bibnamefont
+  {Cabello}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {State-independent quantum contextuality with single photons},}\ }\href
+  {\doibase 10.1103/PhysRevLett.103.160405} {\bibfield  {journal} {\bibinfo
+  {journal} {Physical Review Letters}\ }\textbf {\bibinfo {volume} {103}},\
+  \bibinfo {pages} {160405} (\bibinfo {year} {2009})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Cabello}(2008)}]{cabello:210401}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Ad\'an}\ \bibnamefont
+  {Cabello}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Experimentally
+  testable state-independent quantum contextuality},}\ }\href {\doibase
+  10.1103/PhysRevLett.101.210401} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review Letters}\ }\textbf {\bibinfo {volume} {101}},\ \bibinfo
+  {eid} {210401} (\bibinfo {year} {2008})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pitowsky}(1982)}]{pitowsky-82}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Itamar}\ \bibnamefont
+  {Pitowsky}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Resolution of
+  the {E}instein-{P}odolsky-{R}osen and {B}ell paradoxes},}\ }\href {\doibase
+  10.1103/PhysRevLett.48.1299} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review Letters}\ }\textbf {\bibinfo {volume} {48}},\ \bibinfo
+  {pages} {1299--1302} (\bibinfo {year} {1982})}\BibitemShut {NoStop}%
+\bibitem [{Note2()}]{Note2}%
+  \BibitemOpen
+  \bibinfo {note} {Note that there exist models of complementarity such as
+  automaton logic or generalised urn models which are value definite \cite
+  {svozil-2001-eua}.}\BibitemShut {Stop}%
+\bibitem [{Note3()}]{Note3}%
+  \BibitemOpen
+  \bibinfo {note} {In the Bell-type cases all observables, and in the
+  Kochen-Specker case ``many'' observables.}\BibitemShut {Stop}%
+\bibitem [{\citenamefont {Zierler}\ and\ \citenamefont
+  {Schlessinger}(1965)}]{ZirlSchl-65}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Neal}\ \bibnamefont
+  {Zierler}}\ and\ \bibinfo {author} {\bibfnamefont {Michael}\ \bibnamefont
+  {Schlessinger}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Boolean
+  embeddings of orthomodular sets and quantum logic},}\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {Duke Mathematical Journal}\
+  }\textbf {\bibinfo {volume} {32}},\ \bibinfo {pages} {251--262} (\bibinfo
+  {year} {1965})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kalmbach}(1986)}]{kalmbach-86}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Gudrun}\ \bibnamefont
+  {Kalmbach}},\ }\href@noop {} {\emph {\bibinfo {title} {Measures and Hilbert
+  Lattices}}}\ (\bibinfo  {publisher} {World Scientific},\ \bibinfo {address}
+  {Singapore},\ \bibinfo {year} {1986})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Alda}(1980)}]{Alda}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {V\'aclav}\
+  \bibnamefont {Alda}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {On\/
+  {\rm 0-1} measures for projectors {I}},}\ }\href {http://dml.cz/dmlcz/103871}
+  {\bibfield  {journal} {\bibinfo  {journal} {Aplikace matematiky (Applications
+  of Mathematics)}\ }\textbf {\bibinfo {volume} {25}},\ \bibinfo {pages}
+  {373--374} (\bibinfo {year} {1980})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Alda}(1981)}]{Alda2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {V\'aclav}\
+  \bibnamefont {Alda}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {On\/
+  {\rm 0-1} measures for projectors {II}},}\ }\href
+  {http://dml.cz/dmlcz/103894} {\bibfield  {journal} {\bibinfo  {journal}
+  {Aplikace matematiky (Applications of Mathematics)}\ }\textbf {\bibinfo
+  {volume} {26}},\ \bibinfo {pages} {57--58} (\bibinfo {year}
+  {1981})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pt{\'{a}}k}\ and\ \citenamefont
+  {Pulmannov{\'{a}}}(1991)}]{pulmannova-91}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Pavel}\ \bibnamefont
+  {Pt{\'{a}}k}}\ and\ \bibinfo {author} {\bibfnamefont {Sylvia}\ \bibnamefont
+  {Pulmannov{\'{a}}}},\ }\href@noop {} {\emph {\bibinfo {title} {Orthomodular
+  Structures as Quantum Logics}}}\ (\bibinfo  {publisher} {Kluwer Academic
+  Publishers},\ \bibinfo {address} {Dordrecht},\ \bibinfo {year}
+  {1991})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}\ and\ \citenamefont
+  {Tkadlec}(1996)}]{svozil-tkadlec}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl}\ \bibnamefont
+  {Svozil}}\ and\ \bibinfo {author} {\bibfnamefont {Josef}\ \bibnamefont
+  {Tkadlec}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Greechie
+  diagrams, nonexistence of measures in quantum logics and {K}ochen--{S}pecker
+  type constructions},}\ }\href {\doibase 10.1063/1.531710} {\bibfield
+  {journal} {\bibinfo  {journal} {Journal of Mathematical Physics}\ }\textbf
+  {\bibinfo {volume} {37}},\ \bibinfo {pages} {5380--5401} (\bibinfo {year}
+  {1996})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Elitzur}\ \emph {et~al.}(1992)\citenamefont
+  {Elitzur}, \citenamefont {Popescu},\ and\ \citenamefont
+  {Rohrlich}}]{Elitzur199225}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Avshalom~C.}\
+  \bibnamefont {Elitzur}}, \bibinfo {author} {\bibfnamefont {Sandu}\
+  \bibnamefont {Popescu}}, \ and\ \bibinfo {author} {\bibfnamefont {Daniel}\
+  \bibnamefont {Rohrlich}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Quantum nonlocality for each pair in an ensemble},}\ }\href {\doibase
+  10.1016/0375-9601(92)90952-I} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physics Letters A}\ }\textbf {\bibinfo {volume} {162}},\ \bibinfo {pages}
+  {25--28} (\bibinfo {year} {1992})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}(2012)}]{svozil-2011-enough}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl}\ \bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {How much
+  contextuality?}}\ }\href {\doibase 10.1007/s11047-012-9318-9} {\bibfield
+  {journal} {\bibinfo  {journal} {Natural Computing}\ }\textbf {\bibinfo
+  {volume} {11}},\ \bibinfo {pages} {261--265} (\bibinfo {year} {2012})},\
+  \Eprint {http://arxiv.org/abs/arXiv:1103.3980} {arXiv:1103.3980} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Specker}(1999)}]{Specker-priv}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Ernst}\ \bibnamefont
+  {Specker}},\ }\href@noop {} {} (\bibinfo {year} {1999}),\ \bibinfo {note}
+  {private communication to {K}. {S}vozil}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Einstein}\ \emph {et~al.}(1935)\citenamefont
+  {Einstein}, \citenamefont {Podolsky},\ and\ \citenamefont {Rosen}}]{epr}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Albert}\ \bibnamefont
+  {Einstein}}, \bibinfo {author} {\bibfnamefont {Boris}\ \bibnamefont
+  {Podolsky}}, \ and\ \bibinfo {author} {\bibfnamefont {Nathan}\ \bibnamefont
+  {Rosen}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Can
+  quantum-mechanical description of physical reality be considered complete?}}\
+  }\href {\doibase 10.1103/PhysRev.47.777} {\bibfield  {journal} {\bibinfo
+  {journal} {Physical Review}\ }\textbf {\bibinfo {volume} {47}},\ \bibinfo
+  {pages} {777--780} (\bibinfo {year} {1935})}\BibitemShut {NoStop}%
+\bibitem [{Note4()}]{Note4}%
+  \BibitemOpen
+  \bibinfo {note} {An element of physical reality corresponds to the notion of
+  a definite value, possibly contextual, as outlined in this
+  paper.}\BibitemShut {Stop}%
+\bibitem [{\citenamefont {Peres}(1996)}]{Peres:1996fk}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Asher}\ \bibnamefont
+  {Peres}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Generalized
+  {K}ochen-{S}pecker theorem},}\ }\href {\doibase 10.1007/BF02058634}
+  {\bibfield  {journal} {\bibinfo  {journal} {Foundations of Physics}\ }\textbf
+  {\bibinfo {volume} {26}},\ \bibinfo {pages} {807--812} (\bibinfo {year}
+  {1996})},\ \Eprint {http://arxiv.org/abs/arXiv:quant-ph/9510018}
+  {arXiv:quant-ph/9510018} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kwon}\ \emph {et~al.}(2009)\citenamefont {Kwon},
+  \citenamefont {Cho},\ and\ \citenamefont {Kim}}]{Kwon:09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Osung}\ \bibnamefont
+  {Kwon}}, \bibinfo {author} {\bibfnamefont {Young-Wook}\ \bibnamefont {Cho}},
+  \ and\ \bibinfo {author} {\bibfnamefont {Yoon-Ho}\ \bibnamefont {Kim}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {Quantum random number
+  generator using photon-number path entanglement},}\ }\href {\doibase
+  10.1364/AO.48.001774} {\bibfield  {journal} {\bibinfo  {journal} {Applied
+  Optics}\ }\textbf {\bibinfo {volume} {48}},\ \bibinfo {pages} {1774--1778}
+  (\bibinfo {year} {2009})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pironio}\ \emph {et~al.}(2010)\citenamefont
+  {Pironio}, \citenamefont {Ac{\'i}n}, \citenamefont {Massar}, \citenamefont
+  {{Boyer de la Giroday}}, \citenamefont {Matsukevich}, \citenamefont {Maunz},
+  \citenamefont {Olmschenk}, \citenamefont {Hayes}, \citenamefont {Luo},
+  \citenamefont {Manning},\ and\ \citenamefont {Monroe}}]{10.1038/nature09008}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Pironio}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Ac{\'i}n}},
+  \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Massar}}, \bibinfo
+  {author} {\bibfnamefont {A.}~\bibnamefont {{Boyer de la Giroday}}}, \bibinfo
+  {author} {\bibfnamefont {D.~N.}\ \bibnamefont {Matsukevich}}, \bibinfo
+  {author} {\bibfnamefont {P.}~\bibnamefont {Maunz}}, \bibinfo {author}
+  {\bibfnamefont {S.}~\bibnamefont {Olmschenk}}, \bibinfo {author}
+  {\bibfnamefont {D.}~\bibnamefont {Hayes}}, \bibinfo {author} {\bibfnamefont
+  {L.}~\bibnamefont {Luo}}, \bibinfo {author} {\bibfnamefont {T.~A.}\
+  \bibnamefont {Manning}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {C.}~\bibnamefont {Monroe}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Random numbers certified by {B}ell's theorem},}\ }\href {\doibase
+  10.1038/nature09008} {\bibfield  {journal} {\bibinfo  {journal} {Nature}\
+  }\textbf {\bibinfo {volume} {464}},\ \bibinfo {pages} {1021--1024} (\bibinfo
+  {year} {2010})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stefanov}\ \emph {et~al.}(2000)\citenamefont
+  {Stefanov}, \citenamefont {Gisin}, \citenamefont {Guinnard}, \citenamefont
+  {Guinnard},\ and\ \citenamefont {Zbinden}}]{stefanov-2000}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Andr{\'{e}}}\
+  \bibnamefont {Stefanov}}, \bibinfo {author} {\bibfnamefont {Nicolas}\
+  \bibnamefont {Gisin}}, \bibinfo {author} {\bibfnamefont {Olivier}\
+  \bibnamefont {Guinnard}}, \bibinfo {author} {\bibfnamefont {Laurent}\
+  \bibnamefont {Guinnard}}, \ and\ \bibinfo {author} {\bibfnamefont {Hugo}\
+  \bibnamefont {Zbinden}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Optical quantum random number generator},}\ }\href {\doibase
+  10.1080/095003400147908} {\bibfield  {journal} {\bibinfo  {journal} {Journal
+  of Modern Optics}\ }\textbf {\bibinfo {volume} {47}},\ \bibinfo {pages}
+  {595--598} (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}(2009)}]{svozil-2009-howto}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl}\ \bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Three criteria
+  for quantum random-number generators based on beam splitters},}\ }\href
+  {\doibase 10.1103/PhysRevA.79.054306} {\bibfield  {journal} {\bibinfo
+  {journal} {Physical Review A}\ }\textbf {\bibinfo {volume} {79}},\ \bibinfo
+  {eid} {054306} (\bibinfo {year} {2009})},\ \Eprint
+  {http://arxiv.org/abs/arXiv:quant-ph/0903.2744} {arXiv:quant-ph/0903.2744}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Wayne}\ \emph {et~al.}(2009)\citenamefont {Wayne},
+  \citenamefont {Jeffrey}, \citenamefont {Akselrod},\ and\ \citenamefont
+  {Kwiat}}]{Wayne-09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Michael~A.}\
+  \bibnamefont {Wayne}}, \bibinfo {author} {\bibfnamefont {Evan~R.}\
+  \bibnamefont {Jeffrey}}, \bibinfo {author} {\bibfnamefont {Gleb~M.}\
+  \bibnamefont {Akselrod}}, \ and\ \bibinfo {author} {\bibfnamefont {Paul~G.}\
+  \bibnamefont {Kwiat}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Photon arrival time quantum random number generation},}\ }\href {\doibase
+  10.1080/09500340802553244} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Modern Optics}\ }\textbf {\bibinfo {volume} {56}},\ \bibinfo
+  {pages} {516--516} (\bibinfo {year} {2009})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Stip\v{c}evi\'{c}}\ and\ \citenamefont
+  {Rogina}(2007)}]{stipcevic045104}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Stip\v{c}evi\'{c}}}\ and\ \bibinfo {author} {\bibfnamefont {B.~Medved}\
+  \bibnamefont {Rogina}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Quantum random number generator based on photonic emission in
+  semiconductors},}\ }\href {\doibase 10.1063/1.2720728} {\bibfield  {journal}
+  {\bibinfo  {journal} {Review of Scientific Instruments}\ }\textbf {\bibinfo
+  {volume} {78}},\ \bibinfo {eid} {045104} (\bibinfo {year}
+  {2007})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Ma}\ \emph {et~al.}(2005)\citenamefont {Ma},
+  \citenamefont {Xie},\ and\ \citenamefont {Wu}}]{Ma:05}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Hai-Qiang}\
+  \bibnamefont {Ma}}, \bibinfo {author} {\bibfnamefont {Yuejian}\ \bibnamefont
+  {Xie}}, \ and\ \bibinfo {author} {\bibfnamefont {Ling-An}\ \bibnamefont
+  {Wu}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Random number
+  generation based on the time of arrival of single photons},}\ }\href
+  {\doibase 10.1364/AO.44.007760} {\bibfield  {journal} {\bibinfo  {journal}
+  {Applied Optics}\ }\textbf {\bibinfo {volume} {44}},\ \bibinfo {pages}
+  {7760--7763} (\bibinfo {year} {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}(2002)}]{calude:02}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Cristian}\
+  \bibnamefont {Calude}},\ }\href@noop {} {\emph {\bibinfo {title} {Information
+  and Randomness---An Algorithmic Perspective}}},\ \bibinfo {edition} {2nd}\
+  ed.\ (\bibinfo  {publisher} {Springer},\ \bibinfo {address} {Berlin},\
+  \bibinfo {year} {2002})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Borel}(1909)}]{borel:09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {{\'{E}}mile}\
+  \bibnamefont {Borel}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Les
+  probabilit\'{e}s d\'{e}nombrables et leurs applications arithm\'{e}tiques},}\
+  }\href {\doibase 10.1007/BF03019651} {\bibfield  {journal} {\bibinfo
+  {journal} {Rendiconti del Circolo Matematico di Palermo (1884 - 1940)}\
+  }\textbf {\bibinfo {volume} {27}},\ \bibinfo {pages} {247--271} (\bibinfo
+  {year} {1909})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Abbott}\ and\ \citenamefont
+  {Calude}()}]{AbbottCalude10}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Alastair~A.}\
+  \bibnamefont {Abbott}}\ and\ \bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}},\ } \bibfield  {title} {\enquote {\bibinfo {title} {Von Neumann normalisation of a quantum random number generator},}\
+  }{\bibfield  {journal} {\bibinfo
+  {journal} {Computability}\
+  }\textbf {\bibinfo {volume} {1}},\ \bibinfo {pages} {59--83} (\bibinfo
+  {year} {2012})} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Merali}(2010)}]{Merali:2014aa}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Zeeya}\ \bibnamefont
+  {Merali}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {A truth test for
+  randomness},}\ }\href {\doibase 10.1038/news.2010.181} {\bibfield  {journal}
+  {\bibinfo  {journal} {Nature News}\ } (\bibinfo {year} {2010}),\
+  10.1038/news.2010.181} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{ID Quantique SA}}(2001-2009)}]{idQuantique}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibnamefont {{ID Quantique SA}}},\
+  }\href
+  {http://www.idquantique.com/true-random-number-generator/products-overview.html}
+  {\emph {\bibinfo {title} {{QUANTIS}. Quantum number generator}}}\ (\bibinfo
+  {publisher} {idQuantique},\ \bibinfo {address} {Geneva, Switzerland},\
+  \bibinfo {year} {2001-2009})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Q}uantum {O}ptics}(2012)}]{ANU}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {{ANU}}\ \bibnamefont
+  {{Q}uantum {O}ptics}},\ }\href
+  {http://photonics.anu.edu.au/qoptics/Research/qrng.php} {\emph {\bibinfo
+  {title} {{ANU}. Quantum random number generator}}}\ (\bibinfo  {publisher}
+  {{ANU} {Q}uantum {O}ptics},\ \bibinfo {address} {Australian National
+  University},\ \bibinfo {year} {2012})\ \bibinfo {note} {uRL {\tt
+  http://photonics.anu.edu.au/qoptics/Research/qrng.php} accessed on July 9th,
+  2012}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Svozil}(2008)}]{svozil-2006-ran}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Cristian~S.}\
+  \bibnamefont {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {Karl}\
+  \bibnamefont {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Quantum randomness and value indefiniteness},}\ }\href {\doibase
+  10.1166/asl.2008.016} {\bibfield  {journal} {\bibinfo  {journal} {Advanced
+  Science Letters}\ }\textbf {\bibinfo {volume} {1}},\ \bibinfo {pages}
+  {165--168} (\bibinfo {year} {2008})},\ \Eprint
+  {http://arxiv.org/abs/arXiv:quant-ph/0611029} {arXiv:quant-ph/0611029}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Reck}\ \emph {et~al.}(1994)\citenamefont {Reck},
+  \citenamefont {Zeilinger}, \citenamefont {Bernstein},\ and\ \citenamefont
+  {Bertani}}]{rzbb}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Reck}}, \bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont {Zeilinger}},
+  \bibinfo {author} {\bibfnamefont {H.~J.}\ \bibnamefont {Bernstein}}, \ and\
+  \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Bertani}},\ }\bibfield
+  {title} {\enquote {\bibinfo {title} {Experimental realization of any discrete
+  unitary operator},}\ }\href {\doibase 10.1103/PhysRevLett.73.58} {\bibfield
+  {journal} {\bibinfo  {journal} {Physical Review Letters}\ }\textbf {\bibinfo
+  {volume} {73}},\ \bibinfo {pages} {58--61} (\bibinfo {year}
+  {1994})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zukowski}\ \emph {et~al.}(1997)\citenamefont
+  {Zukowski}, \citenamefont {Zeilinger},\ and\ \citenamefont
+  {Horne}}]{zukowski-97}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Marek}\ \bibnamefont
+  {Zukowski}}, \bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont
+  {Zeilinger}}, \ and\ \bibinfo {author} {\bibfnamefont {Michael~A.}\
+  \bibnamefont {Horne}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Realizable higher-dimensional two-particle entanglements via multiport beam
+  splitters},}\ }\href {\doibase 10.1103/PhysRevA.55.2564} {\bibfield
+  {journal} {\bibinfo  {journal} {Physical Review A}\ }\textbf {\bibinfo
+  {volume} {55}},\ \bibinfo {pages} {2564--2579} (\bibinfo {year}
+  {1997})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}(2005{\natexlab{a}})}]{svozil-2004-analog}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl}\ \bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Noncontextuality
+  in multipartite entanglement},}\ }\href {\doibase
+  10.1088/0305-4470/38/25/013} {\bibfield  {journal} {\bibinfo  {journal} {J.
+  Phys. A: Math. Gen.}\ }\textbf {\bibinfo {volume} {38}},\ \bibinfo {pages}
+  {5781--5798} (\bibinfo {year} {2005}{\natexlab{a}})},\ \Eprint
+  {http://arxiv.org/abs/quant-ph/0401113} {quant-ph/0401113} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Murnaghan}(1962)}]{murnaghan}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {F.~D.}\ \bibnamefont
+  {Murnaghan}},\ }\href@noop {} {\emph {\bibinfo {title} {The Unitary and
+  Rotation Groups}}}\ (\bibinfo  {publisher} {Spartan Books},\ \bibinfo
+  {address} {Washington, D.C.},\ \bibinfo {year} {1962})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zeilinger}(1981)}]{zeilinger:882}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Zeilinger}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {General
+  properties of lossless beam splitters in interferometry},}\ }\href {\doibase
+  10.1119/1.12387} {\bibfield  {journal} {\bibinfo  {journal} {American Journal
+  of Physics}\ }\textbf {\bibinfo {volume} {49}},\ \bibinfo {pages} {882--883}
+  (\bibinfo {year} {1981})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Campos}\ \emph {et~al.}(1989)\citenamefont {Campos},
+  \citenamefont {Saleh},\ and\ \citenamefont {Teich}}]{Campos:1989fk}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~A.}\ \bibnamefont
+  {Campos}}, \bibinfo {author} {\bibfnamefont {B.~E.~A.}\ \bibnamefont
+  {Saleh}}, \ and\ \bibinfo {author} {\bibfnamefont {M.~C.}\ \bibnamefont
+  {Teich}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Quantum-mechanical lossless beam splitter: {$SU(2)$} symmetry and photon
+  statistics},}\ }\href {\doibase 10.1103/PhysRevA.40.1371} {\bibfield
+  {journal} {\bibinfo  {journal} {Physical Review A}\ }\textbf {\bibinfo
+  {volume} {40}},\ \bibinfo {pages} {1371--1384} (\bibinfo {year}
+  {1989})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Greenberger}\ \emph {et~al.}(1993)\citenamefont
+  {Greenberger}, \citenamefont {Horne},\ and\ \citenamefont
+  {Zeilinger}}]{green-horn-zei}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Daniel~M.}\
+  \bibnamefont {Greenberger}}, \bibinfo {author} {\bibfnamefont {Mike~A.}\
+  \bibnamefont {Horne}}, \ and\ \bibinfo {author} {\bibfnamefont {Anton}\
+  \bibnamefont {Zeilinger}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Multiparticle interferometry and the superposition principle},}\ }\href
+  {\doibase 10.1063/1.881360} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physics Today}\ }\textbf {\bibinfo {volume} {46}},\ \bibinfo {pages}
+  {22--29} (\bibinfo {year} {1993})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Vazirani}\ and\ \citenamefont
+  {Vidick}(2012)}]{Vazirani28072012}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Umesh}\ \bibnamefont
+  {Vazirani}}\ and\ \bibinfo {author} {\bibfnamefont {Thomas}\ \bibnamefont
+  {Vidick}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Certifiable
+  quantum dice},}\ }\href {\doibase 10.1098/rsta.2011.0336} {\bibfield
+  {journal} {\bibinfo  {journal} {Philosophical Transactions of the Royal
+  Society A: Mathematical, Physical and Engineering Sciences}\ }\textbf
+  {\bibinfo {volume} {370}},\ \bibinfo {pages} {3432--3448} (\bibinfo {year}
+  {2012})},\ \Eprint {http://arxiv.org/abs/arXiv:1111.6054} {arXiv:1111.6054}
+  \BibitemShut {NoStop}%
+\bibitem [{Note5()}]{Note5}%
+  \BibitemOpen
+  \bibinfo {note} {Such violations are often referred to as ``proofs of the
+  Kochen-Specker theorem,'' or ``proofs of quantum contextuality''\cite
+  {hasegawa:230401,Bartosik-09,kirch-09,PhysRevLett.103.160405,Lapkiewicz-11}.}\BibitemShut
+  {Stop}%
+\bibitem [{\citenamefont {Bouwmeester}\ \emph {et~al.}(1999)\citenamefont
+  {Bouwmeester}, \citenamefont {Pan}, \citenamefont {Daniell}, \citenamefont
+  {Weinfurter},\ and\ \citenamefont {Zeilinger}}]{PhysRevLett.82.1345}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Dik}\ \bibnamefont
+  {Bouwmeester}}, \bibinfo {author} {\bibfnamefont {Jian-Wei}\ \bibnamefont
+  {Pan}}, \bibinfo {author} {\bibfnamefont {Matthew}\ \bibnamefont {Daniell}},
+  \bibinfo {author} {\bibfnamefont {Harald}\ \bibnamefont {Weinfurter}}, \ and\
+  \bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont {Zeilinger}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {Observation of three-photon
+  greenberger-horne-zeilinger entanglement},}\ }\href {\doibase
+  10.1103/PhysRevLett.82.1345} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review Letters}\ }\textbf {\bibinfo {volume} {82}},\ \bibinfo
+  {pages} {1345--1349} (\bibinfo {year} {1999})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pan}\ \emph {et~al.}(2000)\citenamefont {Pan},
+  \citenamefont {Bouwmeester}, \citenamefont {Daniell}, \citenamefont
+  {Weinfurter},\ and\ \citenamefont {Zeilinger}}]{panbdwz}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Jian-Wei}\
+  \bibnamefont {Pan}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
+  {Bouwmeester}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Daniell}}, \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Weinfurter}},
+  \ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Zeilinger}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {Experimental test of quantum
+  nonlocality in three-photon {G}reenberger-{H}orne-{Z}eilinger
+  entanglement},}\ }\href {\doibase 10.1038/35000514} {\bibfield  {journal}
+  {\bibinfo  {journal} {Nature}\ }\textbf {\bibinfo {volume} {403}},\ \bibinfo
+  {pages} {515--519} (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}(2005{\natexlab{b}})}]{svozil-2001-eua}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Karl}\ \bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Logical
+  equivalence between generalized urn models and finite automata},}\ }\href
+  {\doibase 10.1007/s10773-005-7052-0} {\bibfield  {journal} {\bibinfo
+  {journal} {International Journal of Theoretical Physics}\ }\textbf {\bibinfo
+  {volume} {44}},\ \bibinfo {pages} {745--754} (\bibinfo {year}
+  {2005}{\natexlab{b}})},\ \Eprint {http://arxiv.org/abs/quant-ph/0209136}
+  {quant-ph/0209136} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Lapkiewicz}\ \emph {et~al.}(2011)\citenamefont
+  {Lapkiewicz}, \citenamefont {Li}, \citenamefont {Schaeff}, \citenamefont
+  {Langford}, \citenamefont {Ramelow}, \citenamefont {Wie{\'{s}}niak},\ and\
+  \citenamefont {Zeilinger}}]{Lapkiewicz-11}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Radek}\ \bibnamefont
+  {Lapkiewicz}}, \bibinfo {author} {\bibfnamefont {Peizhe}\ \bibnamefont {Li}},
+  \bibinfo {author} {\bibfnamefont {Christoph}\ \bibnamefont {Schaeff}},
+  \bibinfo {author} {\bibfnamefont {Nathan~K.}\ \bibnamefont {Langford}},
+  \bibinfo {author} {\bibfnamefont {Sven}\ \bibnamefont {Ramelow}}, \bibinfo
+  {author} {\bibfnamefont {Marcin}\ \bibnamefont {Wie{\'{s}}niak}}, \ and\
+  \bibinfo {author} {\bibfnamefont {Anton}\ \bibnamefont {Zeilinger}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {Experimental
+  non-classicality of an indivisible quantum system},}\ }\href {\doibase
+  10.1038/nature10119} {\bibfield  {journal} {\bibinfo  {journal} {Nature}\
+  }\textbf {\bibinfo {volume} {474}},\ \bibinfo {pages} {490--493} (\bibinfo
+  {year} {2011})}\BibitemShut {NoStop}%
+\end{thebibliography}%
+
+\end{document}

@@ -1,0 +1,292 @@
+\documentclass[prl,amsfonts,showpacs,preprint,showkeys]{revtex4}
+%\documentclass[pra,showpacs,showkeys,amsfonts]{revtex4}
+\usepackage{graphicx}
+%\documentstyle[amsfonts]{article}
+\RequirePackage{times}
+%\RequirePackage{courier}
+\RequirePackage{mathptm}
+%\renewcommand{\baselinestretch}{1.3}
+
+\begin{document}
+%\sloppy
+
+
+
+\title{Concentrated correlations violate Bell-type inequalities maximally}
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+\affiliation{Institut f\"ur Theoretische Physik, University of Technology Vienna,
+Wiedner Hauptstra\ss e 8-10/136, A-1040 Vienna, Austria}
+
+
+\begin{abstract}
+Multipartite quantized systems can be partitioned,
+and their observables grouped and redefined into condensed correlations.
+Such concentrated correlations can contribute to exceeding
+Tsirelson's bounds on Bell-type inequalities to a degree where the maximal
+algebraic violation is reached.
+\end{abstract}
+
+\pacs{03.67.Hk,03.65.Ud,03.65.Ta,03.67.Mn}
+\keywords{Quantum information, entanglement, quantum nonlocality}
+
+\maketitle
+
+Domestizierung der Forscher
+
+
+\end{document}
+
+<< Algebra`ReIm`
+
+(* Definition of the Tensor Product *)
+
+TensorProduct[a_, b_] :=    Table[(*a, b are nxn and mxm - matrices*)
+a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*b[[s - Floor[(s -
+1)/Length[b]]*Length[b],t - Floor[(t - 1)/Length[b]]*Length[b]]], {s,
+  1,Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(* Definition of the Tensor Product between two vectors *)
+
+TensorProductVec[x_, y_] := Flatten[Table[ x[[i]] y[[j]] , {i, 1, Length[x]}, {j, 1, Length[x]}]];
+
+
+(* Definition of the Dyadic Product *)
+
+DyadicProductVec[x_] :=  Table[x[[i]] x[[j]], {i, 1, Length[x]}, {j, 1, Length[x]}];
+
+(* Definition of the sigma matrices *)
+
+vecsig[r_, tt_, p_ ]:= r * { {Cos[tt], Sin[tt] Exp[-I p]}, {Sin[tt] Exp[I p], -Cos[tt]}}
+
+BellBasis = (1/Sqrt[2]) {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, -1, 0}, {1, 0, 0,-1}};
+
+Basis =  {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0,1}};
+
+
+(* 2 PARTICLES *)
+
+
+(* Definition of operators *)
+
+
+(* Definition of single operators for occurrence of spin up *)
+
+SingleProbH1Up[x_] :=   TensorProduct[1/2(IdentityMatrix[2] + vecsig[1, x, 0]), IdentityMatrix[2]]
+
+SingleProbH2Up[x_] :=   TensorProduct[IdentityMatrix[2], 1/2(IdentityMatrix[2] + vecsig[1, x, 0])]
+
+
+
+(* Definition of two-particle joint operator for occurrence of spin up  *)
+
+JointProbUp[x_, y_] :=  TensorProduct[1/2(IdentityMatrix[2] +
+                       vecsig[1, x, 0]), 1/2(IdentityMatrix[2] + vecsig[1, y, 0])]
+
+(* Definition of two-particle joint operator for occurrence of spin down  *)
+
+JointProbDown[x_, y_] :=  TensorProduct[1/2(IdentityMatrix[2] -
+                       vecsig[1, x, 0]), 1/2(IdentityMatrix[2] - vecsig[1, y, 0])]
+
+(* Definition of two-particle joint operator for occurrence of spin down and spin up *)
+
+JointProbDownUp[x_, y_] :=  TensorProduct[1/2(IdentityMatrix[2] -
+                       vecsig[1, x, 0]), 1/2(IdentityMatrix[2] + vecsig[1, y, 0])]
+
+(* Definition of two-particle joint operator for occurrence of spin up and spin down *)
+
+JointProbUpDown[x_, y_] :=  TensorProduct[1/2(IdentityMatrix[2] +
+                       vecsig[1, x, 0]), 1/2(IdentityMatrix[2] - vecsig[1, y, 0])]
+
+
+
+(* Definition of probabilities *)
+
+
+(* Probability of concurrence of two equal events for two - particle probability in singlet Bell state
+   for occurrence of spin up
+ *)
+
+P2UU[ttt_] = FullSimplify[
+Tr[DyadicProductVec[(1/Sqrt[2])*(TensorProductVec[{0, 1}, {1, 0}] -
+     TensorProductVec[{1, 0}, {0, 1}])].JointProbUp[0, ttt]]
+]
+
+(* Probability of concurrence of two equal events for two - particle probability in singlet Bell state
+   for occurrence of spin down
+ *)
+
+P2DD[ttt_] = FullSimplify[
+Tr[DyadicProductVec[(1/Sqrt[2])*(TensorProductVec[{0, 1}, {1, 0}] -
+     TensorProductVec[{1, 0}, {0, 1}])].JointProbDown[0, ttt]]
+]
+
+(* Probability of concurrence of two equal events for two - particle probability in singlet Bell state
+   for either both spin up or both spin down
+ *)
+
+P2UUDD[ttt_] = FullSimplify[ P2UU[ttt] + P2DD[ttt] ]
+
+
+(* Probability of concurrence of two NONequal events for two - particle probability in singlet Bell state
+   for occurrence of spin up and spin down
+ *)
+
+P2UD[ttt_] = FullSimplify[
+Tr[DyadicProductVec[(1/Sqrt[2])*(TensorProductVec[{0, 1}, {1, 0}] -
+     TensorProductVec[{1, 0}, {0, 1}])].JointProbUpDown[0, ttt]]
+]
+
+(* Probability of concurrence of two NONequal events for two - particle probability in singlet Bell state
+   for occurrence of spin down and spin up
+ *)
+
+P2DU[ttt_] = FullSimplify[
+Tr[DyadicProductVec[(1/Sqrt[2])*(TensorProductVec[{0, 1}, {1, 0}] -
+     TensorProductVec[{1, 0}, {0, 1}])].JointProbDownUp[0, ttt]]
+]
+
+(* Probability of concurrence of two NONequal events for two - particle probability in singlet Bell state
+   for either  spin up&down or spin down&up
+ *)
+
+P2UDDU[ttt_] = FullSimplify[ P2UD[ttt] + P2DU[ttt] ]
+
+
+(* plot of Probability of concurrence of two (NON)equal events for two-particle probability
+   and expectation value
+   in a singlet Bell state
+ *)
+
+Plot[{P2UUDD[ttt],P2UDDU[ttt],P2UUDD[ttt]-P2UDDU[ttt]
+     }
+           , {ttt,0,Pi},
+    PlotStyle -> Table[{Hue[ihue/4]}, {ihue, 2, 10}],
+    (* PlotStyle -> {{Hue[0.7]}, {Hue[0.9]}, {Hue[0.3]}, {Hue[0.2]}}, *)
+    PlotRange -> {-1.03, 1.03},
+    Frame -> True,
+    DefaultFont -> {"Times", 24},
+    FrameLabel -> {"\[Theta] [rad]", "P(\[Theta])"},
+    AspectRatio ->   1,
+    FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2, 3 \[Pi]/4, \[Pi]},
+                   {-1,-1/2,{0.0001, "0"}, 1/2, 1}, None, None}]
+
+
+
+(* 4 PARTICLES *)
+
+
+(* Definition of operators *)
+
+
+(* Definition of four-particle joint operators  for occurrence of spin up or down *)
+
+JointProb4[x1_, x2_, x3_, x4_, x1pm_, x2pm_, x3pm_, x4pm_] :=
+  TensorProduct[
+    TensorProduct[
+      TensorProduct[1/2(IdentityMatrix[2] + x1pm * vecsig[1, x1, 0]),
+        1/2(IdentityMatrix[2] + x2pm * vecsig[1, x2, 0])],
+      1/2(IdentityMatrix[2] + x3pm * vecsig[1, x3, 0])],
+    1/2(IdentityMatrix[2] + x4pm * vecsig[1, x4, 0])];
+
+
+(* Definition of one of the two four-particle singlet states *)
+
+psi4s1 = DyadicProductVec[
+          TensorProductVec[
+           (1/Sqrt[2]) {0, 1, -1, 0}, (1/Sqrt[2]) {0, 1, -1,0}
+                          ]
+                ];
+
+
+(* Probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet states
+ *)
+
+P4PM[x1_, x2_, x3_, x4_, x1pm_, x2pm_, x3pm_, x4pm_] = FullSimplify[
+Tr[psi4s1.JointProb4[x1, x2, x3, x4, x1pm, x2pm, x3pm, x4pm]]];
+
+
+(* All the probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet states sum up to 1
+ *)
+
+P4PPMM[\[Theta]]  = FullSimplify[
+Sum[ P4PM[\[Theta],0,\[Theta],0,pm1,pm2,pm3,pm4],
+   {pm1,-1,1,2}, {pm2,-1,1,2},{pm3,-1,1,2},{pm4,-1,1,2}]
+]
+
+
+(* Grouping the probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet on the left (particles 1&2) and right (particles 3&4) hand side
+ *)
+
+P4PPMMG[\[Theta]_]  = FullSimplify[
+Sum[ pm1*pm2*pm3*pm4*P4PM[\[Theta],0,\[Theta],0,pm1,pm2,pm3,pm4],
+   {pm1,-1,1,2}, {pm2,-1,1,2},{pm3,-1,1,2},{pm4,-1,1,2}]
+]
+
+
+Plot[{P4PPMMG[\[Theta]]} , {\[Theta], 0, Pi},
+    PlotStyle -> Table[{Hue[ihue/4]}, {ihue, 2, 10}],
+    (* PlotStyle -> {{Hue[0.7]}, {Hue[0.9]}, {Hue[0.3]}, {Hue[0.2]}}, *)
+    PlotRange -> {-1.03, 1.03},
+    Frame -> True,
+    DefaultFont -> {"Times", 24},
+    FrameLabel -> {"\[Theta] [rad]", "P(\[Theta])"},
+    AspectRatio ->   1,
+    FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2, 3 \[Pi]/4, \[Pi]},
+                   {-1,-1/2,{0.0001, "0"}, 1/2, 1}, None, None}]
+
+
+(* A. Grouping the probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet on the left (particles 1&2) and right (particles 3&4) hand side
+ *)
+
+P4PPMMGA[\[Theta]_, \[CurlyPhi]_] =
+  FullSimplify[
+    Sum[pm1*pm2*pm3*pm4*
+        P4PM[\[Theta], 0, \[CurlyPhi], 0, pm1, pm2, pm3, pm4],
+        {pm1, -1, 1,2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1, 1, 2}]]
+
+
+Plot[{P4PPMMGA[\[Theta],0],P4PPMMGA[\[Theta],Pi/4],P4PPMMGA[\[Theta],Pi/2],
+      P4PPMMGA[\[Theta],3Pi/4],P4PPMMGA[\[Theta],Pi],
+      2\[Theta]/Pi -1} , {\[Theta], 0, Pi},
+    PlotStyle -> Table[{Hue[ihue/9]}, {ihue, 2, 10}],
+    (* PlotStyle -> {{Hue[0.7]}, {Hue[0.9]}, {Hue[0.3]}, {Hue[0.2]}}, *)
+    PlotRange -> {-1.03, 1.03},
+    Frame -> True,
+    DefaultFont -> {"Times", 24},
+    FrameLabel -> {"\[Theta] [rad]", "P(\[Theta])"},
+    AspectRatio ->   1,
+    FrameTicks -> {{{0.0001, "0"}, \[Pi]/4, \[Pi]/2, 3 \[Pi]/4, \[Pi]},
+                   {-1,-1/2,{0.0001, "0"}, 1/2, 1}, None, None}]
+
+(* A. Grouping the probabilities of four-particle joint operators  for occurrence of spin up or down
+   in one of the singlet on the left (particles 1&2) and right (particles 3&4) hand side
+ *)
+
+
+P4PPMMGB[\[Alpha]_, \[Beta]_, \[Gamma]_, \[Delta]_] =
+  FullSimplify[
+    Sum[pm1*pm2*pm3*pm4*
+        P4PM[\[Alpha], \[Beta], \[Gamma], \[Delta], pm1, pm2, pm3,
+          pm4], {pm1, -1, 1, 2}, {pm2, -1, 1, 2}, {pm3, -1, 1, 2}, {pm4, -1,
+        1, 2}]]
+
+(* Cos[\[Alpha] - \[Beta]] Cos[\[Gamma] - \[Delta]] *)
+
+
+
+
+
+
+(*
+Export["c:/mytex/2005-gtq-fc.ps", Out[28], "EPS", ImageSize -> 500]
+
+http://mathworld.wolfram.com/HeavisideStepFunction.html
+ *)

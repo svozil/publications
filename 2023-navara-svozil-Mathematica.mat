@@ -1,0 +1,191 @@
+(*
+
+variants = {
+{ Pi/6 ,1.58663,0.953254},
+{ Pi/3 , 1.64229,N[4/5]},
+{ 5 Pi/12 ,1.69392,0.671872},
+{ Pi/2 ,1.77215,0.5},
+{ 4 Pi/6 , 2 Pi/3 , 0 },
+{N[3 Pi/2 ,1.77215,0.5}
+           }
+
+
+
+
+*)
+
+alpha = -Pi/6;
+
+
+v2={Sqrt[2/3], 0, Sqrt[1/3]};
+v14= {-Sqrt[1/6], Sqrt[1/2], Sqrt[1/3]};
+v26= {-Sqrt[1/6], -Sqrt[1/2], Sqrt[1/3]};
+
+v12=RotationMatrix[ alpha , {0, 0, 1}] . v2;
+v24=RotationMatrix[ alpha , {0, 0, 1}] . v14;
+v36=RotationMatrix[ alpha , {0, 0, 1}] . v26;
+
+v1  = Normalize[Cross[v2,v12]];
+v13 = Normalize[Cross[v14,v24]];
+v25 = Normalize[Cross[v26,v36]];
+
+v3  = FullSimplify[ Normalize[Cross[v1,v2]    ] ]   ;
+v15 = FullSimplify[ Normalize[Cross[v13,v14]  ] ]   ;
+v27 = FullSimplify[ Normalize[Cross[v25,v26]  ] ]   ;
+v11 = FullSimplify[ Normalize[Cross[v1,v12]   ] ]    ;
+v23 = FullSimplify[ Normalize[Cross[v13,v24]  ] ]    ;
+v35 = FullSimplify[ Normalize[Cross[v25,v36]  ] ]    ;
+
+
+(*
+
+v5={v51,v52,v53};
+
+Reduce[{
+v3 . v5 == 0,
+(RotationMatrix[beta, {0, 0, 1}] . v2) . v5 == 0,
+Cross[(RotationMatrix[beta, {0, 0, 1}] . v2), (RotationMatrix[alpha + beta, {0, 0, 1}] . v2)] . v5 == 0,
+v51 != 0,
+-3 Pi/4 < beta < 3 Pi/4
+       },{beta}, Reals]
+
+v51 != 0 && v52 == v51/(3 Sqrt[3]) && v53 == Sqrt[2] v51 &&
+ beta == -2 ArcTan[3 Sqrt[3]]
+
+v51 =1 && v52 == 1/(3 Sqrt[3]) && v53 == Sqrt[2]   &&
+ beta == -2 ArcTan[3 Sqrt[3]]
+
+beta = 2 ArcTan[(-8 Sqrt[3] - 3 Sqrt[6])/(Sqrt[2] (25 + 18 Sqrt[2]))];
+
+v5={1,1/23 (-3 Sqrt[3] - 4 Sqrt[6]),-(2 (18 Sqrt[3] + Sqrt[6]))/(23 Sqrt[3])};
+v4 = FullSimplify[Cross[v3,v5]  ]   *3 ;
+FullSimplify[checkorthogonality[v3,v4,v5]]
+
+beta= 1.642285776;
+
+beta = -2 (5 \[Pi] +
+   ArcTan[(-9375 - 225 Sqrt[65] - (
+       48750 Sqrt[6 (197475 - 675 Sqrt[65])])/(1950 + 75 Sqrt[65]) - (
+       1875 Sqrt[390 (197475 - 675 Sqrt[65])])/(
+       1950 + 75 Sqrt[65]))/(8 Sqrt[3] (1950 + 75 Sqrt[65]))]);
+
+*)
+
+beta =1.58663;
+
+N[beta]
+
+(*
+rotation('X8', X2, alpha+beta, axis):
+rotation('X20', X14, alpha+beta, axis):
+rotation('X32', X26, alpha+beta, axis):
+rotation('X6', X2, beta, axis):
+rotation('X18', X14, beta, axis):
+rotation('X30', X26, beta, axis):
+*)
+
+
+v6  = RotationMatrix[beta , {0, 0, 1}] . v2      ;
+v18 = RotationMatrix[beta , {0, 0, 1}] . v14     ;
+v30 = RotationMatrix[beta , {0, 0, 1}] . v26     ;
+v8  = RotationMatrix[ alpha + beta , {0, 0, 1}] . v2     ;
+v20 = RotationMatrix[ alpha + beta , {0, 0, 1}] . v14     ;
+v32 = RotationMatrix[ alpha + beta , {0, 0, 1}] . v26     ;
+
+v7  = FullSimplify[ Normalize[Cross[v6,v8]    ]]   ;
+v19 = FullSimplify[ Normalize[Cross[v18,v20]  ]]   ;
+v31 = FullSimplify[ Normalize[Cross[v30,v32]  ]]   ;
+v5  = FullSimplify[ Normalize[Cross[v6,v7]    ]]   ;
+
+v17 = FullSimplify[ Normalize[Cross[v18,v19]  ]]   ;
+v29 = FullSimplify[ Normalize[Cross[v30,v31]  ]]   ;
+v33 = FullSimplify[ Normalize[Cross[v31,v32]  ]]   ;
+v21 = FullSimplify[ Normalize[Cross[v19,v20]  ]]   ;
+v9  = FullSimplify[ Normalize[Cross[v7,v8]    ]]   ;
+
+v4  = FullSimplify[ Normalize[Cross[v3,v5]    ]]   ;
+v16 = FullSimplify[ Normalize[Cross[v15,v17]  ]]   ;
+v28 = FullSimplify[ Normalize[Cross[v27,v29]  ]]   ;
+v34 = FullSimplify[ Normalize[Cross[v33,v35]  ]]   ;
+v22 = FullSimplify[ Normalize[Cross[v21,v23]  ]]   ;
+v10 = FullSimplify[ Normalize[Cross[v9,v11]   ]]   ;
+
+
+(* should be mutually orthogonal within contexts/blocks *)
+
+checkorthogonality[a_,b_,c_] := {a.b,a.c,b.c};
+
+FullSimplify[checkorthogonality[v1 ,v2 ,v3]]
+FullSimplify[checkorthogonality[v2 ,v14,v26]]
+FullSimplify[checkorthogonality[v12,v24,v36]]
+FullSimplify[checkorthogonality[v13,v14,v15]]
+FullSimplify[checkorthogonality[v25,v26,v27]]
+FullSimplify[checkorthogonality[v13,v23,v24]]
+FullSimplify[checkorthogonality[v25,v35,v36]]
+FullSimplify[checkorthogonality[v1,v12,v11]]
+
+
+FullSimplify[checkorthogonality[v5 ,v6 ,v7]]
+FullSimplify[checkorthogonality[v17 ,v18,v19]]
+FullSimplify[checkorthogonality[v29,v30,v31]]
+FullSimplify[checkorthogonality[v31,v32,v33]]
+FullSimplify[checkorthogonality[v19,v20,v21]]
+FullSimplify[checkorthogonality[v7,v8,v9]]
+FullSimplify[checkorthogonality[v6,v18,v30]]
+FullSimplify[checkorthogonality[v8,v20,v32]]
+
+FullSimplify[checkorthogonality[v3,v4,v5]]
+FullSimplify[checkorthogonality[v15,v16,v17]]
+FullSimplify[checkorthogonality[v27,v28,v29]]
+FullSimplify[checkorthogonality[v33,v34,v35]]
+FullSimplify[checkorthogonality[v21,v22,v23]]
+FullSimplify[checkorthogonality[v9,v10,v11]]
+
+(* should not be mutually orthogonal *)
+
+print["should not be mutually orthogonal"]
+
+FullSimplify[checkorthogonality[v4,v16,v28]]
+FullSimplify[checkorthogonality[v10,v22,v34]]
+
+
+FullSimplify[v4+v16+v28]
+FullSimplify[v10+v22+v34]
+
+
+(*<<Algebra`ReIm`*)(*Definition of the Tensor Product*)
+TensorProduct1[a_, b_] :=
+  Table[(*a,b are nxn and mxm-matrices*)
+   a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*
+    b[[s - Floor[(s - 1)/Length[b]]*Length[b],
+      t - Floor[(t - 1)/Length[b]]*Length[b]]], {s, 1,
+    Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(*Definition of the Tensor Product between two vectors*)
+
+TensorProductVec[x_, y_] :=
+  Flatten[Table[
+    x[[i]] y[[j]], {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(*Definition of the Dyadic Product*)
+
+DyadicProductVec[x_] :=
+  Table[x[[i]] Conjugate[x[[j]]], {i, 1, Length[x]}, {j, 1, Length[x]}];
+
+
+FullSimplify[DyadicProductVec[v4]+DyadicProductVec[v16]+DyadicProductVec[v28]]
+FullSimplify[DyadicProductVec[v10]+DyadicProductVec[v22]+DyadicProductVec[v34]]
+
+FOR=ToRadicals[
+   FullSimplify[
+    ToRadicals[{v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12,
+      v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25,
+       v26, v27, v28, v29, v30, v31, v32, v33, v34, v35, v36}]]];
+
+Length[FOR]==Length[Union[FOR]]
+
+Print[MatrixForm[FOR]]
+
+TeXForm[MatrixForm[FOR]]

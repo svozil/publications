@@ -1,0 +1,670 @@
+\documentclass[
+aip,
+cha,
+amssymb
+]{revtex4-1}
+
+
+%\newcommand{\dom}{{\rm dom}}
+%\usepackage{latexsym,url,amssymb}
+\usepackage{graphicx}
+\def \C{{\mathfrak C}}
+\def \N{{\mathbf N}}
+\def \R{{\mathbf R}}
+
+\newenvironment{Instruction}[2]%
+{
+%   \newcommand{\Name}[1]{\item[\hskip \labelsep{}  ] ##1}%
+\noindent {\bf #1 \hfill #2} \\[-2ex]
+\begin{flushright}\begin{minipage}{\textwidth}
+   }%
+{\end{minipage}
+\end{flushright}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{fact}[thm]{Fact}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{defn}[thm]{Definition}
+%\newtheorem{prop}[thm]{Proposition}
+\newtheorem{sch}[thm]{Scholium}
+\newenvironment{proof}{\trivlist \item[\hskip \labelsep{\bf Proof.}]}%          Dineen's
+{{\hfill$\Box$}\endtrivlist}
+
+
+
+\begin{document}
+
+\sloppy
+
+\title{$\Pi_{1}$--Statements, Chaotic Systems and the Church-Turing Thesis}
+
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+\author{Elena Calude}
+\email{e.calude@massey.ac.nz}
+\homepage{http://www.massey.ac.nz/~ecalude}
+\affiliation{Institute of Information and Mathematical Sciences,
+Massey University at Albany,
+Private Bag 102-904, North Shore MSC New Zealand}
+
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+\affiliation{Institute for Theoretical Physics, {\it Vienna} University of Technology,
+Wiedner Hauptstrasse 8-10/136, 1040 {\it Vienna},  Austria}
+
+
+\date{\today}
+
+\begin{abstract}
+Proving that a dynamical system is chaotic is an important problem in chaos theory \cite{1985cfd..book.....F}. In this note we show that to every $\Pi_{1}$--statement $\pi$ one can associate a dynamical system $\mathcal{H}_{\pi}$ such that proving in Zermelo-Fraenkel set theory with the Axiom of Choice (ZFC), the chaoticity of $\mathcal{H}_{\pi}$ is equivalent to proving  $\pi$ in ZFC. Fermat's last theorem, the Riemann hypothesis and the four color theorem are examples of  $\Pi_{1}$--statements. By applying the computational method  in  \cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}   to  $\Pi_{1}$--statements we evaluate the complexity of proving the chaoticity of some dynamical systems. We show that there are dynamical systems for which the ZFC proofs of their chaoticity are arbitrarily complex according to the above complexity measure. Also, there are infinitely many chaotic systems for which ZFC cannot prove their chaoticity. The techniques are related to (i) the construction of a Poincar\'e box as a classical physical random number generator (akin to a quantum Born box), and (ii) the conceivable capability of classical physical systems to ``compute the hard (or even un)computable'' by measuring observables which correspond to computationally hard (or even un)computable problems.
+\end{abstract}
+
+\pacs{05.45.Ac,05.45.Gg,02.10.Ab}
+\keywords{$\Pi_{1}$--statement, low-dimensional chaos, ZFC provability, logic and set theory}
+\preprint{CDMTCS preprint nr. 384/2010}
+\maketitle
+
+{\bf
+Proving the chaoticity of some dynamical systems is equivalent to solving the hardest problems in mathematics.
+Conversely, by assuming the chaoticity of some dynamical systems, our current theory of effective computation could be incomplete
+in the sense that physical chaos outperforms computations restricted by that theory.}
+
+\section{Introduction}
+
+%The first paragraph of the article should be a Lead Paragraph and will be highlighted in the journal in boldface type.
+%This paragraph, which essentially advertises the main points of the article,
+%must describe in terms accessible to the nonspecialist reader the context and significance of the research problem studied and the importance of the results.
+%The Editors will pay special attention to the clarity and accessibility of this paragraph, and in many cases may rewrite it.
+
+A system is chaotic if small differences in initial conditions may yield widely diverging temporal evolution, making long-term prediction impossible in general~\cite{Campbell-1882,poincare14}.
+Deterministic systems whose dynamics are fully determined by their initial conditions,
+with no random elements involved in the strictly causal laws governing their temporal evolution,
+can be chaotic~\cite{kellert-93,Devaney-1989}.
+Despite causality~\cite{suppes-1993}, virtually any ``interesting'' question about non-trivial dynamical systems appears to be
+undecidable \cite{Stewart-91}, but {\it is there a way to mathematically prove this statement?}
+Closely related is the question, {\it is there a way to classify the difficulty of proving chaoticity of a dynamical system?}
+There are only few ``bridges'' between chaotic dynamical systems and
+complexity theories, in particular algorithmic information theory \cite{gacs09}.
+In what follows, we will discuss the equivalence between chaotic dynamical and formal systems;
+stated pointedly  ``proving the chaoticity of some dynamical systems''
+amounts to ``solving the hardest problems in mathematics'' and {\it vice versa.}
+
+Using the results of Richardson \cite{richardson68} and
+Holmes and  Marsden \cite{Homes-Marsden-82},
+da Costa,  Doria  and Amaral \cite{dc-d93} have constructed a two-dimensional Hamiltonian system $\mathcal{H}$
+--- a system of first-order differential equations which can be written in the form of Hamilton's equations,
+in which the Hamilton function represents the total energy of the system ---
+with the property that proving (in ZFC)
+the existence of a Smale horseshoe in $\mathcal{H}$ is equivalent to proving Fermat's last theorem. In  \cite{ecalude-10}
+a shorter self-contained proof for da Costa,  Doria  and Amaral theorem was given and the  method  in  \cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}
+was applied to show that proving Fermat's last theorem has low computational complexity, hence proving that
+ da Costa,  Doria  and Amaral two-dimensional Hamiltonian system $\mathcal{H}$ has a Smale horseshoe has low computational complexity.
+
+As Fermat's last theorem is a $\Pi_{1}$--statement, i.e.\ a statement of the form $\forall n \, {\rm Pred} (n)$, where Pred is a computable predicate, {\it  it is natural to ask whether
+the above results can be extended to any $\Pi_{1}$--statement.}
+In this note we show that to every $\Pi_{1}$--statement $\pi$ one can associate a dynamical system $\mathcal{H}_{\pi}$ such that
+proving in ZFC the chaoticity of $\mathcal{H}_{\pi}$ is equivalent to proving  $\pi$ in ZFC.  By applying
+the computational method  in  \cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}   to  $\Pi_{1}$--statements we
+show that there are dynamical systems whose ZFC proofs of their chaoticity are arbitrarily complex and
+there are chaotic systems for which ZFC cannot prove their chaoticity.
+
+\section{$\Pi_{1}$--statements and the complexity measure}
+
+In this section we present a complexity measure   \cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}
+for  $\Pi_{1}$--statements [i.e. statements of the form ``$\forall n \, {\rm Pred}(n)$'',
+where Pred is a computable predicate] defined by means of register machine programs.
+
+We use a fixed ``universal formalism'' for programs, more precisely, a universal self-delimiting Turing machine $U$. The machine $U$ (which is fully described
+below) has to be {\it minimal} in the sense
+that none of its instructions can be simulated by a program for $U$ written with the remaining instructions.
+
+To every $\Pi_{1}$--statement $\pi = \forall m {\rm Pred} (m)$ we associate the algorithm $\Pi_{\rm Pred}=\inf\{n\,:\, {\rm Pred}(n) = \mbox{ false}\}$ which systematically searches for a counter-example for $\pi$. There are many programs (for $U$) which implement $\Pi_{\rm Pred}$; without loss of generality, any such program will be denoted also by $\Pi_{\rm Pred}$. Note that
+$ \pi \mbox{  is true iff   }  U(\Pi_{\rm Pred})$ never halts.
+
+The complexity (with respect to $U$) of a $\Pi_{1}$--statement $\pi$ is defined by
+the length of the smallest-length  program (for  $U$) $\Pi_{\rm Pred}$---defined as above---where minimization is calculated for all possible representations of $\pi$ as $\pi = \forall n {\rm Pred}(n)$:
+
+
+
+\[C_{U}(\pi) = \min \{ |\Pi_{{\rm Pred}}| \,:\,  \pi = \forall n {\rm Pred}(n)\}.\]
+
+
+For $C_{U}$ it is irrelevant  whether $\pi$ is known to be true or false. In particular, the program containing the  single instruction halt is not a $\Pi_{{\rm Pred}}$ program, for any Pred.
+
+Because the complexity  $C_{U}$ is   incomputable,  we can work only with upper bounds for $C_{U}$. As the exact value
+of $C_{U}$ is not important, following \cite{calude-elena-ec2} we classify $\Pi_{1}$--statements into the following classes (a kilobit (kbit or kb) is equal to $2^{10}$ bits):
+
+$$\C_{U,n} = \{\pi \,:\,
+\pi \mbox{  is a $\Pi_{1}$--statement}, C_{U}(\pi) \le n \mbox{ kbit} \}.$$
+
+
+We  briefly describe the syntax  and the semantics
+of a register machine  language which  implements a (natural) minimal
+universal prefix-free binary Turing machine $U$.
+
+Any register program (machine) uses a finite number of registers, each of which may
+contain an arbitrarily large non-negative  integer.
+
+By default, all registers, named with a string of lower or upper
+case letters, are initialized to 0.  Instructions are labeled
+by default with 0,1,2,\ldots
+
+
+The register machine  instructions are listed below.
+Note that in all cases R2 and R3 denote either a register or a non-negative integer, while R1  must be a
+register.  When referring to R we use, depending upon the context, either the name of register R or the non-negative integer stored in R.
+
+\bigskip
+
+\begin{Instruction}{~=R1,R2,R3}{    }%                   (EQ R1  R2  R3)}
+If the contents of R1 and R2 are equal, then the execution continues
+at the R3-th instruction of the program.
+If the contents of R1 and R2  are not equal, then execution continues with the next instruction
+in sequence. If the content of R3 is outside the scope of the program,
+then we have an illegal branch error.
+
+\bigskip
+
+\end{Instruction}
+
+\begin{Instruction}{~\&R1,R2}{      }%                    (SET R1  R2)}
+The contents of register R1 is replaced by
+ R2.
+
+ \bigskip
+
+\end{Instruction}
+
+\begin{Instruction}{~+R1,R2}{       }%                    (ADD R1  R2)}
+The contents of register R1 is replaced by the sum of the contents of
+ R1 and R2.
+\end{Instruction}
+
+\bigskip
+
+\begin{Instruction}{~!R1}{         }%                         (READ R1)}
+One bit is read into the  register R1, so the contents of R1
+becomes either 0 or 1.  Any attempt to read past the last data-bit
+results in a run-time error.
+\end{Instruction}
+
+\bigskip
+
+\begin{Instruction}{~\%}{          }%                            (HALT)}
+   This is the last instruction for each register machine
+program before the input data. It halts the execution in two
+possible states: either successfully halts or it halts with an under-read error.
+\end{Instruction}
+
+
+
+
+A {\em register machine program}\/ consists of a finite list of
+labeled instructions from the above list, with the restriction that
+the halt instruction appears only once, as the last instruction
+of the list. The input data (a binary string) follows immediately
+after the halt instruction.  A program not reading the whole
+data or attempting to read past the last data-bit results in a
+run-time error. Some programs (as the ones presented in this paper)
+have no input data; these programs cannot halt with an under-read error.
+
+
+
+The instruction {\tt =R,R,n} is used for the unconditional jump to the   $n$-th instruction
+of the program.
+For Boolean data types we use integers 0 = \verb|false| and 1 = \verb|true|.
+
+For longer programs it is convenient to  distinguish
+between the main program and some sets of instructions called ``routines'' which
+perform specific tasks for another routine or the main program.  The call and call-back of a routine are executed with  unconditional jumps.
+
+To compute an upper bound on the complexity of a $\Pi_{1}$--statement $\pi$ we need to compute the size in bits of the program  $\Pi_{\rm \pi}$,
+so we need to uniquely code in binary the programs for $U$. To this aim we use a prefix-free coding as follows.
+
+Table~\ref{2010-pi1chaos-t1} enumerates the binary coding of  special characters.
+\begin{table}
+\caption{Binary encoding of  special characters (instructions and comma); $\varepsilon$ is the empty string.}
+\begin{center}
+$\begin{array}{|c|c||c|c|}
+\hline\hline
+{\rm special   } \,\,\, {\rm  characters} & {\rm code} &  {\rm instruction} & {\rm code}\\  \hline
+, & \varepsilon  & + & 111 \\
+ \& & 01 & ! &  110 \\
+= & 00  & \% & 100\\
+ \hline\hline \end{array}
+$
+\end{center}
+\label{2010-pi1chaos-t1}
+\end{table}
+For registers we use the prefix-free regular code ${\rm code}_{1} = \{0^{|x|}1x \mid x\in\{0,1\}^{*}\}$.
+Table~\ref{2010-pi1chaos-t2} contains the codes of
+the first 14 registers. The register names are chosen  to  optimize the length of the program, i.e.\
+the most frequent registers have the smallest ${\rm code}_{1}$ length.
+\begin{table}
+\caption{Binary encoding of the first 14 registers.}
+\begin{center}
+$\begin{array}{|c|c||c|c|}
+\hline\hline
+{\rm register} & {\rm code}_{1} & {\rm register} & {\rm code}_{1} \\\hline
+{\rm R}_1 & 010 & {\rm R}_8  & 0001001\\
+{\rm R}_2 & 011 & {\rm R}_9 & 0001010\\
+{\rm R}_3 & 00100 & {\rm R}_{10} & 0001011\\
+{\rm R}_4 & 00101 & {\rm R}_{11}  & 0001100\\
+{\rm R}_5 & 00110 & {\rm R}_{12} & 0001101\\
+{\rm R}_6  & 00111 & {\rm R}_{13} & 0001110\\
+{\rm R}_7  & 0001000 & {\rm R}_{14} & 0001111\\
+\hline\hline
+\end{array}$
+\end{center}
+\label{2010-pi1chaos-t2}
+\end{table}
+
+%\if01
+%\begin{center}
+%\[\begin{array}{|c|c||c|c||c|c||c|c|}
+%\hline
+%{\rm register} & {\rm code}_{1} & {\rm register} & {\rm code}_{1}   & {\rm register} & {\rm code}_{1}   & {\rm register} & {\rm code}_{1} \\\hline
+%{\rm R}_1 & 010 & {\rm R}_9 & 0001010 & {\rm R}_{17} &  000010010& {\rm R}_{25} & 000011010\\ \hline
+%{\rm R}_2 & 011 & {\rm R}_{10} & 0001011& {\rm R}_{18} &  000010011&{\rm R}_{26} & 000011011\\ \hline
+%{\rm R}_3 & 00100 &{\rm R}_{11}  & 0001100 & {\rm R}_{19} & 000010100 & {\rm R}_{27} & 000011100\\ \hline
+%{\rm R}_4 & 00101 & {\rm R}_{12} & 0001101& {\rm R}_{20} &  000010101& {\rm R}_{28} &   000011101\\\hline
+%{\rm R}_5 & 00110 & {\rm R}_{13} & 0001110 & {\rm R}_{21} &  000010110& {\rm R}_{29} &  000011110\\\hline
+%
+%{\rm R}_6  & 00111 & {\rm R}_{14} & 0001111 & {\rm R}_{22} &  000010111& {\rm R}_{30} &  000011111\\\hline
+%
+%{\rm R}_7  & 0001000 &{\rm R}_{15}  & 000010000 &{\rm R}_{23}  &  000011000&
+%{\rm R}_{31} & 00000100000\\\hline
+%
+%{\rm R}_8  & 0001001 &{\rm R}_{16}  & 000010001 & {\rm R}_{24} &  000011001& {\rm R}_{32} & 00000100001\\\hline
+%\end{array}\]
+%Table~2
+%\end{center}
+%\fi
+
+For non-negative integers we use the prefix-free regular code  ${\rm code}_{2}
+= \{1^{|x|}0x \mid x\in\{0,1\}^{*}\}$. Table~\ref{2010-pi1chaos-t3} contains  the codes of
+the first 16 non-negative integers.
+\begin{table}
+\caption{Binary encoding of the first 16 non-negative integers.}
+\begin{center}
+$\begin{array}{|c|c||c|c||c|c||c|c|}
+\hline\hline
+{\rm integer} & {\rm code}_{2} & {\rm integer} & {\rm code}_{2}  & {\rm integer} & {\rm code}_{2}  & {\rm integer} & {\rm code}_{2}\\\hline
+0 & 100 & 4 & 11010 & 8 &  1110010& 12 & 1110110\\
+1 & 101 & 5 & 11011& 9 &  1110011& 13 & 1110111\\
+2 & 11000 & 6 & 1110000 & 10 & 1110100 & 14 & 111100000\\
+3 & 11001 & 7 & 1110001 & 11 &  1110101& 15 & 111100001
+\\\hline\hline\end{array}$
+\end{center}
+\label{2010-pi1chaos-t3}
+\end{table}
+
+The instructions are coded by self-delimiting binary  strings as follows:
+\begin{itemize}
+\item[{\rm (i)}]  {\tt \&R1,R2} is coded in two different ways, depending on R2.
+As $x\varepsilon = \varepsilon x=x$, for every string $x \in \{0,1\}^{*}$, in what follows we omit $\varepsilon$.
+\[ 01{\rm code}_{1}({\rm R}1){\rm code}_{i}({\rm R}2),\]
+where $i=1$  if R2 is a register and $i=2$ if R2 is an integer.
+
+\item[{\rm (ii)}]   {\tt +R1,R2} is coded in two different ways depending on R2:
+\[ 111{\rm code}_{1}({\rm R}1){\rm code}_{i}({\rm R}2),\]
+where $i=1$  if R2 is a register and $i=2$ if R2 is  a non-negative integer.
+
+\item[{\rm (iii)}]  {\tt =R1,R2,R3} is coded in four different ways depending on the data types of  R2 and R3:
+
+
+\[ 00{\rm code}_{1}({\rm R}1){\rm code}_{i}({\rm R}2){\rm code}_{j}({\rm R}3),\]
+where $i=1$  if R2 is a register and $i=2$ if R2 is a non-negative integer,
+$j=1$  if R3 is a register and $j=2$ if R3 is a non-negative integer.
+
+
+\item[{\rm (iv)}]  {\tt !R1} is coded by \[110{\rm code}_{1}({\rm R1}).\]
+\item[{\rm (v)}]  {\tt \%} is coded by \[100.\]
+\end{itemize}
+
+
+For example, Goldbach's conjecture (included in Hilbert's eighth problem \cite{hilbert-1900e})
+states   that {
+\it all positive even integers greater than two can be expressed as the
+sum of two primes.}
+The program  $\Pi_{\rm Goldbach}$  gives the upper bound $C_{U}({\rm Goldbach})
+\le 540$ which proves that  the Goldbach conjecture is in the lowest class $\C_{U,1}$.
+
+
+\begin{verbatim}
+                   0 = a a 16                         19 & c 22
+                   1 & e 2                            20 & a h
+                   2 & d 1                            21 = a a 1
+                   3 = a e c                          22 = d 0
+                   4 & d 0                            23 & i 0
+                   5 & f e                            24 & k h
+                   6 = f a 13                         25 = k g 29
+                   7 + f 1                            26 + i 1
+                   8 + d 1                            27 + k 1
+                   9 = d e 11                         28 = a a 25
+                  10 = a a 6                          29 & c 32
+                  11 & d 0                            30 & a i
+                  12 = a a 6                          31 = a a 1
+                  13 = d 0 c                          32 = d 0 35
+                  14 + e 1                            33 + g 2
+                  15 = a a 2                          34 = a a 17
+                  16 & g 4                            35 + h 1
+                  17 & h 2                            36 = a a 18
+                  18 = g h 38                         37 & d 0
+                                                      38 %
+\end{verbatim}
+
+%\if01
+%{\small
+%\begin{verbatim}
+%0 = a a 16
+%1 & e 2
+%2 & d 1
+%3 = a e c
+%4 & d 0
+%5 & f e
+%6 = f a 13
+%7 + f 1
+%8 + d 1
+%9 = d e 11
+%10 = a a 6
+%11 & d 0
+%12 = a a 6
+%13 = d 0 c
+%14 + e 1
+%15 = a a 2
+%16 & g 4
+%17 & h 2
+%18 = g h 38
+%19 & c 22
+%20 & a h
+%21 = a a 1
+%22 = d 0
+%23 & i 0
+%24 & k h
+%25 = k g 29
+%26 + i 1
+%27 + k 1
+%28 = a a 25
+%29 & c 32
+%30 & a i
+%31 = a a 1
+%32 = d 0 35
+%33 + g 2
+%34 = a a 17
+%35 + h 1
+%36 = a a 18
+%37 & d 0
+%38 %
+%\end{verbatim}
+%}
+%\fi
+
+\section{Richardson-Caviness-Wang lemma}
+Following Richardson \cite{richardson68}, Caviness \cite{321591} and Wang \cite{wang} we fix a positive integer $n$,
+and denote by $\mathcal{E}_{n}$ a set of expressions representing real valued, partially defined functions of real variables and by $F(\mathcal{E}_{n})$
+the set of functions represented by the expressions in $\mathcal{E}_{n}$. By $e(x_{1}, x_{2}, \ldots ,x_{n})$ we denote the function  represented by
+the expression  $e\in \mathcal{E}_{n}$. Let
+$\mu$ and ${\rm sign}$ be the expressions denoting two unary functions such that
+$\mu(x) = |x|,\,  {\rm sign}(x) = 1$, for all $x\not= 0$.
+We assume that $\mathcal{E}_{n}$
+is generated by:
+\begin{itemize}
+\item[{\rm (i)}]   the rational numbers and $\pi$ as constant functions,
+\item[{\rm (ii)}]    variables $x_{1}, x_{2}, \ldots ,x_{n}$,
+\item[{\rm (iii)}]     the functions $\sin, \mu, {\rm sign}$, and
+\item[{\rm (iv)}]    the operations of  addition, subtraction, multiplication and composition.
+\end{itemize}
+
+
+In fact we can omit subtraction and $\pi$, cf. \cite{wang,Laczkovich-2002}.
+
+
+Let $\mathcal{P}_{n}$ be the set of  polynomials with integral coefficients
+in the variables $x_{1}, x_{2}, \ldots ,x_{n}$. Let $\N, \R$ denote the set of non-negative integers and reals, respectively.
+
+
+\begin{lem}\label{equiv} {\rm \cite{richardson68,321591,wang} }
+For every polynomial $P(x_{1}, x_{2}, \ldots ,x_{n}) \in \mathcal{P}_{n}$ there exists $f_{P}(x_{1}, x_{2}, \ldots ,x_{n}) \in F(\mathcal{E}_{n})$ such that the following conditions are equivalent.
+\begin{itemize}
+\item[{\rm (i)}] $\exists x_{1}, x_{2}, \ldots ,x_{n} \in \N$:
+$P(x_{1}, x_{2}, \ldots ,x_{n})=0$.
+\item[{\rm (ii)}]  $\exists  x_{1}, x_{2}, \ldots ,x_{n} \in \R$:
+$f_{P}(x_{1}, x_{2}, \ldots ,x_{n})=0$.
+\item[{\rm (iii)}]
+$\exists  x_{1}, x_{2}, \ldots ,x_{n} \in \R$:
+$f_{P}(x_{1}, x_{2}, \ldots ,x_{n})\le 1$.
+\end{itemize}
+
+\end{lem}
+
+\section{Main results}
+
+
+\begin{thm} \label{CC}Assume {\rm ZFC} is arithmetically
+sound and fix a computable predicate {\rm Pred}. Then, to each $\Pi_{1}$--statement
+$\pi= \forall m \, {\rm Pred}(m)$
+one can effectively construct in the formal language of {\rm ZFC} the expression $e(x_{1}, \ldots ,x_{n}) \in \mathcal{E}_{n}$ describing a  Hamiltonian system $\mathcal{H}_{\pi}$ such that  {\rm ZFC} proves the chaoticity of
+$\mathcal{H}_{\pi}$  iff   {\rm ZFC} proves $\pi$.
+
+\end{thm}
+
+
+%\begin{proof}
+Using the MRD Theorem \cite{Matiyasevich-htp} to the  computable predicate Pred and its negation  we derive Diophantine representations for both
+sets $\{i \in\N \,:\, {\rm Pred}(i) =0\}$ and $\{i \in\N \,:\,  {\rm Pred}(i) =1\}$. In particular, we can effectively find a Diophantine equation $D(m, x_{1}, \ldots ,x_{n})$ such that for each natural $m$ we have:
+
+
+
+\begin{eqnarray*}
+{\rm Pred}(m)=1 &\mbox{  iff  } & \neg( {\rm Pred}(m)=0)\\
+&\mbox{  iff  } & \neg( \exists    x_{1}, \ldots ,x_{n}\in\N:
+D(m, x_{1}, \ldots ,x_{n}) =0)\\
+&\mbox{  iff  } & \forall   x_{1}, \ldots ,x_{n}\in \N:  D(m, x_{1}, \ldots ,x_{n}) \not=0.
+\end{eqnarray*}
+
+
+
+Consequently, using Lemma~\ref{equiv} we obtain the following equivalent statements:
+
+
+\begin{eqnarray*}
+ \pi=\forall m \, {\rm Pred}(m) &  \Longleftrightarrow & \forall m, x_{1}, \ldots ,x_{n} \in \N: D(m,x_{1}, \ldots ,x_{n})\not=0,\\
+%& \Longleftrightarrow  & \forall m\in \N, \neg (\exists  x_{1}, \ldots ,x_{n} \in\N:  D(m, x_{1}, \ldots ,x_{n}) =0),\\
+& \Longleftrightarrow  & \forall m\in\N, \forall  x_{1}, \ldots ,x_{n} \in\R:  f_{D}(m,x_{1}, \ldots ,x_{n})\not=0,\\
+& \Longleftrightarrow  &
+\forall m\in\N, \forall  x_{1}, \ldots ,x_{n} \in\R:  f_{D}(m,x_{1}, \ldots ,x_{n})>1,\\
+& \Longleftrightarrow  &
+\forall m\in\N, \forall  x_{1}, \ldots ,x_{n} \in\R:  F_{D}(m,x_{1}, \ldots ,x_{n})=1,\\[-4ex]
+\end{eqnarray*}
+where $$F_{D}(m,x_{1}, \ldots ,x_{n}) = {\rm sign}(\mu(f_{D}(m,x_{1}, \ldots ,x_{n})-1)+f_{D}(m,x_{1}, \ldots ,x_{n})-1).$$
+
+\noindent Here
+$$F_{D}(m,x_{1}, \ldots ,x_{n}) = 0 \mbox{ iff }  f_{D}(m,x_{1}, \ldots ,x_{n}) \le 1.$$
+
+
+So,
+\begin{equation}
+\label{h}
+\mbox{ ZFC   proves  }  \pi \mbox{  iff   ZFC proves  }   \forall  x_{1}, \ldots ,x_{n} \in\R:  F_{D}(m,x_{1}, \ldots ,x_{n})=1.
+\end{equation}
+
+
+
+We denote by $h,k$
+the Hamiltonian for the free particle and the Hamiltonian for the two-dimensional
+system with a Smale horseshoe in \cite{Homes-Marsden-82} (Example 4).  We next define
+the Hamiltonian:
+
+
+\begin{equation}
+\label{H}
+\mathcal{H}_{\pi} = F_{P} \cdot h + (1- F_{P})\cdot k.
+\end{equation}
+
+
+In view of (\ref{h}) and the fact that $ \forall  x_{1}, \ldots ,x_{n} \in\R,  F_{D}(m,x_{1}, \ldots ,x_{n})
+\in\{0,1\}$ we have:
+
+
+\[ \mbox{  ZFC proves  }  \pi \mbox{  iff  ZFC proves  that } \mathcal{H}_{\pi} \mbox{   has a Smale horseshoe, }\]
+
+\noindent which concludes the proof.
+
+%\end{proof}
+
+
+Theorem~\ref{CC} can be applied to a variety of $\Pi_{1}$--statements including Goldbach's conjecture,
+Fermat's lat theorem, Riemann's hypothesis, the four color theorem, and many others.
+
+
+How difficult is to prove in ZFC the chaoticity of the system $\mathcal{H}_{\pi}$ in (\ref{H})?
+Using the
+complexity $C_{U}$ we can show that Fermat's last theorem and Goldbach's conjecture are in $\C_{U,1}$,   the Riemann hypothesis is in
+   $\C_{U,3}$, and the four colour theorem is in $\C_{U,4}$ \cite{calude-elena-ec2,calude-elena-CE3,ecalude-09}; their corresponding
+   dynamical systems produced by Theorem~\ref{CC} have the property that the complexity of their chaoticity proofs is in the corresponding class.
+
+
+
+As for every natural $n$ there exists a natural $m_{n}$ such that $\C_{U,n} \subset \C_{U,m_{n}}$, it follows that,
+according to $C_{U}$, there exist arbitrarily complex $\Pi_{1}$--statements, so proving the chaoticity
+of the associated system $\mathcal{H}_{\pi}$ can be arbitrarily complex.
+
+
+Finally, there are infinitely many
+true, but unprovable in ZFC $\Pi_{1}$--statements $\pi$ \cite{cal-paun-83}, so the corresponding systems $\mathcal{H}_{\pi}$ are chaotic but ZFC cannot prove their chaoticity.  For example, from the negation of the halting problem for $U$ we get infinitely many $\Pi_{1}$-statements $\pi_{x} =$ ``$\forall n$
+($U(x)$ does not stop in time $n$)'' which are undecidable in ZFC.
+
+%\section{The solid-liquid-gas conjecture}
+%
+%
+%The solid-liquid-gas conjecture
+%\cite{beck-AMS}
+%%\cite[p. 45]{beck-AMS}
+%states that a classical discrete system  either features simple behavior
+%(like periodicity or nested structure) or it features advanced pseudo-randomness (chaoticity).
+%
+%For the sake of being able to use a simplified representation
+%consider a crystal lattice representing the behavior of molecules in the  solid matter---a simple periodic configuration. The molecules in the ideal model of the gaseous state behave erratically, like  ``random.''
+%Liquids feature an in between  behavior:  the molecules in the liquid state of the matter are relatively free to move with respect to each other but they are restricted by cohesive forces which guarantee that the liquid maintains a fixed volume. Liquids display short range order and long range disorder.
+%The classification is an oversimplification (for example, amorphous solids, like glass, are not crystalline)
+%and it is not mathematically precise, but it can serve as a guiding principle. This  is also related to Wolfram's  principle of computational equivalence \cite{wolfram-2002}
+%
+%
+%If we consider a single electron of hydrogen  atom in a very strong magnetic field, at low energies,
+%the proton binds its electron tightly as the electrostatic force between the proton and the electron dominates the magnetic force.
+%In this case the classical orbits are ellipses. At very high energies, the electron is far from the nucleus; in this configuration, the magnetic force dominates.
+%The orbits are helices spiraling round the line of magnetic field. At intermediate energies, however, the two forces are comparable and exert contrary influences.
+%The electron revolves the contradiction by moving chaotically  \cite{berry-87}.
+
+\section{Computational capabilities of chaotic motion}
+
+One of the intriguing possibilities of the aforementioned equivalences between certain statements in ZFC and chaotic motion is
+the hypothetical possibility to ``decide'' hard problems in ZFC
+or ``perform uncomputable tasks'' by observing the corresponding chaos \cite{Scarpellini-63,Stewart-91,dc-d93,Scarpellini-2003,Scarpellini-2003c}.
+Indeed, if such methods and procedures have an ``effective'' physical implementation,
+then, strictly speaking, the Church-Turing thesis identifying the informal notion of {\em computable algorithm}
+with {\em Turing computability}, or, equivalently, {\em recursive functions}, is too restricted and has to be adapted to the
+physical capacities~\cite{davis-58,rogers1,kreisel} (for a converse  viewpoint restricting operations to strictly finitistic means,
+see Refs.~\cite{bridgman,gandy2,gandy1}).
+
+It is rather intriguing that, at least in this respect, the situation resembles the famous Einstein, Podolski and Rosen (EPR) argument~\cite{epr} for
+a possible ``incompleteness'' of quantum mechanics.
+According to EPR, whereas quantum theory does not allow complementary physical observables to simultaneously ``exist,''
+experiment (augmented with counterfactual reasoning) allows for such ``elements of physical reality.''
+
+In the case of chaotic systems, our present theory of computability,
+formalized by recursion theory, does not allow the ``execution'' of certain ``hard'' tasks;
+but the equivalent chaotic systems would perform just such tasks, sometimes with relative ease on the side of the experimenter.
+One example of such seemingly mismatch --- in the sense of EPR --- of computability theory and physical computation is the construction of
+``oracles producing random bits,'' as discussed in the next section.
+
+
+
+\section{Poincar\'e box as physical random number generator}
+
+Chaotic systems can be used as a physical device for incomputability.
+In the ``extreme'' algorithmically incompressible case, a chaotic dynamical system can serve
+as a source of random bits; i.e., as a physical {\em random number generator} (RNG).
+This RNG can be conceptualized by enclosing a chaotic system in a ``black box'' with an output interface
+which communicates the consecutive physical states of the chaotic evolution~\cite{PhysRevLett.45.712} in a properly encoded symbolic form.
+In order for these, say, strings of bits, to be physically certified random, it is necessary to ascertain chaoticity;
+a property which relates to the proofs of chaoticity discussed above.
+
+This scenario can be elucitated by considering the shift map $\sigma$ which
+``pushes'' up successive bits of the sequence $s=0.s_1s_2s_3\cdots$;
+i.e., $\sigma (s)= 0.s_2s_3s_4\cdots$,  $\sigma (\sigma (s))= 0.s_3s_4s_5\cdots$, and so on.
+Suppose one starts with an initial ``measurement'' precision of, say, just one bit after the comma,
+indicated by a  ``window of measurability;''
+all other information ``beyond the first bit after the comma'' is hidden to the experimenter at this point.
+Consider an initial state represented by an algorithmically random real $s$.
+At first the experimenter records the first position $s_1$ of $s$, symbolized by
+$0.[[s_1]]s_2 s_3\cdots$, where the square brackets ``$[[~\cdots~]]$''
+indicate the boundaries of the experimenter's sliding ``window of measurability.''
+Successive iterations of the shift map ``bring up'' more and more bits of the initial sequence of $s$; i.e.,
+$\sigma (s)$ yields $0.s_1[[s_2]]s_3s_4\cdots$,
+$\sigma (\sigma (s))$ yields $0.s_1 s_2[[s_3]]s_4s_5\cdots$, and in general
+$\sigma^{(i)} (s)$ yields $ 0.\cdots s_{i-1}s_{i}[[s_{i+1}]]s_{i+2}s_{i+3}\cdots$ after $i$ iterations of the shift map.
+Thus effectively, the algorithmic information content of $s$ ``unfolds'' at a rate of one bit per time cycle.
+If $s$ is algorithmically random, then (at least ideally) the empirical recording of its successive bits generates a random sequence (in the asymptotic limit).
+
+It is not totally unreasonable to conjecture that, with respect to algorithmic and statistical tests of randomness,
+{\em Poincar\'e boxes} {\em cannot} be differentiated from another type of physical RNGs termed {\em Born boxes}, which are based on quantum indeterminism
+(e.g., photons impinging on beam splitters and detectors~\cite{svozil-qct,rarity-94,zeilinger:qct,stefanov-2000,0256-307X-21-10-027,wang:056107,fiorentino:032334,svozil-2009-howto}).
+Considering the different physical origins of physical indeterminism exploited by the Poincar\'e and Born boxes
+--- in the first, classical case, indeterminism resides in the continuum, whereas in the second, quantum case,
+in the postulated~\cite{born-26-1,born-26-2,zeil-05_nature_ofQuantum,2008-cal-svo} irreducible randomness of certain individual outcomes involving photons ---
+why should the two physical RNG's perform equally from an algorithmic information theoretic~\cite{chaitin3,calude:02} point of view?
+Because, one could argue,
+both would produce (in the asymptotic regime) random strings with high probability.
+
+The Poincare box derives its random behavior from a {\em single, individual} initial value containing incompressible algorithmic information with probability
+one~\cite{crutchfield1,brudno2},  whereas
+the Born box utilizes {\em successive, independent} ideal coin tosses.
+Whether or not these speculations are justified or not only experiment can tell.
+So far, no empirical evidence either for or against the conjectured equivalence of Poincar\'e and Born boxes exist.
+
+It is not too difficult to ``construct'' a Poincar\'e box by utilizing a shift map which ``pumps'' up
+the bits of the binary representation of the initial value by one bit per (discrete iteration) cycle.
+Of course, assuring the physical representability of this extreme chaotic regime for concrete
+classical chaotic systems, might turn out to be a ``hard'' task; as has been argued above.
+With this proviso, and by further assuming that the initial value is some element of the continuum
+(in ZFC the ``selection'' of an initial value is guaranteed by the Axiom of Choice), the shift map
+is, at least asymptotically, capable of yielding a random number with probability one.
+
+
+\section{Summary and outlook}
+
+We have argued that every $\Pi_{1}$--statement $\pi$ can be associated with a dynamical system $\mathcal{H}_{\pi}$ such that
+ZFC proves the chaoticity of $\mathcal{H}_{\pi}$ iff ZFC proves $\pi$.
+Many ``hard''problems, such as, for example, the Riemann hypothesis and the four colour theorem, are  $\Pi_{1}$--statements.
+The computational method  in  \cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}  have been applied to
+$\Pi_{1}$--statements, resulting in a complexity measure for proving the chaoticity of some dynamical systems.
+We have shown that there are dynamical systems for which the ZFC proofs of their chaoticity are
+arbitrarily complex according to the above complexity measure.
+Furthermore, there are infinitely
+many chaotic systems for which ZFC cannot prove their chaoticity.
+
+One of the challenging conceptual questions which is motivated by these results is the issue of relating physical entities to formal ones.
+In particular at stake is the Church-Turing thesis, which is challenged from a classical physical perspective.
+As classical chaotic motion seems to be capable to ``perform'' incomputable tasks --- a criterion which might,
+as we argue, be ``hard'' to certify for a wide variety of Hamiltonian systems, but which nevertheless is a feasible scenario  ---
+it might not be too unreasonable to speculate that
+the present formal theories of computability would have to be adapted in accordance with our physical capabilities originating
+from chaotic motion.
+
+
+
+\bibliography{svozil}
+
+\end{document}

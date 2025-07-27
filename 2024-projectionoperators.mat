@@ -1,0 +1,110 @@
+(* Definition of the Tensor Product *)
+
+MyTensorProduct[a_, b_] :=    Table[(*a, b are nxn and mxm - matrices*)
+a[[Ceiling[s/Length[b]], Ceiling[t/Length[b]]]]*b[[s - Floor[(s -
+1)/Length[b]]*Length[b],t - Floor[(t - 1)/Length[b]]*Length[b]]], {s,
+  1,Length[a]*Length[b]}, {t, 1, Length[a]*Length[b]}];
+
+
+(* Definition of the Tensor Product between two vectors *)
+
+MyTensorProductVec[x_, y_] := Flatten[Table[ x[[i]] y[[j]] , {i, 1, Length[x]}, {j, 1, Length[y]}]];
+
+
+(* Definition of the Dyadic Product *)
+
+DyadicProductVec[x_] :=  Table[x[[i]] x[[j]], {i, 1, Length[x]}, {j, 1, Length[x]}];
+
+(* Definition of the sigma matrices *)
+
+
+vecsig[r_, tt_, p_ ]:= r * { {Cos[tt], Sin[tt] Exp[-I p]}, {Sin[tt] Exp[I p], -Cos[tt]}}
+
+(* Definition of some vectors *)
+
+BellBasis = (1/Sqrt[2]) {{1, 0, 0, 1}, {0, 1, 1, 0}, {0, 1, -1, 0}, {1, 0, 0,-1}};
+
+Basis =  {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0,1}};
+
+vp = {0,1};
+vm = {1,0};
+
+(* 2 PARTICLES *)
+
+
+(* Definition of singlet state *)
+
+psi2s = (1/Sqrt[2])*(MyTensorProductVec[{1, 0}, {0, 1}] - MyTensorProductVec[{0, 1}, {1, 0}]);
+
+(* Definition of operators *)
+
+(* Definition of single operators for occurrence of spin up *)
+
+SingleParticleProjector2first[x_,p_,pm_] :=   MyTensorProduct[1/2(IdentityMatrix[2] + pm * vecsig[1, x, p]), IdentityMatrix[2]]
+
+SingleParticleProjector2second[x_,p_,pm_] :=   MyTensorProduct[IdentityMatrix[2], 1/2(IdentityMatrix[2] + pm * vecsig[1, x, p])]
+
+
+
+(* Definition of two-particle joint operator for occurrence of spin up and down  *)
+
+JointProjector2[x1_, x2_,p1_,p2_,pm1_,pm2_] :=       MyTensorProduct[ 1/2(IdentityMatrix[2] + pm1 * vecsig[1, x1, p1]),  1/2(IdentityMatrix[2] + pm2 * vecsig[1, x2, p2]) ]
+
+(* Verify identity pm <-> x1-Pi *)
+
+FullSimplify[
+    ComplexExpand[
+      MyTensorProduct[1/2(IdentityMatrix[2] - 1*vecsig[1, x1, 0]),
+        1/2(IdentityMatrix[2] - 1*vecsig[1, x2, 0])]]] ==
+  FullSimplify[
+    ComplexExpand[
+      MyTensorProduct[1/2(IdentityMatrix[2] + 1*vecsig[1, x1 - Pi, 0]),
+        1/2(IdentityMatrix[2] + 1*vecsig[1, x2 - Pi, 0])]]]
+
+
+
+(* Definition of simplified joint two-particle ops. *)
+
+JP2[x1_, x2_, pm1_, pm2_] := MyTensorProduct[ 1/2(IdentityMatrix[2] + pm1 * vecsig[1, x1, 0]), 1/2(IdentityMatrix[2] + pm2 * vecsig[1, x2, 0]) ];
+
+O2[d1_, d2_] :=   FullSimplify[JP2[d1, d2, 1, 1] +  JP2[d1, d2, -1, -1] - (JP2[d1, d2, -1, 1] + JP2[d1, d2, 1, -1])];
+
+
+
+
+Plot[Tr[ O2[0, t] . DyadicProductVec[BellBasis[[3]]]], {t, 0, Pi}]
+
+
+
+ Tr[O2[Pi/2, Pi/4]    . DyadicProductVec[BellBasis[[3]]]]
+ Tr[O2[Pi/2, 3  Pi/4] . DyadicProductVec[BellBasis[[3]]]]
+ Tr[O2[0, Pi/4]       . DyadicProductVec[BellBasis[[3]]]]
+ Tr[O2[0, 3  Pi/4]    . DyadicProductVec[BellBasis[[3]]]]
+
+
+ Tr[O2[Pi/2, Pi/4] . DyadicProductVec[BellBasis[[3]]]] +
+ Tr[O2[Pi/2, 3  Pi/4] . DyadicProductVec[BellBasis[[3]]]] +
+ Tr[O2[0, Pi/4] . DyadicProductVec[BellBasis[[3]]]] -
+ Tr[O2[0, 3  Pi/4] . DyadicProductVec[BellBasis[[3]]]]
+
+
+
+
+FullSimplify[Eigensystem[O2[Pi/2, Pi/4]]]
+FullSimplify[Eigensystem[O2[Pi/2, 3  Pi/4]]]
+FullSimplify[Eigensystem[O2[0, Pi/4]        ]]
+FullSimplify[Eigensystem[O2[0, 3  Pi/4]       ]]
+
+
+
+FullSimplify[Eigensystem[O2[Pi/2, Pi/4]  +
+O2[Pi/2, 3  Pi/4]+
+O2[0, Pi/4]       -
+O2[0, 3  Pi/4] ]  ]
+
+FullSimplify[Eigensystem[ a O2[Pi/2, Pi/4]  +  b
+O2[Pi/2, 3  Pi/4]+   c
+O2[0, Pi/4]       -   d
+O2[0, 3  Pi/4] ]  ]
+
+

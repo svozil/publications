@@ -1,0 +1,1160 @@
+\documentclass[
+aip,
+cha,
+amssymb
+]{revtex4-1}
+
+
+%\newcommand{\dom}{{\rm dom}}
+%\usepackage{latexsym,url,amssymb}
+\usepackage{graphicx}
+\def \C{{\mathfrak C}}
+\def \N{{\mathbf N}}
+\def \R{{\mathbf R}}
+
+\newenvironment{Instruction}[2]%
+{
+%   \newcommand{\Name}[1]{\item[\hskip \labelsep{}  ] ##1}%
+\noindent {\bf #1 \hfill #2} \\[-2ex]
+\begin{flushright}\begin{minipage}{\textwidth}
+   }%
+{\end{minipage}
+\end{flushright}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{fact}[thm]{Fact}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{defn}[thm]{Definition}
+%\newtheorem{prop}[thm]{Proposition}
+\newtheorem{sch}[thm]{Scholium}
+\newenvironment{proof}{\trivlist \item[\hskip \labelsep{\bf Proof.}]}%          Dineen's
+{{\hfill$\Box$}\endtrivlist}
+
+
+
+\begin{document}
+
+\sloppy
+
+\title{The Complexity of Proving Chaoticity and the Church-Turing Thesis}
+
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+\author{Elena Calude}
+\email{e.calude@massey.ac.nz}
+\homepage{http://www.massey.ac.nz/~ecalude}
+\affiliation{Institute of Information and Mathematical Sciences,
+Massey University at Albany,
+Private Bag 102-904, North Shore MSC New Zealand}
+
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+\affiliation{Institute for Theoretical Physics, {\it Vienna} University of Technology,
+Wiedner Hauptstrasse 8-10/136, 1040 {\it Vienna},  Austria}
+
+
+\date{\today}
+
+\begin{abstract}
+Proving the chaoticity of some dynamical systems is equivalent to solving the hardest problems in mathematics. Conversely, classical physical systems may ``compute the hard or even the incomputable'' by measuring observables which correspond to computationally hard or even incomputable problems.
+\end{abstract}
+
+\pacs{05.45.Ac,05.45.Gg,02.10.Ab}
+\keywords{computability, $\Pi_{1}$--statement, logic, ZFC provability,  low-dimensional chaos}
+\preprint{CDMTCS preprint nr. 384/2010}
+\maketitle
+
+{\bf
+The relationship between classical physical systems modeled by continua and their theory of computation is still not entirely settled. On the one hand,  chaotic systems indicate that it might be ``computationally hard'' to formally prove many of their properties, in particular chaoticity. On the other hand, it might not be too unreasonable to speculate that such physical systems,  due to their capabilities of utilizing  the continuum, may be capable of performing tasks which are beyond the scope of universal Turing machines based on discrete entities.
+}
+
+\section{Introduction}
+
+
+Proving that a dynamical system is chaotic is an important problem in chaos
+theory~\cite{1985cfd..book.....F}.
+Despite causality~\cite{suppes-1993}, {\it virtually any ``interesting'' question about non-trivial dynamical systems appears to be
+undecidable}~\cite{Stewart-91}, but  is there a way to mathematically prove {\it this statement?}
+Closely related is the question: {\it Is there a way to measure the difficulty of proving the chaoticity of a dynamical system?}
+There are only few ``bridges'' between chaotic dynamical systems and
+complexity theories, in particular algorithmic information theory~\cite{brudno2,crutchfield1,moore,gacs09}.
+The unpredictability of the systems studied in this article comes from a combination
+of chaoticity and a ``decision problem'' embedded in the system; the complexity of the  ``decision problem'' (in the sense to be precisely described in the following section)
+may be arbitrarily large, including high incomputability.  We shall show that  ``proving the chaoticity of some dynamical systems''
+amounts to ``solving the hardest problems in mathematics'' and {\it vice versa.}
+
+
+We will study a class of mathematical sentences called $\Pi_{1}$--statements. A
+sentence of the form $\pi = \forall n \, {\rm Pred} (n)$, where Pred is a computable predicate ($n$ is always a non-negative integer) is called a $\Pi_{1}$--{\em statement}. The Greek letter $\pi$ is used as a generic notation for such a statement; it has no relation with the famous constant $3.145\cdots$. Clearly,  $\pi$ is true if and only if all instances of Pred,
+${\rm Pred} (0), {\rm Pred} (1), \dots , {\rm Pred} (n), \dots$ are true.
+Every $\Pi_{1}$--statement is {\it finitely refutable} because a single false instance of Pred
+makes $\pi$ false. For example, $\forall n [n^{2} + 1 >0]$ is true, but $\forall n [2n+3 \mbox {  is prime}]$ is false.
+
+We deal with formal proofs by using the Zermelo-Fraenkel set theory with the Axiom of Choice (ZFC), the standard system for doing mathematics. So, we say that ``ZFC proves $\pi$'' in case there is a proof in ZFC for $\pi$.
+
+Da Costa,  Doria \cite{dc-d91b} and da Costa,  Doria  and Amaral~\cite{dc-d93} have constructed a two-dimensional Hamiltonian system $\mathcal{H}$
+--- a system of first-order differential equations which can be written in the form of Hamilton's equations,
+in which the Hamiltonian function represents the total energy of the system ---
+with the property that (formally) proving
+the existence of a Smale horseshoe in $\mathcal{H}$ is equivalent to (formally) proving Fermat's last theorem. Contrary to the opinion expressed in the above articles, it was  shown that proving that
+the two-dimensional Hamiltonian system $\mathcal{H}$ has a Smale horseshoe has low complexity~\cite{ecalude-10} because Fermat's last theorem has a low complexity.
+
+
+As Fermat's last theorem is a $\Pi_{1}$--statement,  {\it  it is natural to ask whether
+the above results can be extended to any $\Pi_{1}$--statement.}
+In this note we show that to every $\Pi_{1}$--statement $\pi$
+ one can associate a dynamical system $\mathcal{H}_{\pi}$ such that
+proving in ZFC the chaoticity of $\mathcal{H}_{\pi}$ is equivalent to proving  $\pi$ in ZFC.  By applying
+the computational method~\cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}   to  $\Pi_{1}$--statements we
+show that there are dynamical systems whose ZFC proofs of their chaoticity are arbitrarily complex and
+there are chaotic systems for which ZFC cannot prove their chaoticity.
+ The techniques are related to (i) the construction of a Poincar\'e box as a classical physical random number generator
+(akin to a quantum Born box), and (ii) the conceivable capability of classical physical systems to
+``compute the hard or even the incomputable'' by measuring observables which correspond to computationally hard or even incomputable problems.
+
+\section{$\Pi_{1}$--statements and the complexity measure}
+
+In this section we present a complexity measure~\cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}
+for  $\Pi_{1}$--statements
+%[i.e. statements of the form ``$\forall n \, {\rm Pred}(n)$'',
+%where Pred is a computable predicate]
+defined by means of register machine programs.
+
+We use a fixed ``universal formalism'' for programs, more precisely, a universal self-delimiting Turing machine $U$. The machine $U$ (which is fully described
+below) has to be {\it minimal} in the sense
+that none of its instructions can be simulated by a program for $U$ written with the remaining instructions.
+
+To every $\Pi_{1}$--statement $\pi = \forall m {\rm Pred} (m)$ we associate the algorithm $\Pi_{\rm Pred}=\inf\{n\,:\, {\rm Pred}(n) = \mbox{ false}\}$ which systematically searches for a counter-example for $\pi$. There are many programs (for $U$) which implement $\Pi_{\rm Pred}$; without loss of generality, any such program will be denoted also by $\Pi_{\rm Pred}$. Note that
+$ \pi \mbox{  is true iff   }  U(\Pi_{\rm Pred})$ never halts.
+
+The complexity (with respect to $U$) of a $\Pi_{1}$--statement $\pi$ is defined by
+the length of the smallest-length  program (for  $U$) $\Pi_{\rm Pred}$---defined as above---where minimization is calculated for all possible representations of $\pi$ as $\pi = \forall n {\rm Pred}(n)$:
+$C_{U}(\pi) = \min \{ |\Pi_{{\rm Pred}}| \,:\,  \pi = \forall n {\rm Pred}(n)\}$.
+
+
+For $C_{U}$ it is irrelevant  whether $\pi$ is known to be true or false. In particular, the program containing the  single instruction halt is not a $\Pi_{{\rm Pred}}$ program, for any Pred.  As the exact value
+of $C_{U}$ is not important ($C_{U}$ is   incomputable), following a previous article by two of the Authors~\cite{calude-elena-ec2}
+we classify $\Pi_{1}$--statements into the following classes:
+$\C_{U,n} = \{\pi \,:\,
+\pi \mbox{  is a $\Pi_{1}$--statement}, C_{U}(\pi) \le n \mbox{ kbit} \}.$ (Recall that
+a kilobit (kbit or kb)
+is equal to $2^{10}$ bits.)
+
+
+We  briefly describe the syntax  and the semantics
+of a register machine  language which  implements a (natural) minimal
+universal prefix-free binary Turing machine $U$.
+Any register program (machine) uses a finite number of registers, each of which may
+contain an arbitrarily large non-negative  integer.
+By default, all registers, named with a string of lower or upper
+case letters, are initialized to 0.  Instructions are labeled
+by default with 0,1,2,\ldots
+
+
+The register machine  instructions are listed below.
+Note that in all cases R2 and R3 denote either a register or a non-negative integer, while R1  must be a
+register.  When referring to R we use, depending upon the context, either the name of register R or the non-negative integer stored in R.
+
+%\begin{Instruction}{~=R1,R2,R3}{    }
+{\bf ~=R1,R2,R3}:
+if the contents of R1 and R2 are equal, then the execution continues
+at the R3-th instruction of the program;
+if the contents of R1 and R2  are not equal, then execution continues with the next instruction
+in sequence, and, if the content of R3 is outside the scope of the program,
+then we have an illegal branch error.
+
+{\bf ~\&R1,R2}:
+the contents of register R1 is replaced by
+ R2.
+
+{\bf ~+R1,R2}:
+the contents of register R1 is replaced by the sum of the contents of
+ R1 and R2.
+
+{\bf ~!R1}: one bit is read into the  register R1, so the contents of R1
+becomes either 0 or 1; any attempt to read past the last data-bit
+results in a run-time error.
+
+{\bf ~\%}: this is the last instruction for each register machine
+program before the input data; it halts the execution in two
+possible states: either successfully halts or it halts with an under-read error.
+
+
+
+
+A {\em register machine program}\/ consists of a finite list of
+labeled instructions from the above list, with the restriction that
+the halt instruction appears only once, as the last instruction
+of the list.
+
+\if01
+The input data (a binary string) follows immediately
+after the halt instruction.  A program not reading the whole
+data or attempting to read past the last data-bit results in a
+run-time error. Some programs (such as the ones presented in this article)
+have no input data; these programs cannot halt with an under-read error.
+
+
+
+The instruction {\tt =R,R,n} is used for the unconditional jump to the   $n$-th instruction
+of the program.
+For Boolean data types we use integers 0 = \verb|false| and 1 = \verb|true|.
+
+For longer programs it is convenient to  distinguish
+between the main program and some sets of instructions called ``routines'' which
+perform specific tasks for another routine or the main program.  The call and call-back of a routine are executed with  unconditional jumps.
+\fi
+
+To compute an upper bound on the complexity of a $\Pi_{1}$--statement $\pi$ we need to compute the size in bits of the program  $\Pi_{\rm \pi}$,
+so we need to uniquely code in binary the programs for $U$. To this aim we use a prefix-free coding as follows.
+
+Table~\ref{2010-pi1chaos-t1} enumerates the binary coding of  special characters.
+\begin{table}
+\caption{Binary encoding of  special characters (instructions and comma); $\varepsilon$ is the empty string.}
+\begin{center}
+$\begin{array}{ c c| c c}
+\hline\hline
+{\rm special   } \,\,\, {\rm  characters} & {\rm code} &  {\rm instruction} & {\rm code}\\  \hline
+, & \varepsilon  & + & 111 \\
+ \& & 01 & ! &  110 \\
+= & 00  & \% & 100\\
+ \hline\hline \end{array}
+$
+\end{center}
+\label{2010-pi1chaos-t1}
+\end{table}
+For registers we use the prefix-free regular code ${\rm code}_{1} = \{0^{|x|}1x \mid x\in\{0,1\}^{*}\}$.
+%Table~\ref{2010-pi1chaos-t2} contains the codes of the first 14 registers.
+The register names are chosen  to  optimize the length of the program, i.e.\
+the most frequent registers have the smallest ${\rm code}_{1}$ length.
+
+\if01
+\begin{table}
+\caption{Binary encoding of the first 14 registers.}
+\begin{center}
+$\begin{array}{|c|c||c|c|}
+\hline\hline
+{\rm register} & {\rm code}_{1} & {\rm register} & {\rm code}_{1} \\\hline
+{\rm R}_1 & 010 & {\rm R}_8  & 0001001\\
+{\rm R}_2 & 011 & {\rm R}_9 & 0001010\\
+{\rm R}_3 & 00100 & {\rm R}_{10} & 0001011\\
+{\rm R}_4 & 00101 & {\rm R}_{11}  & 0001100\\
+{\rm R}_5 & 00110 & {\rm R}_{12} & 0001101\\
+{\rm R}_6  & 00111 & {\rm R}_{13} & 0001110\\
+{\rm R}_7  & 0001000 & {\rm R}_{14} & 0001111\\
+\hline\hline
+\end{array}$
+\end{center}
+\label{2010-pi1chaos-t2}
+\end{table}
+\fi
+%\if01
+%\begin{center}
+%\[\begin{array}{|c|c||c|c||c|c||c|c|}
+%\hline
+%{\rm register} & {\rm code}_{1} & {\rm register} & {\rm code}_{1}   & {\rm register} & {\rm code}_{1}   & {\rm register} & {\rm code}_{1} \\\hline
+%{\rm R}_1 & 010 & {\rm R}_9 & 0001010 & {\rm R}_{17} &  000010010& {\rm R}_{25} & 000011010\\ \hline
+%{\rm R}_2 & 011 & {\rm R}_{10} & 0001011& {\rm R}_{18} &  000010011&{\rm R}_{26} & 000011011\\ \hline
+%{\rm R}_3 & 00100 &{\rm R}_{11}  & 0001100 & {\rm R}_{19} & 000010100 & {\rm R}_{27} & 000011100\\ \hline
+%{\rm R}_4 & 00101 & {\rm R}_{12} & 0001101& {\rm R}_{20} &  000010101& {\rm R}_{28} &   000011101\\\hline
+%{\rm R}_5 & 00110 & {\rm R}_{13} & 0001110 & {\rm R}_{21} &  000010110& {\rm R}_{29} &  000011110\\\hline
+%
+%{\rm R}_6  & 00111 & {\rm R}_{14} & 0001111 & {\rm R}_{22} &  000010111& {\rm R}_{30} &  000011111\\\hline
+%
+%{\rm R}_7  & 0001000 &{\rm R}_{15}  & 000010000 &{\rm R}_{23}  &  000011000&
+%{\rm R}_{31} & 00000100000\\\hline
+%
+%{\rm R}_8  & 0001001 &{\rm R}_{16}  & 000010001 & {\rm R}_{24} &  000011001& {\rm R}_{32} & 00000100001\\\hline
+%\end{array}\]
+%Table~2
+%\end{center}
+%\fi
+For non-negative integers we use the prefix-free regular code  ${\rm code}_{2}
+= \{1^{|x|}0x \mid x\in\{0,1\}^{*}\}$.
+\if01
+Table~\ref{2010-pi1chaos-t3} contains  the codes of
+the first 16 non-negative integers.
+\begin{table}
+\caption{Binary encoding of the first 16 non-negative integers.}
+\begin{center}
+$\begin{array}{|c|c||c|c||c|c||c|c|}
+\hline\hline
+{\rm integer} & {\rm code}_{2} & {\rm integer} & {\rm code}_{2}  & {\rm integer} & {\rm code}_{2}  & {\rm integer} & {\rm code}_{2}\\\hline
+0 & 100 & 4 & 11010 & 8 &  1110010& 12 & 1110110\\
+1 & 101 & 5 & 11011& 9 &  1110011& 13 & 1110111\\
+2 & 11000 & 6 & 1110000 & 10 & 1110100 & 14 & 111100000\\
+3 & 11001 & 7 & 1110001 & 11 &  1110101& 15 & 111100001
+\\\hline\hline\end{array}$
+\end{center}
+\label{2010-pi1chaos-t3}
+\end{table}
+\fi
+The instructions are coded by self-delimiting binary  strings as follows
+(see more details in Refs.~\cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}):
+\begin{itemize}
+\item[{\rm (i)}]  {\tt \&R1,R2} is coded in two different ways, depending on R2 (we omit $\varepsilon$):
+$ 01{\rm code}_{1}({\rm R}1){\rm code}_{i}({\rm R}2),$
+where $i=1$  if R2 is a register and $i=2$ if R2 is a non-negative integer.
+
+\item[{\rm (ii)}]   {\tt +R1,R2} is coded in two different ways depending on R2:
+$111{\rm code}_{1}({\rm R}1){\rm code}_{i}({\rm R}2),$
+where $i=1$  if R2 is a register and $i=2$ if R2 is  a non-negative integer.
+
+\item[{\rm (iii)}]  {\tt =R1,R2,R3} is coded in four different ways depending on the data types of  R2 and R3:
+$00{\rm code}_{1}({\rm R}1){\rm code}_{i}({\rm R}2){\rm code}_{j}({\rm R}3),$
+where $i=1$  if R2 is a register and $i=2$ if R2 is a non-negative integer,
+$j=1$  if R3 is a register and $j=2$ if R3 is a non-negative integer.
+
+
+\item[{\rm (iv)}]  {\tt !R1} is coded by $110{\rm code}_{1}({\rm R1}).$
+\item[{\rm (v)}]  {\tt \%} is coded by $100.$
+\end{itemize}
+
+
+For example, Goldbach's conjecture (included in Hilbert's eighth problem~\cite{hilbert-1900e})
+states   that {
+\it all positive even integers greater than two can be expressed as the
+sum of two primes.}
+The program  $\Pi_{\rm Goldbach}$  listed in Table~\ref{2010-pi1-t2}
+gives the upper bound $C_{U}({\rm Goldbach})
+\le 540$ which proves that  the Goldbach conjecture is in the lowest class $\C_{U,1}$.
+
+\if01
+\begin{verbatim}
+           {\tt        0} {\tt =} {\tt a a 16  }                     {\tt   19} {\tt \&} {\tt c      22    }
+           {\tt        1} {\tt \&} {\tt e 2     }                     {\tt   20} {\tt \&} {\tt a      h     }
+           {\tt        2} {\tt \&} {\tt d 1     }                     {\tt   21} {\tt =} {\tt a      a 1   }
+           {\tt        3} {\tt =} {\tt a e c   }                     {\tt   22} {\tt =} {\tt d      0     }
+           {\tt        4} {\tt \&} {\tt d 0     }                     {\tt   23} {\tt \&} {\tt i      0     }
+           {\tt        5} {\tt \&} {\tt f e     }                     {\tt   24} {\tt \&} {\tt k      h     }
+           {\tt        6} {\tt =} {\tt f a 13  }                     {\tt   25} {\tt =} {\tt k      g 29  }
+           {\tt        7} {\tt +} {\tt f 1     }                     {\tt   26} {\tt +} {\tt i      1     }
+           {\tt        8} {\tt +} {\tt d 1     }                     {\tt   27} {\tt +} {\tt k      1     }
+           {\tt        9} {\tt =} {\tt d e 11  }                     {\tt   28} {\tt =} {\tt a      a 25  }
+           {\tt       10} {\tt =} {\tt a a 6   }                     {\tt   29} {\tt \&} {\tt c      32    }
+           {\tt       11} {\tt \&} {\tt d 0     }                     {\tt   30} {\tt \&} {\tt a      i     }
+           {\tt       12} {\tt =} {\tt a a 6   }                     {\tt   31} {\tt =} {\tt a      a 1   }
+           {\tt       13} {\tt =} {\tt d 0 c   }                     {\tt   32} {\tt =} {\tt d      0 35  }
+           {\tt       14} {\tt +} {\tt e 1     }                     {\tt   33} {\tt +} {\tt g      2     }
+           {\tt       15} {\tt =} {\tt a a 2   }                     {\tt   34} {\tt =} {\tt a      a 17  }
+           {\tt       16} {\tt \&} {\tt g 4     }                     {\tt   35} {\tt +} {\tt h      1     }
+           {\tt       17} {\tt \&} {\tt h 2     }                     {\tt   36} {\tt =} {\tt a      a 18  }
+           {\tt       18} {\tt =} {\tt g h 38  }                     {\tt   37} {\tt \&} {\tt d      0     }
+\end{verbatim}
+\fi
+\begin{table}
+\begin{center}
+\begin{tabular}{ll|cll|cll|cll}
+{\rm 00:\quad \quad}&{\tt  =        a a 16 }   $\quad$&$\quad$&{\rm    11:\quad} &{\tt \& d 0    }  $\quad$&$\quad$&
+{\rm    22:\quad} &{\tt = d 0 35   } $\quad$&$\quad$& {\rm 33:\quad} &{\tt +        g 2       }    \\
+{\rm 01:}&{\tt \&        e 2    }   &&        {\rm    12:} &{\tt =        a a 6  }  &&       {\rm    23:} &{\tt \&        i 0   } &
+&      {\rm 34:} &{\tt =        a a 17    }        \\
+{\rm 02:}&{\tt \&        d 1    }   &&        {\rm    13:} &{\tt =        d 0 c  }  &&       {\rm    24:} &{\tt \&        k h   } &
+&     {\rm 35:} &{\tt +        h 1       }            \\
+{\rm 03:}&{\tt  =        a e c  }   &&        {\rm    14:}&{\tt +        e 1    }  &&        {\rm    25:} &{\tt =        k g  29  } &
+&      {\rm 36:} &{\tt =        a a 18    }           \\
+{\rm 04:}&{\tt \&        d 0    }   &&        {\rm    15:}&{\tt  =        a a 2  }  &&       {\rm    26:} &{\tt +        i 1   } &
+&      {\rm 37:} &{\tt \&        d 0       }       \\
+{\rm 05:}&{\tt \&        f e    }   &&        {\rm    16:}&{\tt \&        g 4    }  &&       {\rm    27:} &{\tt +        k 1   } &
+&      {\rm 38:} &{\tt   \%                 }        \\
+{\rm 06:}&{\tt  =        f a 13 }   &&         {\rm   17:}&{\tt \&        h 2    }  &&       {\rm    28:} &{\tt =        a a  25  } &
+&         \\
+{\rm 07:}&{\tt  +        f 1    }   &&         {\rm   18:} &{\tt =        g h 38 }  &&       {\rm    29:} &{\tt \&        c 32  } &
+&     {\rm  } &{\tt                    }         \\
+{\rm 08:}&{\tt  +        d 1    }   &&          {\rm  19:} &{\tt \&        c 22   }  &&      {\rm    30:} &{\tt \&        a i   } &
+&     {\rm   } &{\tt                    }         \\
+{\rm 09:}&{\tt  =        d e 11 }   &&          {\rm  20:} &{\tt \&        a h    }  &&     {\rm    31:} &{\tt =        a a 1 }  &&     {\rm   } &{\tt                    }         \\
+{\rm 10:}&{\tt  =        a a 6  }   &&         {\rm   21:} &{\tt =        a a 1  }  &&       {\rm 32:\quad} &{\tt = d 0 35    }  &
+&     {\rm   } &{\tt                       }
+\end{tabular}
+\end{center}
+\caption{\label{2010-pi1-t2} Program $\Pi_{\rm Goldbach}$ for the Goldbach conjecture.}
+\end{table}
+
+%\if01
+%{\small
+%\begin{verbatim}
+%0 = a a 16
+%1 & e 2
+%2 & d 1
+%3 = a e c
+%4 & d 0
+%5 & f e
+%6 = f a 13
+%7 + f 1
+%8 + d 1
+%9 = d e 11
+%10 = a a 6
+%11 & d 0
+%12 = a a 6
+%13 = d 0 c
+%14 + e 1
+%15 = a a 2
+%16 & g 4
+%17 & h 2
+%18 = g h 38
+%19 & c 22
+%20 & a h
+%21 = a a 1
+%22 = d 0
+%23 & i 0
+%24 & k h
+%25 = k g 29
+%26 + i 1
+%27 + k 1
+%28 = a a 25
+%29 & c 32
+%30 & a i
+%31 = a a 1
+%32 = d 0 35
+%33 + g 2
+%34 = a a 17
+%35 + h 1
+%36 = a a 18
+%37 & d 0
+%38 %
+%\end{verbatim}
+%}
+%\fi
+
+\if01
+\section{Richardson-Caviness-Wang lemma}
+Following Richardson~\cite{richardson68}, Caviness~\cite{321591} and Wang~\cite{wang} we fix a positive integer $n$,
+and denote by $\mathcal{E}_{n}$ a set of expressions representing real valued, partially defined functions of real variables and by $F(\mathcal{E}_{n})$
+the set of functions represented by the expressions in $\mathcal{E}_{n}$. By $e(x_{1}, x_{2}, \ldots ,x_{n})$ we denote the function  represented by
+the expression  $e\in \mathcal{E}_{n}$. Let
+$\mu$ and ${\rm sign}$ be the expressions denoting two unary functions such that
+$\mu(x) = |x|,\,  {\rm sign}(x) = 1$, for all $x\not= 0$.
+We assume that $\mathcal{E}_{n}$
+is generated by:
+\begin{itemize}
+\item[{\rm (i)}]   the rational numbers and $\pi$ as constant functions,
+\item[{\rm (ii)}]    variables $x_{1}, x_{2}, \ldots ,x_{n}$,
+\item[{\rm (iii)}]     the functions $\sin, \mu, {\rm sign}$, and
+\item[{\rm (iv)}]    the operations of  addition, subtraction, multiplication and composition.
+\end{itemize}
+
+
+In fact we can omit subtraction and $\pi$, cf. Ref.~\cite{wang,Laczkovich-2002}.
+
+
+Let $\mathcal{P}_{n}$ be the set of  polynomials with integral coefficients
+in the variables $x_{1}, x_{2}, \ldots ,x_{n}$. Let $\N, \R$ denote the set of non-negative integers and reals, respectively.
+
+
+\begin{lem}\label{equiv} {\rm Ref.~\cite{richardson68,321591,wang} }
+For every polynomial $P(x_{1}, x_{2}, \ldots ,x_{n}) \in \mathcal{P}_{n}$ there exists $f_{P}(x_{1}, x_{2}, \ldots ,x_{n}) \in F(\mathcal{E}_{n})$ such that the following conditions are equivalent.
+\begin{itemize}
+\item[{\rm (i)}] $\exists x_{1}, x_{2}, \ldots ,x_{n} \in \N$:
+$P(x_{1}, x_{2}, \ldots ,x_{n})=0$.
+\item[{\rm (ii)}]  $\exists  x_{1}, x_{2}, \ldots ,x_{n} \in \R$:
+$f_{P}(x_{1}, x_{2}, \ldots ,x_{n})=0$.
+\item[{\rm (iii)}]
+$\exists  x_{1}, x_{2}, \ldots ,x_{n} \in \R$:
+$f_{P}(x_{1}, x_{2}, \ldots ,x_{n})\le 1$.
+\end{itemize}
+
+\end{lem}
+\fi
+
+\section{Main results}
+
+We start with a result relating $\Pi_{1}$--statements and Hamiltonians.
+
+
+\begin{thm} \label{CC}Assume {\rm ZFC} is arithmetically
+sound, i.e.\ every statement {\rm ZFC} proves is true. Then, to each $\Pi_{1}$--statement
+$\pi= \forall m \, {\rm Pred}(m)$
+one can effectively construct in the formal language of {\rm ZFC}
+a  Hamiltonian system $\mathcal{H}_{\pi}$ such that  {\rm ZFC} proves that the system
+$\mathcal{H}_{\pi}$  has  a Smale horseshoe  iff   {\rm ZFC} proves $\pi$.
+\end{thm}
+
+We denote by $h$ and $k$
+ the Hamiltonian for the two-dimensional
+system with a Smale horseshoe as defined by Holmes and Marsden~\cite{Homes-Marsden-82}  (their Example~4)
+and the Hamiltonian for the free particle, respectively.  Clearly, the systems  $h$ and $k$ can be represented in the formal language of ZFC.  Define
+the  Hamiltonian $ \mathcal{H}_{\pi}^{m}$  as a linear combination of $h,k$:
+
+
+
+\begin{eqnarray}
+\label{H}
+ \mathcal{H}_{\pi}^{m} (q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n}) & = &  {\rm Pred}(m) \cdot h (q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n})\\
+ &  & + (1- {\rm Pred}(m))\cdot k(q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n}).\nonumber
+\end{eqnarray}
+
+
+
+Fix a positive integer $i$. In view of (\ref{H}), $\mathcal{H}_{\pi}^{i}$ can be represented in the formal language of ZFC and $\mathcal{H}_{\pi}^{i} (q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n})$ $ =
+h(q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n})$  iff $\mbox{  ZFC proves  }  \pi $. In case the above equivalence holds true, $\mathcal{H}_{\pi}^{i} (q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n}) =
+\mathcal{H}_{\pi}^{j} (q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n})$, for all  non-negative integers $i, j$, hence we can name each $\mathcal{H}_{\pi}^{t}$  by $\mathcal{H}_{\pi}$.
+
+We have shown that \\[-5ex]
+\begin{quote}
+ $\mbox{  ZFC proves  }  \pi \mbox{  iff  ZFC proves  that } \mathcal{H}_{\pi} \mbox{   has a Smale horseshoe}$,
+ \end{quote}
+hence  ending the proof of Theorem~\ref{CC}.
+
+
+%\end{proof}
+
+If $\pi$ is true but unprovable in ZFC, then the equality $ \mathcal{H}_{\pi}^{i} (q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n})$ $ =
+h(q_{1}, \dots ,q_{n}, p_{1}, \dots ,p_{n})$ is true but unprovable in ZFC.
+
+In case $\pi$ is the Fermat's last theorem, Theorem~\ref{CC} is exactly the result
+proved~\cite{dc-d91b,dc-d93};  our direct proof does not need the machinery involving Richardson lemma used in Ref.~\cite{dc-d91b,dc-d93}.
+
+Theorem~\ref{CC} can be applied to a variety of $\Pi_{1}$--statements including Goldbach's conjecture,
+  Riemann's hypothesis, the four color theorem, and many others.
+
+\medskip
+
+We address now the complexity issue:
+How difficult is it
+to prove  in ZFC that the system $\mathcal{H}_{\pi}$ in Equation~(\ref{H}) is chaotic?
+Using the
+complexity $C_{U}$ we can show that Fermat's last theorem and Goldbach's conjecture are in $\C_{U,1}$,   the Riemann hypothesis is in
+   $\C_{U,3}$, and the four color theorem is in $\C_{U,4}$~\cite{calude-elena-ec2,calude-elena-CE3,ecalude-09}; their corresponding
+   dynamical systems produced by Theorem~\ref{CC} have the property that the complexity of its chaoticity proof is in the corresponding class.
+
+
+
+As for every natural $n$ there exists a natural $m_{n}$ such that $\C_{U,n} \subset \C_{U,m_{n}}$, it follows that,
+according to $C_{U}$, there exist arbitrarily complex $\Pi_{1}$--statements; hence
+proving the chaoticity
+of the  system $\mathcal{H}_{\pi}$ can be arbitrarily complex.
+
+
+Finally, there are infinitely many
+true, but unprovable in ZFC, $\Pi_{1}$--statements $\pi$~\cite{cal-paun-83},
+such that
+the corresponding systems $\mathcal{H}_{\pi}^{i}$ are chaotic but ZFC cannot prove their chaoticity.
+For example, from the negation of the halting problem for $U$ we get infinitely many $\Pi_{1}$-statements $\pi_{x} =$ ``$\forall n$
+($U(x)$ does not stop in time $n$)'' which are undecidable in ZFC.
+
+
+\section{Computational capabilities of chaotic motion}
+
+One of the intriguing possibilities of the aforementioned equivalences between certain statements in ZFC and chaotic motion is
+the hypothetical possibility to ``decide'' hard problems in ZFC
+or ``perform incomputable tasks'' by observing the corresponding chaos~\cite{Scarpellini-63,Stewart-91,dc-d93,Scarpellini-2003,Scarpellini-2003c}.
+Indeed, if such methods and procedures have an ``effective'' physical implementation,
+then, strictly speaking, the Church-Turing thesis identifying the informal notion of {\em computable algorithm}
+with {\em Turing computability}, or, equivalently, {\em recursive functions}, is too restricted and has to be adapted to the
+physical capacities~\cite{davis-58,rogers1,kreisel} (for a converse  viewpoint restricting operations to strictly finitistic means,
+see Refs.~\cite{bridgman,gandy2,gandy1}).
+
+It is rather intriguing that, at least in this respect, the situation resembles the famous Einstein, Podolski and Rosen (EPR) argument~\cite{epr} for
+a possible ``incompleteness'' of quantum mechanics.
+According to EPR, whereas quantum theory does not allow complementary physical observables to simultaneously ``exist,''
+experiment (augmented with counterfactual reasoning) allows for such ``elements of physical reality.''
+
+In the case of chaotic systems, our present theory of computability,
+formalized by recursion theory, does not allow the ``execution'' of certain ``hard'' tasks;
+but the equivalent chaotic systems would perform just such tasks, sometimes with relative ease on the side of the experimenter.
+One example of such seemingly mismatch --- in the sense of EPR --- of computability theory and physical computation is the construction of
+``oracles producing random bits,'' as discussed in the next section.
+
+
+
+\section{Poincar\'e box as physical random number generator}
+
+Chaotic systems can be used as a physical device for incomputability.
+In the ``extreme'' algorithmically incompressible case, a chaotic dynamical system can serve
+as a source of random bits; i.e., as a physical {\em random number generator} (RNG).
+This RNG can be conceptualized by enclosing a chaotic system in a ``black box'' with an output interface
+which communicates the consecutive physical states of the chaotic evolution~\cite{PhysRevLett.45.712} in a properly encoded symbolic form.
+In order for these, say, strings of bits, to be physically certified random, it is necessary to ascertain chaoticity;
+a property which relates to the proofs of chaoticity discussed above.
+
+This scenario can be elucidated by considering the shift map $\sigma$
+(a form of generalized shift studied by Moore~\cite{moore})  which
+``pushes'' up successive bits of the sequence $s=0.s_1s_2s_3\cdots$;
+i.e., $\sigma (s)= 0.s_2s_3s_4\cdots$,  $\sigma (\sigma (s))= 0.s_3s_4s_5\cdots$, and so on.
+Suppose one starts with an initial ``measurement'' precision of, say, just one bit after the comma,
+indicated by a  ``window of measurability;''
+all other information ``beyond the first bit after the comma'' is hidden to the experimenter at this point.
+Consider an initial state represented by an algorithmically random real $s$.
+At first the experimenter records the first position $s_1$ of $s$, symbolized by
+$0.[[s_1]]s_2 s_3\cdots$, where the square brackets ``$[[~\cdots~]]$''
+indicate the boundaries of the experimenter's sliding ``window of measurability.''
+Successive iterations of the shift map ``bring up'' more and more bits of the initial sequence of $s$; i.e.,
+$\sigma (s)$ yields $0.s_1[[s_2]]s_3s_4\cdots$,
+$\sigma (\sigma (s))$ yields $0.s_1 s_2[[s_3]]s_4s_5\cdots$, and in general
+$\sigma^{(i)} (s)$ yields $ 0.\cdots s_{i-1}s_{i}[[s_{i+1}]]s_{i+2}s_{i+3}\cdots$ after $i$ iterations of the shift map.
+Thus effectively, the algorithmic information content of $s$ ``unfolds'' at a rate of one bit per time cycle.
+If $s$ is algorithmically random, then (at least ideally) the empirical recording of its successive bits generates a random sequence (in the asymptotic limit).
+
+It is not totally unreasonable to conjecture that, with respect to algorithmic (hence also statistical)  tests of randomness,
+{\em Poincar\'e boxes} {\em cannot} be differentiated from another type of physical RNGs termed {\em Born boxes}, which are based on quantum indeterminism
+(e.g., photons impinging on beam splitters and detectors~\cite{svozil-qct,rarity-94,zeilinger:qct,stefanov-2000,0256-307X-21-10-027,wang:056107,fiorentino:032334,svozil-2009-howto}).
+Considering the different physical origins of physical indeterminism exploited by the Poincar\'e and Born boxes
+--- in the first, classical case, indeterminism resides in the continuum, whereas in the second, quantum case,
+in the postulated~\cite{born-26-1,born-26-2,zeil-05_nature_ofQuantum,2008-cal-svo} irreducible randomness of certain individual outcomes involving photons ---
+why should the two physical RNG's perform equally from an algorithmic information theoretic~\cite{chaitin3,calude:02} point of view?
+Because, one could argue,
+both would produce (in the asymptotic regime) random strings with high probability.
+
+The Poincare box derives its random behavior from a {\em single, individual} initial value containing incompressible algorithmic information with probability
+one~\cite{brudno2,crutchfield1},  whereas
+the Born box utilizes {\em successive, independent} ideal coin tosses.
+Whether or not these speculations are justified or not only experiment can tell.
+So far, no empirical evidence either for or against the conjectured equivalence of Poincar\'e and Born boxes exist.
+
+It is not too difficult to ``construct'' a Poincar\'e box by utilizing a shift map which ``pumps'' up
+the bits of the binary representation of the initial value by one bit per (discrete iteration) cycle.
+Of course, assuring the physical representability of this extreme chaotic regime for concrete
+classical chaotic systems, might turn out to be a ``hard'' task; as has been argued above.
+With this proviso, and by further assuming that the initial value is some element of the continuum
+(in ZFC the ``selection'' of an initial value is guaranteed by the Axiom of Choice), the shift map
+is, at least asymptotically, capable of yielding a random number with probability one.
+
+
+\section{Summary and outlook}
+
+We have argued that every $\Pi_{1}$--statement $\pi$ can be associated with a dynamical system $\mathcal{H}_{\pi}$ such that
+ZFC proves the chaoticity of $\mathcal{H}_{\pi}$ iff ZFC proves $\pi$.
+Many ``hard''problems, such as, for example, the Riemann hypothesis and the four color theorem, are  $\Pi_{1}$--statements.
+The computational method~\cite{calude-elena-dinneen06,calude-elena-ec1,calude-elena-ec2}  has been applied to
+$\Pi_{1}$--statements, resulting in a complexity measure for proving the chaoticity of some dynamical systems.
+Consequently, there are dynamical systems for which the ZFC proofs of their chaoticity are
+arbitrarily complex according to the above complexity measure.
+Furthermore, there are infinitely
+many chaotic systems for which ZFC cannot prove their chaoticity.
+
+One of the challenging conceptual questions which is motivated by these results is the issue of relating physical entities to formal ones.
+In particular at stake is the Church-Turing thesis, which is challenged from a classical physical perspective.
+As classical chaotic motion seems to be capable to ``perform'' incomputable tasks --- a criterion which might,
+as we argue, be ``hard'' to certify for a wide variety of Hamiltonian systems, but which nevertheless is a feasible scenario  ---
+it might not be too unreasonable to speculate that
+the present formal theories of computability would have to be adapted in accordance with our physical capabilities originating
+from chaotic motion.
+
+\section*{Acknowledgement} We thank Alastair Abbott and the anonymous referees for critical comments which improved the article.
+
+%\bibliography{svozil}
+
+
+%merlin.mbs 2010-03-15 4.21a (PWD, AO, DPC)
+%Control: key (0)
+%Control: author (8) initials jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (0) allowed
+%Control: page (1) range
+%Control: year (1) truncated
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{44}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\@ifxundefined \urlstyle {%
+  \providecommand \doi  [0]{\begingroup \@sanitize@url \@doi}%
+  \providecommand \@doi [1]{\endgroup \@@startlink {\doibase
+  #1}doi:\discretionary {}{}{}#1\@@endlink }%
+}{%
+  \providecommand \doi  [0]{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url }%
+}%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \Doi [0]{\begingroup \@sanitize@url \@Doi }%
+\providecommand \@Doi  [1]{\endgroup\@@startlink{\doibase#1}\@@Doi}%
+\providecommand \@@Doi [1]{#1\@@endlink}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+%</preamble>
+\bibitem [{\citenamefont {Hirsch}(1985)}]{1985cfd..book.....F}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Hirsch}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The chaos of
+  dynamical systems. {L}ecture notes in pure and applied mathematics.
+  {V}olume~98},}\ }in\ \href@noop {} {\emph {\bibinfo {booktitle} {Chaos,
+  fractals, and dynamics}}},\ \bibinfo {editor} {edited by\ \bibinfo {editor}
+  {\bibfnamefont {P.}~\bibnamefont {Fischer}}\ and\ \bibinfo {editor}
+  {\bibfnamefont {W.~R.}\ \bibnamefont {Smith}}}\ (\bibinfo  {publisher}
+  {M.~Dekker},\ \bibinfo {address} {New York},\ \bibinfo {year}
+  {1985})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Suppes}(1993)}]{suppes-1993}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Suppes}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The
+  transcendental character of determinism},}\ }\Doi
+  {10.1111/j.1475-4975.1993.tb00266.x} {\bibfield  {journal} {\bibinfo
+  {journal} {Midwest Studies In Philosophy},\ }\textbf {\bibinfo {volume}
+  {18}},\ \bibinfo {pages} {242--257} (\bibinfo {year} {1993})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Stewart}(1991)}]{Stewart-91}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.}~\bibnamefont
+  {Stewart}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Deciding the
+  undecidable},}\ }\Doi {10.1038/352664a0} {\bibfield  {journal} {\bibinfo
+  {journal} {Nature},\ }\textbf {\bibinfo {volume} {352}},\ \bibinfo {pages}
+  {664--665} (\bibinfo {year} {1991})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Brudno}(1983)}]{brudno2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.~A.}\ \bibnamefont
+  {Brudno}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Entropy and the
+  complexity of the trajectories of a dynamical system},}\ }\href@noop {}
+  {\bibfield  {journal} {\bibinfo  {journal} {Transactions of the Moscow
+  Mathematical Society},\ }\textbf {\bibinfo {volume} {44}},\ \bibinfo {pages}
+  {127--151} (\bibinfo {year} {1983})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Crutchfield}\ and\ \citenamefont
+  {Packard}(1982)}]{crutchfield1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~P.}\ \bibnamefont
+  {Crutchfield}}\ and\ \bibinfo {author} {\bibfnamefont {N.~H.}\ \bibnamefont
+  {Packard}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Symbolic
+  dynamics of one-dimensional maps: Entropies, finite precision, and noise},}\
+  }\Doi {10.1007/BF02650178} {\bibfield  {journal} {\bibinfo  {journal}
+  {International Journal of Theoretical Physics},\ }\textbf {\bibinfo {volume}
+  {21}},\ \bibinfo {pages} {433--466} (\bibinfo {year} {1982})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Moore}(1990)}]{moore}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.~D.}\ \bibnamefont
+  {Moore}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Unpredictability
+  and undecidability in dynamical systems},}\ }\Doi
+  {10.1103/PhysRevLett.64.2354} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review Letters},\ }\textbf {\bibinfo {volume} {64}},\ \bibinfo
+  {pages} {2354--2357} (\bibinfo {year} {1990})},\ \bibinfo {note} {cf. Ch.
+  Bennett, {\sl Nature}, {\bf 346}, 606 (1990)}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {G\'acs}\ \emph {et~al.}(2009)\citenamefont {G\'acs},
+  \citenamefont {Hoyrup},\ and\ \citenamefont {Rojas}}]{gacs09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {G\'acs}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Hoyrup}}, \
+  and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Rojas}},\ }\bibfield
+   {title} {\enquote {\bibinfo {title} {Randomness on computable probability
+  spaces. {A} dynamical point of view},}\ }in\ \href
+  {http://stacs2009.informatik.uni-freiburg.de/proceedings_stacs09.pdf} {\emph
+  {\bibinfo {booktitle} {26th International Symposium on Theoretical Aspects of
+  Computer Science - {STACS 2009}}}},\ \bibinfo {editor} {edited by\ \bibinfo
+  {editor} {\bibfnamefont {S.}~\bibnamefont {Albers}}\ and\ \bibinfo {editor}
+  {\bibfnamefont {J.-Y.}\ \bibnamefont {Marion}}}\ (\bibinfo  {publisher} {IBFI
+  Schloss Dagstuhl},\ \bibinfo {address} {Freiburg},\ \bibinfo {year} {2009})\
+  pp.\ \bibinfo {pages} {469--480},\ \Eprint
+  {http://arxiv.org/abs/arXiv:0902.1939} {arXiv:0902.1939} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {{da Costa}}\ and\ \citenamefont
+  {Doria}(1991)}]{dc-d91b}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {N.~C.~A.}\
+  \bibnamefont {{da Costa}}}\ and\ \bibinfo {author} {\bibfnamefont {F.~A.}\
+  \bibnamefont {Doria}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Undecidability and incompleteness in classical mechanics},}\ }\Doi
+  {10.1007/BF00671484} {\bibfield  {journal} {\bibinfo  {journal}
+  {International Journal of Theoretical Physics},\ }\textbf {\bibinfo {volume}
+  {30}},\ \bibinfo {pages} {1041--1073} (\bibinfo {year} {1991})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {{da Costa}}\ \emph {et~al.}(1993)\citenamefont {{da
+  Costa}}, \citenamefont {Doria},\ and\ \citenamefont {do~Amaral}}]{dc-d93}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {N.~C.~A.}\
+  \bibnamefont {{da Costa}}}, \bibinfo {author} {\bibfnamefont {F.~A.}\
+  \bibnamefont {Doria}}, \ and\ \bibinfo {author} {\bibfnamefont {A.~F.~F.}\
+  \bibnamefont {do~Amaral}},\ }\bibfield  {title} {\enquote {\bibinfo {title}
+  {Dynamical system where proving chaos is equivalent to proving {F}ermat's
+  conjecture},}\ }\Doi {10.1007/BF00675030} {\bibfield  {journal} {\bibinfo
+  {journal} {International Journal of Theoretical Physics},\ }\textbf {\bibinfo
+  {volume} {32}},\ \bibinfo {pages} {2187--2206} (\bibinfo {year}
+  {1993})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}(2010)}]{ecalude-10}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {E.}~\bibnamefont
+  {Calude}},\ }\href
+  {http://www.cs.auckland.ac.nz/CDMTCS/researchreports/383elena.pdf} {\enquote
+  {\bibinfo {title} {{F}ermat's last theorem and chaoticity},}\ } (\bibinfo
+  {year} {2010}),\ \bibinfo {note} {{CDMTCS} preprint 383}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Calude}\ \emph {et~al.}(2006)\citenamefont {Calude},
+  \citenamefont {Calude},\ and\ \citenamefont
+  {Dinneen}}]{calude-elena-dinneen06}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.~S.}\ \bibnamefont
+  {Calude}}, \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont {Calude}}, \
+  and\ \bibinfo {author} {\bibfnamefont {M.~J.}\ \bibnamefont {Dinneen}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {A new measure of the
+  difficulty of problems},}\ }\href
+  {http://www.cs.auckland.ac.nz/CDMTCS/researchreports/277cris.pdf} {\bibfield
+  {journal} {\bibinfo  {journal} {Journal for Multiple-Valued Logic and Soft
+  Computing},\ }\textbf {\bibinfo {volume} {12}},\ \bibinfo {pages} {285--307}
+  (\bibinfo {year} {2006})},\ \bibinfo {note} {{CDMTCS} report series
+  277}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Calude}(2009)}]{calude-elena-ec1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.~S.}\ \bibnamefont
+  {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont
+  {Calude}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Evaluating the
+  complexity of mathematical problems. {P}art 1},}\ }\href
+  {http://www.complex-systems.com/pdf/18-3-1.pdf} {\bibfield  {journal}
+  {\bibinfo  {journal} {Complex Systems},\ }\textbf {\bibinfo {volume} {19}},\
+  \bibinfo {pages} {267--285} (\bibinfo {year} {2009})},\ \bibinfo {note}
+  {{CDMTCS} report series 343}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Calude}(2010)}]{calude-elena-ec2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.~S.}\ \bibnamefont
+  {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont
+  {Calude}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Evaluating the
+  complexity of mathematical problems. {P}art 2},}\ }\href
+  {http://www.cs.auckland.ac.nz/CDMTCS//researchreports/369cris.pdf} {\bibfield
+   {journal} {\bibinfo  {journal} {Complex Systems},\ }\textbf {\bibinfo
+  {volume} {18}},\ \bibinfo {pages} {387--401} (\bibinfo {year} {2010})},\
+  \bibinfo {note} {{CDMTCS} report series 369}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Hilbert}(1902)}]{hilbert-1900e}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
+  {Hilbert}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Mathematical
+  problems},}\ }\Doi {10.1090/S0002-9904-1902-00923-3} {\bibfield  {journal}
+  {\bibinfo  {journal} {Bull. Amer. Math. Soc.},\ }\textbf {\bibinfo {volume}
+  {8}},\ \bibinfo {pages} {437--479} (\bibinfo {year} {1902})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Holmes}\ and\ \citenamefont
+  {Marsden}(1982)}]{Homes-Marsden-82}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.~J.}\ \bibnamefont
+  {Holmes}}\ and\ \bibinfo {author} {\bibfnamefont {J.~E.}\ \bibnamefont
+  {Marsden}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Horseshoes in
+  perturbations of {H}amiltonian systems with two degrees of freedom},}\ }\Doi
+  {10.1007/BF01961239} {\bibfield  {journal} {\bibinfo  {journal}
+  {Communications in Mathematical Physics},\ }\textbf {\bibinfo {volume}
+  {82}},\ \bibinfo {pages} {523--544} (\bibinfo {year} {1982})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Calude}()}]{calude-elena-CE3}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.~S.}\ \bibnamefont
+  {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {E.}~\bibnamefont
+  {Calude}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The complexity
+  of the four colour theorem},}\ }\href
+  {http://www.cs.auckland.ac.nz/CDMTCS//researchreports/368cris.pdf} {\bibfield
+   {journal} {\bibinfo  {journal} {LMS Journal of Computation and
+  Mathematics}},\ }\bibinfo {note} {in print, CDMTCS Research Report
+  368}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}(2009)}]{ecalude-09}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {E.}~\bibnamefont
+  {Calude}},\ }\href
+  {http://www.cs.auckland.ac.nz/CDMTCS/researchreports/370elena.pdf} {\enquote
+  {\bibinfo {title} {The complexity of the {G}oldbach's conjecture and
+  {R}iemann's hypothesis},}\ } (\bibinfo {year} {2009}),\ \bibinfo {note}
+  {{CDMTCS} preprint 370}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {P\u{a}un}(1983)}]{cal-paun-83}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
+  {P\u{a}un}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Independent
+  instances for some undecidable problems},}\ }\href@noop {} {\bibfield
+  {journal} {\bibinfo  {journal} {RAIRO - Theoretical Informatics and
+  Applications (RAIRO: ITA)},\ }\textbf {\bibinfo {volume} {17}},\ \bibinfo
+  {pages} {49--54} (\bibinfo {year} {1983})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Scarpellini}(1963)}]{Scarpellini-63}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont
+  {Scarpellini}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Zwei
+  unentscheidbare {P}robleme der {A}nalysis},}\ }\Doi
+  {10.1002/malq.19630091802} {\bibfield  {journal} {\bibinfo  {journal}
+  {Zeitschrift f{\"{u}}r Mathematische Logik und Grundlagen der Mathematik},\
+  }\textbf {\bibinfo {volume} {9}},\ \bibinfo {pages} {265--289} (\bibinfo
+  {year} {1963})},\ ISSN \bibinfo {issn} {1521-3870}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Scarpellini}(2003){\natexlab{a}}}]{Scarpellini-2003}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont
+  {Scarpellini}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Two
+  undecidable problems of analysis},}\ }\Doi
+  {http://dx.doi.org/10.1023/A:1021381032553} {\bibfield  {journal} {\bibinfo
+  {journal} {Minds and Machines},\ }\textbf {\bibinfo {volume} {13}},\ \bibinfo
+  {pages} {49--77} (\bibinfo {year} {2003}{\natexlab{a}})},\ ISSN \bibinfo
+  {issn} {0924-6495}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont
+  {Scarpellini}(2003){\natexlab{b}}}]{Scarpellini-2003c}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {B.}~\bibnamefont
+  {Scarpellini}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Comments on
+  `two undecidable problems of analysis'},}\ }\Doi
+  {http://dx.doi.org/10.1023/A:1021364916624} {\bibfield  {journal} {\bibinfo
+  {journal} {Minds and Machines},\ }\textbf {\bibinfo {volume} {13}},\ \bibinfo
+  {pages} {79--85} (\bibinfo {year} {2003}{\natexlab{b}})},\ ISSN \bibinfo
+  {issn} {0924-6495}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Davis}(1958)}]{davis-58}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Davis}},\ }\href@noop {} {\emph {\bibinfo {title} {Computability and
+  Unsolvability}}}\ (\bibinfo  {publisher} {McGraw-Hill},\ \bibinfo {address}
+  {New York},\ \bibinfo {year} {1958})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {{Rogers, Jr.}}(1967)}]{rogers1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {H.}~\bibnamefont
+  {{Rogers, Jr.}}},\ }\href@noop {} {\emph {\bibinfo {title} {Theory of
+  Recursive Functions and Effective Computability}}}\ (\bibinfo  {publisher}
+  {MacGraw-Hill},\ \bibinfo {address} {New York},\ \bibinfo {year}
+  {1967})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Kreisel}(1974)}]{kreisel}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
+  {Kreisel}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {A notion of
+  mechanistic theory},}\ }\Doi {10.1007/BF00484949} {\bibfield  {journal}
+  {\bibinfo  {journal} {Synthese},\ }\textbf {\bibinfo {volume} {29}},\
+  \bibinfo {pages} {11--26} (\bibinfo {year} {1974})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Bridgman}(1934)}]{bridgman}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.~W.}\ \bibnamefont
+  {Bridgman}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {A physicist's
+  second reaction to {M}engenlehre},}\ }\href@noop {} {\bibfield  {journal}
+  {\bibinfo  {journal} {Scripta Mathematica},\ }\textbf {\bibinfo {volume}
+  {2}},\ \bibinfo {pages} {101--117, 224--234} (\bibinfo {year} {1934})},\
+  \bibinfo {note} {cf. R. Landauer \cite{landauer-95}}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gandy}(1980)}]{gandy2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~O.}\ \bibnamefont
+  {Gandy}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {{C}hurch's thesis
+  and principles for mechanics},}\ }in\ \href@noop {} {\emph {\bibinfo
+  {booktitle} {The {K}leene Symposium. {V}ol. 101 of Studies in Logic and
+  Foundations of Mathematics}}},\ \bibinfo {editor} {edited by\ \bibinfo
+  {editor} {\bibfnamefont {J.}~\bibnamefont {Barwise}}, \bibinfo {editor}
+  {\bibfnamefont {H.~J.}\ \bibnamefont {Kreisler}}, \ and\ \bibinfo {editor}
+  {\bibfnamefont {K.}~\bibnamefont {Kunen}}}\ (\bibinfo  {publisher} {North
+  Holland},\ \bibinfo {address} {Amsterdam},\ \bibinfo {year} {1980})\ pp.\
+  \bibinfo {pages} {123--148}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gandy}(1982)}]{gandy1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~O.}\ \bibnamefont
+  {Gandy}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Limitations to
+  mathematical knowledge},}\ }in\ \href@noop {} {\emph {\bibinfo {booktitle}
+  {Logic Colloquium '82}}},\ \bibinfo {editor} {edited by\ \bibinfo {editor}
+  {\bibfnamefont {D.}~\bibnamefont {van Dalen}}, \bibinfo {editor}
+  {\bibfnamefont {D.}~\bibnamefont {Lascar}}, \ and\ \bibinfo {editor}
+  {\bibfnamefont {J.}~\bibnamefont {Smiley}}}\ (\bibinfo  {publisher} {North
+  Holland},\ \bibinfo {address} {Amsterdam},\ \bibinfo {year} {1982})\ p.\
+  \bibinfo {pages} {129–146}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Einstein}\ \emph {et~al.}(1935)\citenamefont
+  {Einstein}, \citenamefont {Podolsky},\ and\ \citenamefont {Rosen}}]{epr}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Einstein}}, \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Podolsky}},
+  \ and\ \bibinfo {author} {\bibfnamefont {N.}~\bibnamefont {Rosen}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {Can quantum-mechanical
+  description of physical reality be considered complete?}}\ }\Doi
+  {10.1103/PhysRev.47.777} {\bibfield  {journal} {\bibinfo  {journal} {Physical
+  Review},\ }\textbf {\bibinfo {volume} {47}},\ \bibinfo {pages} {777--780}
+  (\bibinfo {year} {1935})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Packard}\ \emph {et~al.}(1980)\citenamefont
+  {Packard}, \citenamefont {Crutchfield}, \citenamefont {Farmer},\ and\
+  \citenamefont {Shaw}}]{PhysRevLett.45.712}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {N.~H.}\ \bibnamefont
+  {Packard}}, \bibinfo {author} {\bibfnamefont {J.~P.}\ \bibnamefont
+  {Crutchfield}}, \bibinfo {author} {\bibfnamefont {J.~D.}\ \bibnamefont
+  {Farmer}}, \ and\ \bibinfo {author} {\bibfnamefont {R.~S.}\ \bibnamefont
+  {Shaw}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Geometry from a
+  time series},}\ }\Doi {10.1103/PhysRevLett.45.712} {\bibfield  {journal}
+  {\bibinfo  {journal} {Physical Review Letters},\ }\textbf {\bibinfo {volume}
+  {45}},\ \bibinfo {pages} {712--716} (\bibinfo {year} {1980})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Svozil}(1990)}]{svozil-qct}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The quantum coin
+  toss---testing microphysical undecidability},}\ }\Doi
+  {10.1016/0375-9601(90)90408-G} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physics Letters A},\ }\textbf {\bibinfo {volume} {143}},\ \bibinfo {pages}
+  {433--437} (\bibinfo {year} {1990})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Rarity}\ \emph {et~al.}(1994)\citenamefont {Rarity},
+  \citenamefont {Owens},\ and\ \citenamefont {Tapster}}]{rarity-94}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~G.}\ \bibnamefont
+  {Rarity}}, \bibinfo {author} {\bibfnamefont {M.~P.~C.}\ \bibnamefont
+  {Owens}}, \ and\ \bibinfo {author} {\bibfnamefont {P.~R.}\ \bibnamefont
+  {Tapster}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Quantum
+  random-number generation and key sharing},}\ }\Doi
+  {10.1080/09500349414552281} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Modern Optics},\ }\textbf {\bibinfo {volume} {41}},\ \bibinfo
+  {pages} {2435--2444} (\bibinfo {year} {1994})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Jennewein}\ \emph {et~al.}(2000)\citenamefont
+  {Jennewein}, \citenamefont {Achleitner}, \citenamefont {Weihs}, \citenamefont
+  {Weinfurter},\ and\ \citenamefont {Zeilinger}}]{zeilinger:qct}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {T.}~\bibnamefont
+  {Jennewein}}, \bibinfo {author} {\bibfnamefont {U.}~\bibnamefont
+  {Achleitner}}, \bibinfo {author} {\bibfnamefont {G.}~\bibnamefont {Weihs}},
+  \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Weinfurter}}, \ and\
+  \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Zeilinger}},\ }\bibfield
+  {title} {\enquote {\bibinfo {title} {A fast and compact quantum random number
+  generator},}\ }\Doi {10.1063/1.1150518} {\bibfield  {journal} {\bibinfo
+  {journal} {Review of Scientific Instruments},\ }\textbf {\bibinfo {volume}
+  {71}},\ \bibinfo {pages} {1675--1680} (\bibinfo {year} {2000})},\ \Eprint
+  {http://arxiv.org/abs/quant-ph/9912118} {quant-ph/9912118} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Stefanov}\ \emph {et~al.}(2000)\citenamefont
+  {Stefanov}, \citenamefont {Gisin}, \citenamefont {Guinnard}, \citenamefont
+  {Guinnard},\ and\ \citenamefont {Zbinden}}]{stefanov-2000}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Stefanov}}, \bibinfo {author} {\bibfnamefont {N.}~\bibnamefont {Gisin}},
+  \bibinfo {author} {\bibfnamefont {O.}~\bibnamefont {Guinnard}}, \bibinfo
+  {author} {\bibfnamefont {L.}~\bibnamefont {Guinnard}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {H.}~\bibnamefont {Zbinden}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Optical quantum random number generator},}\
+  }\Doi {10.1080/095003400147908} {\bibfield  {journal} {\bibinfo  {journal}
+  {Journal of Modern Optics},\ }\textbf {\bibinfo {volume} {47}},\ \bibinfo
+  {pages} {595--598} (\bibinfo {year} {2000})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Hai-Qiang}\ \emph {et~al.}(2004)\citenamefont
+  {Hai-Qiang}, \citenamefont {Su-Mei}, \citenamefont {Da}, \citenamefont
+  {Jun-Tao}, \citenamefont {Ling-Ling}, \citenamefont {Yan-Xue},\ and\
+  \citenamefont {Ling-An}}]{0256-307X-21-10-027}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Hai-Qiang}}, \bibinfo {author} {\bibfnamefont {W.}~\bibnamefont {Su-Mei}},
+  \bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont {Da}}, \bibinfo {author}
+  {\bibfnamefont {C.}~\bibnamefont {Jun-Tao}}, \bibinfo {author} {\bibfnamefont
+  {J.}~\bibnamefont {Ling-Ling}}, \bibinfo {author} {\bibfnamefont
+  {H.}~\bibnamefont {Yan-Xue}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {W.}~\bibnamefont {Ling-An}},\ }\bibfield  {title} {\enquote {\bibinfo
+  {title} {A random number generator based on quantum entangled photon
+  pairs},}\ }\Doi {10.1088/0256-307X/21/10/027} {\bibfield  {journal} {\bibinfo
+   {journal} {Chinese Physics Letters},\ }\textbf {\bibinfo {volume} {21}},\
+  \bibinfo {pages} {1961--1964} (\bibinfo {year} {2004})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Wang}\ \emph {et~al.}(2006)\citenamefont {Wang},
+  \citenamefont {Long},\ and\ \citenamefont {Li}}]{wang:056107}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {P.~X.}\ \bibnamefont
+  {Wang}}, \bibinfo {author} {\bibfnamefont {G.~L.}\ \bibnamefont {Long}}, \
+  and\ \bibinfo {author} {\bibfnamefont {Y.~S.}\ \bibnamefont {Li}},\
+  }\bibfield  {title} {\enquote {\bibinfo {title} {Scheme for a quantum random
+  number generator},}\ }\Doi {10.1063/1.2338830} {\bibfield  {journal}
+  {\bibinfo  {journal} {Journal of Applied Physics},\ }\textbf {\bibinfo
+  {volume} {100}},\ \bibinfo {eid} {056107} (\bibinfo {year}
+  {2006})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Fiorentino}\ \emph {et~al.}(2007)\citenamefont
+  {Fiorentino}, \citenamefont {Santori}, \citenamefont {Spillane},
+  \citenamefont {Beausoleil},\ and\ \citenamefont {Munro}}]{fiorentino:032334}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Fiorentino}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Santori}},
+  \bibinfo {author} {\bibfnamefont {S.~M.}\ \bibnamefont {Spillane}}, \bibinfo
+  {author} {\bibfnamefont {R.~G.}\ \bibnamefont {Beausoleil}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {W.~J.}\ \bibnamefont {Munro}},\ }\bibfield  {title}
+  {\enquote {\bibinfo {title} {Secure self-calibrating quantum random-bit
+  generator},}\ }\Doi {10.1103/PhysRevA.75.032334} {\bibfield  {journal}
+  {\bibinfo  {journal} {Physical Review A (Atomic, Molecular, and Optical
+  Physics)},\ }\textbf {\bibinfo {volume} {75}},\ \bibinfo {eid} {032334}
+  (\bibinfo {year} {2007})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Svozil}(2009)}]{svozil-2009-howto}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Three criteria
+  for quantum random-number generators based on beam splitters},}\ }\Doi
+  {10.1103/PhysRevA.79.054306} {\bibfield  {journal} {\bibinfo  {journal}
+  {Physical Review A (Atomic, Molecular, and Optical Physics)},\ }\textbf
+  {\bibinfo {volume} {79}},\ \bibinfo {eid} {054306} (\bibinfo {year}
+  {2009})},\ \Eprint {http://arxiv.org/abs/arXiv:0903.2744} {arXiv:0903.2744}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Born}(1926){\natexlab{a}}}]{born-26-1}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Born}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Zur
+  {Q}uantenmechanik der {S}to{\ss}vorg{\"{a}}nge},}\ }\Doi {10.1007/BF01397477}
+  {\bibfield  {journal} {\bibinfo  {journal} {Zeitschrift f{\"{u}}r Physik},\
+  }\textbf {\bibinfo {volume} {37}},\ \bibinfo {pages} {863--867} (\bibinfo
+  {year} {1926}{\natexlab{a}})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Born}(1926){\natexlab{b}}}]{born-26-2}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
+  {Born}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {{Q}uantenmechanik
+  der {S}to{\ss}vorg{\"{a}}nge},}\ }\Doi {10.1007/BF01397184} {\bibfield
+  {journal} {\bibinfo  {journal} {Zeitschrift f{\"{u}}r Physik},\ }\textbf
+  {\bibinfo {volume} {38}},\ \bibinfo {pages} {803--827} (\bibinfo {year}
+  {1926}{\natexlab{b}})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Zeilinger}(2005)}]{zeil-05_nature_ofQuantum}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Zeilinger}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {The message
+  of the quantum},}\ }\Doi {10.1038/438743a} {\bibfield  {journal} {\bibinfo
+  {journal} {Nature},\ }\textbf {\bibinfo {volume} {438}},\ \bibinfo {pages}
+  {743} (\bibinfo {year} {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}\ and\ \citenamefont
+  {Svozil}(2008)}]{2008-cal-svo}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.~S.}\ \bibnamefont
+  {Calude}}\ and\ \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
+  {Svozil}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Quantum
+  randomness and value indefiniteness},}\ }\Doi {10.1166/asl.2008.016}
+  {\bibfield  {journal} {\bibinfo  {journal} {Advanced Science Letters},\
+  }\textbf {\bibinfo {volume} {1}},\ \bibinfo {pages} {165--168} (\bibinfo
+  {year} {2008})},\ \Eprint {http://arxiv.org/abs/arXiv:quant-ph/0611029}
+  {arXiv:quant-ph/0611029} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Chaitin}(1987)}]{chaitin3}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.~J.}\ \bibnamefont
+  {Chaitin}},\ }\href {http://www.cs.auckland.ac.nz/~chaitin/cup.pdf} {\emph
+  {\bibinfo {title} {Algorithmic Information Theory}}}\ (\bibinfo  {publisher}
+  {Cambridge University Press},\ \bibinfo {address} {Cambridge},\ \bibinfo
+  {year} {1987})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Calude}(2002)}]{calude:02}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Calude}},\ }\href@noop {} {\emph {\bibinfo {title} {Information and
+  Randomness---An Algorithmic Perspective}}},\ \bibinfo {edition} {2nd}\ ed.\
+  (\bibinfo  {publisher} {Springer},\ \bibinfo {address} {Berlin},\ \bibinfo
+  {year} {2002})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Landauer}(1994)}]{landauer-95}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.}~\bibnamefont
+  {Landauer}},\ }\bibfield  {title} {\enquote {\bibinfo {title} {Advertisement
+  for a paper {I} like},}\ }in\ \href
+  {http://www.santafe.edu/research/publications/workingpapers/94-10-056.pdf}
+  {\emph {\bibinfo {booktitle} {On Limits}}},\ \bibinfo {editor} {edited by\
+  \bibinfo {editor} {\bibfnamefont {J.~L.}\ \bibnamefont {Casti}}\ and\
+  \bibinfo {editor} {\bibfnamefont {J.~F.}\ \bibnamefont {Traub}}}\ (\bibinfo
+  {publisher} {Santa Fe Institute Report 94-10-056},\ \bibinfo {address} {Santa
+  Fe, NM},\ \bibinfo {year} {1994})\ p.~\bibinfo {pages} {39}\BibitemShut
+  {NoStop}%
+\end{thebibliography}%
+\end{document}

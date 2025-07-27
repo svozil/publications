@@ -1,0 +1,633 @@
+\documentclass[%
+ %reprint,
+ superscriptaddress,
+ %groupedaddress,
+ %unsortedaddress,
+ %runinaddress,
+ %frontmatterverbose,
+ preprint,
+ showpacs,
+ showkeys,
+ preprintnumbers,
+ %nofootinbib,
+ %nobibnotes,
+ %bibnotes,
+  amsmath,amssymb,
+  aps,
+ % prl,
+ pra,
+ %prb,
+ % rmp,
+ %prstab,
+ %prstper,
+  longbibliography,
+  floatfix,
+  %lengthcheck,%
+ ]{revtex4-1}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+%\usepackage[hmargin=2cm,vmargin=3cm]{geometry}
+\usepackage{graphicx}
+
+\RequirePackage{times}
+\RequirePackage{mathptm}
+
+\usepackage{url}
+\usepackage{yfonts}
+
+\sloppy
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{comment}[theorem]{Comment}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\seq}[1]{\mathbf{#1}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\rest}[2]{#1\!\!\restriction_{#2}}
+\newcommand{\reste}[2]{#1\restriction_{#2}}
+\newcommand{\N}{\mathbb{N}}%      \N   == \mathbb{N}
+\newcommand{\Z}{\mathbb{Z}}%      \Z   == \mathbb{Z}
+\newcommand{\Q}{\mathbb{Q}}%      \Q   == \mathbb{Q}
+\newcommand{\R}{\mathbb{R}}%      \R   == \mathbb{R}
+\newcommand{\C}{\mathbb{C}}%      \C   == \mathbb{C}
+\newcommand{\alphabet}{\{0,1\}}
+\newcommand{\B}{B^*}%        \X  == \Sigma^*
+\newcommand{\BI}{B^\omega}%        \XI  == \Sigma^\infty
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\dom}{\text{dom}}
+\newcommand{\cl}{\text{cl}}
+
+
+\newcommand{\bra}[1]{\left< #1 \right|}
+\newcommand{\ket}[1]{\left| #1 \right>}
+
+\newcommand{\iprod}[2]{\langle #1 | #2 \rangle}
+\newcommand{\mprod}[3]{\langle #1 | #2 | #3 \rangle}
+\newcommand{\oprod}[2]{| #1 \rangle\langle #2 |}
+\newcommand{\rb}{\raisebox{0.5ex}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+	
+\title{On the unpredictability of individual quantum measurement outcomes}
+	
+\author{Alastair A. Abbott}
+\email{a.abbott@auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~aabb009}
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+\affiliation{Centre Cavaill\`es, CIRPHLES, \'Ecole Normale Sup\'erieure, 29 rue d'Ulm, 75005 Paris, France}
+
+\author{Cristian S. Calude}
+\email{cristian@cs.auckland.ac.nz}
+\homepage{http://www.cs.auckland.ac.nz/~cristian}
+
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+
+\author{Karl Svozil}
+\email{svozil@tuwien.ac.at}
+\homepage{http://tph.tuwien.ac.at/~svozil}
+
+\affiliation{Institute for Theoretical Physics,
+Vienna  University of Technology,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria}
+
+\affiliation{Department of Computer Science, University of Auckland,
+Private Bag 92019, Auckland, New Zealand}
+
+\date{\today}
+
+\begin{abstract}
+Suppose  we prepare a quantum in a pure state corresponding to a unit vector in Hilbert space.
+Choose an observable property of this quantum corresponding to a projector whose respective linear subspace is
+neither collinear nor orthogonal with respect to the pure state vector. Recent results can be then used to {\em prove} that this observable property
+has no predetermined value, and thus remains value indefinite.
+
+As a consequence, we {\em prove} that the outcome of a measurement of such a property is {\em unpredictable} with respect to a very general model of prediction here developed.
+
+These results are true relative to three assumptions, namely compatibility with quantum mechanical predictions, noncontextuality, and the value definiteness of observables corresponding to the preparation basis of a quantum state. This framework allows for the first time a rigorous proof of the unpredictability of some individual quantum measurement outcomes, a fact postulated or claimed for a long time.
+
+Finally, unpredictability will be used to discuss quantum randomness---shown to be ``maximally incomputable''---as well as {\em real} model hypercomputation whose computational power has yet to be determined.\end{abstract}
+
+\pacs{}
+\keywords{}
+%\preprint{CDMTCS preprint nr. x}
+
+\maketitle
+
+\section{Introduction}
+
+Indeterminism has had a role at the heart of quantum mechanics since Born postulated that the modulus-squared of the wave function should be interpreted as a probability density that, unlike in classical statistical physics~\cite{Myrvold2011237}, expresses fundamental,  irreducible indeterminism~\cite{born-26-1}.
+In Born's own words, ``{\em I myself am inclined  to give up determinism in the world of atoms.}''
+The nature of individual measurement outcomes in quantum mechanics was, for a period, a subject of much debate.
+Einstein famously dissented, stating his belief that \cite[p. 204]{born-69} ``\emph{He does not throw dice}.''
+Nonetheless, over time the conjecture that measurement outcomes are themselves fundamentally indeterministic became the quantum orthodoxy~\cite{zeil-05_nature_ofQuantum}.
+
+% (AA) following paragraph heavily rewritten
+Accompanying the belief of quantum indeterminism is the view that quantum measurement outcomes are unpredictable and random~\cite{zeil-05_nature_ofQuantum}, a view that, at least to some extent, seems intuitively to follow from indeterminism.
+These are all, however, subtle concepts and any such argument would be clarified immensely by formalising the situation.
+This has happened with indeterminism, which has progressively been formalised as value indefiniteness in the development of the theorems of Bell~\cite{bell-66} and, particularly,  Kochen-Specker~\cite{kochen1}.
+These theorems, which have also been experimentally tested via the violation of various inequalities~\cite{wjswz-98}, express the impossibility of certain classes of deterministic theories.%, and give a better grounding to the belief in quantum indeterminism.
+%AA%Much later, this assumption was %(albeit retrospectively)
+%AA% in a certain sense vindicated by the theorems of Bell~\cite{bell-66} and Kochen-Specker~\cite{kochen1} on the impossibility of certain classes of deterministic theories.
+%AA%These results were further corroborated by the experimental verification of violation of Bell's inequalities~\cite{wjswz-98}.
+
+While these results have given a better grounding to the belief in quantum indeterminism, it is crucial to recognise their limits.
+% (AA) next 3 lines replace the two commented out
+Firstly, it is important to remember that the deduction of indeterminism from these no-go theorems rests on the reluctance to accept non-classical alternatives such as nonlocality and contextual determinism, assumptions whose validity continues to be tested and analysed.
+%AA% acceptance of indeterminism is largely influenced by the results of the aforementioned no-go theorems, which in turn rest on further assumptions such as noncontextuality and locality, assumption whose validity continues to be tested and analysed.
+Secondly, in order to understand clearly the consequences of indeterminism for unpredictability and randomness, formal notions of these concepts also need to be specified and analysed.
+Such notions are by no means simple to define, and we should be cautious of any attempt to assert that randomness and unpredictability follow trivially.
+%AA%Firstly, such results nonetheless require belief in the validity of certain assumptions such as noncontextuality and locality.
+%AA%Secondly, even with these assumptions, such indeterminism need not entail complete unpredictability or randomness.
+
+% (AA) Next paragraph completely rewritten
+In this paper we systematically approach these issues.
+We first discuss various possible proposed notions of prediction, before presenting an objective, non-probabilistic formal model of prediction which we argue captures the notion of an `in principle' predictable physical event or sequence thereof.
+We show that individual quantum measurement outcomes are unpredictable with respect to this model, confirming the intuition.
+The use of clear formal models allows us to identify Kochen-Specker type value indefiniteness~\cite{2012-incomput-proofsCJ} as the key reason for this unpredictability.
+We further discuss the issue of quantum randomness from the viewpoint of the derived unpredictability.
+%This value indefiniteness is indeed a formalised notion of indeterminism which can either be postulated directly, or derived from further assumptions via the (Strong) Kochen-Specker theorem~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109}.
+
+%In this paper we systematically approach these issues aiming to deduce quantum indeterminism and unpredictability from more fundamental,
+%arguably largely accepted,
+%assumptions, rather rely on their \emph{ad hoc} postulation.
+%Working directly from the results implied by strong versions of the Kochen-Specker theorem~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109}
+%we propose   a very general model of prediction of physical outcomes.
+%We show that, relative to specific assumptions drawn from the Kochen-Specker theorem, no outcome of any single measurement of a value indefinite quantum observable is predictable.
+
+\section{Value indefiniteness}
+
+\subsection{A formal basis for indeterminism}
+%CC%
+% A good starting point is  Popper's description of quantum indeterminism in \cite[117--118]{popper-50i}:
+
+The generally accepted phenomenon of quantum indeterminism cannot be deduced from the Hilbert space formalism of quantum mechanics alone, as this specifies only the probability distribution for a given measurement which in itself need not indicate intrinsic indeterminism.
+%(AA - rest of paragraph modified)
+Instead, it enters at the interpretational level, even if its acceptance is influenced by the analysis of no-go theorems.
+While we could, in our effort to clarify and formalise unpredictability, restrict ourselves to a particular interpretation, it is preferable to work from a formal definition of value-indefiniteness which represents indeterminism in a general framework~\cite{2012-incomput-proofsCJ}.
+Here we will briefly review this formalism, as well as the Kochen-Specker theorem which is the primary motivation for its acceptance.
+% from a small set of physical assumptions and principles to arrive at a more general understanding of quantum unpredictability.
+
+% (AA - from here on in this section is heavily reworked)
+
+%AA%In \cite{2012-incomput-proofsCJ} the physical assumptions needed to deduce quantum value indefiniteness---the formalisation of the intuitive notion of quantum indeterminism---were carefully analysed.
+%AA%Here we briefly review the key assumptions, as this will be important in the analysis of the link between value indefiniteness and unpredictability.
+
+For a given quantum system, we can represent the measurement outcomes which are pre-determined by a value assignment function.
+This partial function assigns (potentially hidden) values to those observables for which measurement results are pre-determined, which we call \emph{value definite} observables, and may be undefined for some (or all) observables.
+Such \emph{value indefiniteness} corresponds to the indeterminism of a measurement outcome.
+
+%AA%In the following we shall work in an idealised theoretical framework.
+%AA%That is, we consider perfect idealised measuring devices and experiments where the devices behave precisely as they should in theory.
+%AA%Further, any predictions or access to measurement results that are in principle possible are considered reasonable in this framework.
+
+While one could potentially hypothesise that all observables are value indefinite under the value assignment function for quantum systems, it seems that at least some conditions for value definiteness need to be respected.
+%AA%Since the central issue is that of value indefiniteness,
+%AA%it is crucial to have a clear understanding of
+With respect to
+when we should conclude that a physical quantity is value definite,
+Einstein, Podolsky and Rosen (EPR)  define {\em physical reality} in terms of certainty and predictability in \cite[p.~777]{epr}.
+%AA%Based on this accepted notion of an element of physical reality,
+While we have not yet given a definition of predictability, we posit that any reasonable definition should render
+%AA%we allow ourselves to be guided by
+the following  ``EPR principle'' true,
+which identifies their notion of an ``element of physical reality'' with ``value definiteness'':
+\begin{quote}
+	{\em EPR principle}: If, without in any way disturbing a system, we can predict with certainty the value of a physical quantity, then there exists a \emph{definite value} prior to observation corresponding to this physical quantity.
+\end{quote}
+
+We briefly note that the constraint that prediction acts ``without in any way disturbing a system'' is perhaps nontrivial~\cite{laloe-2012}, but nonetheless appears a reasonable requirement for prediction, especially in order to imply pre-determined values.
+
+With this in mind, it seems that as a minimum requirement, the \emph{eigenstate principle} should hold: if a quantum system is prepared in a state $\ket{\psi}$, then the projection observable $P_\psi=\oprod{\psi}{\psi}$ is value definite.
+This is similar, although weaker (as only one direction of the implication is asserted) than the eigenstate-eigenvalue link~\cite{Suarez:2004gn}.
+%, which is nonetheless rejected (although rarely) by some interpretations.
+
+We recall that a context is a set of mutually commuting observables.
+A further requirement that seems unavoidable is that, if some observables in a context are value definite, then if quantum mechanical identities uniquely identify the outcome for other observables in the context, they must be value definite as well.
+We call this \emph{admissibility} of the value assignment function, and appears necessary to avoid measurement results that should be impossible to obtain.
+Note that we require this to hold only when any indeterminism (which implies multiple possible outcomes) would allow quantum mechanical predictions to be broken.
+As an example, given a set $\{P_1,\dots,P_n\}$ of commuting projection observables, if $P_1$ were to have the definite value 1, all other observables in this set must have the value 0.
+Were this not the case, there would be a possibility to obtain the value 1 for more than one compatible projection observable, a direct contradiction of the quantum predictions.
+
+The Kochen-Specker theorem \cite{kochen1} shows that no value assignment function can consistently make \emph{all} observables value definite while maintaining the requirement that the values are assigned non-contextually---that is, the value of an observable is the same in each context it is in.
+This is a global property: non-contextuality is incompatible with \emph{all} observables being value definite.
+However, it is possible to localise value indefiniteness and show that even the existence of two non-compatible value definite observables is in contradiction with admissibility and the requirement that any value definite observables behave non-contextuality, without requiring that all observables be value definite.
+
+%AA%Our main assumptions based on value definiteness are the following.
+%AA%More technical descriptions and further discussion can be found in \cite{2012-incomput-proofsCJ}.
+
+
+%AA%\emph{Admissibility}:  Definite values must not contradict the statistical quantum predictions for compatible observables on a single quantum.
+%AA%For example, given a set $\{P_1,\dots,P_n\}$ of commuting projection observables, if $P_1$ were to have the definite value 1, all other observables in this set must have the value 0 as any other possibility would contradict the quantum prediction that one and only one such projector will yield the value 1 upon measurement.
+
+%AA%\emph{Noncontextuality of definite values}: If a measurement is made of a value definite observable, the outcome obtained (and thus the preexisting physical property) is \emph{noncontextual}. That means it does not depend on other compatible (i.e.\ simultaneously co-measurable) observables which may be measured alongside the value definite observable.
+
+%AA%\emph{Eigenstate principle}:  If a quantum system is prepared in the state $\ket{\psi}$, then the projection observable $P_\psi=\ket{\psi}\bra{\psi}$ is value definite, as are (by the previous two assumptions) all observables which commute with $P_\psi$.
+
+%AA%The eigenstate principle follows largely from the EPR principle, since by preparing a system in the state $\ket{\psi}$ we ensure that we can predict with certainty the value of the observable $P_\psi$.
+%AA%However, we make this explicit because of its importance in deducing the existence of value indefiniteness.
+%AA%{\bf If the Eigenstate assumption can be derived from EPR then we need to show this and not refer to it as an assumption, but as a fact or proposition or corollary.}
+%CC%
+
+
+%AA%These assumptions give a generalised and formal base for the understanding of value indefiniteness in quantum physics.
+%In particular, in \cite{2012-incomput-proofsCJ,PhysRevA.89.032109}
+%the following result is proven from these assumptions:
+\begin{theorem}[From \cite{2012-incomput-proofsCJ,PhysRevA.89.032109}]
+	\label{thm:vi-everywhere}
+		Let there be a quantum system prepared in the state
+	$\ket{\psi}$ in dimension $n\ge 3$ Hilbert space $\C^n$, and let $\ket{\phi}$ be any state neither orthogonal nor parallel to $\ket{\psi}$, i.e.\ $0<|\iprod{\psi}{\phi}|<1$.
+	Then the projection observable $P_\phi=\ket{\phi}\bra{\phi}$ is value indefinite under any non-contextual admissible assignment function.
+\end{theorem}
+
+Hence,  accepting that definite values, \emph{should they exist} for certain observables, behave non-contextually is in fact enough to derive rather than postulate quantum value indefiniteness.
+
+% (AA - move this here from the end of the paper. I've cut a lot of this section down because it seems a bit of a sidetrack from predictability.)
+\subsection{Contextual alternatives}
+
+%AA%So far we have argued for the complete unpredictability of quantum bits literally created {\it ``ex nihilo''};
+%that is, out of nowhere, thereby contradicting the {\em  principle of sufficient reason} {\it ``ex nihilo nihil fit''}.
+%This is in accord with the orthodox viewpoint which associates irreducible indeterminism with certain single
+%utcomes \cite{born-26-1,zeil-05_nature_ofQuantum}.
+It is worth keeping in mind that, while indeterminism is often treated as an assumption or aspect of the orthodox viewpoint \cite{born-26-1,zeil-05_nature_ofQuantum}, this usually rests implicitly on the deeper assumptions we have mentioned that the Kochen-Specker theorem relies on.
+If these assumptions are violated, deterministic theories could not be excluded, and the assumption of indeterminism would appear much blinder.
+%AA%if the assumptions of the Kochen-Specker theorem we have mentioned are violated, deterministic theories cannot be excluded and indeterminism becomes purely an assumption, if nonetheless the orthodox viewpoint  \cite{born-26-1,zeil-05_nature_ofQuantum}.
+
+%Let us, for the sake of an alternative, also briefly mention other scenarios.
+%AA%It should be acknowledged, however, that the guarantee of such indeterminism relies on the assumptions made, in particular, on noncontextuality.
+%As our theorems are derived  mathematically, they leave no space for a formal alternative within (relative to) the assumptions.
+%Hence, in order to allow alternatives, we have to modify our assumptions.% and axioms.
+%AA%If this assumption were abandoned the nature of unpredictability in quantum mechanics could be considerably different, and it is worth briefly considering this situation.
+
+If this were the case, perhaps the simplest alternative would be the explicit assumption of the context dependant value definiteness, and most attempts to interpret quantum mechanics deterministically, such as Bohmian mechanics~\cite{Bohm52}, can be expressed in this framework.
+%AA%The formal framework for such a theory is outlined in Refs.~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109}, and most attempts to interpret quantum mechanics deterministically could be expressed in this framework.
+An important caveat is that, due to the experimental verification of Bell inequalities~\cite{wjswz-98},
+any such deterministic hidden parameters must be explicitly nonlocal.
+%The best-known such theory is Bohmian mechanics~\cite{Bohm52}, although many others exist (see \cite{laloe-2012}).
+In such a theory unpredictability seems less evident as the \emph{ex nihilo} results are sacrificed.
+However, predictability is still not an immediate consequence, as such hidden variables could potentially be ``assigned'' by a demon operating beyond the limits of any predicting agent (e.g. uncomputably).
+
+
+%A second alternative is based on the explicit assumption of context dependence of the measurement result as outlined in Refs.~\cite{2012-incomput-proofsCJ,2013-KstLip}.
+A second alternative would be to challenge the
+%One assumption, in particular, the noncontextuality of definite values, seems to be highly
+nontrivial assumption that a predetermined outcome  (corresponding to a value definite property) needs to be a deterministic function of the observable alone.
+%In this view, any predetermined outcome solely corresponds to a value definite property (an element of physical reality) of the single quantum measured.
+%In what follows we shall assume that the
+Instead one could insist that the
+{\em ``$\ldots$ result of an observation may reasonably depend not only on the state of the system  $\ldots$ but also on the complete disposition  of the apparatus''} \cite[Sec.~5]{bell-66}.
+In particular this would apply to the situation of a mismatch between preparation and measurement for which the states prepared and measured are complementary (that is, neither collinear nor orthogonal).
+%AA%This position appears also to be in accord with Bohr's remarks \cite[p. 210]{bohr-1949} on {\em ``the impossibility of any sharp separation between the behaviour of atomic objects and the interaction with the measuring instruments which serve to define the conditions under which the phenomena appear.''}
+
+In this viewpoint, even when the macroscopic measurement apparatuses are still idealised as being perfect, their many degrees of freedom (which may by far exceed Avogadro's  or Loschmidt's constants) contribute to any measurement of the single quantum.
+Most of these degrees of freedom might be totally uncontrollable by the experimenter, and may result in an {\em epistemic uncertainty} which is dominated by the combined complexities of interactions between the single quantum measured and the (macroscopic) measurement device producing the outcome.
+%This might be even conjectured to be consistent with a combined uniform unitary evolution resulting from a quantisation of the quantum and the measurement device.
+
+%In terms of quantum states the situation could thus be as follows:
+%through the measurement interaction between the single quantum and the measurement outcome the compound state remains pure;
+%alas the single quantum and the fully quantised apparatus become entangled.
+%If there is no one-to-one uniqueness between the ``macroscopic'' states of the measurement apparatus and the quantum, then any measurement of the single quantum amounts to a partial trace resulting in a mixed state of the apparatus, and thus to uncertainty and unpredictability of the readout.
+
+In such a measurement, the pure single quantum and the apparatus would become entangled.
+In the absence of one-to-one uniqueness between the macroscopic states of the measurement apparatus and the quantum, any measurement would amount to a partial trace resulting in a mixed state of the apparatus, and thus to uncertainty and unpredictability of the readout.
+
+In this minority view, just as for irreversibility in classical statistical mechanics~\cite{Myrvold2011237}, the indeterminism of single quantum measurements might not be irreducible at all, but  an expression of, and relative to, the limited means available to analyse the situation.
+In Bell's terms, the outcome may be irreversible {\em for all practical purposes}~\cite{bell-a}.
+
+
+\subsection{Unpredictability of individual measurements}
+\label{sec:physUnpred}
+
+While we wish to formalise and analyse quantum unpredictability carefully, we wish to outline carefully the intuitive reasoning first, as this should guide our approach at formalisation.
+
+The EPR principle renders a definition of value definiteness and physical reality based on the ability to predict.
+Thus, it seems conversely that \emph{value indefiniteness} corresponds to the {\em absence of physical reality};
+if no unique element of physical reality corresponding to a particular physical quantity exists, this is reflected by the physical quantity being value indefinite.
+That is, for such an observable neither of the two exclusive measurement outcomes $\{0,1\}$ is certain to occur and therefore we should conclude that any kind of prediction of the outcome with certainty cannot exist, and the outcome of this individual measurement must thus be unpredictable.
+One possible interpretation of this unpredictability is that the physical property measured is logically independent of the information contained in the quantum system~\cite{1367-2630-12-1-013019}.%---often postulated to be a single bit per qubit.
+%AA%If a physical property is value indefinite we cannot predict with certainty the outcome of any experiment measuring this property.
+
+%Now suppose the assumptions of the strong or extended Kochen-Specker theorem \cite{2012-incomput-proofsCJ,2013-KstLip} hold;
+%in particular admissibility and non-contextual of value assignments.
+%AA%To elaborate on this point, suppose that we consider, as in Theorem~\ref{thm:vi-everywhere}, a quantum projection observable in dimension $n\ge 3$ Hilbert space projecting onto a linear subspace which is neither collinear nor orthogonal with respect to the pure state %(represented by a projector)
+%AA%in which a single quantum system has been prepared.
+
+%AA%According to Theorem~\ref{thm:vi-everywhere} and the results of \cite{2012-incomput-proofsCJ,PhysRevA.89.032109}, any such observable is {\em provable} (relative to the assumptions we have discussed) value indefinite.
+%AA%That is, by the noncontextuality of definite values, the result obtained upon its measurement cannot correspond to any deterministic function of the observable alone.
+%AA%More explicitly, neither of the two exclusive measurement outcomes $\{0,1\}$ can be consistent with the state preparation.
+%AA%In particular, neither one of these outcomes is certain to occur and therefore any kind of prediction of the outcome with certainty cannot exist.
+%AA%Stated in terms of the EPR principle we infer that, as there cannot be any certainty in predicting a value indefinite observable, there is no element of physical reality corresponding to this physical property.
+
+%Because, for the sake of a proof by contradiction, suppose that there would exist a definite and certain measurement outcome, associated with a unique, non-arbitrary, functional value assignment onto $\{0,1\}$.
+%But this would contradict, and would be inconsistent with, in particular, the strong or extended Kochen-Specker theorems.
+%Hence any such functional value assignment, and therefore any kind of prediction of the outcome with certainty, cannot exist.
+
+%(From the converse of the EPR definition of physical reality, we infer that, as there cannot be any certainty in predicting a value indefinite observable, there cannot exist an element of physical reality corresponding to this physical quantity.)
+
+%Furthermore, this unpredictability (i.e.\ indeterminacy) of measurement outcomes associated with such observables projecting onto subspaces that are neither collinear nor orthogonal with respect to the pure state in which some individual quantum has been prepared, must be accepted for every such single quantum measured in this way.
+%AA%Furthermore, suppose that observables---whose associated projectors are neither collinear
+%AA%nor orthogonal with respect to the pure state in which some quantum has
+%AA%been prepared---are measured.  Then the resulting unpredictability (i.e. indeterminacy) of the outcome must be accepted for every such individual quantum measured.
+
+
+
+Furthermore, the ``more conjugate'' a measurement basis becomes relative to the state which has been used for preparing this quantum, the ``more unpredictable'' and thus ``more indeterminate'' in statistical terms the quantum behaves.
+In particular, if the state prepared is orthogonal to the projection observable measured
+(i.e.\ if there is a ``maximal mismatch'' between preparation
+and  measurement), then the individual quantum not only cannot be predicted with certainty by any agent, but such an agent can do no better than blindly guessing the outcome of the measurement.
+%AA%In this sense the quantum behaves maximally unpredictably.
+%, and thus can contribute towards a quantum source of randomness.
+%CC%
+%However, this is not to be understood that quantum randomness is ``maximally random'' or ``perfect random'', which are mathematically vacuous notions: there are only degrees of randomness, with no upper limit.
+
+% (AA - added this paragraph)
+This, however,  should not be understood as a claim that quantum randomness is ``maximally random''.
+Indeed, randomness can come in many flavours, from statistical properties to computability theoretic properties of outcome sequences.
+Maximal randomness in the sense that no correlations exist between successive measurement results is %theoretically Such a notion of ``perfect randomness'' is
+in fact mathematically impossible \cite{GS-90,calude:02}: there exist only degrees of randomness to which there is no upper limit.
+Thus, while there is a clear intuitive link between unpredictability and randomness of any kind, the link between indeterminism and unpredictability seems stronger than that with randomness, and any claims of quantum randomness need to be analysed carefully from a theoretical viewpoint.
+We will return to this point later in the paper.
+
+\section{%Towards a more formal explanation
+%CC%
+Modelling prediction}
+
+%(AA - Added this subsection completely)
+\subsection{Discussion of models of prediction}
+
+Various definitions of predictability have been proposed by different authors.
+While some authors, particularly in physics and cryptographic fields seem to adopt the view that probability mean unpredictability \cite{Acin:2013qa,zeil-05_nature_ofQuantum}, this is insufficient to describe unpredictable physical processes.
+Probabilities are a formal description given by a particular theory, but do not entail that a physical process is fundamentally indeterministic nor unpredictable, and can (often very reasonably) represent simply a lack of knowledge or underdetermination of the theory.
+Instead, a more robust way to formulate prediction seems to be in terms of a `predicting agent' of some form.
+This appears to be what EPR had in mind when alluding to prediction in the EPR principle, and is similarly the approach taken by other more serious definitions to define predictability.
+
+In the theory of dynamical systems, unpredictability has long been linked to chaos, and has often been identified as the inability to calculate with any reasonable precision the state of system given a particular observable initial condition \cite{Werndl:2009nx}.
+The observability is critical, since although a system may presumably have a well-defined initial state (a point in phase-space), any observation yields an interval of positive measure (a region of phase space.)
+This certainly seems the correct path to follow in formalising predictability, but more generality and formalism is needed to provide a definition for arbitrary physical processes.
+
+Popper, in arguing that unpredictability \emph{is} indeterminism, defines prediction in terms of ``physical predicting machines'' \cite{popper-50i}.
+He consider these as real machines that can take measurements of the world around them, compute via physical means, and output (via some display or tape, for example) predictions of the future state of the system.
+He then considers various prediction tasks, which can be thought of as experiments which must be predicted to a certain accuracy, and considers these to be predictable if it is \emph{physically} possible to construct a predictor for them.
+
+A more modern and technical definition was given by Eagle \cite{Eagle:2005ys} in defining randomness as maximal unpredictability.
+While we will return to the issue of randomness later, his definition of unpredictability deserves further attention.
+He defined prediction relative to a particular theory, and for a particular predicting agent.
+Specifically, a prediction function is defined as a function mapping the state of the system described by the theory and specified epistemically (and thus finitely) by the agent to a probability distribution of states at some time $t$.
+%(which may be negative, in which case we have a retrodiction).
+This definition formalises more clearly prediction as the output of a function operating on information extracted about the physical system by an agent.
+
+Here we wish to propose a definition of prediction that, while similar in many aspects to these definitions, addresses what we consider some conceptual and formal concerns with these formalisms.
+Popper's definition is perhaps not abstract enough and lacks generality by requiring the predictor to be physically present in its environment.
+Similarly, Eagle's definition renders predictability relative to a particular physical theory.
+In order to relate the intrinsic indeterminism of a system to unpredictability, it would be more appropriate to have a definition of events as unpredictable \emph{in principle}.
+Thus, being ignorant of a better theory might change our epistemic ability to know if an event is predictable or not, but would not change the fact that an event may or may not be, in principle, predictable.
+Furthermore, we think it is important to restrict the class of prediction functions by imposing some effectivity (i.e. computability) constraints.
+Indeed, to predict is to say in advance via some effective means.
+It seems difficult to envisage a predicting agent operating by any other means, and giving the agent more power can further lead to technical difficulties by using incomputable numbers to `cheat' in prediction. %AA: better explanation/references needed.
+
+Here we propose a definition that takes these points into account, giving a definition based on the ability for some computably operating agent to predict using finite information extracted from the system for a specified experiment.
+For simplicity we will consider tasks with binary observable values (0 or 1), but the extension to finitely or countable many (i.e. finitely specified) output values is trivial.
+Further, unlike Eagle \cite{Eagle:2005ys} we consider only prediction with certainty, rather than with probability.%, as is the case in Eagle \cite{Eagle:2005ys}.
+While it is not difficult or too unreasonable to extend this to the more general scenario, this is not needed to discuss indeterminism, as the EPR principle indicates, and in doing so we avoid any potential pitfalls with probably 1 or 0 events \cite{Zaman:1987gd}.
+
+
+
+
+
+
+%AA%While we have argued from a purely physical standpoint that prediction of a single quantum is in general impossible, the argument needs  a proper mathematical formalisation.
+%CC%
+%AA%In particular, to say more about the quality of a sequence of outcomes of quantum measurements, the notion of prediction needs to be given a more rigorous form.
+
+
+
+%AA%Intuitively, a prediction must be a method of specifying in advance the result that will be obtained by a measurement.
+
+
+While it is important to discuss the unpredictability of individual events \cite{Eagle:2005ys}, an issue that needs to be considered is when to consider such predictions correct, as we need to exclude the possibility that such a correct prediction can occur by chance.
+%AA%Such a prediction is correct if it indeed agrees with the measured value.
+%AA%However, even if a prediction turns out to be correct, how can we be sure it was not correct merely by luck?
+
+Popper succinctly summarises this predicament in Ref.~\cite[117--118]{popper-50i}:
+``\emph{If we assert of an observable event that it is unpredictable we do not mean, of course, that it is logically or physically impossible for anybody to give a correct description of the event in question before it has occurred;
+for it is clearly not impossible that somebody may hit upon such a description accidentally.
+What is asserted is that certain rational methods of prediction break down in certain cases---the methods of prediction which are practised in physical science.}''
+
+One possibility is then to demand a proof that the prediction will be correct---to formalise the ``rational methods of prediction'' that Popper refers to.
+However, this is notoriously difficult and must be made relative to the physical theory considered, which generally is not well axiomatised.
+Instead we demand that such predictions be {\em repeatable}, and not merely one-off events.
+This point of view is consistent with Popper's own framework of empirical falsification~\cite{popper,popper-en}: an empirical theory (in our case, the prediction) can never be proven correct, but it can be falsified through decisive experiments (an incorrect prediction).
+Specifically, we require that in any potential infinite set of repetitions the predictions remain correct.
+
+\subsection{Developing the model}
+
+In order to formalise our non-probabilistic model of prediction we considering a hypothetical experiment $E$ specified effectively by an experimenter.
+We formalise the notion of a predictor, which is an effective (i.e. computational) method of uniformly predicting the outcome of an experiment using information extracted (again, uniformly) from the experimental conditions and the specification of the experiment.
+An experiment will be predictable if any potential sequence of repetitions (of unbounded length) of it can always be predicted correctly by such a predictor.
+
+More formally, we consider a physical experiment $E$ producing a single bit $x\in\{0,1\}$.
+An example of such an experiment is the measurement of a photon's polarisation after it has passed through a 50-50 beam splitter.  As it will be  seen later, the proposed framework can apply equally to other experiments.
+Further, with a particular instantiation or ``trial'' of $E$ we associate the parameter $\lambda$, encoded as a real number,  which fully describes the trial.
+While $\lambda$ is not in its entirety an obtainable quantity, it contains any information that may be pertinent to prediction and we may have practical access to finite aspects of this information.
+In particular this information may be   directly associated with the particular trial of $E$ (e.g. initial conditions or hidden variables) %, the specific theory that $E$ is based on)
+and/or relevant external factors (e.g. the time, results of previous trials of $E$).
+%Further associated with a particular instantiation of $E$ is a parameter $\lambda$ which summarises any further information that may be pertinent to prediction (e.g. initial conditions, results of previous results of $E$).
+Any such external factors should, however, be local in the sense of special relativity, as (even if we admit quantum nonlocality) any other information cannot be utilised for the purpose of prediction~\cite{laloe-2012}.
+%By ``local'' information we mean in the relativity theoretical sense, as properties outside the space-time cone of the trial should have no bearing on the outcome~\cite{laloe-2012}.
+We can view $\lambda$ as resource that one can extract finite information from in order   to predict the outcome of the experiment $E$.
+We formalise this in the following.
+
+An {\em extractor} is a function selecting a ``finite'' amount of information included in $\lambda$
+which can be used to make predictions of experiments performed with parameter $\lambda$. Formally, an extractor is a (deterministic)
+function $\lambda \mapsto \langle \lambda \rangle$ mapping reals to rationals.
+For example, $\langle \lambda \rangle$ may be an encoding of the result of the previous instantiation of $E$, or the time of day the experiment is performed.
+
+A predictor for $E$ is an algorithm  (computable function) $P_E$
+which \emph{halts} on every input and \emph{outputs} either $0$, $1$ (cases in which  $P_E$ has made a prediction), or ``prediction withheld''.
+We interpret the last form of output as a refrain from making a prediction.
+%Generally, but not necessarily, the predictor $P_E$  uses the specific theory that $E$ is based on and details of the experiment $E$;
+The predictor
+$P_E$ can utilise as input the information $\langle\lambda\rangle$ selected by an extractor
+encoding  relevant information for a particular instantiation of $E$, but, {\em as required by} EPR,  must not disturb or interact with $E$ in any way;
+that is, it must be \emph{passive}.
+%$P_E$ can also utilise as input any finite available information contained in the parameter $\lambda$ for a particular instantiation of $E$, but, {\em as required by} EPR,  must not disturb or interact with $E$ in any way; i.e.\ it must be \emph{passive}.
+%We denote the encoding of this information by $\langle \lambda \rangle$, which must be consistently obtained for across trials of $E$.\footnote{More technically, we can require that $\langle \lambda \rangle$ be a deterministic, effective function of $\lambda$ for a specific $P_E$ (different predictors may use different information).}
+%For example, $\langle \lambda \rangle$ may be the result of the previous instantiation of $E$, or the time of day the experiment is performed.
+
+%can utilise as input any available information about a particular instantiation of $E$ (such as initial conditions and previous results) which we summarise in the parameter $\lambda$, but, {\em as required by} EPR,  must not disturb or interact with $E$ in any way; i.e.\ it must be \emph{passive}.
+%% Must the prediction be relative to a given theory, or can it utilise any theory?
+
+As we noted earlier, a certain predictor may give the correct output for a trial of $E$ simply by chance.
+This may be due not only to a lucky choice of predictor, but also to the input being chosen by chance to produce the correct output.
+Thus, we rather  consider the performance of a predictor $P_E$  using, as input, information extracted by a particular fixed extractor.
+This way we ensure that $P_E$ utilises in ernest information extracted from $\lambda$,
+and we avoid the complication of deciding under what input we should consider $P_E$'s correctness.
+
+A predictor $P_E$ provides a \emph{correct prediction} using the extractor $\langle \, \rangle$ for an instantiation of $E$ with parameter $\lambda$ if, %using any information contained in $\lambda$ as input,
+when taking as input $\langle \lambda \rangle$,
+%encoding any relevant information in $\lambda$,
+it outputs 0 or 1 (i.e.\ it does not refrain from making a prediction) and this output is equal to $x$, the result of the experiment.
+%The correctness of a prediction is considered relative to an extraction since the output of $P_E$ depends on its input, and this avoids the view that its correctness similarly depends largely on an arbitrary input.
+
+Let us fix an extractor $\langle \, \rangle$. The predictor $P_E$ is {\em $k,\langle \, \rangle$-correct} if there exists an $n\ge k$ such that when $E$ is repeated $n$ times with associated parameters $\lambda_1 ,\dots, \lambda_n$ producing the outputs $x_1,x_2,\dots ,x_n$, $P_E$ outputs the sequence $P_E(\langle\lambda_1\rangle), P_E(\langle\lambda_2\rangle),\dots ,P_E(\langle\lambda_n\rangle)$ with the following two properties:  (i) no prediction in the sequence is incorrect, and (ii) in the sequence there are $k$ correct predictions.
+%  of the $n$ repetitions of $E$.
+% it may have more than $k$ correct predictions
+%(and hence outputs ``prediction withheld'' for the remaining $n-k$ iterations).
+The trials of $E$ form a succession of events of the form ``$E$ is prepared, performed, the result recorded, $E$ is reset'', iterated $n$ times in an algorithmic fashion.
+
+If $P_E$ is $k,\langle \, \rangle$-correct we can bound the probability that $P_E$ is in fact operating by chance and may not continue to give correct predictions, and thus give a measure of our confidence in the predictions of $P_E$.
+Specifically, the sequence of $n$ predictions made by $P_E$ can be represented as a string of length $n$ over the alphabet $\{T,F,W\}$, where $T$ represents a correct prediction, $F$ an incorrect prediction, and $W$ a withheld prediction.
+Then, for a $k,\langle \, \rangle$-correct predictor there exists an $n\ge k$ such that the sequence of predictions contains $k$ $T$'s and $(n-k)\,$ $W$'s.
+%is of the form $u\cdot T$, where $u\in\{T,?\}^{n-1}$.
+%There are $2^{n-1}$ such possible prediction sequences out of  $3^n$ possible strings of length $n$.
+%Thus, the probability that such a correct sequence is due to chance is $$\frac{2^{n-1}}{3^n}=\frac{1}{3}\left(\frac{2}{3}\right)^{n-1}\le \frac{1}{3}\left(\frac{2}{3}\right)^{k-1}.$$
+There are ${n \choose k}$ such possible prediction sequences out of $3^n$ possible strings of length $n$.
+Thus, the probability that such a correct sequence would be produced by chance is
+$$\frac{{n\choose k}}{3^n}<\frac{2^n}{3^n}\le \left(\frac{2}{3}\right)^k\rb.$$
+
+Clearly the confidence we have in a $k,\langle \, \rangle$-correct predictor increases as $k\to\infty$.
+If $P_E$ is $k,\langle \, \rangle$-correct for all $k$, then $P_E$ never makes an incorrect prediction and the number of correct predictions can be made arbitrarily large by repeating $E$ enough times.
+
+%Finally, the predictor $P_E$ is \emph{correct for} $E$ if a) when $E$ is repeated a finite (but arbitrary large) number of times independently, $P_E$  never provides an incorrect prediction,  and b) the number of correct predictions can be made arbitrary large by repeating $E$ enough times.
+
+%CC%
+The definition of $k,\langle \, \rangle$-correctness allows $P_E$ to refrain from predicting when it is unable to.
+A predictor $P_E$ which is $k,\langle \, \rangle$-correct for all $k$,  is, when using the extracted information $\langle\lambda\rangle$, guaranteed to always be capable of providing more correct predictions for $E$,
+so it will not output ``prediction withheld'' indefinitely.
+Furthermore, although $P_E$ is technically used only a finite, but arbitrarily large, number of times, the definition guarantees that, in the hypothetical scenario where it is executed infinitely many times, $P_E$ will provide  infinitely many correct predictions and not a single incorrect one.
+
+
+While a predictor's correctness is based on its performance in repeated trials,  we can use the predictor to define the prediction of single bits produced by the experiment $E$.
+%As we noted earlier,
+If $P_E$ is not $k,\langle \, \rangle$-correct for all $k$, then we cannot exclude the possibility that any correct prediction $P_E$ makes is simply due to chance.
+Hence, we propose the following definition: \emph{the outcome $x$ of a single trial of the experiment $E$ performed with parameter $\lambda$ is {\rm predictable} (with certainty) if there exist an extractor $\langle \, \rangle$ and a predictor $P_E$ which is $k,\langle \, \rangle$-correct for all $k$, and $P_E(\langle\lambda\rangle)=x$}.
+
+
+
+\section{Maximal incomputability}
+
+%With a formal and physically motivated definition of prediction, we can investigate more carefully the unpredictability of quantum events.
+
+The formal and physically motivated model of prediction we have presented can be applied to any physical experiment.
+However, let us turn our attention to using it to categorise more rigorously the unpredictability of quantum measurement outcomes discussed in Sec.~\ref{sec:physUnpred}.
+
+We first show that experiments utilising quantum value indefinite observers cannot have a predictor which is $k,\langle \, \rangle$-correct for all $k$.
+More precisely: {\em if $E$ is an experiment measuring  a quantum value indefinite observer, then for every predictor $P_E$ using any extractor $\langle\, \rangle$, $P_E$ is not $k,\langle \, \rangle$-correct for all $k$.}
+%for every description $\langle \, \rangle$ and every predictor $P_E$, it is impossible that $P_E$  is $k$ $\langle \, \rangle$--correct for all $k$.}
+
+Throughout this section we will consider an experiment $E$ performed in dimension $n\ge 3$ Hilbert space in which a quantum system is prepared in a state $\ket{\psi}$ and a value indefinite observable $P_\phi$ is measured producing a single bit $x$.
+By Theorem~\ref{thm:vi-everywhere} such an observable is guaranteed to exist, and to identify one we need only a mismatch between preparation and observation contexts.
+The nature of the physical system in which this state is prepared and the experiment performed is not important, whether it be photons passing through generalised beam splitters~\cite{rzbb},
+ions in an atomic trap, or any other quantum system in dimension $n\ge 3$ Hilbert space.
+
+Let us fix an extractor $\langle\,  \rangle$, and
+assume for the sake of contradiction that there exists a predictor $P_E$ for $E$ which is $k,\langle \, \rangle$-correct for all $k$.
+Consider the hypothetical situation where the experiment $E$ is repeatedly initialised, performed and reset \emph{ad infinitum} in an algorithmic ``ritual'' generating an infinite sequence of bits $\x=x_1x_2\dots$
+
+Since $P_E$ \emph{never} makes an incorrect prediction, each of its predictions is correct with certainty.
+Then, according to the EPR principle we must conclude that each such prediction corresponds to a value definite property of the system measured in $E$.
+However, we chose $E$ such that this is not the case: each $x_i$ is the result of the measurement of a value indefinite observable, and thus we obtain a contradiction and conclude no such predictor $P_E$ can exist.
+
+%The absence of a predictor $P_E$ which is $k$-correct for all $k$ for such a quantum experiment $E$ allows us to further show that no single bit $x$ produced by such an experiment $E$ can be reliably predicted.
+%Moreover, since no such $P_E$ exists for this type of quantum experiment $E$, no single outcome is predictable with certainty.
+Moreover, since there does not exist a predictor $P_E$ which is $k,\langle \, \rangle$-correct using any extractor $\langle\, \rangle$ for all $k$, for such a quantum experiment $E$, no single outcome is predictable with certainty.
+Stated differently, in an infinite repetition of $E$ as considered previously generating the infinite sequence $\x=x_1x_2\dots$, \emph{no single bit $x_i$ can be predicted with certainty}.
+
+A further consequence of this result is that the sequence $\x$ must be strongly incomputable, technically {\em bi-immune}.\footnote{A bi-immune sequence is one that contains no infinite computable subsequence.}
+This was shown in \cite{svozil-2006-ran,2012-incomput-proofsCJ}, but follows directly and more naturally from this new formalism of prediction.
+
+Let us assume for the sake of contradiction that $\x=x_1x_2\dots$ is not bi-immune.  %, and let the infinite computable subsequence be $x_{j_1}x_{j_2}\dots$
+Then, from the definition of bi-immunity, there exist an infinite computable set $I \subset \N^+$ and a partially computable function $f$ whose domain is
+$I$ and satisfies $f(i)=x_i$ for every $i\in I$.
+\if01
+the set of indices of the computable subsequence $I=\{j_k \mid k\in\N^+\}$ is computable and infinite, so there exists a partial computable function $f:\N^+ \to \{0,1\}$ with computable domain $I$ such that $f(i)=x_i$ if $i\in I$ and $f(i)$ is undefined (i.e.\ the algorithm implementing it does not halt) if $i\notin I$.
+\fi
+%Fix a description $\langle \, \rangle$.
+Consider the extractor $\langle \lambda_i\rangle = i$.
+ Now we can use $f$ to construct a predictor $P_E$ which is $k,\langle \, \rangle$-correct for all $k>0$. On the $i$th iteration of $E$ with parameter $\lambda_i$, $$P_E(\langle\lambda_i\rangle)=\begin{cases}f(i)=x_i, & \text{if $i\in I$,}\\\text{``{prediction withheld}'',} & \text{if $i\notin I$.}\end{cases}$$
+It is clear by the properties of $f$ that $P_E$ indeed satisfies the criteria to be $k,\langle \, \rangle$-correct for all $k$:
+%the infinite set of bits $\{x_{f(i)} \;|\; i\in I\}$ is correctly predicted.
+each bit $x_{f(i)}$ for $i\in I$, for which there are infinitely many, is correctly predicted.
+Thus, since no such predictor can exist, the sequence $\x$ must be bi-immune; in particular,   $\x$ is {\em incomputable}.
+
+\if01
+Let us first ask whether, when the experiment is repeated \emph{ad infinitum} generating an infinite sequence of bits $\x=x_1x_2\dots$, it is possible to algorithmically compute $\x$ in any way.
+In \cite{svozil-2006-ran,2012-incomput-proofsCJ} it was shown that such sequence is strongly incomputable: it is bi-immune.
+A bi-immune sequence is one that contains no computable subsequence.
+That is, there is no algorithmic way to compute infinitely many measurement outcomes.
+However, we will see that this result follows much more naturally from our new formalism of predictors.
+
+Let us assume for the sake of contradiction that $\x$ is not bi-immune, and let the computable subsequence be $x_{j_1}x_{j_2}\dots$
+Then, from the definition of bi-immunity, the set of indices of the computable subsequence $I=\{j_k \mid k\in\N^+\}$ is computable and there exists a partially computable function $f:\N^+ \to \{0,1\}$ such that $f(i)=x_i$ if $i\in I$ and $f$ does not halt if $i\notin I$.
+%Then, from the definition of bi-immunity, there exists a computable function $f:\N^+\to \{0,1\}$ such that $f(i)=x_{j_i}$ computing the subsequence $x_{j_1}x_{j_2}\dots$ where the sequence of indices $(j_i)_{i\in\N^+}$ is increasing and computable.
+We can use $f$ to construct a predictor $P_E$ which is $k$-correct for all $k>0$.
+
+Specifically, on the $i$th iteration of $E$, $$P_E(\lambda_i)=P_E(i)=\begin{cases}f(i) & \text{if $i\in I$,}\\\text{``\emph{prediction withheld}''} & \text{if $i\notin I$.}\end{cases}$$
+It is clear by the properties of $f$ that $P_E$ indeed satisfies the criteria to be $k$-correct for all $k$.
+
+Since $P_E$ \emph{never} makes an incorrect prediction, each prediction it makes is correct with certainty.
+However, the EPR principle means we must then conclude that each such prediction corresponds to a value definite property of the system measured in $E$.
+However, we chose $E$ such that this is not the case: each $x_i$ is the result of the measurement of a value indefinite property, and thus we obtain a contradiction and conclude $\x$ is bi-immune.
+\fi
+
+
+\section{Summary}
+
+The main thrust of our argument has been to formally certify the indeterminism of single quantum events and their consequential unpredictability, rather than rely on the {\it ad hoc} postulation of these properties.
+In particular, suppose that we prepare a quantum in a pure state corresponding %to a unit vector in Hilbert space.
+to a unit vector in Hilbert space of dimension at least three. Then any complementary
+observable property of this quantum---corresponding to some projector whose respective
+linear subspace is neither collinear nor orthogonal with respect to the pure state vector---has no predetermined value, and thus remains value indefinite.
+%Then an observable property of this quantum corresponding to a projector whose respective linear subspace is
+%neither collinear nor orthogonal with respect to the pure state vector
+%has no predetermined value, and thus remains value indefinite.
+Furthermore, we show that the outcome of a measurement of such a property is unpredictable with respect to a very general model of prediction.
+These results are true relative to the assumptions made,
+%and to the axioms from which it has been derived;
+in particular,
+admissibility, noncontextuality, and the eigenstate principle.
+
+In other terms the bit resulting from the measurement of such an observable property is ``created from nowhere'',
+and cannot be causally connected to any physical entity, whether it be knowable in practice or hidden.
+One might say that the quantum system acts like an {\em incomputable oracle.}
+
+This irreducible indeterminacy ``certifies'' the use of quantum random number generators for various computational tasks in cryptography and elsewhere~\cite{svozil-qct,stefanov-2000,10.1038/nature09008}.
+Our results can also be interpreted as justification for certain claims of {\em hypercomputation}, %at least in so far
+as no universal Turing machine will ever be able to produce in the limit an output that
+%, at least in the limit, has the same characteristics as
+is identical with the sequence of bits generated by %sequences resulting from
+a quantum oracle~\cite{qrand-oracle}.
+More than that---no single bit % infinite subsequence of bits
+of such sequences can ever be predicted.
+
+As a concluding remark, we  emphasise that the indeterminism and unpredictability of quantum measurement outcomes are based on the results of strong forms of the Kochen-Specker theorem, and hence require at minimum three-dimensional Hilbert space.
+This requirement is necessary to ensure the nontrivial interconnectedness of contexts (i.e. maximal sets of compatible observables) used to derive such results.
+%We also emphasise that, as our results are based on stronger forms of the Kochen-Specker theorem, they require three-dimensional Hilbert space and, in particular, the interconnectedness of maximal observables (also known as contexts, blocks, or simply bases) that allow the proofs based on finite interconnected subsets of observables. {\bf CC: not clear to me???}
+%(Quantised models of two-dimensional Hilbert space do not allow the possibility of some nontrival interconnection of observables; in this case, all interconnected observables coincide.) {\bf CC: We don't have a proof for this!!!}
+We thus  strongly recommend the use of at least three-dimensional Hilbert space in the construction of quantum random number generators based on quantised systems and quantum indeterminism.
+
+\section*{Acknowledgement} This work was supported in part by Marie Curie FP7-PEOPLE-2010-IRSES Grant RANPHYS.
+
+\bibliography{svozil.bib}
+
+\end{document}

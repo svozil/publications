@@ -1,0 +1,805 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\usepackage[dvipsnames]{xcolor}
+
+%\usepackage{mathptmx}% http://ctan.org/pkg/mathptmx
+
+\usepackage{amssymb,amsmath}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\begin{document}
+%
+\title{Quantum advantage by relational queries about equivalence classes}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Karl Svozil\orcidID{0000-0001-6554-2802}}
+%
+\authorrunning{Karl Svozil}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Institute for Theoretical Physics,
+Vienna  University of Technology,
+Wiedner Hauptstrasse 8-10/136,
+1040 Vienna,  Austria  \\
+\email{svozil@tuwien.ac.at}\\
+\url{http://tph.tuwien.ac.at/\textasciitilde{}svozil}
+}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Relational quantum queries are sometimes capable to effectively decide between collections of mutually exclusive elementary cases without completely resolving and determining those individual instances. Thereby the set of mutually exclusive elementary cases is effectively partitioned into equivalence classes pertinent to the respective query. In the second part of the paper, we review recent progress in theoretical certifications (relative to the assumptions made) of quantum value indeterminacy as a means to build quantum oracles for randomness.
+
+\keywords{quantum computation, partitioning of cases, quantum parallelism, hidden subgroup problem, quantum random number generators.}
+\end{abstract}
+%
+%
+%
+
+
+%\documentclass[%
+% reprint,
+% twocolumn,
+% %superscriptaddress,
+% %groupedaddress,
+% %unsortedaddress,
+% %runinaddress,
+% %frontmatterverbose,
+% %  preprint,
+% showpacs,
+% showkeys,
+% preprintnumbers,
+% %nofootinbib,
+% %nobibnotes,
+% %bibnotes,
+% amsmath,amssymb,
+% aps,
+% % prl,
+%  pra,
+% % prb,
+% % rmp,
+% %prstab,
+% %prstper,
+%  longbibliography,
+% %floatfix,
+% %lengthcheck,%
+% ]{revtex4-1}
+%
+%%\usepackage{cdmtcs-pdf}
+%
+%\usepackage[dvipsnames]{xcolor}
+%
+%\usepackage{mathptmx}% http://ctan.org/pkg/mathptmx
+%
+%\usepackage{amssymb,amsthm,amsmath}
+%
+%\usepackage{tikz}
+%\usetikzlibrary{calc}
+%
+%\usepackage[breaklinks=true,colorlinks=true,anchorcolor=blue,citecolor=blue,filecolor=blue,menucolor=blue,pagecolor=blue,urlcolor=blue,linkcolor=blue]{hyperref}
+%\usepackage{graphicx}% Include figure files
+%\usepackage{url}
+%
+%\usepackage{xcolor}
+%\usepackage{colortbl}
+%
+%
+%\begin{document}
+%
+%\title{Quantum advantage by queries associated with equivalence classes rather than individual cases}
+%
+%\author{Karl Svozil}
+%\email{svozil@tuwien.ac.at}
+%\homepage{http://tph.tuwien.ac.at/~svozil}
+%
+%\affiliation{Institute for Theoretical Physics,
+%Vienna  University of Technology,
+%Wiedner Hauptstrasse 8-10/136,
+%1040 Vienna,  Austria}
+%
+%
+%
+%\date{\today}
+%
+%\begin{abstract}
+%Depending on the query quantum information theory is sometimes capable of effectively deciding between classes of mutually exclusive elementary cases without completely resolving and determining those individual instances forming the respective equivalence class. Thereby the set of mutually exclusive elementary cases is effectively partitioned into equivalence classes pertinent to the respective query. In the last part of the paper, we review recent progress in theoretical certifications (relative to the assumptions made) of quantum value indeterminacy as a means to build quantum oracles for randomness.
+%\end{abstract}
+%
+%
+%\maketitle
+
+
+
+\section{Quantum (dis-)advantages}
+
+Genuine quantum computations will be with us for a long time to come,
+because the miniaturization of electronic circuits is pushing the processor physics into the coherent superposition/complementarity/entanglement/value-indefinite regime
+(which has no sharp boundary just as the quantum--classical separation is fuzzy and means dependent).
+Moore's law, insofar as it relates to classical ``paper and pencil''~\cite[p.~34]{Turing-Intelligent_Machinery} computation,
+has reached its effective bottom ceiling approximately ten to five years ago; this is due to exhaustion of minimization
+with respect to reasonably cooling, as well as by approaching the atomic scale.
+Most recent performance increases are due to parallelization (if possible).
+
+Alas, this upcoming kind of ``enforced'' quantum domain computing, imagined by Manin, Feynman, and others, still poses conceptual, theoretical and technological challenges.
+Indeed, contemporary quantum information theory appears to be far from being fully comprehended, worked out and mature.
+It is based on quantum mechanics, a theory whose semantics has been notoriously debated almost from its inception, while its syntax -- its formalism, and, in particular,
+the rules of deriving predictions
+-- are highly successful, accepted and relied upon.
+Depending on temperament and metaphysical inclination, its proponents admit that nobody understands quantum mechanics~\cite{feynman-law,clauser-talkvie},
+maintain that there is no issue whatsoever~\cite{Englert2013,fuchs-peres},
+one should not bother too much~\cite{dirac,bell-a} about its meaning and foundations, and rather shut up and calculate~\cite{mermin-1989-shutup,mermin-2004-shutup}.
+
+By transitivity or rather a reduction, quantum information theory inherits quantum mechanics'
+apparent lack of consensus, as well as a certain degree of cognitive dissonance between applying the formalism while suffering from an absence of conceptual clarity~\cite{mermin-2019},
+Strong hopes, claims and promises~\cite{Aaronson:2013:QCD:2487754,Dyakonov-2013,svozil-2016-quantum-hokus-pokus,Abbott-Calude-blog-2016-06-19,Dyakonov-2019,aaronson-Dyakonov} of quantum ``supremacy''~\cite{Wiesner-2017} are
+accompanied by the pertinent question of what exactly, if at all, could make quantum information and computation outperform classical physical resources.
+Surely many nonclassical quantum features present themselves as being useful or decisive in this respect; among them complementarity, coherence (aka parallelism), entanglement,
+or value indeterminacy (aka contextuality).
+But if and how exactly those features will contribute or enable future algorithmic advances still remains to be seen.
+
+The situation is aggravated by the fact that, although the quantum formalism amounts to linear algebra and functional analysis,
+some of its most important theorems are merely superficially absorbed by the community at large: take,
+for example, Gleason's theorem~\cite{Gleason}, and extensions thereof~\cite{pitowsky:218,2015-AnalyticKS}.
+Another example is Shor's factoring algorithm~\cite[Chapter~5]{nielsen-book10} whose presentations often suffer from the fact
+that its full comprehension requires a nonsuperficial understanding of number theory,
+analysis, as well as quantum mechanics; a condition seldom encountered in a single (wo)man.
+Moreover, often one is confronted with confusing opinions: for instance, the claim that quantum computation is universal with respect to either unitary transformations
+or first-order predicate calculus is sometimes confused with full Turing universality.
+And the plethora of algorithms collected into a quantum algorithm zoo~\cite{jordan-zoo} is compounded by the quest of exactly why and how quantum algorithms may outperform classical ones.
+
+Quantum advantages may be enumerated in four principal groups, reflecting potential non-classical quantum features:
+\begin{itemize}
+\item
+quantum parallelism -- aka {\it coherent superposition} of classically mutually exclusive bit states,
+associated with their simultaneous co-representation;
+
+\item
+quantum collectivism -- aka entanglement (involving possibly nonlocal correlations)  in a multi-particle situation: information
+is encoded only in {\it relational properties} among particles; individual particles have no definite property;
+
+
+\item
+quantum probabilities are vector-based (orthogonal projection operators), resulting in non-classical
+expectation values rendering different (from classical value assignments) predictions;
+
+
+\item
+quantum complementarity: in general quantized systems forbid measurements of certain pairs of observables with arbitrary precision:
+``you cannot eat a piece of the quantum cake \& have another one too;''
+
+
+\item
+quantum value indefiniteness: there cannot exist classical (true/false) value assignments on certain collections of (intertwining) quantum observables.
+
+\end{itemize}
+
+In what follows the first and the last feature -- parallelism and value indefiniteness -- will be discussed in more detail.
+
+
+\section{Suitable partitioning of cases}
+
+One quantum feature called ``quantum parallelism,''
+which is often presented as a possible quantum resource not available classically,
+is the capacity of $n$ quantum bits to encode $2^n$ classically
+mutually exclusive distinct classical bit states at once, that is, simultaneously:
+$
+\vert \Psi \rangle = \sum_{i=0}^{2^n-1} \psi_i \vert i \rangle
+$,
+where the index $i$ runs through all $2^n$ possible combinations of $n$ classically mutually exclusive bit states $\{0,1\}$,
+$\vert i \rangle $ are elements of an orthonormal basis in $2^n$-dimensional Hilbert space,
+and $\psi_i$ represent probability amplitudes whose absolute squares sum up to $1$.
+
+Quantum parallelism, often presented rather mystically,
+may formally come about rather trivially: the alleged simultaneous quantum co-existence of classically mutually exclusive states is like
+pretending that a vector in the plane may simultaneously point in both directions of the plane~\cite{Dyakonov-2019};
+a sort of confusion between a vector and its components.
+This seemingly absurd co-representability of contradicting classical states was the motivation for Schr\"odinger's cat paradox~\cite{schrodinger}.
+Note also that, in order to maintain coherence throughout a quantum computation,
+a {\em de facto} exponential overhead of ``physical stuff'' might be required.
+This could well compensate or even outweigh the advantage; that is, the exponential simultaneous
+co-representability of (coherent superpositions of) classical mutually exclusive cases of a computation.
+
+The state
+$
+\vert \Psi \rangle
+$
+``carrying'' all these classical cases in parallel is not directly accessible or ``readable'' by any physical operational means.
+And yet, it can be argued that its simultaneous representation of classically exclusive cases can be put to practical use indirectly if certain criteria are met:
+\begin{itemize}
+\item
+first of all, there needs to be a quantum physical realizable grouping or partitioning of the
+classical cases, associated with a particular query of interest; and
+\item
+second, this aforementioned query needs to be realizable by a quantum observable.
+\end{itemize}
+In that way, one may attain knowledge of a particular feature one is interested in; but,
+unlike classical computation, (all) other features remain totally unspecified and unknown.
+There is no ``free quantum lunch'' here, as a total specification of all observables would
+require the same amount of quantum queries as with classical resources.
+And yet, through coherent superposition (aka interference)
+one might be able to ``scramble'' or re-encode the signal
+in such a way that some features can be read off of it very efficiently --
+indeed, with an exponential (in the number of bits) advantage over classical computations
+which lack this form of rescrambling and re-encoding (through coherent superpositions).
+However, it remains to be seen whether, say, classical analog computation with waveforms,
+can produce similar advantages.
+
+For the sake of a demonstration, the Deutsch algorithm~\cite[Chapter~2]{mermin-07} serves as a Rosetta stone of sorts
+for a better understanding of the formalism and respective machinery at work in such cases.
+It is based on the four possible binary functions $f_0, \ldots , f_3$ of a single bit $x \in \{0,1\}$:
+the two constant functions $f_0(x)=1-f_3(x)=0$,
+as well as the two nonconstant functions: the identity $f_1(x)=x$ and the not $f_3(x) = (x+1) \text{ mod } 2$, respectively.
+Suppose that one is presented with a black box including in- and output interfaces,
+realizing one of these classical functional cases, but it is unknown which one.
+Suppose further that one is only interested in their parity; that is, whether or not the encoded black box function is a constant function of the argument.
+Thereby, with respect to the corresponding equivalence relation of being ``(not) constant in the arguement''
+the set of functions
+$\{f_0, \ldots , f_3\}$
+is partitioned into
+$\{\{f_0,f_3\},\{f_1,f_2\}\}$.
+
+A different way of looking at this relational encoding
+is in terms of zero-knowledge proofs: thereby
+nature is in the role of an agent
+which is queried about a property/proposition, and issues a correct answer
+without disclosing
+all the details and the fine structure of the way this result is obtained.
+
+Classically the only way of figuring this (``constant or not'')   out
+is to input the two bit-state cases, corresponding to two separate queries.
+If the black box admits quantum states,
+then the Deutsch algorithm presents a way to obtain the answer (``constant or not'')
+directly in one query.
+In order to do this one has to perform
+three successive steps~\cite{svozil-2005-ko,2007-tkadlec-svozil-springer}:
+\begin{itemize}
+\item
+first one needs to scramble the classical bits into a coherent superposition of the two classical bit states.
+This can be done by a Hadamard transformation, or a quantum Fourier transformation;
+\item
+second, one has to transform the coherent superposition according to the binary function which is encoded in the box.
+This has to be done while maintaining reversibility; that is, by taking ``enough'' auxiliary bits
+to maintain bijectivity/permutation; even if the encoding function is many-to-one (eg, constant).
+\item
+third, one needs to unscramble this resulting state to produce a classical output signal which indicates the result of the query.
+As all involved transformations need to be unitary and thus reversible
+the latter task can again be achieved by an (inverse) Hadamard transformation, or an (inverse)
+quantum Fourier transformation.
+\end{itemize}
+
+This structural pattern repeats itself in many quantum algorithms suggested so far.
+It can be subsumed into the three- or rather fivefold framework:
+``prepare a classical state; then
+spread (the classical state into a coherent superposition of classical states)
+---
+transform (according to some functional form pertinent to the problem or query considered)
+---
+fold (into partitions of classical states which can be accessed via quantum queries and yield classical signals);
+then detect that classical signal.''
+
+Besides the (classical) pre- and post-processing of the data,
+Shor's algorithm~\cite[Chapter~5]{nielsen-book10}
+has a very similar structure in its quantum (order-finding) core:
+It creates a superposition of classically mutually exclusive states $i$
+{\it via} a generalized Hadamard transformation.
+It then processes this coherent superposition of all $i$ by computing $x^i \text{ mod } n$,
+for some (externally given) $x$ and $n$, the number to be factored.
+And it finally ``folds back'' the expanded, processed state by applying an inverse quantum Fourier transform,
+which then (with high probability) conveniently yields a piece of classical information (in one register) about the period or order; that is,
+the least positive integer $k$ such that $x^k =1 (\text{mod } n)$ holds.
+As far as Shor's factoring algorithm is concerned, everything else is computed classically.
+
+Partitioning of states may be related to the hidden subgroup problem~\cite[Section~5.4.3]{nielsen-book10}:
+thereby, a function maps from some group to a finite set and is
+promised to be constant on cosets of the hidden subgroup.
+If those cosets are identified with the transformations ``filtering'' and ``singling out''~\cite{DonSvo01,svozil-2002-statepart-prl,svozil-2003-garda,svozil-2005-ko}
+the elements of a partition of states associated with the particular problem,
+finding the hidden subgroup may yield an effective way of solving this problem (encoded by the state partition).
+
+Whether or not this strategy to find ``quantum oracles'' corresponding to arbitrary partitions
+of classical cases is quantum feasible remains to be seen. There appears to be an {\it ad hoc} counterexample,
+as there is no speedup for generalized parity~\cite{Farhi-98}; at least with the means considered.
+
+\section{Quantum oracles for random numbers}
+
+Let me, for the sake of presenting another quantum resource mentioned in the beginning, contemplate one example for which, relative to the assumptions made,
+quantum ``computation'' outperforms
+classical recursion theory: the generation of (allegedly) irreducibly indeterministic numbers; or sequences thereof~\cite{2014-nobit}.
+A recent extension of the
+Kochen-Specker theorem~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109,2015-AnalyticKS}
+allowing partial value assignments suggests the following algorithm:
+Suppose one prepares a quantized system capable of three or more mutually exclusive outcomes,
+formalized by Hilbert spaces of dimension three and higher, in an arbitrary pure state.
+Then,
+relative to certain reasonable assumptions (for value assignments and noncontextuality),
+this system cannot be in any defined, determined property in any other direction of Hilbert state not
+collinear or orthogonal to the vector associated with the prepared state~\cite{pitowsky:218,hru-pit-2003}:
+the associated classical truth assignment cannot be a total function.
+The proof by contradiction is constructive and involves a configuration of intertwining quantum contexts (aka orthonormal bases).
+Figure~\ref{2019-s} depicts a particular configuration of quantum observables, as well as a particular one of their faithful orthogonal representations~\cite{lovasz-79}
+in which the prepared and measured states are an angle
+$
+\text{arccos } \langle {\bf a}\vert {\bf b} \rangle =
+\text{arccos} \left[
+\begin{pmatrix}
+1,0,0
+\end{pmatrix}   \frac{1}{2}
+\begin{pmatrix}
+\sqrt{2},1,1
+\end{pmatrix}^\intercal
+\right] = \frac{\pi}{4}$ apart~\cite[Table~1]{2015-AnalyticKS}.
+\newif\iflabel \labeltrue
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}  [scale=0.3]
+\labeltrue
+        \tikzstyle{every path}=[line width=1.5pt]
+%\tikzstyle{c1}=[circle,fill,inner sep=4]
+%\tikzstyle{c2}=[circle,fill,inner sep=2.7]
+%\tikzstyle{c3}=[circle,fill,inner sep=1]
+        \tikzstyle{c1}=[circle,fill,inner sep=3]
+        \tikzstyle{c2}=[circle,fill,inner sep=2]
+        \tikzstyle{c3}=[circle,fill,inner sep=1]
+        \tikzstyle{s1}=[color=red,rectangle,minimum size=8,inner sep=6]
+        \tikzstyle{d1}=[draw=none,circle,minimum size=4]
+        \tikzstyle{e1}=[color=gray,rectangle,minimum size=8,inner sep=6]
+
+        % Define positions of all observables
+
+
+
+\draw [color=orange]  (4,0)  coordinate[c1,fill,label=225:{\color{black}  $\vert {\bf b} \rangle $}] (b) -- (13,0)    coordinate[c1,fill,label={[label distance=-1]270:{\iflabel \footnotesize \color{black}  $2$\fi}}] (2) -- (22,0)  coordinate[c1,fill,label={[label distance=-1]315:{\iflabel \footnotesize \color{black}  $3$\fi}}] (3);
+\draw [color=blue] (3) -- (26,12)  coordinate[c1,fill,pos=0.8,label={[label distance=-1]0:{\iflabel \footnotesize \color{black}  ${21}$\fi}}] (21) coordinate[c1,fill,label={[label distance=-3]0:{\iflabel \footnotesize \color{black}  ${23}$\fi}}] (23);
+\draw [color=green] (23) -- (22,18.5) coordinate[c1,fill,pos=0.4,label={[label distance=-1]0:{\iflabel \footnotesize \color{black}  ${29}$\fi}}] (29) coordinate[c1,fill,label={[label distance=-1]45:{\iflabel \footnotesize \color{black}  $5$\fi}}] (5);
+\draw [color=magenta] (5)-- (13,18.5)coordinate[c1,fill,label=90:{\color{black}  $\vert {\bf a} \rangle $}] (a) -- (4,18.5)  coordinate[c1,fill,label={[label distance=-1]135:{\iflabel \footnotesize \color{black}  $4$\fi}}] (4);
+\draw [color=CadetBlue] (4) -- (0,12)   coordinate[c1,fill,pos=0.6,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  ${10}$\fi}}] (10)  coordinate[c1,fill,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  $7$\fi}}] (7);
+\draw [color=brown] (7) -- (b)      coordinate[c1,fill,pos=0.2,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  $6$\fi}}] (6);
+
+
+
+
+
+
+        \draw [color=gray] (a) -- (2) coordinate[c1,fill,pos=0.52,label={[label distance=-1, yshift=2]357.5:{\iflabel \footnotesize \color{black}  $1$\fi}}] (1);
+
+        \draw [color=violet] (5) -- (22,6) coordinate[c1,fill,pos=0.4,label={[label distance=-1]0:{\iflabel \footnotesize \color{black}  ${11}$\fi}}] (11) coordinate[c1,fill,label={[label distance=-1]0:{\iflabel \footnotesize \color{black}  $9$\fi}}] (9);
+
+\draw [color=Apricot] (9) -- (b) coordinate[c1,fill,pos=0.3,label={[label distance=-1]280:{\iflabel \footnotesize \color{black}  $8$\fi}}] (8);
+
+\draw [color=TealBlue] (4) -- (4,6) coordinate[c1,fill,pos=0.4,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  ${28}$\fi}}] (28) coordinate[c1,fill,label={[label distance=-3]180:{\iflabel \footnotesize \color{black}  ${22}$\fi}}] (22);
+\draw [color=YellowGreen] (22) -- (3) coordinate[c1,fill,pos=0.2,label={[label distance=-1]260:{\iflabel \footnotesize \color{black}  ${19}$\fi}}] (19);
+
+        \coordinate (25) at ([xshift=-4cm]1);
+        \coordinate (27) at ([xshift=4cm]1);
+
+\draw [color=MidnightBlue]  (22) -- (25) coordinate[c1,fill,pos=0.5,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  ${24}$\fi}}] (24) coordinate[c1,fill,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  ${25}$\fi}}] (25);
+\draw [color=Mulberry] (25) -- (9) coordinate[c1,fill,pos=0.8,label={[label distance=-1]90:{\iflabel \footnotesize \color{black}  ${35}$\fi}}] (35);
+
+\draw [color=BrickRed]  (7) -- (27) coordinate[c1,fill,pos=0.5,label={[label distance=-3]90:{\iflabel \footnotesize \color{black}  ${34}$\fi}}] (34) coordinate[c1,fill,label={[label distance=-1]90:{\iflabel \footnotesize \color{black}  ${27}$\fi}}] (27);
+\draw [color=Emerald] (27) -- (23) coordinate[c1,fill,pos=0.25,label={[label distance=-1]320:{\iflabel \footnotesize \color{black}  ${26}$\fi}}] (26);
+
+\draw [color=BlueGreen]  (10) -- (15.5,17.5) coordinate[c1,fill,pos=0.5,label={[label distance=-1]90:{\iflabel \footnotesize \color{black}  ${12}$\fi}}] (12) coordinate[c1,fill,label={[label distance=-1,xshift=5]270:{\iflabel \footnotesize \color{black}  ${13}$\fi}}] (13);
+\draw [color=Tan] (13) -- (29) coordinate[c1,fill,pos=0.4,label={[label distance=-1]90:{\iflabel \footnotesize \color{black}  ${31}$\fi}}] (31);
+
+\draw [color=RawSienna]  (28) -- (10.5,15) coordinate[c1,fill,pos=0.5,label={[label distance=-3, yshift=-3]160:{\iflabel \footnotesize \color{black}  ${30}$\fi}}] (30) coordinate[c1,fill,label={[label distance=-5]45:{\iflabel \footnotesize \color{black}  ${15}$\fi}}] (15);
+\draw [color=SpringGreen] (15) -- (11) coordinate[c1,fill,pos=0.6,label={[label distance=-1]90:{\iflabel \footnotesize \color{black}  ${14}$\fi}}] (14);
+
+\draw [color=Salmon]  (15) -- (1) coordinate[c1,fill,pos=0.2,label={[label distance=-1, yshift=2]180:{\iflabel \footnotesize \color{black}  ${17}$\fi}}] (17);
+\draw [color=Fuchsia] (1)-- (13) coordinate[c1,fill,pos=0.3,label={[label distance=-1]0:{\iflabel \footnotesize \color{black}  ${16}$\fi}}] (16);
+
+\draw [color=CornflowerBlue]  (19) -- (16) coordinate[c1,fill,pos=0.3,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  ${18}$\fi}}] (18);
+\draw [color=pink] (16) -- (8) coordinate[c1,fill,pos=0.7,label={[label distance=-1]180:{\iflabel \footnotesize \color{black}  ${32}$\fi}}] (32);
+
+\draw [color=PineGreen]  (6) -- (17) coordinate[c1,fill,pos=0.7,label={[label distance=-1, yshift=2]180:{\iflabel \footnotesize \color{black}  ${33}$\fi}}] (33);
+\draw [color=DarkOrchid] (17) -- (21) coordinate[c1,fill,pos=0.4,label={[label distance=-3]20:{\iflabel \footnotesize \color{black}  ${20}$\fi}}] (20);
+
+\draw [color=black] (25) -- (1) -- (27);
+
+
+
+
+\draw (a) coordinate[c2,fill=gray];
+
+\draw (b) coordinate[c2,fill=brown];
+\draw (b) coordinate[c3,fill=Apricot];
+
+\draw (4) coordinate[c2,fill=CadetBlue];
+\draw (4) coordinate[c3,fill=TealBlue];
+
+\draw (5) coordinate[c2,fill=magenta];
+\draw (5) coordinate[c3,fill=violet];
+
+\draw (7) coordinate[c2,BrickRed];
+\draw (7) coordinate[c3,fill=brown];
+
+\draw (23) coordinate[c2,fill=green];
+\draw (23) coordinate[c3,fill=Emerald];
+
+\draw (29) coordinate[c2,fill=Tan];
+
+\draw (21) coordinate[c2,fill=DarkOrchid];
+
+\draw (3) coordinate[c2,fill=blue];
+\draw (3) coordinate[c3,fill=YellowGreen];
+
+\draw (11) coordinate[c2,fill=SpringGreen];
+
+\draw (9) coordinate[c2,fill=Apricot];
+\draw (9) coordinate[c3,fill=Mulberry];
+
+\draw (27) coordinate[c2,fill=Emerald];
+\draw (27) coordinate[c3,fill=black];
+
+\draw (13) coordinate[c2,fill=Tan];
+\draw (13) coordinate[c3,fill=Fuchsia];
+
+\draw (7) coordinate[c2,BrickRed];
+\draw (7) coordinate[c3,fill=brown];
+
+\draw (8) coordinate[c2,fill=pink];
+
+\draw (19) coordinate[c2,fill=CornflowerBlue];
+
+\draw (16) coordinate[c2,fill=CornflowerBlue];
+\draw (16) coordinate[c3,fill=pink];
+
+\draw (1) coordinate[c2,fill=Salmon];
+\draw (1) coordinate[c3,fill=Fuchsia];
+
+\draw (17) coordinate[c2,fill=PineGreen];
+\draw (17) coordinate[c3,fill=DarkOrchid];
+
+\draw (15) coordinate[c2,fill=SpringGreen];
+\draw (15) coordinate[c3,fill=Salmon];
+
+\draw (25) coordinate[c2,fill=Mulberry];
+\draw (25) coordinate[c3,fill=black];
+
+
+\draw (22) coordinate[c2,fill=YellowGreen];
+\draw (22) coordinate[c3,fill=MidnightBlue];
+
+\draw (28) coordinate[c2,fill=RawSienna];
+
+\draw (10) coordinate[c2,fill=BlueGreen];
+
+\draw (6) coordinate[c2,fill=PineGreen];
+
+
+\draw (2) coordinate[c2,fill=gray];
+
+\end{tikzpicture}
+\end{center}
+\caption{Greechie orthogonality diagram of a logic~\cite[Fig.~2, p.~102201-8]{2015-AnalyticKS}
+realizable in $\mathbb{R}^3$
+with the true--implies--value indefiniteness (neither true nor false) property on the atoms $\vert {\bf a} \rangle $ and $\vert {\bf b} \rangle $,
+respectively.
+The 8 classical value assignments require $\vert {\bf a} \rangle $ to be false.
+Therefore, if  one prepares the quantized system in state $\vert {\bf a} \rangle $,
+the second state $\vert {\bf b} \rangle $ cannot have any consistent classical value assignment -- it must be value indeterminate/indefinite.
+}
+\label{2019-s}
+\end{figure}
+
+Whenever one approaches quantum indeterminacy from the empirical, inductive side,
+one has to recognize that, without {\it a priori} assumptions, formal proofs of (in)computability,
+and more so algorithmic incompressibility (aka randomness~\cite{ml:70})
+are blocked by reduction to the halting problems and similar~\cite{svozil-2016-pu-book}.
+The best one can do is to run
+tests, such as Borel normality and other criteria, on finite sequences of random number generators~\cite{PhysRevA.82.022102,Abbott_2019}
+which turn out to be consistent with the aforementioned value indefiniteness and
+quantum indeterminacy.
+
+\section{Afterthoughts on assumptions}
+
+Let me, as a substitute for a final discussion, mention a {\it caveat}: as all results and certifications hold true relative to the assumptions made,
+different assumptions and axioms may change the perceptual framework and results entirely.
+One might, for instance, disapprove of the physical existence of states and observables beyond a single vector or context~\cite{svozil-2018-whycontexts,Auffeves-Grangier-2018}.
+Thereby, the problem of measuring other contexts would be relegated to the general measurement problem of coherent superpositions~\cite{london-Bauer-1983}.
+In this case, as von Neumann, Wigner and Everett have pointed out, by ``nesting'' the measurement objects and the measurement apparatus in larger and larger systems~\cite{everett-collw},
+the assumption of the universal validity of the quantum state evolution would
+result in mere epistemic randomness; very much like the randomness encountered in, and the second law of~\cite{Myrvold2011237}, classical statistical physics.
+From that perspective, quantum randomness might turn out to be valid ``for all practical purposes''~\cite{bell-a} through interaction with a huge number of (uncontrollable) degrees of freedom
+in the environment of a quantized system in a coherent state, ``squeezing'' out this coherence very much like a balloon losing gas~\cite{Zyczkowski-balloon}.
+
+\section*{Acknowledgments}
+I kindly acknowledge enlightening discussions with Cristian Calude about many of the subjects mentioned.
+All misconceptions and errors are mine.
+I declare that I have no conflict of interest.
+
+%\begin{acknowledgments}
+%I kindly acknowledge enlightening discussions with Cristian Calude on many of the subjects mentioned.
+%All misconceptions and errors are mine.
+%\end{acknowledgments}
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{svozil}
+%
+
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{aaronson-Dyakonov}
+Aaronson, S.: Happy new year! {M}y response to {M}. {I}. {D}yakonov (1999),
+  \url{http://www.scottaaronson.com/writings/bignumbers.html}, accessed March
+  16th, 2017
+
+\bibitem{Aaronson:2013:QCD:2487754}
+Aaronson, S.: Quantum Computing Since {D}emocritus. Cambridge University Press,
+  New York, NY, USA (2013). \doi{10.1017/CBO9780511979309},
+  \url{https://doi.org/10.1017/CBO9780511979309}
+
+\bibitem{Abbott-Calude-blog-2016-06-19}
+Abbott, A.A., Calude, C.S.: Limits of quantum computing: A sceptic's view,
+  \url{http://www.quantumforquants.org/quantum-computing/limits-of-quantum-computing/},
+  jun 19th, 2016, accessed June 19th, 2016
+
+\bibitem{2012-incomput-proofsCJ}
+Abbott, A.A., Calude, C.S., Conder, J., Svozil, K.: Strong {K}ochen-{S}pecker
+  theorem and incomputability of quantum randomness. Physical Review A
+  \textbf{86},  062109 (Dec 2012). \doi{10.1103/PhysRevA.86.062109},
+  \url{https://doi.org/10.1103/PhysRevA.86.062109}
+
+\bibitem{Abbott_2019}
+Abbott, A.A., Calude, C.S., Dinneen, M.J., Huang, N.: Experimentally probing
+  the algorithmic randomness and incomputability of quantum randomness. Physica
+  Scripta  \textbf{94}(4),  045103 (feb 2019). \doi{10.1088/1402-4896/aaf36a},
+  \url{https://doi.org/10.1088/1402-4896/aaf36a}
+
+\bibitem{PhysRevA.89.032109}
+Abbott, A.A., Calude, C.S., Svozil, K.: Value-indefinite observables are almost
+  everywhere. Physical Review A  \textbf{89},  032109 (Mar 2014).
+  \doi{10.1103/PhysRevA.89.032109},
+  \url{https://doi.org/10.1103/PhysRevA.89.032109}
+
+\bibitem{2014-nobit}
+Abbott, A.A., Calude, C.S., Svozil, K.: On the unpredictability of individual
+  quantum measurement outcomes. In: Beklemishev, L.D., Blass, A., Dershowitz,
+  N., Finkbeiner, B., Schulte, W. (eds.) Fields of Logic and Computation II,
+  Lecture Notes in Computer Science, vol.~9300, pp. 69--86. Springer, Cham,
+  Heidelberg, New York, Dordrecht, London (2015).
+  \doi{10.1007/978-3-319-23534-9\_4},
+  \url{https://doi.org/10.1007/978-3-319-23534-9\_4}
+
+\bibitem{2015-AnalyticKS}
+Abbott, A.A., Calude, C.S., Svozil, K.: A variant of the {K}ochen-{S}pecker
+  theorem localising value indefiniteness. Journal of Mathematical Physics
+  \textbf{56}(10), 102201 (2015). \doi{10.1063/1.4931658},
+  \url{https://doi.org/10.1063/1.4931658}
+
+\bibitem{Auffeves-Grangier-2018}
+Auff\'eves, A., Grangier, P.: Extracontextuality and extravalence in quantum
+  mechanics. Philosophical Transactions of the Royal Society {A}: Mathematical,
+  Physical and Engineering Sciences  \textbf{376}(2123),  20170311 (2018).
+  \doi{10.1098/rsta.2017.0311}, \url{https://doi.org/10.1098/rsta.2017.0311}
+
+\bibitem{bell-a}
+Bell, J.S.: Against `measurement'. Physics World  \textbf{3},  33--41 (1990).
+  \doi{10.1088/2058-7058/3/8/26},
+  \url{https://doi.org/10.1088/2058-7058/3/8/26}
+
+\bibitem{Zyczkowski-balloon}
+Bengtsson, I., Zyczkowski, K.: Geometry of quantum states - addendum (2018),
+  \url{http://chaos.if.uj.edu.pl/\textasciitilde{}karol/decoh18.pdf}, accessed
+  on March 24th, 2019
+
+\bibitem{PhysRevA.82.022102}
+Calude, C.S., Dinneen, M.J., Dumitrescu, M., Svozil, K.: Experimental evidence
+  of quantum randomness incomputability. Phys. Rev. A  \textbf{82}(2),  022102
+  (Aug 2010). \doi{10.1103/PhysRevA.82.022102},
+  \url{https://doi.org/10.1103/PhysRevA.82.022102}
+
+\bibitem{clauser-talkvie}
+Clauser, J.: Early history of {B}ell's theorem. In: Bertlmann, R., Zeilinger,
+  A. (eds.) Quantum (Un)speakables: {F}rom {B}ell to Quantum Information, pp.
+  61--96. Springer, Berlin (2002). \doi{10.1007/978-3-662-05032-3\_6},
+  \url{https://doi.org/10.1007/978-3-662-05032-3\_6}
+
+\bibitem{dirac}
+Dirac, P.A.M.: The Principles of Quantum Mechanics. Oxford University Press,
+  Oxford, fourth edn. (1930, 1958)
+
+\bibitem{DonSvo01}
+Donath, N., Svozil, K.: Finding a state among a complete set of orthogonal
+  ones. Physical Review A  \textbf{65},  044302 (2002).
+  \doi{10.1103/PhysRevA.65.044302},
+  \url{https://doi.org/10.1103/PhysRevA.65.044302}
+
+\bibitem{Dyakonov-2013}
+Dyakonov, M.I.: State of the Art and Prospects for Quantum Computing, chap.~20,
+  pp. 266--285. John Wiley \& Sons, Ltd (2013).
+  \doi{10.1002/9781118678107.ch20},
+  \url{https://doi.org/10.1002/9781118678107.ch20}
+
+\bibitem{Dyakonov-2019}
+Dyakonov, M.I.: When will we have a quantum computer? (2019),
+  \url{https://arxiv.org/abs/1903.10760}, talk at the conference ``Future
+  trends in microelectronics'', Sardinia (2018). To be published in a special
+  issue of Solid State Electronics
+
+\bibitem{Englert2013}
+Englert, B.G.: On quantum theory. The European Physical Journal D
+  \textbf{67}(11),  1--16 (2013). \doi{10.1140/epjd/e2013-40486-5},
+  \url{https://doi.org/10.1140/epjd/e2013-40486-5}
+
+\bibitem{everett-collw}
+{Everett III}, H.: The {E}verett interpretation of quantum mechanics: Collected
+  works 1955-1980 with commentary. Princeton University Press, Princeton, NJ
+  (2012), \url{http://press.princeton.edu/titles/9770.html}
+
+\bibitem{Farhi-98}
+Farhi, E., Goldstone, J., Gutmann, S., Sipser, M.: Limit on the speed of
+  quantum computation in determining parity. Physical Review Letters
+  \textbf{81},  5442--5444 (1998). \doi{10.1103/PhysRevLett.81.5442},
+  \url{https://doi.org/10.1103/PhysRevLett.81.5442}
+
+\bibitem{feynman-law}
+Feynman, R.P.: The Character of Physical Law. MIT Press, Cambridge, MA (1965)
+
+\bibitem{fuchs-peres}
+Fuchs, C.A., Peres, A.: Quantum theory needs no `interpretation'. Physics Today
+   \textbf{53}(4),  70--71 (March 2000). \doi{10.1063/1.883004},
+  \url{https://doi.org/10.1063/1.883004}, further discussions of and reactions
+  to the article can be found in the September issue of Physics Today, {\it
+  53}, 11-14 (2000)
+
+\bibitem{Gleason}
+Gleason, A.M.: Measures on the closed subspaces of a {H}ilbert space. Journal
+  of Mathematics and Mechanics (now Indiana University Mathematics Journal)
+  \textbf{6}(4),  885--893 (1957). \doi{10.1512/iumj.1957.6.56050},
+  \url{https://doi.org/10.1512/iumj.1957.6.56050}
+
+\bibitem{hru-pit-2003}
+Hrushovski, E., Pitowsky, I.: Generalizations of {K}ochen and {S}pecker's
+  theorem and the effectiveness of {G}leason's theorem. Studies in History and
+  Philosophy of Science Part B: Studies in History and Philosophy of Modern
+  Physics  \textbf{35}(2),  177--194 (2004). \doi{10.1016/j.shpsb.2003.10.002},
+  \url{https://doi.org/10.1016/j.shpsb.2003.10.002}
+
+\bibitem{jordan-zoo}
+Jordan, S.: Quantum algorithm zoo (2011-2019),
+  \url{http://quantumalgorithmzoo.org/}, accessed March 26, 2019
+
+\bibitem{london-Bauer-1939}
+London, F., Bauer, E.: La theorie de l'observation en m\'ecanique quantique;
+  {N}o.~775 of Actualit\'es scientifiques et industrielles: Expos\'es de
+  physique g\'en\'erale, publi\'es sous la direction de {P}aul {L}angevin.
+  Hermann, Paris (1939), english translation in~\cite{london-Bauer-1983}
+
+\bibitem{london-Bauer-1983}
+London, F., Bauer, E.: The theory of observation in quantum mechanics. In:
+  Quantum Theory and Measurement, pp. 217--259. Princeton University Press,
+  Princeton, NJ (1983), consolidated translation of French
+  original~\cite{london-Bauer-1939}
+
+\bibitem{lovasz-79}
+Lov\'asz, L.: On the {S}hannon capacity of a graph. IEEE Transactions on
+  Information Theory  \textbf{25}(1), ~1--7 (January 1979).
+  \doi{10.1109/TIT.1979.1055985}
+
+\bibitem{ml:70}
+Martin-L{\"{o}}f, P.: On the notion of randomness. In: Kino, A., Myhill, J.,
+  Vesley, R.E. (eds.) Intuitionism and Proof Theory, p.~73. North-Holland,
+  Amsterdam and London (1970)
+
+\bibitem{mermin-2004-shutup}
+Mermin, D.N.: Could {F}eynman have said this? Physics Today  \textbf{57},
+  10--11 (1989). \doi{10.1063/1.1768652},
+  \url{https://doi.org/10.1063/1.1768652}
+
+\bibitem{mermin-1989-shutup}
+Mermin, D.N.: What's wrong with this pillow? Physics Today  \textbf{42},  9--11
+  (1989). \doi{10.1063/1.2810963}, \url{https://doi.org/10.1063/1.2810963}
+
+\bibitem{mermin-07}
+Mermin, D.N.: Quantum Computer Science. Cambridge University Press, Cambridge
+  (2007). \doi{10.1017/CBO9780511813870},
+  \url{https://doi.org/10.1017/CBO9780511813870}
+
+\bibitem{mermin-2019}
+Mermin, D.N.: Making better sense of quantum mechanics (2019),
+  \url{https://arxiv.org/abs/1809.01639}
+
+\bibitem{Myrvold2011237}
+Myrvold, W.C.: Statistical mechanics and thermodynamics: A {M}axwellian view.
+  Studies in History and Philosophy of Science Part B: Studies in History and
+  Philosophy of Modern Physics  \textbf{42}(4),  237--243 (2011).
+  \doi{10.1016/j.shpsb.2011.07.001},
+  \url{https://doi.org/10.1016/j.shpsb.2011.07.001}
+
+\bibitem{nielsen-book10}
+Nielsen, M.A., Chuang, I.L.: Quantum Computation and Quantum Information.
+  Cambridge University Press, Cambridge (2010). \doi{10.1017/CBO9780511976667},
+  \url{https://doi.org/10.1017/CBO9780511976667}, 10th Anniversary Edition
+
+\bibitem{pitowsky:218}
+Pitowsky, I.: Infinite and finite {G}leason's theorems and the logic of
+  indeterminacy. Journal of Mathematical Physics  \textbf{39}(1),  218--228
+  (1998). \doi{10.1063/1.532334}, \url{https://doi.org/10.1063/1.532334}
+
+\bibitem{schrodinger}
+Schr{\"{o}}dinger, E.: {D}ie gegenw\"artige {S}ituation in der
+  {Q}uantenmechanik. Naturwissenschaften  \textbf{23},  807--812, 823--828,
+  844--849 (1935). \doi{10.1007/BF01491891, 10.1007/BF01491914,
+  10.1007/BF01491987}, \url{https://doi.org/10.1007/BF01491891,
+  https://doi.org/10.1007/BF01491914, https://doi.org/10.1007/BF01491987}
+
+\bibitem{svozil-2002-statepart-prl}
+Svozil, K.: Quantum information in base $n$ defined by state partitions.
+  Physical Review A  \textbf{66},  044306 (2002).
+  \doi{10.1103/PhysRevA.66.044306},
+  \url{https://doi.org/10.1103/PhysRevA.66.044306}
+
+\bibitem{svozil-2003-garda}
+Svozil, K.: Quantum information via state partitions and the context
+  translation principle. Journal of Modern Optics  \textbf{51},  811--819
+  (2004). \doi{10.1080/09500340410001664179},
+  \url{https://doi.org/10.1080/09500340410001664179}
+
+\bibitem{svozil-2005-ko}
+Svozil, K.: Characterization of quantum computable decision problems by state
+  discrimination. In: Adenier, G., Khrennikov, A., Nieuwenhuizen, T.M. (eds.)
+  Quantum Theory: Reconsideration of Foundations---3. vol.~810, pp. 271--279.
+  American Institute of Physics (2006). \doi{10.1063/1.2158729},
+  \url{https://doi.org/10.1063/1.2158729}
+
+\bibitem{svozil-2016-quantum-hokus-pokus}
+Svozil, K.: Quantum hocus-pocus. Ethics in Science and Environmental Politics
+  (ESEP)  \textbf{16}(1),  25--30 (2016). \doi{10.3354/esep00171},
+  \url{https://doi.org/10.3354/esep00171}
+
+\bibitem{svozil-2018-whycontexts}
+Svozil, K.: New forms of quantum value indefiniteness suggest that incompatible
+  views on contexts are epistemic. Entropy  \textbf{20}(6),  406(22) (2018).
+  \doi{10.3390/e20060406}, \url{https://doi.org/10.3390/e20060406}
+
+\bibitem{svozil-2016-pu-book}
+Svozil, K.: Physical [A]Causality. {D}eterminism, Randomness and Uncaused
+  Events. Springer, Cham, Berlin, Heidelberg, New York (2018).
+  \doi{10.1007/978-3-319-70815-7},
+  \url{https://doi.org/10.1007/978-3-319-70815-7}
+
+\bibitem{2007-tkadlec-svozil-springer}
+Svozil, K., Tkadlec, J.: On the solution of trivalent decision problems by
+  quantum state identification. Natural Computing  \textbf{in print},  in print
+  (2009). \doi{10.1007/s11047-009-9112-5},
+  \url{https://doi.org/10.1007/s11047-009-9112-5}
+
+\bibitem{Turing-Intelligent_Machinery}
+Turing, A.M.: Intelligent machinery. In: Evans, C.R., Robertson, A.D.J. (eds.)
+  {C}ybernetics. {K}ey Papers, pp. 27--52. Butterworths, London (1968)
+
+\bibitem{Wiesner-2017}
+Wiesner, K.: The careless use of language in quantum information,
+  \url{https://arxiv.org/abs/1705.06768}
+
+\end{thebibliography}
+
+\end{document}
+

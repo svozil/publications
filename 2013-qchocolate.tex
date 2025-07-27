@@ -1,0 +1,2323 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage{amssymb}
+\usepackage{eepic}
+\usepackage[x11names]{xcolor}
+
+\journal{Theoretical Computer Science}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Non-contextual chocolate ball versus value indefinite quantum cryptography}
+
+\author{Karl Svozil}
+\ead{svozil@tuwien.ac.at}
+\ead[url]{http://tph.tuwien.ac.at/~svozil}
+\address{Institute for Theoretical Physics, Vienna University of Technology\\
+Wiedner Hauptstra\ss e 8-10/136, A-1040 Vienna, Austria}
+
+\begin{abstract}
+Some quantum cryptographic protocols can be implemented with specially prepared metaphorical chocolate balls representing local hidden variables, others protected by value indefiniteness cannot. This latter feature, which follows from Bell- and Kochen-Specker type arguments, is only present in systems with three or more mutually exclusive outcomes. Conversely, there exist local hidden variable models based on chocolate ball configurations utilizable for cryptography which cannot be realized by quantum systems. The possibility that quantum cryptography supported by value indefiniteness (contextuality) has practical advantages over more conventional quantum cryptographic protocols remains highly speculative.
+\end{abstract}
+
+%\pacs{03.67.Hk,03.65.Ud}
+\begin{keyword}
+Quantum information, quantum cryptography, singlet states, entanglement, quantum non-locality, value indefiniteness, contextuality
+\end{keyword}
+
+
+
+\end{frontmatter}
+
+\section{Quantum resources for cryptography}
+
+Quantum cryptography~\footnote{
+In view of the many superb presentations of quantum cryptography
+--- to name but a few, see Refs.~\cite{gisin-qc-rmp,arXiv:0802.4155}  and
+\cite[Chapter~6]{mermin-04} (or, alternatively, \cite[Section 6.2]{mermin-07}),
+as well as
+\cite[Section~12.6]{nielsen-book};
+apologies to other authors for this incomplete, subjective collection
+---
+I refrain from any extensive introduction.
+}
+uses quantum resources to encode plain symbols forming some message.
+Thereby, the security of the code against cryptanalytic attacks to recover
+that message rests upon the validity of physics, giving new and direct meaning to
+Landauer's dictum~\cite{landauer} ``information is physical.''
+
+What exactly are those quantum resources on which quantum cryptography is based upon?
+Consider, for a start,  the following qualities of quantized systems:
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\begin{enumerate}
+\item
+randomness of certain individual events,
+such as the occurrence of certain measurement outcomes
+for states which are in a  superposition of eigenstates
+associated with eigenvalues corresponding to these outcomes;
+\item
+complementarity, as proposed by Pauli, Heisenberg and Bohr;
+\item
+value indefiniteness, as attested by Bell, Kochen \& Specker, Greenberger, Horne and Zeilinger, Pitowsky and others~\cite{2012-incomput-proofsCJ,PhysRevA.89.032109}
+(often, this property is referred to as ``contextuality''~\cite{bohr-1949,bell-66,redhead}.
+Alas, contextual truth assignments
+are just one possibility among others to cope with the theorems mentioned,
+thereby providing a particular quasi-realistic, but not necessarily the only possible, ``solution'' or ``interpretation'' of those theorems~\cite{svozil-2008-ql});
+\item
+interference and quantum parallelism, allowing the co-representation of classically contradicting states of information
+by a coherent superposition thereof;
+\item
+entanglement of two or more particles,
+as pointed out by Schr\"odinger, such that their state cannot be represented
+as the product of states of the isolated, individual quanta,
+but is rather defined by the {\em joint} or {\em relative} properties of the quanta involved.
+\end{enumerate}
+
+The first quantum cryptographic protocols, such as the ones by Wiesner~\cite{wiesner} and
+Bennett \& Brassard~\cite{benn-84,benn-92},
+just require complementarity and random individual outcomes.
+It may well be that a different quantum cryptographic scheme that uses stronger or additional powers provided by quantum theory,
+such as value indefiniteness (or, by another term, contextuality) manifesting itself
+in Bell- or Kochen-Specker type theorems~\cite{specker-60,kochen1,ZirlSchl-65,Alda,Alda2,kamber64,kamber65,mermin-93,pitowsky:218,hru-pit-2003},
+will provide an advantage over these former protocols.
+
+Even nowadays it is seldom acknowledged that,
+when it comes to value definiteness, there definitely {\em is} a difference between
+two- and three-dimensional Hilbert space.
+This difference can probably be best explained in terms of (conjugate) bases:
+whereas different bases in two-dimensional Hilbert space are disjoint and totally separated
+(they do not share any vector),
+from three dimensions onwards, they may share common elements.
+It is this inter-connectedness of bases and ``frames'' which
+supports both the Gleason and the Kochen-Specker theorems.
+This can, for instance, be used in derivations of the latter one in three dimensions,
+which effectively amount to a succession of rotations of bases along one of their elements
+(the original Kochen-Specker~\cite{kochen1} proof uses 117 interlinked bases), thereby creating new rotated bases,
+until the original base is reached.
+Note that certain (even dense~\cite{meyer:99}) ``dilutions'' of bases break up the possibility to interconnect,
+thus allowing value definiteness.
+
+The importance of these arguments for physics is this:
+since in quantum mechanics the dimension of Hilbert space
+is determined by the number of mutually exclusive outcomes,
+a {\em necessary} condition for a quantum system to be protected by value indefiniteness
+thus is that the associated quantum system has {\em at least three} mutually exclusive outcomes;
+two outcomes are insufficient for this purpose.
+Of course, one could argue that systems with two outcomes are still protected by complementarity.
+
+This article addresses two issues: a critical re-evaluation
+of quantum cryptographic protocols in view
+of quantum value indefiniteness;
+as well as suggestions to improve them to assure the best possible protection
+``our''~\cite[p.~866]{born-26-1} present quantum theory can afford.
+In doing so, a toy model will be introduced which implements complementarity but still
+is value definite.
+Then it will be exemplified how to do perform ``quasi-classical'' quantum-like cryptography
+with these models.
+Finally, methods will be discussed which go beyond the quasi-classical realm.
+
+\section{Realizations of quantum cryptographic protocols}
+
+Let us, for the sake of demonstration,
+discuss a concrete ``toy'' system which features complementarity but (not) value (in)definiteness.
+It is based on the partitions of a set.
+Suppose the set is given by
+$S=\{1,2,3,4\}$,
+and consider two of its equipartitions
+$A=\{\{1,2\},\{3,4\}\}$
+and
+$B=\{\{1,3\},\{2,4\}\}$, as well as
+the usual set theoretic operations (intersection, union and complement) and
+the subset relation among the elements of these two partitions.
+Then $A$ and $B$ generate two Boolean algebras
+$L_A= \{\emptyset ,\{1,2\},\{3,4\},S\}$
+and
+$L_B= \{\emptyset ,\{1,3\},\{2,4\},S\}$
+which are equivalent to a Boolean algebra with two atoms
+$a_1=\{1,2\}$ \& $a_2=\{3,4\}$, as well as
+$b_1=\{1,3\}$  \& $b_2=\{2,4\}$
+per algebra, respectively.
+Then, the partition logic~\cite{svozil-ql,svozil-2001-eua,svozil-2008-ql}
+consisting of two Boolean subalgebras
+$L_A \oplus L_B = L_{A,B} = \left\langle \{L_A,L_B\},\cap, \cup, ',\subset \right\rangle $
+is obtained as a pasting construction (through identifying identical elements of subalgebras~\cite{greechie:71,nav:91,kalmbach-81})
+from $L_A$ and $L_B$:
+only elements contribute which are in $L_A$, or in $L_B$, or in both of them  (i.e. in $L_A \cap L_B$)
+-- the atoms of this algebra being the elements  $a_1,\ldots ,b_2$ --
+and all common elements. In the present case only the smallest and greatest elements $\emptyset$
+and $S$  --  are identified.
+$L_{A,B}$ ``inherits'' the operations and relations of its subalgebras (also called {\em blocks}
+or {\em contexts}) $L_A$ and $L_B$.
+This pasting construction yields a non-distributive and thus
+non-boolean, orthocomplemented propositional structure~\cite{kalmbach-81,pulmannova-91}.
+Nondistributivity can quite easily be proven,
+as  $a_1 \wedge (b_1 \vee b_2) \neq  (a_1 \wedge b_1) \vee (a_1 \wedge b_2)$,
+since $b_1 \vee b_2=S$, whereas  $a_1 \wedge b_1= a_1 \wedge b_2 =\emptyset$.
+Note that, although $a_1,\ldots ,b_2$ are compositions of elements of $S$,
+not all elements of the power set  of $S$ associated with a Boolean algebra with four atoms,  such
+as $\{1\}$ or $\{1,2,3\}$, are contained in $L_{A,B}$.
+
+Figure~\ref{2006-ql-nondist}(a)
+depicts a Greechie (orthogonality) diagram~\cite{greechie:71} of  $L_{A,B}$,
+which represents elements in a Boolean algebra as single smooth curves;
+in this case there are just two atoms  (least elements above $\emptyset$)
+per subalgebra; and both subalgebras are not interconnected.
+\begin{figure}
+\begin{center}
+\begin{tabular}{ccc}
+%TexCad Options
+%\grade{\off}
+%\emlines{\off}
+%\beziermacro{\off}
+%\reduce{\on}
+%\snapping{\off}
+%\quality{0.20}
+%\graddiff{0.01}
+%\snapasp{1}
+%\zoom{1.00}
+\unitlength 0.35mm
+\allinethickness{1.5pt} %\thicklines %\linethickness{0.4pt}
+\begin{picture}(165,65.00)
+\put(0.00,15.00){\color{DeepPink1}\circle{6}}
+\put(0.00,15.00){\color{DeepPink1}\circle{2.8}}
+\put(0.00,15.00){\color{DeepPink1}\circle{0.5}}
+\put(60.00,15.00){\color{DeepPink1}\circle{6}}
+\put(60.00,15.00){\color{DeepPink1}\circle{2.8}}
+\put(60.00,15.00){\color{DeepPink1}\circle{0.5}}
+\put(0.00,0.00){\color{DeepPink1}\makebox(0,0)[cc]{$a_1=a_2'$}}
+\put(60.00,0.00){\color{DeepPink1}\makebox(0,0)[cc]{$a_2=a_1'$}}
+\put(0.00,15.00){\color{DeepPink1}\line(1,0){60.00}}
+\put(100.00,15.00){\color{Turquoise1}\circle{6}}
+\put(100.00,15.00){\color{Turquoise1}\circle{2.8}}
+\put(100.00,15.00){\color{Turquoise1}\circle{0.5}}
+\put(160.00,15.00){\color{Turquoise1}\circle{6}}
+\put(160.00,15.00){\color{Turquoise1}\circle{2.8}}
+\put(160.00,15.00){\color{Turquoise1}\circle{0.5}}
+\put(110.00,0.00){\color{Turquoise1}\makebox(0,0)[cc]{$b_2=b_1'$}}
+\put(160.00,0.00){\color{Turquoise1}\makebox(0,0)[cc]{$b_1=b_2'$}}
+\put(100.00,15.00){\color{Turquoise1}\line(1,0){60.00}}
+\put(40.00,25.00){\color{DeepPink1}\makebox(0,0)[cc]{$L_A$}}
+\put(130.00,25.00){\color{Turquoise1}\makebox(0,0)[cc]{$L_B$}}
+\end{picture}
+&
+\qquad
+\qquad
+\qquad
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\off}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\off}
+%\reduce{\on}
+%\snapping{\off}
+%\quality{6.000}
+%\graddiff{0.010}
+%\snapasp{1}
+%\zoom{9.5137}
+\unitlength .55mm % = 1.707pt
+\allinethickness{1.5pt} %\thicklines %\linethickness{0.4pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(69.971,40.225)(0,0)
+\put(29.971,.225){\color{DeepPink1}\vector(0,1){40}}
+\put(29.971,.225){\color{DeepPink1}\vector(1,0){40}}
+\put(29.971,.225){\color{Turquoise1}\vector(1,1){30}}
+\put(29.943,.225){\color{Turquoise1}\vector(-1,1){30}}
+\put(30,45){\color{DeepPink1}\makebox(0,0)[cc]{$a_1=a_2'$}}
+\put(69.971,-4.775){\color{DeepPink1}\makebox(0,0)[cc]{$a_2=a_1'$}}
+\put(60,35){\color{Turquoise1}\makebox(0,0)[cc]{$b_2=b_1'$}}
+\put(0,35){\color{Turquoise1}\makebox(0,0)[]{$b_1=b_2'$}}
+\end{picture}
+\\
+$\;$\\
+(a)&&(b)
+\end{tabular}
+\end{center}
+\caption{\label{2006-ql-nondist}
+(Color online)
+(a) Greechie
+diagram  of $L_{A,B}$, consisting of two separate Boolean subalgebras $L_A$ and $L_B$;
+(b)
+two-dimensional Hilbert space configuration of spin-$\frac{1}{2}$
+state measurements along two non-collinear directions.
+As there are only two mutually exclusive outcomes, the dimension of the Hilbert space is two.
+}
+\end{figure}
+
+Several realizations of this partition logic exist; among them
+\begin{enumerate}
+\item
+the propositional structure~\cite{birkhoff-36,svozil-ql} of spin state measurements of a spin-$\frac{1}{2}$ particle
+along two non-collinear directions,
+or of the linear polarization of a photon along two non-orthogonal, non-collinear directions.
+A  two-dimensional Hilbert space representation of this configuration is depicted in
+Figure~\ref{2006-ql-nondist}(b).
+Thereby, the choice of the measurement direction decides which one of the two
+complementary spin state observables is measured;
+\item
+generalized urn models~\cite{wright,dvur-pul-svo}
+utilizing
+black balls painted
+with two or more symbols in two or more colors.
+Suppose, for instance,  just two symbols ``$0$'' and ``$1$''
+in just two colors, say,  ``pink'' and ``light blue'',
+resulting in four types of conceivable balls:
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}$}} \end{picture}, as well as
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}$}} \end{picture}
+--- many copies of which are randomly
+distributed in an urn.
+Suppose further that the experimenter looks at them with one of two differently colored eyeglasses,
+each one ideally  matching the colors of only one of the symbols,
+such that only light in this wave length passes through.
+Thereby, the choice of the color decides which one of the two
+complementary observables associated with ``pink'' and ``light blue'' is measured.
+Propositions refer to the possible ball types drawn from the urn, given the information printed in the chosen color.
+For further details about chocolate ball cryptography based on {\em generalized urn models} resulting in {\em partition logics}, we refer to Refs.
+\cite{svozil-2005-ln1e,svozil-2001-eua}.
+\item
+initial state identification problem for
+deterministic finite (Moore or Mealy)
+automata in an unknown initial state~\cite{e-f-moore,svozil-2001-eua};
+in particular ones $\left\langle S, I, O, \delta, \lambda \right\rangle$
+with four internal states $S=\{1,2,3,4\}$, two input and two output states $I=O=\{0,1\}$,
+ an ``irreversible'' (all-to-one) transition function
+$\delta (s, i) =1$ for all $s\in S$, $i\in I$,
+and an output function  ``modelling'' the state partitions by
+$\lambda (1,0)=\lambda (2,0) =0$,
+$\lambda (3,0)=\lambda (4,0) =1$,
+$\lambda (1,1)=\lambda (3,1) =0$,
+$\lambda (2,1)=\lambda (4,1) =1$.
+Thereby, the choice of the input symbol decides which one of the two
+complementary observables is measured.
+For further details about the {\em initial state identification problem} of finite automata
+resulting in {\em partition logics}, we refer to Refs.
+\cite{,svozil-2001-eua,svozil-2008-ql}.
+\end{enumerate}
+
+Let us, for the moment, consider generalized urn models,
+because they allow a ``pleasant'' representation as chocolate balls coated in black foils and
+painted with color symbols.\footnote{In an ``early bird'' breakfast setup for Canadian politicians,
+Gilles Brassard used {\em boiled eggs} instead of chocolate balls.}
+With the four types of chocolate balls
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}$}} \end{picture}, and
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}$}} \end{picture}
+drawn from an urn it is
+possible to execute the 1984 Bennett-Brassard (BB84) protocol~\cite{benn-84,benn-92}
+and ``generate'' a secret key shared by two parties~\cite{svozil-2005-ln1e}.
+Formally, this reflects
+(i) the random draw of balls from an urn, as well as
+(ii) the complementarity modeled
+{\em via} the color painting and the colored eyeglasses.
+It also reflects the possibility to embed this model into a bigger Boolean (and thus classical)
+algebra $2^4$ by ``taking off the eyeglasses'' and looking at both symbols of those four balls types
+simultaneously.
+The atoms of this Boolean algebra are just the ball types, associated with the four  cases
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}$}} \end{picture}, and
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}$}} \end{picture}.
+The possibility of a classical embedding is also reflected in a ``sufficient'' number
+(i.e., by a separating, full set) of two-valued, dispersionless (only the sharp values ``$0$'' and ``$1$'' are allowed) states
+$P(a_1)+P(a_2)=P(b_1)+P(b_2)=1$, with $P(x)\in \{0,1\}$.
+These two-valued states can also be interpreted as logical truth assignments,
+irrespective of whether the observables have been (co-)measured.
+
+When comparing BB84-type cryptography with quanta and chocolate balls, one has to keep in mind
+that the similarities with respect to complementarity appear somewhat superficial with regards to the state of the objects communicated  {\em after} any measurement.
+Because even if an eavesdropper, say Eve, sticks to the rules of the game by putting on colored eyeglasses,
+any of her measurements would not affect or change the type of ball, and thus would not cause any {\em disturbance}  of the objects communicated,
+thereby not causing any measurement errors between Alice and Bob.
+This is different from quantum complementarity and quantum cryptography protected by it,
+for if Eve would choose a different observable than Bob she would inevitably alter the state transferred.
+This amounts to a disturbance which makes it possible for Alice and Bob to recognize Eve's cryptanalytic attack through occasional measurement errors;
+at least if Eve is incapable of controlling the classical channel between the two.
+Of course one could alleviate this deficiency of the quasi-classical analogue by requiring Eve not to communicate the original object received from Bob,
+but by redrawing from the urn and
+sending Alice another object consistent with Eve's measurement.
+
+
+The possibility to ascribe certain ``ontic states'' interpretable as observer-independent
+``omniscient elements of physical reality''
+(in the sense of Einstein, Podolsky and Rosen~\cite[p.~777]{epr},
+a paper which amazingly contains not a single reference) even for complementarity observables
+may raise some skepticism or even outright rejection,
+since that is not how quantum mechanics is known to perform at its most mind-boggling mode.
+Indeed, so far, the rant presented merely attempted to convince the reader that one can
+have complementarity {\em as well as} value definiteness; i.e.,
+complementarity is not sufficient for value indefiniteness in the
+sense of the Bell- and Kochen-Specker argument.
+
+Unfortunately, the two-dimensionality of the associated Hilbert space
+is also a feature
+plaguing present random number generators based on beam
+splitters~\cite{svozil-qct,rarity-94,zeilinger:qct,stefanov-2000}.
+In this respect, most of the present random number generators using
+beam splitters are protected by the randomness
+of single outcomes as well as by complementarity, but not by
+certified value indefiniteness~\cite{PhysRevLett.85.3313,2008-cal-svo,svozil-2009-howto,10.1038/nature09008},
+as guaranteed by quantum theory in its standard form~\cite{v-neumann-49}.
+%(Yet they may still be certified to pass all {\em diehard} tests by the Swiss Federal Office of Metrology).
+Their methodology should also be improved by the methods discussed below.
+
+
+
+\section{Supporting cryptography with value indefiniteness}
+
+Fortunately, quantum mechanics is more resourceful and mind-boggling than that,
+as it does not permit any two-valued states which may be ontologically  interpretable
+as elements of physical reality.
+So we have to go further, reminding ourselves that value indefiniteness
+comes about only for Hilbert spaces of dimensions three and higher.
+There are several ways of doing this.
+The following options will be discussed:
+\begin{enumerate}
+\item
+the known protocols can be generalized to three or more outcomes~\cite{PhysRevLett.85.3313};
+\item
+entangled pairs of particles~\cite{ekert91} associated with statistical value indefiniteness may be considered;
+\item
+full, non-probabilistic value indefiniteness may be attempted, at least counterfactually.
+\end{enumerate}
+
+
+\subsection{Generalizations to three and more outcomes}
+
+In constructing quantum random number generators {\em via} beam splitters
+which ultimately are used in cryptographic setups, it is important
+(i)  to have full control of the particle source, and
+(ii) to use beam splitters with three or more output ports,
+associated with three- or higher-dimensional Hilbert spaces.
+Thereby, the question of whether it is {\em sufficient} for this purpose to compose a multiport beam splitter
+by a succession of phase shifters and beam splitters
+with two output ports~\cite{rzbb,svozil-2004-analog},
+based on elementary decompositions of the unitary group~\cite{murnaghan} remains to be answered.
+
+Dichotomic sequences could be obtained from sequences containing more than two symbols
+by discarding all other symbols from that sequence~\cite{MR997340},
+or by identifying the additional symbols with one (or both) of the two symbols.
+For standard normalization procedures and their issues,
+the reader is referred to Refs.~\cite{von-neumann1,Samuelson-1968,elias-72,PeresY-1992,dichtl-2007,Lacharme-2008}.
+%http://www.robertnz.net/hwrng.htm
+
+One concrete realization would be a spin-$\frac{3}{2}$ particle. Suppose it is prepared
+in one of its four spin states, say the one associated with angular momentum $+\frac{3}{2}\hbar$ in
+some arbitrary but definite direction; e.g., by a Stern-Gerlach device.
+Then, its  spin state is  again measured along a perpendicular direction;
+e.g., by another, differently oriented, Stern-Gerlach device.
+Two of the output ports, say the ones corresponding to positive angular momentum $+\frac{3}{2}\hbar$
+and $+\frac{1}{2}\hbar$,
+are identified with the symbol ``$0$,'' the other two ports with the symbol ``$1$.''
+In that way, a random sequence is obtained from quantum coin tosses
+which can be ensured to operate under the conditions of value indefiniteness
+in the sense of the Kochen-Specker theorem.
+Of course, this protocol can also be used to generate random sequences
+containing four symbols (one symbol per detector).
+
+With respect to the use of beam splitters, the reader is kindly reminded of another
+issue related to the fact that beam splitters are {\em reversible} devices capable of only
+translating an incoming  signal into an outgoing  signal in a {\em one-to-one} manner.
+The ``non-destructive'' action of a beam splitter could also be demonstrated
+by ``reconstructing'' the original signal through a ``reversed'' identical beam splitter
+in a Mach-Zehnder interferometer~\cite{green-horn-zei}.
+In this sense, the signal leaving the output ports of a beam splitter
+is ``as good'' for cryptographic purposes as the one entering the device.
+This fact relegates considerations of the quality of quantum randomness
+to the quality of the source. Every care should thus be taken in preparing the source
+to  assure that the state entering the input port
+(i)  either is pure and could subsequently be used for measurements corresponding to conjugate bases,
+(ii) or is maximally mixed, resulting in a representation of its
+state in finite dimensions proportional to the unit matrix.
+
+\subsection{Configurations with statistical value indefiniteness}
+
+Protocols like the Ekert protocol \cite{ekert91}
+utilize two entangled two-state particles for a generation of
+a random key shared by two parties. The particular Einstein-Podolsky-Rosen
+configuration~\cite{epr} and the singlet Bell state communicated among the
+parties guarantee  stronger-than-classical correlations of their sequences,
+resulting in a violation of Bell-type inequalities obeyed by classical probabilities.
+
+Although criticized~\cite{PhysRevLett.68.557} on the grounds that the Ekert protocol
+in certain cryptanalytic aspects is equivalent to existing ones
+(see Ref.~\cite{benn-92b} for a reconciliation),
+it offers additional security in the light of quantum value indefiniteness,
+as it suggests to probe the non-classical parts of quantum statistics.
+This can best be understood in terms of the impossibility to generate
+co-existing tables of all -- even the counterfactually possible -- measurement outcomes
+of the quantum observables used~\cite{peres222}.
+This, of course, can only happen for the four-dimensional Hilbert space configuration
+proposed by Ekert,
+and not for effectively two-dimensional ones of previous proposals.
+
+Because if the Ekert protocol would be executed with chocolate balls instead of suitable quanta,
+the data would not violate the classical bounds predicted by quantum theory.
+This is due to the fact that chocolate ball models are local hidden variable models.
+Thereby, the Ekert protocol would clearly indicate a conceivable cryptanalytic attack --
+for instance,
+by looking simultaneously at all the symbols in all the different colors painted on the chocolate balls.
+
+
+Suppose one would nevertheless attempt to ``mimic'' an Ekert type protocol
+proposed by Bennett, Brassard and Mermin (BBM92)~\cite{PhysRevLett.68.557}
+with a classical ``singlet'' state
+which uses compositions of two balls of the form
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}$}} \end{picture}---\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}$}} \end{picture} / \unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}$}} \end{picture}---\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}$}} \end{picture} / \unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}$}} \end{picture}---\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4
+,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}$}} \end{picture} / \unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}$}} \end{picture}---\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}$}} \end{picture},
+with strictly different (alternatively strictly identical) particle types.
+The resulting probabilities and expectations would obey the classical Clauser-Horne-Shimony-Holt bounds~\cite{chsh}.
+This is due to the fact that generalized urn models have quasi-classical probability distributions
+which can be represented as convex combinations of the full set of separable two-valued states on their observables.
+
+\subsection{Nonprobabilistic value indefiniteness}
+
+In an attempt to fully utilize quantum value indefiniteness,
+we propose a generalization of the BB84 protocol on a propositional structure which does not
+allow any two-valued state.
+In principle, this could be any kind of finite configuration of observables in three- and higher-dimensional Hilbert space;
+in particular ones which have been proposed
+for a proof of the Kochen-Specker theorem.
+\begin{figure}
+\begin{center}
+%TeXCAD Picture [4.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\quality{8.00}
+%\graddiff{0.01}
+%\snapasp{1}
+%\zoom{5.6569}
+\unitlength 0.9mm % = 2.85pt
+\allinethickness{3pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(134.09,125.99)(0,0)
+\put(29.168,27.577){{\color{DarkSeaGreen3}\line(1,0){64.169}}}
+%\emline(69.826,15.379)(102.53,73.539)
+\multiput(69.826,15.379)(.04816494845,.08565537555){679}{{\color{AntiqueWhite3}\line(0,1){.08565537555}}}
+%\end
+%\emline(102.353,43.487)(69.649,101.999)
+\multiput(102.353,43.487)(-.04816494845,.08617378498){679}{{\color{green}\line(0,1){.08617378498}} }
+%\end
+\put(93.691,89.272){{\color{Snow4}\line(-1,0){64.7}}}
+%\emline(53.033,101.823)(20.329,43.487)
+\multiput(53.033,101.823)(-.04816494845,-.08591458027){679}{{\color{Purple3}\line(0,-1){.08591458027}}}
+%\end
+%\emline(20.152,73.539)(53.033,15.203)
+\multiput(20.152,73.539)(.0481420205,-.0854114202){683}{{\color{Red4}\line(0,-1){.0854114202}}}
+%\end
+%\emline(36.592,101.646)(86.09,15.379)
+\multiput(36.592,101.646)(.04819668939,-.08399902629){1027}{{\color{LightCyan2}\line(0,-1){.08399902629}}}
+%\end
+\put(111.015,58.513){{\color{LightSkyBlue2}\line(-1,0){99.348}}}
+%\emline(36.416,15.026)(86.266,101.823)
+\multiput(36.416,15.026)(.04816425121,.08386183575){1035}{{\color{MediumPurple2}\line(0,1){.08386183575}}}
+%\end
+
+
+\multiput(86.39,14.96)(.119617225,.208133971){209}{{\color{lime}\line(0,1){.208133971}}}
+\multiput(86.39,101.96)(.119617225,-.208133971){209}{{\color{olive}\line(0,-1){.208133971}}}
+\put(86.39,101.71){{\color{violet}\line(-1,0){50}}}
+\multiput(36.47,101.96)(-.119617225,-.208133971){209}{{\color{Turquoise1}\line(0,-1){.208133971}}}
+\multiput(36.47,14.96)(-.119617225,.208133971){209}{{\color{yellow}\line(0,1){.208133971}}}
+\put(86.39,15.21){{\color{brown}\line(-1,0){50}}}
+
+
+{\color{DodgerBlue4}\qbezier(52.856,15.203)(56.568,22.009)(44.724,28.461)}{\color{DodgerBlue4}\qbezier(29.345,27.93)(34.029,34.736)(44.724,28.461)}{\color{PaleGreen2}\qbezier(28.991,89.448)(25.279,95.37)(36.416,101.646)}{\color{PaleGreen2}\qbezier(29.345,89.095)(34.029,82.289)(44.724,88.564)}{\color{PaleGreen2}\qbezier(52.856,101.823)(56.568,95.017)(44.724,88.564)}{\color{PaleGreen2}\qbezier(36.416,101.646)(49.055,108.628)(52.856,101.823)}{\color{PaleVioletRed4}\qbezier(69.826,101.646)(73.273,108.452)(86.266,101.469)}{\color{PaleVioletRed4}\qbezier(86.266,101.469)(96.873,95.812)(93.337,89.448)}{\color{PaleVioletRed4}\qbezier(93.337,89.448)(89.713,83.084)(77.958,88.741)}{\color{PaleVioletRed4}\qbezier(77.958,88.741)(66.114,94.663)(69.826,101.646)}{\color{NavajoWhite2}\qbezier(86.266,15.556)(96.873,21.213)(93.337,27.577)}{\color{NavajoWhite2}\qbezier(77.958,28.284)(66.114,22.362)(69.826,15.379)}{\color{NavajoWhite2}\qbezier(93.337,27.577)(89.713,33.941)(77.958,28.284)}{\color{NavajoWhite2}\qbezier(69.826,15.379)
+(73.273,8.574)(86.266,15.556)}{\color{Gold2}\qbezier(20.152,73.185)(11.756,73.097)(11.49,58.513)}{\color{Gold2}\qbezier(28.461,58.159)(28.372,73.273)(20.152,73.185)}{\color{Gold2}\qbezier(11.49,58.513)(11.314,43.398)(20.329,43.487)}{\color{Gold2}\qbezier(20.329,43.487)(28.638,43.575)(28.461,58.159)}{\color{Plum2}\qbezier(111.192,58.513)(111.368,43.398)(102.353,43.487)}{\color{Plum2}\qbezier(102.353,43.487)(94.044,43.575)(94.221,58.159)}{\color{Plum2}\qbezier(94.221,58.159)(94.31,73.273)(102.53,73.185)}{\color{Plum2}\qbezier(102.53,73.185)(110.926,73.097)(111.192,58.513)}{\color{blue}\qbezier(29.2,27.73)(23.55,-5.86)(52.99,15.24)}{\color{blue}\qbezier(29.2,27.88)(36.93,75)(69.63,101.91)}{\color{blue}\qbezier(52.69,15.24)(87.47,40.96)(93.72,89.27)}{\color{blue}\qbezier(93.72,89.27)(98.4,125.99)(69.49,102.06)}{\color{DeepPink1}\qbezier(20.15,73.72)(-11.67,58.52)(20.15,43.31)}{\color{DeepPink1}\qbezier(20.33,73.72)(61.34,93.16)(102.36,73.72)}{\color{DeepPink1}\qbezier(102.36,73.72)(134.09,58.52)
+(102.53,43.31)}{\color{DeepPink1}\qbezier(102.53,43.31)(60.99,23.43)(20.15,43.49)}{\color{orange}\qbezier(93.57,27.73)(99.22,-5.86)(69.78,15.24)}{\color{orange}\qbezier(93.57,27.88)(85.84,75)(53.13,101.91)}{\color{orange}\qbezier(70.08,15.24)(35.3,40.96)(29.05,89.27)}{\color{orange}\qbezier(29.05,89.27)(24.37,125.99)(53.28,102.06)}{\color{DodgerBlue4}\qbezier(28.991,27.577)(25.279,21.655)(36.416,15.379)}{\color{DodgerBlue4}\qbezier(36.416,15.379)(49.055,8.397)(52.856,15.203)}
+
+
+\put(11.56,58.45){{\color{Turquoise1}\circle{4}}}
+\put(11.56,58.45){{\color{yellow}\circle{6}}}
+\put(11.56,58.45){{\color{Gold2}\circle{8}}}
+\put(11.56,58.45){{\color{LightSkyBlue2}\circle{2}}}
+\put(11.56,58.45){{\color{LightSkyBlue2}\circle{0.1}}}
+
+\put(20.4,73.47){{\color{Turquoise1}\circle{4}}}
+\put(20.4,73.47){{\color{DeepPink1}\circle{6}}}
+\put(20.4,73.47){{\color{Red4}\circle{8}}}
+\put(20.4,73.47){{\color{Gold2}\circle{2}}}
+\put(20.4,73.47){{\color{Gold2}\circle{0.1}}}
+
+\put(20.4,43.44){{\color{yellow}\circle{4}}}
+\put(20.4,43.44){{\color{DeepPink1}\circle{6}}}
+\put(20.4,43.44){{\color{Gold2}\circle{8}}}
+\put(20.4,43.44){{\color{Purple3}\circle{2}}}
+\put(20.4,43.44){{\color{Purple3}\circle{0.1}}}
+
+\put(28.656,58.45){{\color{Purple3}\circle{4}}}
+\put(28.656,58.45){{\color{LightSkyBlue2}\circle{8}}}
+\put(28.656,58.45){{\color{Gold2}\circle{6}}}
+\put(28.656,58.45){{\color{Red4}\circle{2}}}
+\put(28.656,58.45){{\color{Red4}\circle{0.1}}}
+
+\put(94.063,58.45){{\color{LightSkyBlue2}\circle{8}}}
+\put(94.063,58.45){{\color{green}\circle{6}}}
+\put(94.063,58.45){{\color{AntiqueWhite3}\circle{4}}}
+\put(94.063,58.45){{\color{Plum2}\circle{2}}}
+\put(94.063,58.45){{\color{Plum2}\circle{0.1}}}
+
+
+\put(111.21,58.45){{\color{Plum2}\circle{8}}}
+\put(111.21,58.45){{\color{olive}\circle{6}}}
+\put(111.21,58.45){{\color{lime}\circle{4}}}
+\put(111.21,58.45){{\color{LightSkyBlue2}\circle{2}}}
+\put(111.21,58.45){{\color{LightSkyBlue2}\circle{0.1}}}
+
+
+\put(102.37,73.47){{\color{olive}\circle{4}}}
+\put(102.37,73.47){{\color{Plum2}\circle{6}}}
+\put(102.37,73.47){{\color{DeepPink1}\circle{8}}}
+\put(102.37,73.47){{\color{AntiqueWhite3}\circle{2}}}
+\put(102.37,73.47){{\color{AntiqueWhite3}\circle{0.1}}}
+
+\put(102.37,43.44){{\color{DeepPink1}\circle{6}}}
+\put(102.37,43.44){{\color{lime}\circle{8}}}
+\put(102.37,43.44){{\color{Plum2}\circle{4}}}
+\put(102.37,43.44){{\color{green}\circle{2}}}
+\put(102.37,43.44){{\color{green}\circle{0.1}}}
+
+\put(36.34,15.16){{\color{brown}\circle{4}}}
+\put(36.34,15.16){{\color{yellow}\circle{6}}}
+\put(36.34,15.16){{\color{MediumPurple2}\circle{8}}}
+\put(36.34,15.16){{\color{DodgerBlue4}\circle{2}}}
+\put(36.34,15.16){{\color{DodgerBlue4}\circle{0.1}}}
+
+\put(44.919,27.71){{\color{MediumPurple2}\circle{6}}}
+\put(44.919,27.71){{\color{DodgerBlue4}\circle{8}}}
+\put(44.919,27.71){{\color{DarkSeaGreen3}\circle{4}}}
+\put(44.919,27.71){{\color{Red4}\circle{2}}}
+\put(44.919,27.71){{\color{Red4}\circle{0.1}}}
+
+\put(29.24,27.71){{\color{yellow}\circle{6}}}
+\put(29.24,27.71){{\color{blue}\circle{4}}}
+\put(29.24,27.71){{\color{DodgerBlue4}\circle{8}}}
+\put(29.24,27.71){{\color{DarkSeaGreen3}\circle{2}}}
+\put(29.24,27.71){{\color{DarkSeaGreen3}\circle{0.1}}}
+
+\put(77.976,27.71){{\color{DarkSeaGreen3}\circle{8}}}
+\put(77.976,27.71){{\color{LightCyan2}\circle{6}}}
+\put(77.976,27.71){{\color{NavajoWhite2}\circle{4}}}
+\put(77.976,27.71){{\color{AntiqueWhite3}\circle{2}}}
+\put(77.976,27.71){{\color{AntiqueWhite3}\circle{0.1}}}
+
+\put(93.53,27.71){{\color{orange}\circle{6}}}
+\put(93.53,27.71){{\color{lime}\circle{4}}}
+\put(93.53,27.71){{\color{NavajoWhite2}\circle{8}}}
+\put(93.53,27.71){{\color{DarkSeaGreen3}\circle{2}}}
+\put(93.53,27.71){{\color{DarkSeaGreen3}\circle{0.1}}}
+
+\put(86.28,15.16){{\color{lime}\circle{6}}}
+\put(86.28,15.16){{\color{brown}\circle{4}}}
+\put(86.28,15.16){{\color{LightCyan2}\circle{8}}}
+\put(86.28,15.16){{\color{NavajoWhite2}\circle{2}}}
+\put(86.28,15.16){{\color{NavajoWhite2}\circle{0.1}}}
+
+\put(52.99,15.16){{\color{brown}\circle{4}}}
+\put(52.99,15.16){{\color{blue}\circle{6}}}
+\put(52.99,15.16){{\color{Red4}\circle{8}}}
+\put(52.99,15.16){{\color{DodgerBlue4}\circle{2}}}
+\put(52.99,15.16){{\color{DodgerBlue4}\circle{0.1}}}
+
+\put(69.68,15.16){{\color{brown}\circle{4}}}
+\put(69.68,15.16){{\color{orange}\circle{6}}}
+\put(69.68,15.16){{\color{AntiqueWhite3}\circle{8}}}
+\put(69.68,15.16){{\color{NavajoWhite2}\circle{2}}}
+\put(69.68,15.16){{\color{NavajoWhite2}\circle{0.1}}}
+
+\put(93.53,89.21){{\color{olive}\circle{4}}}
+\put(93.53,89.21){{\color{blue}\circle{6}}}
+\put(93.53,89.21){{\color{PaleVioletRed4}\circle{8}}}
+\put(93.53,89.21){{\color{Snow4}\circle{2}}}
+\put(93.53,89.21){{\color{Snow4}\circle{0.1}}}
+
+\put(77.976,88.679){{\color{Snow4}\circle{8}}}
+\put(77.976,88.679){{\color{PaleVioletRed4}\circle{6}}}
+\put(77.976,88.679){{\color{green}\circle{4}}}
+\put(77.976,88.679){{\color{MediumPurple2}\circle{2}}}
+\put(77.976,88.679){{\color{MediumPurple2}\circle{0.1}}}
+
+\put(86.28,101.76){{\color{violet}\circle{8}}}
+\put(86.28,101.76){{\color{MediumPurple2}\circle{6}}}
+\put(86.28,101.76){{\color{olive}\circle{4}}}
+\put(86.28,101.76){{\color{PaleVioletRed4}\circle{2}}}
+\put(86.28,101.76){{\color{PaleVioletRed4}\circle{0.1}}}
+
+\put(69.68,101.76){{\color{PaleVioletRed4}\circle{8}}}
+\put(69.68,101.76){{\color{blue}\circle{6}}}
+\put(69.68,101.76){{\color{violet}\circle{4}}}
+\put(69.68,101.76){{\color{green}\circle{2}}}
+\put(69.68,101.76){{\color{green}\circle{0.1}}}
+
+\put(52.99,101.76){{\color{violet}\circle{8}}}
+\put(52.99,101.76){{\color{PaleGreen2}\circle{6}}}
+\put(52.99,101.76){{\color{orange}\circle{4}}}
+\put(52.99,101.76){{\color{Purple3}\circle{2}}}
+\put(52.99,101.76){{\color{Purple3}\circle{0.1}}}
+
+\put(36.34,101.76){{\color{PaleGreen2}\circle{8}}}
+\put(36.34,101.76){{\color{Turquoise1}\circle{6}}}
+\put(36.34,101.76){{\color{violet}\circle{4}}}
+\put(36.34,101.76){{\color{LightCyan2}\circle{2}}}
+\put(36.34,101.76){{\color{LightCyan2}\circle{0.1}}}
+
+\put(44.743,88.679){{\color{LightCyan2}\circle{8}}}
+\put(44.743,88.679){{\color{PaleGreen2}\circle{6}}}
+\put(44.743,88.679){{\color{Snow4}\circle{4}}}
+\put(44.743,88.679){{\color{Purple3}\circle{2}}}
+\put(44.743,88.679){{\color{Purple3}\circle{0.1}}}
+
+\put(29.24,89.21){{\color{PaleGreen2}\circle{8}}}
+\put(29.24,89.21){{\color{orange}\circle{6}}}
+\put(29.24,89.21){{\color{Turquoise1}\circle{4}}}
+\put(29.24,89.21){{\color{Snow4}\circle{2}}}
+\put(29.24,89.21){{\color{Snow4}\circle{0.1}}}
+
+
+
+
+{\color{black} \normalsize
+\put(34,116.02){\makebox(0,0)[rc]{$(0,1,-1,0)$}}
+\put(34,2.65){\makebox(0,0)[rc]{$(0,0,1,-1)$}}
+\put(63,116.38){\makebox(0,0)[rc]{$(1,0,0,1)$}}
+\put(63,2.3){\makebox(0,0)[rc]{$(1,-1,0,0)$}}
+\put(100,116.2){\makebox(0,0)[lc]{$(-1,1,1,1)$}}
+\put(100,2.48){\makebox(0,0)[lc]{$(1,1,1,1)$}}
+\put(65.65,116.38){\makebox(0,0)[lc]{$(1,1,1,-1)$}}
+\put(65.65,2.3){\makebox(0,0)[lc]{$(1,1,-1,-1)$}}
+\put(108.24,94.22){\makebox(0,0)[lc]{$(1,1,-1,1)$}}
+\put(17.45,94.22){\makebox(0,0)[rc]{$(0,1,1,0)$}}
+\put(108.24,22.45){\makebox(0,0)[lc]{$(1,-1,1,-1)$}}
+\put(16.45,22.45){\makebox(0,0)[rc]{$(0,0,1,1)$}}
+\put(114.13,77.96){\makebox(0,0)[lc]{$(1,0,1,0)$}}
+\put(8.55,77.96){\makebox(0,0)[rc]{$(0,0,0,1)$}}
+\put(114.13,38.72){\makebox(0,0)[lc]{$(1,0,-1,0)$}}
+\put(8.55,38.72){\makebox(0,0)[rc]{$(0,1,0,0)$}}
+\put(120.92,57.98){\makebox(0,0)[lc]{$(0,1,0,-1)$}}
+\put(1.77,57.98){\makebox(0,0)[rc]{$(1,0,0,0)$}}
+}
+\end{picture}
+\end{center}
+\caption{ \label{2009-QvPR}
+(Color online)
+Greechie orthogonality diagram of a ``short'' proof~\cite{cabello-96,cabello:210401} of the Kochen-Specker theorem
+in four dimensions containing 24 vectors whose linear span can be identified with propositions~\cite{birkhoff-36} in 24 tightly interlinked contexts~\cite{tkadlec-priv}.
+The graph cannot be colored by the two colors red (associated with truth)
+and green (associated with falsity) such that every context contains exactly one red and three green points.
+For the sake of a proof, consider just the six outer lines and the three outer ellipses.
+Indeed,  in a table containing the points of the contexts as columns
+and the enumeration of contexts as rows,
+every red point occurs in exactly {\em two} such contexts, and thus
+there should be an {\em even} number of red points.
+On the other hand, there are 9 contexts involved; thus by the rules it follows that there
+should be an {\em odd} number (i.e. 9) of red points in this table (exactly one per context).
+}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{cccccc}
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.5mm % = 2.85pt
+\allinethickness{3pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\color{Turquoise1}\line(1,0){110}}
+%\emline(20,20)(75,110)
+\multiput(20,20)(.03372164316,.05518087063){1631}{\color{yellow}\line(0,1){.05518087063}}
+%\end
+%\emline(75,110)(130,20)
+\multiput(75,110)(.03372164316,-.05518087063){1631}{\color{DeepPink1}\line(0,-1){.05518087063}}
+%\end
+\put(20,20){\color{Turquoise1}\circle{9}}
+\put(20,20){\color{yellow}\circle{5.5}}
+\put(20,20){\color{yellow}\circle{1.5}}
+\put(56.25,20){\color{Turquoise1}\circle{5.5}}
+\put(56.25,20){\color{Turquoise1}\circle{1.5}}
+\put(92.5,20){\color{Turquoise1}\circle{5.5}}
+\put(92.5,20){\color{Turquoise1}\circle{1.5}}
+\put(129.75,20){\color{DeepPink1}\circle{9}}
+\put(129.75,20){\color{Turquoise1}\circle{5.5}}
+\put(129.75,20){\color{Turquoise1}\circle{1.5}}
+\put(56.25,79.75){\color{yellow}\circle{5.5}}
+\put(56.25,79.75){\color{yellow}\circle{1.5}}
+\put(38.75,51.25){\color{yellow}\circle{5.5}}
+\put(38.75,51.25){\color{yellow}\circle{1.5}}
+\put(74.75,109.75){\color{yellow}\circle{9}}
+\put(74.75,109.75){\color{DeepPink1}\circle{5.5}}
+\put(74.75,109.75){\color{DeepPink1}\circle{1.5}}
+\put(93.75,79.75){\color{DeepPink1}\circle{5.5}}
+\put(93.75,79.75){\color{DeepPink1}\circle{1.5}}
+\put(111.25,51.25){\color{DeepPink1}\circle{5.5}}
+\put(111.25,51.25){\color{DeepPink1}\circle{1.5}}
+\put(15,5){\makebox(0,0)[cc]{$(1,0,0,0)$}}
+\put(52,5){\makebox(0,0)[cc]{$(0,1,1,0)$}}
+\put(92.5,5){\makebox(0,0)[cc]{$(0,1,-1,0)$}}
+\put(138,5){\makebox(0,0)[cc]{$(0,0,0,1)$}}
+\put(74.75,122){\makebox(0,0)[cc]{$(0,1,0,0)$}}
+\put(108,80.25){\makebox(0,0)[lc]{$(1,0,-1,0)$}}
+\put(125,52.25){\makebox(0,0)[lc]{$(1,0,1,0)$}}
+\put(42.5,80.25){\makebox(0,0)[rc]{$(0,0,1,-1)$}}
+\put(25.5,52.25){\makebox(0,0)[rc]{$(0,0,1,1)$}}
+\end{picture}
+&
+\qquad
+\qquad
+\qquad
+&
+
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.4mm % = 2.85pt
+\allinethickness{3pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\color{Turquoise1}\line(1,0){73}}
+%\emline(20,20)(75,110)
+%\multiput(20,20)(.03372164316,.05518087063){1631}{\color{yellow}\line(0,1){.05518087063}}
+\multiput(20,20)(.03372164316,.05518087063){1080}{\color{DeepPink1}\line(0,1){.05518087063}}
+%\end
+\put(20,20){\color{Turquoise1}\circle{9}}
+\put(20,20){\color{DeepPink1}\circle{5.5}}
+\put(20,20){\color{DeepPink1}\circle{1.5}}
+\put(56.25,20){\color{Turquoise1}\circle{5.5}}
+\put(56.25,20){\color{Turquoise1}\circle{1.5}}
+\put(92.5,20){\color{Turquoise1}\circle{5.5}}
+\put(92.5,20){\color{Turquoise1}\circle{1.5}}
+\put(56.25,79.75){\color{DeepPink1}\circle{5.5}}
+\put(56.25,79.75){\color{DeepPink1}\circle{1.5}}
+\put(38.75,51.25){\color{DeepPink1}\circle{5.5}}
+\put(38.75,51.25){\color{DeepPink1}\circle{1.5}}
+\put(15,5){\makebox(0,0)[cc]{$(1,0,0)$}}
+\put(52,5){\makebox(0,0)[cc]{$(0,1,1)$}}
+\put(92.5,5){\makebox(0,0)[cc]{$(0,1,-1)$}}
+\put(28,52.25){\makebox(0,0)[rc]{$(0,1,0)$}}
+\put(42.5,80.25){\makebox(0,0)[rc]{$(0,0,1)$}}
+\end{picture}
+\\
+(a)&&(b)
+\end{tabular}
+\end{center}
+\caption{ \label{2009-QvPRtria}
+(Color online)
+Subdiagrams of Figure~\ref{2009-QvPR} allowing (value definite)
+chocolate ball realizations.
+}
+\end{figure}
+
+For the sake of a concrete example, we shall consider a variant of the tightly interlinked collection of observables
+in four-dimensional Hilbert space
+presented by Cabello, Estebaranz and Garc{\'i}a-Alcaine~\cite{cabello-96,cabello:210401},
+which is depicted in Figure~\ref{2009-QvPR}.
+(Their original configuration using only 9 contexts would also suffice for the following argument.)
+Instead of two measurement bases of two-dimensional Hilbert space used in the BB84 protocol,
+24 such bases of four-dimensional Hilbert space, corresponding to the 24 smooth (unbroken) orthogonal curves
+in Fig.~\ref{2009-QvPR} are used.
+In what follows, it is assumed that any kind of random decision has been prepared
+according to the protocol for generating
+random sequences sketched above.
+
+
+\begin{enumerate}
+\item
+In the first step, ``Alice'' randomly picks an arbitrary basis from the 24 available ones,
+and sends a random state to ``Bob.''
+\item
+In the second step, Bob independently from Alice, picks some (not necessarily different from Alice's) basis at random,
+and measures the particle received from Alice.
+\item
+In the third step, Alice and Bob compare their bases over a public channel,
+and keep only those events which were recorded in a common basis.
+\item
+Both then exchange some of the matching outcomes  over a public channel to assure that nobody
+has attended their quantum channel.
+\item
+Bob and Alice encode the four outcomes by four or less different symbols.
+As a result, Bob and Alice share a common random key certified by quantum value indefiniteness.
+\end{enumerate}
+
+
+The advantage of this protocol resides in the fact that it does not allow its realization by
+any partition of a set, or any kind of colored chocolate balls.
+Because if it did, any such coloring could be used to generate ``classical'' two-valued states,
+which in turn may be used towards a classical re-interpretation of the quantum observables; an option
+ruled out by the Kochen-Specker theorem.
+
+
+
+For the sake of an explicit demonstration, a simplified version of the protocol, which is based on a subdiagram
+of Figure~\ref{2009-QvPR}, contains only three contexts,
+which are closely interlinked.
+The structure of observables is depicted in Figure~\ref{2009-QvPRtria}(a).
+The vectors represent observables in four-dimensional Hilbert space
+in their usual interpretation as projectors generating the one-dimensional subspaces spanned by them.
+In addition to this quantum mechanical
+representation, and in contrast to the Kochen-Specker configuration in Figure~\ref{2009-QvPR},
+this global collection of observables
+still allows for value definiteness, as there are ``enough'' two valued states
+permitting the formation of a partition logic and thus a chocolate ball realization; e.g.,
+$$
+\begin{array}{c}
+\{
+\{
+\{1,2
+\},
+\{ 3,4,5,6,7
+\},
+\{ 8,9,10,11,12
+\},
+\{13,14
+\}
+\}, \\
+\{
+\{1,4,5,9,10
+\},
+\{ 2,6,7,11,12
+\},
+\{ 3,8
+\},
+\{ 13,14
+\}
+\}, \\
+\{
+\{ 1,2
+\},
+\{ 3,8
+\},
+\{ 4,6,9,11,13
+\},
+\{ 5,7,10,12,14
+\}
+\}
+\}.
+\end{array}
+$$
+The three partitions of the set $\{1,2,\ldots ,14\}$ have been obtained
+by indexing the atoms in terms of
+all the non-vanishing
+two-valued states on them~\cite{svozil-2001-eua,svozil-2008-ql}, as
+depicted in Figure~\ref{2009-qcho-f2vs}.
+They can be straightforwardly applied for a chocolate
+ball configuration with three colors (say pink, light blue, and yellow)
+and four symbols (say 0, 1, 2, and 3).
+The 14 ball types corresponding to the 14 different two-valued measures are as follows:
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}{\color{yellow} {\bf 0}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 0}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 2}}{\color{yellow} {\bf 1}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}{\color{yellow} {\bf 2}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 0}}{\color{yellow} {\bf 3}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 2}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 3}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 2}}{\color{yellow} {\bf 1}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 0}}{\color{yellow} {\bf 2}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 0}}{\color{yellow} {\bf 3}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 2}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 3}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 3}}{\color{Turquoise1} {\bf 3}}{\color{yellow} {\bf 2}}$}}\end{picture}, and
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 3}}{\color{Turquoise1} {\bf 3}}{\color{yellow} {\bf 3}}$}}\end{picture}.
+
+
+
+
+Figure~\ref{2009-QvPRtria}(b) contains a three-dimensional subconfiguration
+with two complementary contexts interlinked in a single observable.
+It again has a value definite representation in terms of partitions of a set,
+and thus again a chocolate ball realization with three symbols in two colors; e.g.,
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 0}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 2}}$}} \end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 1}}$}} \end{picture}, and
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(8,8) \put(4,2){\circle*{8}} \put(4,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 2}}$}} \end{picture}.
+
+\begin{figure}
+\begin{tabular}{cccccccccc}
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(20,20){\circle*{8}} \put(15,5){\makebox(0,0)[cc]{$1$}}            %1
+\put(111.25,51.25){\circle*{8}} \put(125,52.25){\makebox(0,0)[lc]{$5$}} %5
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 1}} \put(74,52){\circle{40}}
+\end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(20,20){\circle*{8}} \put(15,5){\makebox(0,0)[cc]{$1$}}            %1
+\put(93.75,79.75){\circle*{8}} \put(108,80.25){\makebox(0,0)[lc]{$6$}}  %6
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 2}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(56.25,20){\circle*{8}}\put(52,5){\makebox(0,0)[cc]{$2$}}         %2
+\put(74.75,109.75){\circle*{8}} \put(74.75,122){\makebox(0,0)[cc]{$7$}} %7
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 3}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(56.25,20){\circle*{8}}\put(52,5){\makebox(0,0)[cc]{$2$}}         %2
+\put(111.25,51.25){\circle*{8}} \put(125,52.25){\makebox(0,0)[lc]{$5$}} %5
+\put(56.25,79.75){\circle*{8}} \put(42.5,80.25){\makebox(0,0)[rc]{$8$}}%8
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 4}} \put(74,52){\circle{40}} \end{picture}
+\\
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(56.25,20){\circle*{8}}\put(52,5){\makebox(0,0)[cc]{$2$}}         %2
+\put(111.25,51.25){\circle*{8}} \put(125,52.25){\makebox(0,0)[lc]{$5$}} %5
+\put(38.75,51.25){\circle*{8}} \put(25.5,52.25){\makebox(0,0)[rc]{$9$}}%9
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 5}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(56.25,20){\circle*{8}}\put(52,5){\makebox(0,0)[cc]{$2$}}         %2
+\put(93.75,79.75){\circle*{8}} \put(108,80.25){\makebox(0,0)[lc]{$6$}}  %6
+\put(56.25,79.75){\circle*{8}} \put(42.5,80.25){\makebox(0,0)[rc]{$8$}}%8
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 6}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(56.25,20){\circle*{8}}\put(52,5){\makebox(0,0)[cc]{$2$}}         %2
+\put(93.75,79.75){\circle*{8}} \put(108,80.25){\makebox(0,0)[lc]{$6$}}  %6
+\put(38.75,51.25){\circle*{8}} \put(25.5,52.25){\makebox(0,0)[rc]{$9$}}%9
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 7}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(92.5,20){\circle*{8}}\put(92.5,5){\makebox(0,0)[cc]{$3$}}        %3
+\put(74.75,109.75){\circle*{8}} \put(74.75,122){\makebox(0,0)[cc]{$7$}} %7
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 8}} \put(74,52){\circle{40}} \end{picture}
+\\
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(92.5,20){\circle*{8}}\put(92.5,5){\makebox(0,0)[cc]{$3$}}        %3
+\put(111.25,51.25){\circle*{8}} \put(125,52.25){\makebox(0,0)[lc]{$5$}} %5
+\put(56.25,79.75){\circle*{8}} \put(42.5,80.25){\makebox(0,0)[rc]{$8$}}%8
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 9}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(92.5,20){\circle*{8}}\put(92.5,5){\makebox(0,0)[cc]{$3$}}        %3
+\put(111.25,51.25){\circle*{8}} \put(125,52.25){\makebox(0,0)[lc]{$5$}} %5
+\put(38.75,51.25){\circle*{8}} \put(25.5,52.25){\makebox(0,0)[rc]{$9$}}%9
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 10}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(92.5,20){\circle*{8}}\put(92.5,5){\makebox(0,0)[cc]{$3$}}        %3
+\put(93.75,79.75){\circle*{8}} \put(108,80.25){\makebox(0,0)[lc]{$6$}}  %6
+\put(56.25,79.75){\circle*{8}} \put(42.5,80.25){\makebox(0,0)[rc]{$8$}}%8
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 11}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(92.5,20){\circle*{8}}\put(92.5,5){\makebox(0,0)[cc]{$3$}}        %3
+\put(93.75,79.75){\circle*{8}} \put(108,80.25){\makebox(0,0)[lc]{$6$}}  %6
+\put(38.75,51.25){\circle*{8}} \put(25.5,52.25){\makebox(0,0)[rc]{$9$}}%9
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 12}} \put(74,52){\circle{40}} \end{picture}
+\\
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(129.75,20){\circle*{8}} \put(138,5){\makebox(0,0)[cc]{$4$}}      %4
+\put(56.25,79.75){\circle*{8}} \put(42.5,80.25){\makebox(0,0)[rc]{$8$}}%8
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 13}} \put(74,52){\circle{40}} \end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.2mm % = 2.85pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\put(20,20){\line(3,5){55}}
+%\end
+%\emline(75,110)(130,20)
+\put(130,20){\line(-3,5){55}}
+%\end
+\put(129.75,20){\circle*{8}} \put(138,5){\makebox(0,0)[cc]{$4$}}      %4
+\put(38.75,51.25){\circle*{8}} \put(25.5,52.25){\makebox(0,0)[rc]{$9$}}%9
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 14}} \put(74,52){\circle{40}} \end{picture}
+\end{tabular}
+\caption{\label{2009-qcho-f2vs}
+Two-valued states interpretable as global truth functions of the observables depicted
+in Figure~\ref{2009-QvPRtria}(a). Encircled numbers count the states, smaller numbers
+label the observables.
+}
+\end{figure}
+
+\section{Noncommutative chocolate cryptography which cannot be realized quantum mechanically}
+
+Quantum mechanics does not allow a ``triangular'' structure of observables similar to the one depicted in
+Fig.~\ref{2009-QvPRtria} with {\em three} instead of four atoms per block (context),
+since no geometric configuration of tripods exist in three-dimensional vector space which would satisfy this scheme.
+(For a different propositional structure not expressible by quantum mechanics, see Specker's programmatic article~\cite{specker-60} from 1960.)
+It contains six atoms $1,\ldots ,6$ in the blocks 1--2--3, 3--4--5, 5--6--1.
+In order to obtain a partition logic on which the chocolate ball model can be based, the four two-valued states
+are enumerated and depicted in Figure~\ref{2009-qcho-f2vs-2}.
+\begin{figure}
+\begin{center}
+\begin{tabular}{cccccccccc}
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength .2mm % = .569pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(130,110)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\multiput(20,20)(.1198257081,.1960784314){459}{\line(0,1){.1960784314}}
+%\end
+%\emline(75,110)(130,20)
+\multiput(75,110)(.1198257081,-.1960784314){459}{\line(0,-1){.1960784314}}
+%\end
+\put(20,20){\circle*{8}}
+\put(15,5){\makebox(0,0)[cc]{$1$}}
+%1
+\put(102,66.25){\circle*{8}}
+\put(111,73){\makebox(0,0)[lc]{$4$}}
+%5
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 1}}
+\put(74,52){\circle{40}}
+\end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength .2mm % = .569pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(138.75,110)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\multiput(20,20)(.1198257081,.1960784314){459}{\line(0,1){.1960784314}}
+%\end
+%\emline(75,110)(130,20)
+\multiput(75,110)(.1198257081,-.1960784314){459}{\line(0,-1){.1960784314}}
+%\end
+\put(130,20){\circle*{8}}
+\put(138.75,5){\makebox(0,0)[cc]{$3$}}
+%1
+\put(48.25,66.25){\circle*{8}}
+\put(30,73){\makebox(0,0)[lc]{$6$}}
+%5
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 2}}
+\put(74,52){\circle{40}}
+\end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength .2mm % = .569pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(130,120.25)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\multiput(20,20)(.1198257081,.1960784314){459}{\line(0,1){.1960784314}}
+%\end
+%\emline(75,110)(130,20)
+\multiput(75,110)(.1198257081,-.1960784314){459}{\line(0,-1){.1960784314}}
+%\end
+\put(74.25,20){\circle*{8}}
+\put(74.25,6){\makebox(0,0)[cc]{$2$}}
+%1
+\put(75.25,109.75){\circle*{8}}
+\put(75.75,123.25){\makebox(0,0)[cc]{$5$}}
+%5
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 3}}
+\put(74,52){\circle{40}}
+\end{picture}
+&
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength .2mm % = .569pt
+\allinethickness{1pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(130,110)(0,0)
+\put(20,20){\line(1,0){110}}
+%\emline(20,20)(75,110)
+\multiput(20,20)(.1198257081,.1960784314){459}{\line(0,1){.1960784314}}
+%\end
+%\emline(75,110)(130,20)
+\multiput(75,110)(.1198257081,-.1960784314){459}{\line(0,-1){.1960784314}}
+%\end
+\put(74.25,20){\circle*{8}}
+\put(73,6){\makebox(0,0)[cc]{$2$}}
+%1
+\put(47.75,66){\circle*{8}}
+\put(101.25,66){\circle*{8}}
+\put(30,73){\makebox(0,0)[lc]{$6$}}
+\put(110.25,73.5){\makebox(0,0)[lc]{$4$}}
+%5
+\put(74,52){\makebox(0,0)[cc]{\Large \bf 4}}
+\put(74,52){\circle{40}}
+\end{picture}
+\end{tabular}
+\end{center}
+\caption{ \label{2009-qcho-f2vs-2}
+Two-valued states on triangular propositional structure with three atoms per context or block.
+}
+\end{figure}
+
+The associated partition logic is given by
+$$
+\begin{array}{c}
+\{
+\{
+\{1
+\},
+\{2
+\},
+\{  3,4
+\}
+\}, \\
+\{
+\{1,4
+\},
+\{ 2
+\},
+\{ 3
+\}
+\}, \\
+\{
+\{ 1
+\},
+\{ 2,4
+\},
+\{ 3
+\}
+\}
+\}.
+\end{array}
+$$
+Every one of the three partitions of the set $\{1,\ldots ,4\}$ of ball types labeled by 1 through 4 corresponds to a color; and there are three symbols per colors.
+For the first (second/third) partition, the propositions associated with these protocols are:
+\begin{itemize}
+\item
+``when seen through light of the first (second/third) color (e.g., pink/light blue/yellow), symbol ``0'' means ball type number 1 (2/3);''
+\item
+``when seen through light of the first (second/third) color (e.g., pink/light blue/yellow), symbol ``1'' means ball type number 3 or 4 (1 or 4/2 or 4);''
+\item
+``when seen through light of the first (second/third) color (e.g., pink/light blue/yellow), symbol ``2'' means ball type number 2 (3/1).''
+\end{itemize}
+More explicitly, there are four ball types of the form
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 0}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 2}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 2}}{\color{Turquoise1} {\bf 0}}{\color{yellow} {\bf 1}}$}}\end{picture},
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 2}}{\color{yellow} {\bf 0}}$}}\end{picture}, and
+\unitlength 0.7mm \allinethickness{1pt}\begin{picture}(12,12)\put(6,2){\circle*{12}} \put(6,2){\makebox(0,0)[cc]{${\color{DeepPink1} {\bf 1}}{\color{Turquoise1} {\bf 1}}{\color{yellow} {\bf 1}}$}}\end{picture}.
+The resulting propositional structure is depicted in Fig.~\ref{2009-QvPRtria-2}.
+With respect to conceivable realizations,  cryptographic protocols -- such as the one sketched above -- based on this structure are ``stranger than quantum mechanical'' ones.
+\begin{figure}
+\begin{center}
+%TeXCAD Picture [1.pic]. Options:
+%\grade{\on}
+%\emlines{\off}
+%\epic{\off}
+%\beziermacro{\on}
+%\reduce{\on}
+%\snapping{\off}
+%\pvinsert{% Your \input, \def, etc. here}
+%\quality{8.000}
+%\graddiff{0.005}
+%\snapasp{1}
+%\zoom{4.0000}
+\unitlength 0.3mm % = 2.85pt
+\allinethickness{3pt}%\linethickness{0.8pt}
+\ifx\plotpoint\undefined\newsavebox{\plotpoint}\fi % GNUPLOT compatibility
+\begin{picture}(132.5,122)(0,0)
+\put(20,20){\color{Turquoise1}\line(1,0){110}}
+%\emline(20,20)(75,110)
+\multiput(20,20)(.03372164316,.05518087063){1631}{\color{yellow}\line(0,1){.05518087063}}
+%\end
+%\emline(75,110)(130,20)
+\multiput(75,110)(.03372164316,-.05518087063){1631}{\color{DeepPink1}\line(0,-1){.05518087063}}
+%\end
+\put(20,20){\color{Turquoise1}\circle{9}}
+\put(20,20){\color{yellow}\circle{5.5}}
+\put(20,20){\color{yellow}\circle{1.5}}
+\put(74.375,20){\color{Turquoise1}\circle{5.5}}
+\put(74.375,20){\color{Turquoise1}\circle{1.5}}
+\put(129.75,20){\color{DeepPink1}\circle{9}}
+\put(129.75,20){\color{Turquoise1}\circle{5.5}}
+\put(129.75,20){\color{Turquoise1}\circle{1.5}}
+\put(47.5,65.5){\color{yellow}\circle{5.5}}
+\put(47.5,65.5){\color{yellow}\circle{1.5}}
+\put(74.75,109.75){\color{yellow}\circle{9}}
+\put(74.75,109.75){\color{DeepPink1}\circle{5.5}}
+\put(74.75,109.75){\color{DeepPink1}\circle{1.5}}
+\put(102.5,65.5){\color{DeepPink1}\circle{5.5}}
+\put(102.5,65.5){\color{DeepPink1}\circle{1.5}}
+\put(15,5){\makebox(0,0)[cc]{$\{1\}$}}
+\put(74.375,5){\makebox(0,0)[cc]{$\{3,4\}$}}
+\put(138,5){\makebox(0,0)[cc]{$\{2\}$}}
+\put(74.75,122){\makebox(0,0)[cc]{$\{3\}$}}
+\put(112,65.8){\makebox(0,0)[lc]{$\{1,4\}$}}
+\put(34,65.8){\makebox(0,0)[rc]{$\{2,4\}$}}
+\end{picture}
+\end{center}
+\caption{ \label{2009-QvPRtria-2}
+(Color online)
+Propositional structure allowing (value definite)
+chocolate ball realizations with three atoms per context or block which does not allow a quantum analogue.
+}
+\end{figure}
+
+
+\section{Summary and discussion}
+
+
+
+It has been argued that value indefiniteness rather than complementarity could be used as a quantum resource
+against cryptanalytic attacks.
+One reason for this suggestion is that certain types of complementarity can be mimicked by quasi-classical configurations,
+whereas there cannot exist a non-contextual (quasi-)classical analogue of quantum value indefiniteness.
+
+
+The formal reason for the impossibility of (quasi-)classical models in the latter case is
+the non-existence of any two-valued measures on the propositional structure resulting from the associated observables; at least with the assumptions (e.g. non-contextuality) made.
+Constructive proofs (by contradiction) of this formal result has yielded
+Kochen-Specker type theorems~\cite{specker-60,kochen1,ZirlSchl-65,Alda,Alda2,kamber64,kamber65,mermin-93,pitowsky:218,hru-pit-2003}.
+
+By contrast, complementarity may still allow quasi-classical
+observables and propositional structures with a sufficient
+number of two-valued states to admit a homeomorphic embedding into a classical Boolean algebra~\cite{svozil-ql}.
+
+Configurations associated with merely statistical violations of Bell-type inequalities are in-between those two extremes
+because they still allow ``a few'' two-valued states
+which can be used for the coloring of certain types of chocolate balls;
+however these states are insufficient to render a faithful embedding into Boolean algebras.
+If in such cases one insists in tabularizing potential physical properties, these have to be
+``occationally'' contextual~\cite{svozil-2011-enough}.
+Thus quantitatively -- that is in terms of the necessary violations of non-contextuality -- some of the protocols suggested here,
+by explicitly using Kochen-Specker type constructions, utilize even ``more'' non-classical resources of quantum mechanics
+than the Ekert protocol based on Bell-type inequalities.
+
+Furthermore, simple schemes, such as BB84, with have conceivable (quasi-)classical models  such as the ones mentioned here, cannot be implemented
+in a way that remains secure even if one cannot trust whoever provided the hardware,
+but Ekert-type protocols based on Bell-type inequalities can.
+This implementation of device-independent quantum cryptography,
+where one needs not trust the person who built the hardware,
+already utilize a statistical form of quantum value indefiniteness.
+
+
+
+
+From a purely operational,  phenomenological point of view, all that can be measured are violations of certain statistical predictions.
+There does not exist any direct way of simultaneously testing
+this non-classical quantum behavior on individual particles~\cite{svozil-2006-uniquenessprinciple},
+even in the
+Kochen-Specker~\cite{cabello:210401,kirch-09}
+or Greenberger-Horne-Zeilinger~\cite{ghz,panbdwz} type configurations.
+Nevertheless, in other research areas, such as for instance with regard to quantum random number generators, the additional security gained by monitoring value indefiniteness or
+contextuality is often perceived as an advantage~\cite{PhysRevLett.85.3313,2008-cal-svo,svozil-2009-howto,10.1038/nature09008}.
+In this sense, the new protocol may present some advantage over the BB84, and even the Ekert protocols.
+Thus when it comes to fully  harvesting  the quantum, it might not be too unreasonable to utilize value indefiniteness,
+one of its most ``mind-boggling'' features encountered if one assumes the physical relevance of non-operational yet counterfactual observables.
+
+
+We have also mentioned more ``exotic'' protocols utilizing quasi-classical empirical propositional structures that go beyond quantum mechanics.
+These logical structures cannot be realized in Hilbert space of any dimension because there is no realization
+in the Birkhoff-von Neumann type quantum logic of, say, a set of quantum propositions
+realizing the triangle Greechie diagram depicted in Fig.~\ref{2009-QvPRtria-2}, with three atoms per block.
+Whether such configurations can be implemented remains highly speculative, because  on the one hand,
+the quasi-classical chocolate ball models considered here
+can be easily compromised by just looking at the balls without any filter.
+On the other hand, if quantum mechanics is universally valid,
+such interconnections of (blocks of three) observables simply do not exist.
+
+It is important to emphasize that the contention
+suggesting that quantum cryptography supported with value indefiniteness (contextuality)
+might have practical advantages over more conventional quantum cryptographic techniques,
+remains highly speculative.
+
+$\;$\\
+{\bf Acknowledgements}
+\\
+This research has been partly supported by FP7-PEOPLE-2010-IRSES-269151-RANPHYS.
+The author gratefully acknowledges discussions with Cristian Calude and Josef Tkadlec,
+as well as the criticism, comments and suggestions of two anonymous Referees,
+as well as of Tal Mor and Renato Renner.
+The pink--light blue--yellow coloring scheme is by Renate Bertlmann; communicated to the author by Reinhold Bertlmann.
+
+
+
+%\bibliographystyle{elsarticle-harv}
+%\bibliography{svozil}
+
+
+
+\begin{thebibliography}{73}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+
+\bibitem[{Abbott et~al.(2012)Abbott, Calude, Conder, and
+  Svozil}]{2012-incomput-proofsCJ}
+Abbott, A.~A., Calude, C.~S., Conder, J., Svozil, K., Dec 2012. Strong
+  {K}ochen-{S}pecker theorem and incomputability of quantum randomness.
+  Physical Review A 86, 062109.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevA.86.062109}
+
+\bibitem[{Abbott et~al.(2014)Abbott, Calude, and Svozil}]{PhysRevA.89.032109}
+Abbott, A.~A., Calude, C.~S., Svozil, K., Mar 2014. Value-indefinite
+  observables are almost everywhere. Physical Review A 89, 032109.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevA.89.032109}
+
+\bibitem[{Alda(1980)}]{Alda}
+Alda, V., 1980. On\/ {\rm 0-1} measures for projectors {I}. Aplikace matematiky
+  (Applications of Mathematics) 25, 373--374.
+\newline\urlprefix\url{http://dml.cz/dmlcz/103871}
+
+\bibitem[{Alda(1981)}]{Alda2}
+Alda, V., 1981. On\/ {\rm 0-1} measures for projectors {II}. Aplikace
+  matematiky (Applications of Mathematics) 26, 57--58.
+\newline\urlprefix\url{http://dml.cz/dmlcz/103894}
+
+\bibitem[{Bechmann-Pasquinucci and Peres(2000)}]{PhysRevLett.85.3313}
+Bechmann-Pasquinucci, H., Peres, A., Oct 2000. Quantum cryptography with
+  3-state systems. Physical Review Letters 85~(15), 3313--3316.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.85.3313}
+
+\bibitem[{Bell(1966)}]{bell-66}
+Bell, J.~S., 1966. On the problem of hidden variables in quantum mechanics.
+  Reviews of Modern Physics 38, 447--452.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/RevModPhys.38.447}
+
+\bibitem[{Bennett et~al.(1992{\natexlab{a}})Bennett, Bessette, Brassard,
+  Salvail, and Smolin}]{benn-92}
+Bennett, C.~H., Bessette, F., Brassard, G., Salvail, L., Smolin, J.,
+  1992{\natexlab{a}}. Experimental quantum cryptography. Journal of Cryptology
+  5, 3--28.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/BF00191318}
+
+\bibitem[{Bennett and Brassard(1984)}]{benn-84}
+Bennett, C.~H., Brassard, G., 1984. Quantum cryptography: Public key
+  distribution and coin tossing. In: Proceedings of the IEEE International
+  Conference on Computers, Systems, and Signal Processing, Bangalore, India.
+  IEEE Computer Society Press, pp. 175--179.
+\newline\urlprefix\url{http://www.research.ibm.com/people/b/bennetc/bennettc198469790513.pdf}
+
+\bibitem[{Bennett et~al.(1992{\natexlab{b}})Bennett, Brassard, and
+  Ekert}]{benn-92b}
+Bennett, C.~H., Brassard, G., Ekert, A.~K., 1992{\natexlab{b}}. Quantum
+  cryptography. Scientific American 267, 50--57.
+
+\bibitem[{Bennett et~al.(1992{\natexlab{c}})Bennett, Brassard, and
+  Mermin}]{PhysRevLett.68.557}
+Bennett, C.~H., Brassard, G., Mermin, D.~N., Feb 1992{\natexlab{c}}. Quantum
+  cryptography without {B}ell's theorem. Physical Review Letters 68~(5),
+  557--559.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.68.557}
+
+\bibitem[{Birkhoff and {von Neumann}(1936)}]{birkhoff-36}
+Birkhoff, G., {von Neumann}, J., 1936. The logic of quantum mechanics. Annals
+  of Mathematics 37~(4), 823--843.
+\newline\urlprefix\url{http://dx.doi.org/10.2307/1968621}
+
+\bibitem[{Bohr(1949)}]{bohr-1949}
+Bohr, N., 1949. Discussion with {E}instein on epistemological problems in
+  atomic physics. In: Schilpp, P.~A. (Ed.), {A}lbert {E}instein:
+  Philosopher-Scientist. The Library of Living Philosophers, Evanston, Ill.,
+  pp. 200--241.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/S1876-0503(08)70379-7}
+
+\bibitem[{Born(1926)}]{born-26-1}
+Born, M., 1926. Zur {Q}uantenmechanik der {S}to{\ss}vorg{\"{a}}nge. Zeitschrift
+  f{\"{u}}r Physik 37, 863--867.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/BF01397477}
+
+\bibitem[{Cabello(2008)}]{cabello:210401}
+Cabello, A., 2008. Experimentally testable state-independent quantum
+  contextuality. Physical Review Letters 101~(21), 210401.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.101.210401}
+
+\bibitem[{Cabello et~al.(1996)Cabello, Estebaranz, and
+  Garc{\'{i}}a-Alcaine}]{cabello-96}
+Cabello, A., Estebaranz, J.~M., Garc{\'{i}}a-Alcaine, G., 1996.
+  {B}ell-{K}ochen-{S}pecker theorem: A proof with 18 vectors. Physics Letters A
+  212~(4), 183--187.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/0375-9601(96)00134-X}
+
+\bibitem[{Calude and Chi{\c{t}}escu(1989)}]{MR997340}
+Calude, C., Chi{\c{t}}escu, I., 1989. Qualitative properties of {P}.\
+  {M}artin-{L}\"of random sequences. Unione Matematica Italiana. Bollettino. B.
+  Serie VII 3~(1), 229--240.
+
+\bibitem[{Calude and Svozil(2008)}]{2008-cal-svo}
+Calude, C.~S., Svozil, K., December 2008. Quantum randomness and value
+  indefiniteness. Advanced Science Letters 1~(2), 165--168.
+\newline\urlprefix\url{http://www.ingentaconnect.com/content/asp/asl/2008/00000001/00000002/art00004}
+
+\bibitem[{Clauser et~al.(1969)Clauser, Horne, Shimony, and Holt}]{chsh}
+Clauser, J.~F., Horne, M.~A., Shimony, A., Holt, R.~A., Oct 1969. Proposed
+  experiment to test local hidden-variable theories. Physical Review Letters
+  23~(15), 880--884.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.23.880}
+
+\bibitem[{Dichtl(2007)}]{dichtl-2007}
+Dichtl, M., 2007. Bad and good ways of post-processing biased physical random
+  numbers. In: Biryukov, A. (Ed.), Fast Software Encryption. Lecture Notes in
+  Computer Science Volume 4593/2007. Springer, Berlin and Heidelberg, pp.
+  137--152, 14th International Workshop, FSE 2007, Luxembourg, Luxembourg,
+  March 26-28, 2007, Revised Selected Papers.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/978-3-540-74619-5\_9}
+
+\bibitem[{Dvure{\v{c}}enskij et~al.(1995)Dvure{\v{c}}enskij, Pulmannov{\'{a}},
+  and Svozil}]{dvur-pul-svo}
+Dvure{\v{c}}enskij, A., Pulmannov{\'{a}}, S., Svozil, K., 1995. Partition
+  logics, orthoalgebras and automata. Helvetica Physica Acta 68, 407--428.
+
+\bibitem[{Einstein et~al.(1935)Einstein, Podolsky, and Rosen}]{epr}
+Einstein, A., Podolsky, B., Rosen, N., May 1935. Can quantum-mechanical
+  description of physical reality be considered complete? Physical Review
+  47~(10), 777--780.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRev.47.777}
+
+\bibitem[{Ekert(1991)}]{ekert91}
+Ekert, A.~K., Aug 1991. Quantum cryptography based on {B}ell's theorem.
+  Physical Review Letters 67, 661--663.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.67.661}
+
+\bibitem[{Elias(1972)}]{elias-72}
+Elias, P., 1972. The efficient construction of an unbiased random sequence.
+  Ann. Math. Statist. 43~(3), 865--870.
+\newline\urlprefix\url{http://dx.doi.org/10.1214/aoms/1177692552}
+
+\bibitem[{Gisin et~al.(2002)Gisin, Ribordy, Tittel, and Zbinden}]{gisin-qc-rmp}
+Gisin, N., Ribordy, G., Tittel, W., Zbinden, H., 2002. Quantum cryptography.
+  Review of Modern Physics 74, 145--195.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/RevModPhys.74.145}
+
+\bibitem[{Greechie(1971)}]{greechie:71}
+Greechie, J.~R., 1971. Orthomodular lattices admitting no states. Journal of
+  Combinatorial Theory 10, 119--132.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/0097-3165(71)90015-X}
+
+\bibitem[{Greenberger et~al.(1989)Greenberger, Horne, and Zeilinger}]{ghz}
+Greenberger, D.~M., Horne, M.~A., Zeilinger, A., 1989. Going beyond {B}ell's
+  theorem. In: Kafatos, M. (Ed.), Bell's Theorem, Quantum Theory, and
+  Conceptions of the {U}niverse. Vol.~37 of Fundamental Theories of Physics.
+  Springer (Kluwer), Dordrecht, pp. 69--72.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/978-94-017-0849-4\_10}
+
+\bibitem[{Greenberger et~al.(1993)Greenberger, Horne, and
+  Zeilinger}]{green-horn-zei}
+Greenberger, D.~M., Horne, M.~A., Zeilinger, A., August 1993. Multiparticle
+  interferometry and the superposition principle. Physics Today 46, 22--29.
+\newline\urlprefix\url{http://dx.doi.org/10.1063/1.881360}
+
+\bibitem[{Hrushovski and Pitowsky(2004)}]{hru-pit-2003}
+Hrushovski, E., Pitowsky, I., 2004. Generalizations of {K}ochen and {S}pecker's
+  theorem and the effectiveness of {G}leason's theorem. Studies in History and
+  Philosophy of Science Part B: Studies in History and Philosophy of Modern
+  Physics 35~(2), 177­194.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/j.shpsb.2003.10.002}
+
+\bibitem[{Jennewein et~al.(2000)Jennewein, Achleitner, Weihs, Weinfurter, and
+  Zeilinger}]{zeilinger:qct}
+Jennewein, T., Achleitner, U., Weihs, G., Weinfurter, H., Zeilinger, A., 2000.
+  A fast and compact quantum random number generator. Review of Scientific
+  Instruments 71, 1675--1680.
+\newline\urlprefix\url{http://dx.doi.org/10.1063/1.1150518}
+
+\bibitem[{Kalmbach(1981)}]{kalmbach-81}
+Kalmbach, G., 1981. Omologic as a {H}ilbert type calculus. In: Beltrametti, E.,
+  van Fraassen, B.~C. (Eds.), Current Issues in Quantum Logic. Plenum Press,
+  New York, p. 333.
+
+\bibitem[{Kamber(1964)}]{kamber64}
+Kamber, F., 1964. Die {S}truktur des {A}ussagenkalk{\"{u}}ls in einer
+  physikalischen {T}heorie. {N}achrichten der {A}kademie der {W}issenschaften
+  in {G}{\"{o}}ttingen, {M}athematisch-{P}hysikalische {K}lasse 10, 103--124.
+
+\bibitem[{Kamber(1965)}]{kamber65}
+Kamber, F., 1965. Zweiwertige {W}ahrscheinlichkeitsfunktionen auf
+  orthokomplement{\"{a}}ren {V}erb{\"{a}}nden. Mathematische Annalen 158~(3),
+  158--196.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/BF01359975}
+
+\bibitem[{Kirchmair et~al.(2009)Kirchmair, Z{\"{a}}hringer, Gerritsma,
+  Kleinmann, G{\"{u}}hne, Cabello, Blatt, and Roos}]{kirch-09}
+Kirchmair, G., Z{\"{a}}hringer, F., Gerritsma, R., Kleinmann, M., G{\"{u}}hne,
+  O., Cabello, A., Blatt, R., Roos, C.~F., 2009. State-independent experimental
+  test of quantum contextuality. Nature 460, 494--497.
+\newline\urlprefix\url{http://dx.doi.org/10.1038/nature08172}
+
+\bibitem[{Kochen and Specker(1967)}]{kochen1}
+Kochen, S., Specker, E.~P., 1967. The problem of hidden variables in quantum
+  mechanics. Journal of Mathematics and Mechanics (now Indiana University
+  Mathematics Journal) 17~(1), 59--87.
+\newline\urlprefix\url{http://dx.doi.org/10.1512/iumj.1968.17.17004}
+
+\bibitem[{Lacharme(2008)}]{Lacharme-2008}
+Lacharme, P., 2008. Post-processing functions for a biased physical random
+  number generator. In: Nyberg, K. (Ed.), Fast Software Encryption. Lecture
+  Notes in Computer Science Volume 5086/2008. Springer, Berlin and Heidelberg,
+  pp. 334--342, 15th International Workshop, FSE 2008, Lausanne, Switzerland,
+  February 10-13, 2008, Revised Selected Papers.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/978-3-540-71039-4\_21}
+
+\bibitem[{Landauer(1991)}]{landauer}
+Landauer, R., May 1991. Information is physical. Physics Today 44~(5), 23--29.
+\newline\urlprefix\url{http://dx.doi.org/10.1063/1.881299}
+
+\bibitem[{Mermin(1993)}]{mermin-93}
+Mermin, D.~N., 1993. Hidden variables and the two theorems of {J}ohn {B}ell.
+  Reviews of Modern Physics 65, 803--815.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/RevModPhys.65.803}
+
+\bibitem[{Mermin(2002-2008)}]{mermin-04}
+Mermin, D.~N., 2002-2008. Lecture notes on quantum computation.
+\newline\urlprefix\url{http://people.ccmr.cornell.edu/~mermin/qcomp/CS483.html}
+
+\bibitem[{Mermin(2007)}]{mermin-07}
+Mermin, D.~N., 2007. Quantum Computer Science. Cambridge University Press,
+  Cambridge.
+\newline\urlprefix\url{http://people.ccmr.cornell.edu/~mermin/qcomp/CS483.html}
+
+\bibitem[{Meyer(1999)}]{meyer:99}
+Meyer, D.~A., 1999. Finite precision measurement nullifies the
+  {K}ochen-{S}pecker theorem. Physical Review Letters 83~(19), 3751--3754.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.83.3751}
+
+\bibitem[{Moore(1956)}]{e-f-moore}
+Moore, E.~F., 1956. Gedanken-experiments on sequential machines. In: Shannon,
+  C.~E., McCarthy, J. (Eds.), Automata Studies. Princeton University Press,
+  Princeton, NJ, pp. 129--153.
+
+\bibitem[{Murnaghan(1962)}]{murnaghan}
+Murnaghan, F.~D., 1962. The Unitary and Rotation Groups. Spartan Books,
+  Washington, D.C.
+
+\bibitem[{Navara and Rogalewicz(1991)}]{nav:91}
+Navara, M., Rogalewicz, V., 1991. The pasting constructions for orthomodular
+  posets. Mathematische Nachrichten 154, 157--168.
+\newline\urlprefix\url{http://dx.doi.org/10.1002/mana.19911540113}
+
+\bibitem[{Nielsen and Chuang(2000)}]{nielsen-book}
+Nielsen, M.~A., Chuang, I.~L., 2000. Quantum Computation and Quantum
+  Information. Cambridge University Press, Cambridge.
+
+\bibitem[{Pan et~al.(2000)Pan, Bouwmeester, Daniell, Weinfurter, and
+  Zeilinger}]{panbdwz}
+Pan, J.-W., Bouwmeester, D., Daniell, M., Weinfurter, H., Zeilinger, A., 2000.
+  Experimental test of quantum nonlocality in three-photon
+  {G}reenberger-{H}orne-{Z}eilinger entanglement. Nature 403, 515--519.
+\newline\urlprefix\url{http://dx.doi.org/10.1038/35000514}
+
+\bibitem[{Peres(1978)}]{peres222}
+Peres, A., 1978. Unperformed experiments have no results. American Journal of
+  Physics 46, 745--747.
+\newline\urlprefix\url{http://dx.doi.org/10.1119/1.11393}
+
+\bibitem[{Peres(1992)}]{PeresY-1992}
+Peres, Y., 1992. Iterating {V}on {N}eumann's procedure for extracting random
+  bits. The Annals of Statistics 20~(1), 590--597.
+\newline\urlprefix\url{http://www.jstor.org/stable/2242181}
+
+\bibitem[{Pironio et~al.(2010)Pironio, Ac{\'i}n, Massar, {Boyer de la Giroday},
+  Matsukevich, Maunz, Olmschenk, Hayes, Luo, Manning, and
+  Monroe}]{10.1038/nature09008}
+Pironio, S., Ac{\'i}n, A., Massar, S., {Boyer de la Giroday}, A., Matsukevich,
+  D.~N., Maunz, P., Olmschenk, S., Hayes, D., Luo, L., Manning, T.~A., Monroe,
+  C., 2010. Random numbers certified by {B}ell's theorem. Nature 464,
+  1021--1024.
+\newline\urlprefix\url{http://dx.doi.org/10.1038/nature09008}
+
+\bibitem[{Pitowsky(1998)}]{pitowsky:218}
+Pitowsky, I., 1998. Infinite and finite {G}leason's theorems and the logic of
+  indeterminacy. Journal of Mathematical Physics 39~(1), 218--228.
+\newline\urlprefix\url{http://dx.doi.org/10.1063/1.532334}
+
+\bibitem[{Pt{\'{a}}k and Pulmannov{\'{a}}(1991)}]{pulmannova-91}
+Pt{\'{a}}k, P., Pulmannov{\'{a}}, S., 1991. Orthomodular Structures as Quantum
+  Logics. Kluwer Academic Publishers, Dordrecht.
+
+\bibitem[{Rarity et~al.(1994)Rarity, Owens, and Tapster}]{rarity-94}
+Rarity, J.~G., Owens, M. P.~C., Tapster, P.~R., 1994. Quantum random-number
+  generation and key sharing. Journal of Modern Optics 41, 2435--2444.
+\newline\urlprefix\url{http://dx.doi.org/10.1080/09500349414552281}
+
+\bibitem[{Reck et~al.(1994)Reck, Zeilinger, Bernstein, and Bertani}]{rzbb}
+Reck, M., Zeilinger, A., Bernstein, H.~J., Bertani, P., 1994. Experimental
+  realization of any discrete unitary operator. Physical Review Letters 73,
+  58--61.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevLett.73.58}
+
+\bibitem[{Redhead(1990)}]{redhead}
+Redhead, M., 1990. Incompleteness, Nonlocality, and Realism: A Prolegomenon to
+  the Philosophy of Quantum Mechanics. Clarendon Press, Oxford.
+
+\bibitem[{Samuelson(1968)}]{Samuelson-1968}
+Samuelson, P.~A., 1968. Constructing an unbiased random sequence. Journal of
+  the American Statistical Association 63~(324), 1526--1527.
+\newline\urlprefix\url{http://www.jstor.org/stable/2285902}
+
+\bibitem[{Scarani et~al.(2009)Scarani, Bechmann-Pasquinucci, Cerf, Du\v{s}ek,
+  L{\"u}tkenhaus, and Peev}]{arXiv:0802.4155}
+Scarani, V., Bechmann-Pasquinucci, H., Cerf, N.~J., Du\v{s}ek, M.,
+  L{\"u}tkenhaus, N., Peev, M., Sep 2009. The security of practical quantum key
+  distribution. Reviews of Modern Physics 81~(3), 1301--1350.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/RevModPhys.81.1301}
+
+\bibitem[{Specker(1960)}]{specker-60}
+Specker, E., 1960. {D}ie {L}ogik nicht gleichzeitig entscheidbarer {A}ussagen.
+  Dialectica 14~(2-3), 239--246.
+\newline\urlprefix\url{http://dx.doi.org/10.1111/j.1746-8361.1960.tb00422.x}
+
+\bibitem[{Stefanov et~al.(2000)Stefanov, Gisin, Guinnard, Guinnard, and
+  Zbinden}]{stefanov-2000}
+Stefanov, A., Gisin, N., Guinnard, O., Guinnard, L., Zbinden, H., 2000. Optical
+  quantum random number generator. Journal of Modern Optics 47, 595--598.
+\newline\urlprefix\url{http://dx.doi.org/10.1080/095003400147908}
+
+\bibitem[{Svozil(1990)}]{svozil-qct}
+Svozil, K., 1990. The quantum coin toss---testing microphysical undecidability.
+  Physics Letters A 143, 433--437.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/0375-9601(90)90408-G}
+
+\bibitem[{Svozil(1998)}]{svozil-ql}
+Svozil, K., 1998. Quantum Logic. Springer, Singapore.
+
+\bibitem[{Svozil(2005{\natexlab{a}})}]{svozil-2001-eua}
+Svozil, K., 2005{\natexlab{a}}. Logical equivalence between generalized urn
+  models and finite automata. International Journal of Theoretical Physics 44,
+  745--754.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/s10773-005-7052-0}
+
+\bibitem[{Svozil(2005{\natexlab{b}})}]{svozil-2004-analog}
+Svozil, K., 2005{\natexlab{b}}. Noncontextuality in multipartite entanglement.
+  J. Phys. A: Math. Gen. 38, 5781--5798.
+\newline\urlprefix\url{http://dx.doi.org/10.1088/0305-4470/38/25/013}
+
+\bibitem[{Svozil(2006{\natexlab{a}})}]{svozil-2006-uniquenessprinciple}
+Svozil, K., 2006{\natexlab{a}}. Are simultaneous {B}ell measurements possible?
+  New Journal of Physics 8, 39, 1--8.
+\newline\urlprefix\url{http://dx.doi.org/10.1088/1367-2630/8/3/039}
+
+\bibitem[{Svozil(2006{\natexlab{b}})}]{svozil-2005-ln1e}
+Svozil, K., 2006{\natexlab{b}}. Staging quantum cryptography with chocolate
+  balls. American Journal of Physics 74~(9), 800--803.
+\newline\urlprefix\url{http://dx.doi.org/10.1119/1.2205879}
+
+\bibitem[{Svozil(2009{\natexlab{a}})}]{svozil-2008-ql}
+Svozil, K., 2009{\natexlab{a}}. Contexts in quantum, classical and partition
+  logic. In: Engesser, K., Gabbay, D.~M., Lehmann, D. (Eds.), Handbook of
+  Quantum Logic and Quantum Structures. Elsevier, Amsterdam, pp. 551--586.
+\newline\urlprefix\url{http://dx.doi.org/10.1016/B978-0-444-52869-8.50015-3}
+
+\bibitem[{Svozil(2009{\natexlab{b}})}]{svozil-2009-howto}
+Svozil, K., 2009{\natexlab{b}}. Three criteria for quantum random-number
+  generators based on beam splitters. Physical Review A 79~(5), 054306.
+\newline\urlprefix\url{http://dx.doi.org/10.1103/PhysRevA.79.054306}
+
+\bibitem[{Svozil(2012)}]{svozil-2011-enough}
+Svozil, K., 2012. How much contextuality? Natural Computing 11~(2), 261--265.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/s11047-012-9318-9}
+
+\bibitem[{Tkadlec(2009)}]{tkadlec-priv}
+Tkadlec, J., 2009. Private communication.
+
+\bibitem[{{von Neumann}(1932)}]{v-neumann-49}
+{von Neumann}, J., 1932. {M}athematische {G}rundlagen der {Q}uantenmechanik.
+  Springer, Berlin, {E}nglish translation in Ref.~\cite{v-neumann-55}.
+
+\bibitem[{{von Neumann}(1951)}]{von-neumann1}
+{von Neumann}, J., 1951. Various techniques used in connection with random
+  digits. National Bureau of Standards Applied Math Series 12, 36--38,
+  reprinted in {\sl John {von Neumann}, Collected Works, (Vol. V)}, A. H.
+  Traub, editor, MacMillan, New York, 1963, p. 768--770.
+
+\bibitem[{{von Neumann}(1955)}]{v-neumann-55}
+{von Neumann}, J., 1955. Mathematical Foundations of Quantum Mechanics.
+  Princeton University Press, Princeton, NJ.
+
+\bibitem[{Wiesner(1983)}]{wiesner}
+Wiesner, S., 1983. Conjugate coding. SIGACT News 15~(1), 78--88.
+\newline\urlprefix\url{http://dx.doi.org/10.1145/1008908.1008920}
+
+\bibitem[{Wright(1990)}]{wright}
+Wright, R., 1990. Generalized urn models. Foundations of Physics 20~(7),
+  881--903.
+\newline\urlprefix\url{http://dx.doi.org/10.1007/BF01889696}
+
+\bibitem[{Zierler and Schlessinger(1965)}]{ZirlSchl-65}
+Zierler, N., Schlessinger, M., 1965. Boolean embeddings of orthomodular sets
+  and quantum logic. Duke Mathematical Journal 32, 251--262.
+
+\end{thebibliography}
+
+\end{document}
+
+
+According to questions raised by the first Referee, the term ``protected'' has been explained in more details by writing
+
+"This might be perceived ambivalently as and advantage -- by being based upon only these two features --
+yet at the same time not utilizing the full mind boggling capacities of quantum mechanics, since they are not ``protected''
+(in terms of no-go theorems for local non-contextual non-exotic~\cite{pitowsky-82,meyer:99}
+hidden variable models not allowing) by Bell- or Kochen-Specker type value indefiniteness."
+
+
+According to questions raised by the first Referee, the short discussion of the Ekert protocol with regards to chocolate balls has been revised to
+
+"As a result, if the Ekert protocol would be executed with chocolate balls instead of suitable quanta,
+the data would not violate the classical bounds predicted by quantum theory, thereby dissatisfying essential criteria thereof.
+In this respect the Ekert protocol fails for chocolate balls, thereby indicating potential cryptanalytic risks."
+
+According to criticism raised by the second Referee on the different natures of quantum and quasi-classical complementarity -- I completely agree with these considerations -- I have added a paragraph stating
+
+"When comparing BB84-type cryptography with quanta and chocolate balls, one has to keep in mind
+that the similarities with respect to complementarity appear somewhat superficial with regards to the state of the objects communicated  {\em after} any measurement.
+Because even if an eavesdropper, say Eve, sticks to the rules of the game by putting on colored eyeglasses,
+any of her measurements would not affect or change the type of ball, and thus would not cause any {\em disturbance}  of the objects communicated,
+thereby not causing any measurement errors between Alice and Bob.
+This is different from quantum complementarity and quantum cryptography protected by it,
+for if Eve would choose a different observable than Bob she would inevitably alter the state transferred.
+This amounts to a disturbance which makes it possible for Alice and Bob to recognize Eve's cryptanalytic attack through occasional measurement errors;
+at least if Eve is incapable of controlling the classical channel between the two.
+Of course one could alleviate this deficiency of the quasi-classical analogue by requiring Eve not to communicate the original object received from Bob,
+but by redrawing from the urn and
+sending Alice another object consistent with Eve's measurement."
+
+
+According to criticism raised by the second Referee I have eliminated the statement "as complementarity may not be a sufficient resource for the type of ``objective'' security envisaged by quantum cryptography" and substituted it by a more formal argument in the concluding section. I have also stressed the potential advantages of the new protocol over others.
+
+In the concluding section I have also mentioned that no proof for unconditional security of the new protocol can be given, as anticipated and expressed by the second Referee.
+
+According to a question of the second Referee, I have added a small note on why I prefer the term "value indefiniteness" over the term "contextuality": it is basically because the former term is more general, whereas the latter one implies a particular quasi-realist way of "solution" or "interpretation" of the Bell- and Kochen-Specker type theorems.
+
+According to the suggestion of the second Referee, I have added value indefiniteness and contextuality  as keywords.
+
+According to the suggestion of the second Referee, I have eliminated several typos or grammar mistakes (e.g. an"d" advantage, bas"i"s, G"l"eason, theorem"s" ...).
+
+According to the suggestion of the second Referee, instead of "(they share the trivial origin)" it is noted "(they do not share any vector)."
+
+According to the suggestion of the second Referee, I have explicitly written down "Boolean algebra with two (four) atoms" instead of "2^2" ("2^4").
+
+According to the suggestion of the second Referee, I have added references and shortly explained pastings of subalgebras, partition logics, and added references to orthocomplemented propositional structure as well as Greechie diagram.
+
+According to the suggestion of the second Referee, I have written "b_2=b_1'" (prime) instead of "b_2=b_1."
+
+According to the suggestion of the second Referee, I have corrected the grammar to "or in both of them  (i.e., in $L_A \cap L_B$)."
+
+According to the suggestion of the second Referee, I have explained "dispersionless."
+
+According to the suggestion of the second Referee, I have eliminated the quotation marks from "at its most mind-boggling mode."
+
+Motivated by the criticism of the second Referee, I have rewritten the statement as follows:
+
+"most of the present random number generators using beam splitters are protected by the randomness
+of single outcomes as well as by complementarity, but not by certified value indefiniteness" and cited the paper mentioned by the Referee (among others).
+
+According to the suggestion of the second Referee, I have changed "Alas" to "Fortunately."
+
+According to the suggestion of the second Referee, I have changed the wording to
+
+"... the question of whether it is {\em sufficient} for this purpose to compose a multiport beam splitter
+by a succession of phase shifters and beam splitters
+with two output ports~\cite{rzbb,svozil-2004-analog},
+based on elementary decompositions of the unitary group~\cite{murnaghan} remains to be answered."
+
+According to the suggestion of the second Referee, I have corrected a passage to
+
+"Suppose one would nevertheless attempt to ``mimic'' an Ekert type protocol
+proposed by Bennett, Brassard and Mermin (BBM92)~\cite{PhysRevLett.68.557} ..."
+
+According to the suggestion of the second Referee, I have corrected the label discrepancies between figures 2 and 3.
+
+According to the suggestion of the second Referee, I have now written in figure caption of figure 2.
+
+"vectors whose linear span can be identified with propositions~\cite{birkhoff-36}"
+
+According to the suggestion of the second Referee, I have substituted "Indeed" for "For"
+
+According to the suggestion of the second Referee, I have changed the text to
+
+"Bob independently from Alice, picks some (not necessarily different from Alice's) basis at random"
+
+According to the suggestion of the second Referee, I have eliminated the term "remaining" because this may give rise to confusions.
+
+According to the suggestion of the second Referee, I have changed "that is does" to "that it does."
+
+According to the suggestion of the second Referee, I have eliminated the bracket containing "partner" because this may give rise to confusions.
+
+Following the criticism of the second Referee, I have now written "For the sake of an explicit demonstration, a simplified version of the protocol, ..."
+
+Finally, as mentioned earlier, I have completely rewritten the summary section with  particular emphasis on the criticism put forward by the second Referee.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Dear Tal and Renato
+
+thank you very much again for taking up the burden and pain to go over the manuscript and suggest many important improvements, clarifications & corrections.
+
+Please find below the changes that you have suggested, together with my actions:
+
+==================
+
+
+A. The new title seems to focus on chocolate-cryptography, while your main goal seems to advocate here the quantum cryptography that has no chocolate-cryptography version. Thus the new title seems less relevant.  Maybe "chocolate versus non-chocolate quantum cryptography" is better? Maybe it is even better to clearly mention non-contextuality in the title, since the notion of chocolate balls is rather non-informative?
+
+The new title is "Non-contextual chocolate ball versus value indefinite quantum cryptography"
+
+B. Why do you avoid mentionning the term local hidden variables in the abstract?  This could be extremely useful in clarifying what you mean when you refer to "chocolate balls".  After all, if we properly understood, the point of the chocolate balls is the similarly of BB84 to a local hidden variable model - if Eve could study the hidden variables (e.g., by using two types of glasses in your chocolate model, or by knowing some beyond-quantum physics if a local-hidden-variables model is substitute as a replacement of BB84) then she could crack the cryptosystem.
+
+The following sentence (refering to local hidden variable models) has been modified in the abstract:
+"Some quantum cryptographic protocols can be implemented with specially prepared chocolate balls
+representing local hidden variables, others protected by value indefiniteness cannot."
+
+C. It might be vital to add in the end of the abstract:
+It is important to clarify that our belief that
+quantum cryptography supported with value indefiniteness (non-contextuality) might have practical advantages over the more conventional (and simpler) quantum cryptography (such as BB84), is currently still highly speculative.
+
+The following sentence has been added at the very end of the abstract:
+"Whether quantum cryptography supported by value indefiniteness (contextuality) has practical advantages over more conventional quantum cryptographic protocols remains highly speculative."
+
+The following sentence has been added at the very end of the summary:
+"It is important to emphasize that the contention
+suggesting that quantum cryptography supported with value indefiniteness (contextuality)
+might have practical advantages over more conventional quantum cryptographic techniques,
+remains highly speculative."
+
+D. Please replace the word "should" by the word "could" in the first line of Section V (Summary and Discussion).
+
+Done
+
+E. You missed a big hint of Referee 2, who said that your best bet for a potential advantage over BB84 is for implementing device-independent quantum cryptography, where you do not need to trust the person who built the devices for you.  This must be added and emphasized in the Summary and Discussion section. Maybe even in the abstract.
+
+The following paragraph has been added to the summary section V:
+"Furthermore, simple schemes, such as BB84, with have conceivable (quasi-)classical models  such as the ones mentioned here, cannot be implemented
+in a way that remains secure even if one cannot trust whoever provided the hardware,
+but Ekert-type protocols based on Bell-type inequalities can.
+This implementation of device-independent quantum cryptography,
+where one needs not trust the person who built the hardware,
+already utilize a statistical form of quantum value indefiniteness."
+
+F. You say:
+"Because if one accepts quantum complementarity as
+an axiom, there is no necessity for any further 'improvement' of security against cryptanalytic attacks. To this criticism I respond with a performance of the original BB84 protocols with chocolate balls..."
+Well - BB84 is proven unconditionally secure not based on quantum complementarity, but based on the standard axioms of quantum physics (a state being a vector in Hilbert space, unitarity, etc).  So that paragraph in the Summary and Discussion makes no sense to us.
+In other words - complementarity by itself might not generate a self-consistent theorem, and security of BB84 relies on a complex variant of the no-cloning theorem (namely, relies on the unitarity of quantum physics).
+
+You are right. I have therefore dropped the entire paragraph.
+
+G. You said that some chocolate-ball cryptography is beyond what can be done quantumly. This is not sufficiently clear.
+
+I have added the following paragraph at the end of the Summary section:
+"We have also mentioned more ``exotic'' protocols utilizing quasi-classical empirical propositional structures that go beyond quantum mechanics.
+These logical structures cannot be realized in Hilbert space of any dimension because there is no realization
+in the Birkhoff-von Neumann type quantum logic of, say, a set of quantum propositions
+realizing the triangle Greechie diagram depicted in Fig.~\ref{2009-QvPRtria-2}, with three atoms per block.
+Whether such configurations can be implemented remains highly speculative, because  on the one hand,
+the quasi-classical chocolate ball models considered here
+can be easily compromised by just looking at the balls without any filter.
+On the other hand, if quantum mechanics is universally valid,
+such interconnections of (blocks of three) observables simply do not exist."
+
+===
+
+
+Some of your replies to the referees (that appear in the text of the paper) seems logically-complicated and we ask you to rephrase them in simpler terms.
+
+
+1.
+
+
+"This might be perceived ambivalently as an advantage -- by being based upon only these two features --
+yet at the same time not utilizing the full mind boggling capacities of quantum mechanics, since they are not ``protected''
+(in terms of no-go theorems for local non-contextual non-exotic~\cite{pitowsky-82,meyer:99}
+hidden variable models not allowing) by Bell- or Kochen-Specker type value indefiniteness."
+Maybe you can instead say: "It may well be that a different QKD scheme that will use stronger/additional power provided by quantum theory, such as non-contextuality, will provide an advantage over BB84 that is not based upon non-contextuality."
+
+I have rewritten the paragraph by substituting the text you mentioned wit:
+"It may well be that a different quantum cryptographic scheme that uses stronger or additional powers provided by quantum theory,
+such as value indefiniteness (or, by another term, contextuality) manifesting itself
+in Bell- or Kochen-Specker type theorems~\cite{specker-60,kochen1,ZirlSchl-65,Alda,Alda2,kamber64,kamber65,mermin-93,pitowsky:218,hru-pit-2003},
+will provide an advantage over these former protocols."
+
+
+2.
+"As a result, if the Ekert protocol would be executed with chocolate balls instead of suitable quanta,
+the data would not violate the classical bounds predicted by quantum theory, thereby dissatisfying essential criteria thereof.
+In this respect the Ekert protocol fails for chocolate balls, thereby indicating potential cryptanalytic risks."
+
+We fail to understand the sentence, so we cannot suggest how to rewrite it. Maybe you can add a short appendix where Ekert protocol (and Bennett-Brassard-Mermin, BBM) use chocolate balls?  We can imagine that it might be easier to implement BBM-like cryptography using chocolate balls then to implement Ekert-like protocol.
+
+I have revised this paragraph to:
+"Because if the Ekert protocol would be executed with chocolate balls instead of suitable quanta,
+the data would not violate the classical bounds predicted by quantum theory.
+This is due to the fact that chocolate ball models are local hidden variable models.
+Thereby, the Ekert protocol would clearly indicate a conceivable cryptanalytic attack --
+for instance,
+by looking simultaneously at all the symbols in all the different colors painted on the chocolate balls."
+
+3.
+You say in the answers to referees:
+According to criticism raised by the second Referee I have eliminated the statement "as complementarity may not be a sufficient resource for the type of ``objective'' security envisaged by quantum cryptography" and substituted it by a more formal argument in the concluding section. I have also stressed the potential advantages of the new protocol over others.
+
+The rephrased sentence is not clear and probably not correct. See one of the comments above.
+
+I believe that, because I have revised the corresponding paragraphs in the summary section, this issue is now setteled.
+
+4.
+In the concluding section I have also mentioned that no proof for unconditional security of the new protocol can be given, as anticipated and expressed by the second Referee.
+
+
+Referee 2 did not say that unconditional proof cannot be given. The referee only said, as far as we understood, that such a proof is not given in the current paper and is left for future research (while BB84 is proven secure).
+
+
+I agree, but I have now dropped the entire paragraph because it has been incomprehensible. So, yes, I agree.
+========
+
+
+
