@@ -167,7 +167,7 @@ When the base model continues its training on this new dataset, it rapidly adapt
 
 The final stage of training utilizes reinforcement learning (RL) to enhance the model's reasoning and problem-solving capabilities beyond what is possible through simple imitation of static examples. This stage is analogous to providing a student with practice problems rather than just worked solutions. It allows the model to discover for itself the most effective strategies for arriving at a correct answer.
 
-\subsection{RL in Verifiable Domains}
+%\subsection{RL in Verifiable Domains}
 
 In domains where a solution's correctness can be automatically verified (e.g., mathematics or coding, where there is a single correct answer or a unit test to pass), the RL process is straightforward.
 \begin{enumerate}
@@ -186,7 +186,9 @@ A fundamental challenge in natural language is \textit{polysemy}: the phenomenon
 
 \subsection{Dynamic Contextualization via Self-Attention}
 
-Modern LLMs built on the Transformer architecture resolve polysemy by generating dynamic, context-aware vector embeddings. This contrasts sharply with older models (e.g., Word2Vec) which assigned a single, static vector to each word, effectively averaging all its possible meanings into one representation.
+Modern LLMs built on the Transformer architecture resolve polysemy by generating dynamic,
+context-aware vector embeddings.
+This contrasts sharply with older models (e.g., Word2Vec) which assigned a single, static vector to each token or word, effectively averaging all its possible meanings into one representation.
 
 The process in a Transformer can be conceptualized in two stages, as detailed in Appendix \ref{app:embedding_centric}:
 \begin{enumerate}
@@ -335,10 +337,10 @@ and its capacity for reasoning and generation is intrinsically linked to its own
 
 A formal system, in the tradition of Hilbert, G\"odel, and Turing, is defined by a set of axioms and a set of inference rules for deriving theorems.
 We can map the components of an LLM to this structure:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Axioms:} The model's architecture (the specific configuration of Transformer blocks, attention heads, etc.) and its trillions of trained parameters (weights and biases) serve as its axiomatic foundation. This foundation is not simple and clean like Euclid's postulates but is a dense, high-dimensional representation of the statistical patterns learned from its training data.
     \item \textbf{Inference Rules:} The forward pass of the network---the deterministic sequence of matrix multiplications and nonlinear activations that transforms an input token sequence into an output probability distribution---acts as its rule of inference.
-\end{itemize}
+\end{enumerate}
 
 From this perspective, generating a response or a proof is equivalent to deriving a theorem.
 The set of all possible outputs the model can generate constitutes the set of all theorems
@@ -476,11 +478,11 @@ Both QM and LLMs rely on decompositions into approximately orthogonal components
 \subsection{Analogies, Disanalogies, and Conclusion}
 
 The analogy is most compelling where predictions depend on inner products and context-specific bases, but it breaks down where physics imposes constraints absent in classical neural networks. Key disanalogies include:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Phases and Interference:} Transformers lack the complex amplitudes of QM necessary for quantum interference.
     \item \textbf{Unitarity versus  Dissipation:} Transformer updates are not norm-preserving due to non-linearities and normalization, unlike unitary evolution.
     \item \textbf{No-Cloning vs.\ Copying:} LLMs can freely duplicate representations, in contrast to the no-cloning theorem of QM.
-\end{itemize}
+\end{enumerate}
 These differences are critical for determining whether an internal observer would have a quantum-like phenomenology, but they do not preclude the computational existence of such observers in principle.
 
 In summary, QM and LLMs share significant mathematical ground: vector spaces, inner products, and context-dependent projections. The question of an observer ``living inside an LLM'' reduces to whether a self-maintaining computational pattern can persist and exert causal influence within this vectorial system. With only an in-session cache, such life would be fleeting. However, with external memory and a feedback loop, a resident process could, in principle, attain continuity. The underlying physics is classical, but the mathematics of vectors and contexts provides fertile ground for engineering such internal observers.
@@ -502,7 +504,11 @@ mechanics---how meaning is dynamically constructed, how responses are
 probabilistically generated, and how these processes mirror formalisms from physics---is
 essential for navigating the use of these models responsibly and harnessing their full potential.
 
-
+\begin{acknowledgments}
+This text was partially created and revised with assistance from one or more of the following large language models: gpt-5-high, Gemini 2.5 Pro, Grok4-0709, o3-2025-04-16, claude-sonnet-4-20250514-thinking-32k, GLM-4.5. All content, ideas, and prompts were provided by the author.
+This research was funded in whole or in part by the  Austrian Science Fund (FWF) Grant DOI: 10.55776/PIN5424624.
+The authors acknowledge TU Wien Bibliothek for financial support through its Open Access Funding Programme.
+\end{acknowledgments}
 
 
 \bibliography{svozil}
@@ -696,11 +702,11 @@ $\bm{W}_Q \in \mathbb{R}^{d \times d_k}$, $\bm{W}_K \in \mathbb{R}^{d \times d_k
 \end{align}
 
 Intuitively, for each token, these projections serve different purposes:
-\begin{itemize}
+\begin{enumerate}
     \item The \textbf{Query} vector can be seen as a representation of what information the current token is seeking from the rest of the sequence.
     \item The \textbf{Key} vector represents what kind of information the token itself contains or offers.
     \item The \textbf{Value} vector is the actual content or representation of the token that will be passed on if other tokens attend to it.
-\end{itemize}
+\end{enumerate}
 
 \subsection{Attention Score Calculation}
 
@@ -778,11 +784,11 @@ Let the input to a block be $Z$. The data flows through the block as follows:
 \end{enumerate}
 
 The roles of these components are critical:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Position-wise FFN:} This network introduces additional computational capacity, allowing the model to learn more complex transformations of the token representations after information has been aggregated by the attention mechanism.
     \item \textbf{Residual Connections:} These ``shortcuts'' allow the gradient to flow more directly through the network during backpropagation. It helps combat the vanishing gradient problem and makes it easier for the model to learn an identity mapping for a given block, effectively allowing it to dynamically adjust its own depth during training.
     \item \textbf{Layer Normalization:} This technique stabilizes the network by normalizing the activations of each token's representation. By keeping the mean and variance of the activations consistent, it ensures a smoother training process and reduces dependence on careful parameter initialization.
-\end{itemize}
+\end{enumerate}
 
 These blocks are then stacked multiple times---often dozens of times---to form the full LLM. Each block refines and enriches the token representations, allowing the model to build up increasingly complex and abstract understandings of the input sequence.
 
@@ -805,11 +811,11 @@ The output of the block is therefore a new matrix of embeddings where each token
 
 \subsubsection{Hierarchical Refinement through Stacking}
 The power of the Transformer architecture comes from stacking these blocks sequentially. The output embeddings of block $k$ become the input embeddings for block $k+1$. This creates a processing hierarchy where representations become progressively more abstract and sophisticated:
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Lower Layers:} The first few blocks typically resolve local ambiguities and encode basic syntactic information. They perform the initial step of contextualization, disambiguating word senses as in the ``bank'' example.
     \item \textbf{Intermediate Layers:} These blocks operate on already-contextualized embeddings. They can therefore model more complex and longer-range relationships, such as syntactic dependencies, co-reference resolution (e.g., linking a pronoun to its antecedent), and semantic roles.
     \item \textbf{Upper Layers:} The final blocks work with highly abstract representations, allowing them to capture thematic, pragmatic, and discourse-level information from the entire sequence.
-\end{itemize}
+\end{enumerate}
 Thus, the statement that ``each block refines and enriches the token representations'' is the central concept. The Transformer is a machine designed to evolve a set of vectors from simple dictionary lookups into nuanced, context-aware carriers of meaning. The emphasis is unequivocally on the token embeddings as the dynamic computational substrate of the model.
 
 
