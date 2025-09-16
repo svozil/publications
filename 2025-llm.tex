@@ -257,7 +257,8 @@ can belong to multiple bases, and its specific meaning emerges from the context 
 \node[node_label,above right] {$\bm{v}(\text{bank})$} (run);
 \end{tikzpicture}
 \caption{Hypergraph visualization of three intertwining contexts for the word `bank'.
-The central vector $\bm{v}(\text{bank})$ is a shared element common to three distinct contexts (orthonormal bases). Each context connects $\bm{v}(\text{run})$ to a different semantic association: physical activity ($\bm{v}(\text{exercise})$), management ($\bm{v}(\text{business})$), and flow ($\bm{v}(\text{river})$).}
+The central vector $\bm{v}(\text{bank})$ is a shared element common to three distinct contexts (orthonormal bases). Each context connects $\bm{v}(\text{run})$
+to a different semantic association: physical activity $\bm{v}(\text{exercise})$, management $\bm{v}(\text{business})$, and flow $\bm{v}(\text{river})$.}
     \label{fig:intertwining_contexts}
 \end{figure}
 
@@ -269,8 +270,8 @@ The two main entities entering the discussion are
 (i) the vectors as well as the
 (ii) orthogonal (orthonormal) bases (or contexts or blocks or maximal operators) those vectors could be in.
 Think of, say, the Cartesian standard basis $\{\bm{e}_1, \bm{e}_2, \bm{e}_3\}$ with
-$\bm{e}_1= (1,0,0)^\intercal$, $\bm{e}_2=(0,1,0)^\intercal$, and $\bm{e}_3=(0,0,1)^\intercal$ as well as the orthogonal basis $\{\bm{f}_1, \bm{f}_2, \bm{f}_3\}$
-with $\bm{f}_1=(1/\sqrt{2}, -1/\sqrt{2}, 0)^\intercal$, $\bm{f}_2=(1/\sqrt{2}, 1/\sqrt{2}, 0)^\intercal$, and $\bm{f}_3=(0,0,1)^\intercal$, obtained by rotating the first and second vectors
+$\bm{e}_1= (1,0,0)^\intercal$, $\bm{e}_2=(0,1,0)^\intercal$, and $\bm{e}_3=(0,0,1)^\intercal$ as well as the orthonormal basis $\{\bm{f}_1, \bm{f}_2, \bm{f}_3\}$
+with $\bm{f}_1=(1/\sqrt{2})\, (1 , -1  , 0)^\intercal$, $\bm{f}_2=(1/\sqrt{2})\,  (1 , 1 , 0)^\intercal$, and $\bm{f}_3=(0,0,1)^\intercal$, obtained by rotating the first and second vectors
 by an angle $\pi/4$ clockwise around the z-axis, which is aligned with $\bm{e}_3$.
 In this construction both bases share the same vector $\bm{e}_3 = \bm{f}_3$, but the context or maximal observables involved are very different:
 in one case the maximal observable, in its spectral decomposition with arbitrary real eigenvalues $\lambda_i$, is:
@@ -495,6 +496,92 @@ These differences are critical for determining whether an internal observer woul
 
 In summary, QM and LLMs share significant mathematical ground: vector spaces, inner products, and context-dependent projections. The question of an observer ``living inside an LLM'' reduces to whether a self-maintaining computational pattern can persist and exert causal influence within this vectorial system. With only an in-session cache, such life would be fleeting. However, with external memory and a feedback loop, a resident process could, in principle, attain continuity. The underlying physics is classical, but the mathematics of vectors and contexts provides fertile ground for engineering such internal observers.
 
+
+\section{Quantum Attention}
+
+The architectures of modern Large Language Models have inherited much from
+classical attention mechanisms, yet attempts to ``quantize'' these ideas
+have often been limited to almost literal translations of the classical recipe
+into the language of Hilbert spaces~\cite{zhang2025surveyquantumtransformersarchitectures}. Such approaches, while intuitive,
+miss the more radical point: quantum evolution admits only two fundamental
+capacities, identified by von Neumann as
+(i) irreversible, stochastic state reduction (\emph{Process 1}),
+and (ii) reversible, deterministic unitary evolution (\emph{Process 2}).
+A viable notion of quantum attention must therefore be constructed wholly within
+these bounds.
+
+\subsection{Goals of Quantum Attention}
+
+The principal objective of attention in the classical setting is to guide
+next-token prediction through dynamically weighted embeddings.
+Translated into a genuinely quantum language, this entails:
+\begin{enumerate}
+    \item Encoding tokens as quantum states $\bm{\psi}$
+    in a high-dimensional Hilbert space,
+    thereby embedding them into the ``meaning-space'' of the model.
+    \item Evolving these states by a suitably chosen unitary transformation $\bm{U}$,
+    producing a candidate output state
+    \begin{equation}
+    \bm{\phi} = \bm{U} \bm{\psi}.
+    \end{equation}
+    \item Performing a terminal measurement (Process~1),
+    which yields a single token according to the Born rule,
+    with probabilities proportional to $|\bm{\phi}^\dagger \bm{\psi}|^{2}$
+    for pure states.
+\end{enumerate}
+In this scheme, nonlinearities and irreversibility are absent everywhere
+except at the initial state preparation (if stochastic) and at the final,
+irreducibly random measurement. Everything in between must be faithfully
+unitary.
+
+\subsection{Constraints and Learning Mechanisms}
+
+Because all allowed intermediate transformations fall within class (ii)---unitary
+processes---training and back-propagation must be reconceived as
+unitary rotations in Hilbert space. This sharply contrasts with the gradient-descent-based
+adjustments of non-linear maps in classical neural networks.
+Concretely, learnable transformations are constrained to be:
+\begin{itemize}
+    \item In the general case, arbitrary unitaries acting on the relevant Hilbert space,
+    implemented, e.g., by parametrized quantum circuits.
+    \item In restricted scenarios, orthogonal transformations over real-valued state spaces,
+    or, in an extreme discrete approximation, mere \emph{permutations} of basis states.
+\end{itemize}
+Thus, what counts as ``attention weights'' must be replaced not by scalar coefficients,
+but by controlled rotations or permutations of the embedding subspace.
+
+\subsection{Comparison with Classical Attention}
+
+Classical attention is a fundamentally nonlinear mechanism:
+the query--key compatibility scores undergo a softmax normalization
+and act as dynamic coefficients for a weighted average of value embeddings.
+Quantum attention, by contrast, cannot implement such probabilistic normalization
+mid-process. The only stochastic step is the final measurement.
+Hence, quantum attention is more austere but also more physically faithful:
+weights are rotations, superpositions evolve unitarily,
+and probabilities emerge only at the very end.
+
+One may summarize the distinction with a slogan:
+\emph{classical attention mixes; quantum attention rotates}.
+The former continuously interpolates between embeddings using nonlinear weightings,
+while the latter conserves norm and mixes information strictly through unitarity.
+Whether this stricter yet cleaner formalism can achieve the flexibility and
+expressivity that classical attention enjoys remains both a technical and
+philosophical open question.
+
+\subsection{Implications}
+
+The implications are sobering and exciting at once.
+On the sobering side, many of the workhorse techniques of classical deep learning,
+such as gradient backpropagation through non-linear activations,
+are unavailable in their standard form. On the exciting side, however,
+quantum attention reorients learning toward symmetry operations, reversible dynamics,
+and combinatorial richness---offering the prospect of
+models that are less fragile, more interpretable, and governed by deep conservation laws.
+If classical transformers are powered by the calculus of weighted averages,
+their quantum cousins would be powered by the geometry of Hilbert space rotations.
+``Paying attention,'' in such a universe, would mean aligning one's basis just right,
+before the final measurement tosses its fundamental dice.
 
 \section{Summary and Outlook}
 
@@ -828,3 +915,22 @@ Thus, the statement that ``each block refines and enriches the token representat
 
 
 \end{document}
+
+
+
+Quantum attention:
+
+* previous implementation have mostly concentrated on an almost literal transcription of the classical attention mechanism, but we have to radically change that, as quantum capacities are limited to
+** von Neumann Process 1 (irreversible measurements) and
+** process 2 (one-to-one, reversible) unitary state evolution.
+
+
+* going back to the ultimate goal of the attention mechanism is to creat next-token (word)-predictions, by generating
+** proper token word embeddings by quantum states in a high-dimensional Hilbert space |\psi> , as well as
+** proper unitary evolution U of the final output state |\phi> = U |\psi> , followed by
+** a state measuremt that yields one instance with probabilities, associated with  | < \phi | \psi> |^2 in case of pure states.
+
+* There is  no nonlinearity or irreversibility or randomness, with the exception of (the possibility of the initial state and) the Process 1 type measurement at the end
+
+* any back-propagation and learning must be of process type 2 (a unitary rotation in Hilbert space). (Unitary  can be restricted to othogonal transformations, andf, in the extreme discrete case, to permutations).
+
