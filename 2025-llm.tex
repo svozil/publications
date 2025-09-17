@@ -332,6 +332,10 @@ To mitigate the repetitive and predictable text that would arise from consistent
 the most probable token---a technique known as greedy sampling---LLMs utilize a
 variety of sampling strategies~\cite{Jadhav2025}.
 
+
+Even if the temperature is set to zero, a residual stochasticity persists due to the parallelization and batch processing inherent in large-scale inference. At a temperature of 0, the source of nondeterminism is the absence of batch invariance in highly parallel kernel use:
+Any fluctuating load determines the variations of the batch size into which any given request is grouped and parallelized. This variation in batch size causes high-performance kernels for operations like matrix multiplication, normalization, and attention to alter their internal reduction strategy to maintain efficiency. At a fundamental level, a reduction is a sequence of floating-point additions; the reduction ``strategy'' specifies how these additions are partitioned and executed across parallel compute units. Because floating-point addition is lossy for two floating-point numbers with different exponents, and thus non-associative---that is, \((a + b) + c\) is not guaranteed to be bit-wise identical to \(a + (b + c)\)---any change in the reduction order can produce a numerically different result. Consequently, the final output of an individual request becomes dependent on the (for the user seemingly) nondeterministic batching process~\cite{he2025nondeterminism}.
+
 \section{Algorithmic Capacity and the Role of Stochastic Seeding}
 
 The capabilities of LLMs, while impressive, are not infinite.
