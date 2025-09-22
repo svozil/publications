@@ -185,6 +185,22 @@ In domains where a solution's correctness can be automatically verified (e.g., m
 This trial-and-error process allows the model to explore the solution space and discover what works best for its own cognitive architecture. A key finding is that RL training leads to the emergence of sophisticated cognitive strategies. The model learns to ``think'' by generating long, internal monologues where it re-evaluates steps, considers problems from multiple angles, and performs self-correction---all emergent behaviors in service of maximizing the reward of reaching the correct answer. This process mirrors the outperformance of AlphaGo, which used RL to discover novel, superhuman strategies in the game of Go,
 surpassing what was possible by merely imitating human expert players~\cite[Fig.~3a]{Silver-2017}.
 
+\section{Self-Attention and Computational Universality}
+
+The apparent self-reflection observed in Large Language Models (LLMs), often manifested through phrases such as ``let me reconsider'' or ``wait, the user implies...'', does not emerge from conscious introspection but is rather a learned artifact of the training data. These models are trained to predict the next token in a sequence, and such reflective phrases are statistically probable continuations in contexts that necessitate re-evaluation, thereby mimicking human cognitive patterns.
+
+The core mechanism enabling this behavior is the self-attention layer within the Transformer architecture. Self-attention allows the model to weigh the importance of all tokens in the preceding sequence---including its own generated output---at each computational step. This process is enhanced by multi-head attention, which permits the model to track disparate linguistic and logical relationships simultaneously in parallel subspaces. Therefore, while self-attention provides the mechanical capability for in-context reflection, this behavior is fundamentally a stylistic pattern. More profoundly, this same mechanism is the foundation for the model's capacity for universal computation.
+
+This computational capacity of LLMs extends beyond mere linguistic processing, touching upon the theoretical limits of computability. Transformer-based models possess the intrinsic capability to compute partial recursive functions, thereby positioning them as computationally universal systems analogous to a Universal Turing Machine (UTM). This equivalence is most clearly conceptualized under the assumption of an infinitely expandable context window, which would function as the unbounded tape of a UTM. However, the practical technological constraints of current hardware and model architectures mean that this computational universality remains more of a theoretical attribute than a fully realized, practical reality.
+
+The computational universality of LLMs is not explicitly programmed but emerges from the architecture's design.
+Working within an autoregressive decoding loop, the self-attention mechanism allows the model to maintain and update its state by attending to its own previous outputs. This process is powerful enough to simulate known Turing-complete systems, such as a Lag system~\cite{schuurmans2024autoregressivelargelanguagemodels}, effectively using the generated text as a computational tape.
+
+The primary limitation to this capability is the model's finite context window, a direct consequence of the quadratic computational and memory scaling of the self-attention mechanism with respect to sequence length. Consequently, like any physical computing device, an LLM is constrained by finite memory, precluding true mathematical Turing completeness, which presupposes infinite storage.
+
+In practice, LLMs demonstrate a nuanced aptitude for handling recursion, particularly within the domain of code generation. This holistic reasoning is facilitated by self-attention, which permits the model to cross-reference different parts of the generated code, ensuring that recursive calls correctly relate to their corresponding base cases and termination conditions. Such capabilities serve as practical evidence of the sophisticated, Turing-complete computations that self-attention enables.
+
+
 \section{Polysemy}
 \label{section:Polysemy}
 
@@ -785,14 +801,20 @@ During training, this ensures that only the embedding for the specific token pre
 
 \section{The Self-Attention Mechanism}
 
-Let us consider a sequence of $n$ input tokens. Each token is represented by a learned embedding vector, and these row vectors are stacked to form an input matrix $X \in \mathbb{R}^{n \times d}$, where $d$ is the dimension of the embedding space (often called $d_{\text{model}}$ in literature). The self-attention mechanism computes an output matrix $Y \in \mathbb{R}^{n \times d}$ where each output row $\bm{y}_i$ is a new, contextualized representation of the corresponding input token $\bm{x}_i$. This is achieved through the following steps.
+Let us consider a sequence of $n$ input tokens---say, an ``unfinished'' sentence---to be finished by the token derived from the output $Y$ in Eq.~(\ref{2025-llm-e:Y}).
+Each token is represented by a learned embedding vector,
+and these row vectors are stacked to form an input matrix
+$X \in \mathbb{R}^{n \times d}$,
+where $d$ is the dimension of the embedding space (often called $d_{\text{model}}$ in literature). The self-attention mechanism computes an output matrix $Y \in \mathbb{R}^{n \times d}$ where each output row $\bm{y}_i$ is a new, contextualized representation of the corresponding input token $\bm{x}_i$. This is achieved through the following steps.
 
 \subsection{Projection to Query, Key, and Value}
 
 First, the input matrix $X$ is linearly projected into three distinct matrices:
 Query ($\bm{Q}$), Key ($\bm{K}$), and Value ($\bm{V}$).
 This is accomplished using three learned weight matrices:
-$\bm{W}_Q \in \mathbb{R}^{d \times d_k}$, $\bm{W}_K \in \mathbb{R}^{d \times d_k}$, and $\bm{W}_V \in \mathbb{R}^{d \times d_v}$. Typically, the dimensions are set such that $d_k = d_v$.
+$\bm{W}_Q \in \mathbb{R}^{d \times d_k}$, $\bm{W}_K \in \mathbb{R}^{d \times d_k}$, and $\bm{W}_V \in \mathbb{R}^{d \times d_v}$.
+Typically, for the single-head attention block, the dimensions are set such that $d=d_k = d_v$~\cite{Vaswani-2017-Attention}
+(for multi-head attention with $h$ parallel heads discussed in~\ref{2025-llm-mha}, $d_k = d_v = d / h$).
 
 \begin{align}
     \bm{Q} &= X \bm{W}_Q \in \mathbb{R}^{n \times d_k}, \\
@@ -813,7 +835,12 @@ The relationship, or compatibility, between each pair of tokens is computed by t
 \begin{equation}
     \text{Scores} = \bm{Q} \bm{K}^T \in \mathbb{R}^{n \times n}.
 \end{equation}
-The element at position $(i,j)$ in this matrix represents the raw relevance of token $j$ to token $i$. This matrix is then scaled by the square root of the key dimension, $d_k$, to ensure numerical stability during training. The scaling is crucial because for large values of $d_k$, the dot products can grow very large, pushing the subsequent softmax function into regions where its gradient is near zero, which would stall the learning process. The scaled scores are therefore:
+The element at position $(i,j)$ in this matrix represents the raw relevance of token $j$ to token $i$.
+This matrix is then scaled by the square root of the key dimension, $d_k$,
+to ensure numerical stability during training.
+The scaling is crucial because for large values of $d_k$, the dot products can grow very large,
+pushing the subsequent softmax function into regions where its gradient is near zero, which would stall the learning process.
+The scaled scores are therefore:
 \begin{equation}
     \text{Scaled Scores} = \frac{\bm{Q} \bm{K}^T}{\sqrt{d_k}}.
 \end{equation}
@@ -836,31 +863,52 @@ For autoregressive models that generate text one token at a time (like GPT), a \
 The final output of the self-attention layer is a weighted sum of all Value vectors, where the weights are given by the matrix $A$. This computation is performed with a single matrix multiplication:
 \begin{equation}
     Y = A \bm{V} \in \mathbb{R}^{n \times d_v}.
+\label{2025-llm-e:Y}
 \end{equation}
-The $i$-th row of the output, $\bm{y}_i$, is therefore a contextualized vector for the $i$-th token, formed by aggregating information from all other tokens in the sequence to which it was allowed to attend.
+The $i$-th row of the output, $\bm{y}_i$, is therefore a contextualized vector for the $i$-th token,
+formed by aggregating information from all other tokens in the sequence to which it was allowed to attend.
 
 The entire self-attention operation can be expressed compactly as:
 \begin{equation}
     \text{Attention}(\bm{Q}, \bm{K}, \bm{V}) = \text{softmax}\left(\frac{\bm{Q} \bm{K}^T}{\sqrt{d_k}}\right) \bm{V}.
 \end{equation}
 
+
+
+A loss function is calculated to quantify the divergence between the predicted token distribution and
+the ground-truth token---the target that is the actual token completion---from the training set.
+The gradient of this loss is then backpropagated through the model to adjust all learnable parameters,
+including the embedding matrix and the query ($W_Q$), key ($\bm{W}_K$), and value ($\bm{W}_V$) matrices.
+(For multi-head attention below, this includes the output matrix $\bm{W}_O$.)
+
 \section{Advanced Mechanisms}
 
 While the scaled dot-product attention is the core of the Transformer, its true power comes from how this mechanism is integrated into a robust and repeatable block structure. Two key advancements enable this: Multi-Head Attention and the specific architecture of the Transformer block itself.
 
 \subsection{Multi-Head Attention}
-A single attention mechanism might be forced to learn an ``average'' of several types of relationships between tokens. To allow the model to capture a richer set of relationships, the Transformer employs \textit{multi-head attention}. This mechanism does not run a single attention calculation, but rather multiple attention calculations in parallel.
+\label{2025-llm-mha}
+A single attention mechanism might be forced to learn an ``average'' of several types of relationships between tokens.
+ To allow the model to capture a richer set of relationships, the Transformer employs \textit{multi-head attention}.
+This mechanism does not run a single attention calculation, but rather multiple attention calculations in parallel.
 
-The intuition is to allow the model to jointly attend to information from different representational subspaces. For instance, one head might learn to track syntactic dependencies, while another focuses on semantic similarity. This is achieved as follows:
+The intuition is to allow the model to jointly attend to information from different representational subspaces.
+For instance, one head might learn to track syntactic dependencies, while another focuses on semantic similarity.
+This is achieved as follows:
 \begin{enumerate}
-    \item \textbf{Projection:} Instead of one set of projection matrices, the model learns $h$ independent sets of matrices ($\bm{W}_{Q,i}, \bm{W}_{K,i}, \bm{W}_{V,i}$ for each head $i=1,\dots,h$). The input $X$ is projected through each of these sets, creating $h$ different Query, Key, and Value representations.
-    \item \textbf{Parallel Attention Calculation:} The standard attention function is applied to each of these $h$ projected sets in parallel, yielding $h$ distinct output matrices, or ``heads.''
+    \item \textbf{Projection:} Instead of one set of projection matrices, the model learns $h$ independent sets of matrices
+($\bm{W}_{Q,i}, \bm{W}_{K,i}, \bm{W}_{V,i}$ for each head $i=1,\dots,h$), with  $d_k = d_v = d / h$.
+The input $X$ is projected through each of these sets, creating $h$ different Query, Key, and Value representations.
+    \item \textbf{Parallel Attention Calculation:} The standard attention function is applied to each of these $h$
+projected sets in parallel, yielding $h$ distinct output matrices, or ``heads.''
         \begin{equation}
             \text{head}_i = \text{Attention}(X\bm{W}_{Q,i}, X\bm{W}_{K,i}, X\bm{W}_{V,i}).
         \end{equation}
-    \item \textbf{Concatenation and Final Projection:} The outputs of these $h$ heads are concatenated along the feature dimension into a single, larger matrix. This matrix is then projected back to the original model dimension $d$ using an additional learned weight matrix, $\bm{W}_O \in \mathbb{R}^{h d_v \times d}$, which learns to aggregate the information from all heads.
+    \item \textbf{Concatenation and Final Projection:} The outputs of these $h$ heads are ``horizontally''
+concatenated along the feature dimension into a single, larger matrix.
+This matrix is then projected back to the original model dimension $d$ using an additional learned weight matrix,
+$\bm{W}_O \in \mathbb{R}^{h d_v \times d}$, which learns to aggregate the information from all heads.
         \begin{equation}
-            \text{MultiHead}(X) = \text{Concat}(\text{head}_1, \dots, \text{head}_h) \bm{W}_O.
+            \text{MultiHead}(X) = \text{Concat}[\text{head}_1, \dots, \text{head}_h] \bm{W}_O.
         \end{equation}
 \end{enumerate}
 
