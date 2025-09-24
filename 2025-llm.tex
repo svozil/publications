@@ -109,7 +109,13 @@ A primary component learned during this phase is the intrinsic word representati
 where input and output tokens are \textit{mapped to vectors}, amounting to a vector  embedding in a ``low-dimensional''
 vector space.
 Typically embedding dimensions range from several hundred to a few thousand---much less than the number of tokens.
-This vector embedding functions as the token's operational ``meaning.'' In an LLM, this meaning is not explicitly programmed but is an emergent property of the training optimization. An embedding vector is the final state of a token's representation after accumulating countless gradient updates throughout its exposure to the training corpus. In the subsequent inference stage, the vectors corresponding to input tokens are propagated through a series of trained transformations. This results in output vectors that are then decoded into a sequence of tokens, which are transcribed into the final human-perceivable output.
+This vector embedding functions as the token's operational ``meaning.''
+In an LLM, this meaning is not explicitly programmed but is an emergent property of the training optimization.
+An embedding vector is the final state of a token's representation after accumulating countless gradient updates
+throughout its exposure to the training corpus.
+In the subsequent inference stage, the vectors corresponding to input tokens are propagated through a series of trained transformations.
+This results in output vectors that are then decoded into a sequence of tokens,
+which are transcribed into the final human-perceivable output.
 
 
 This intricate dance of calculus and linear algebra,
@@ -199,6 +205,62 @@ Working within an autoregressive decoding loop, the self-attention mechanism all
 The primary limitation to this capability is the model's finite context window, a direct consequence of the quadratic computational and memory scaling of the self-attention mechanism with respect to sequence length. Consequently, like any physical computing device, an LLM is constrained by finite memory, precluding true mathematical Turing completeness, which presupposes infinite storage.
 
 In practice, LLMs demonstrate a nuanced aptitude for handling recursion, particularly within the domain of code generation. This holistic reasoning is facilitated by self-attention, which permits the model to cross-reference different parts of the generated code, ensuring that recursive calls correctly relate to their corresponding base cases and termination conditions. Such capabilities serve as practical evidence of the sophisticated, Turing-complete computations that self-attention enables.
+
+
+
+
+\section{Exponential Scaling of Expressive Capacity via Quasi-Dimensionality}
+\label{section:ExpScal}
+
+The dense vector representations, or embeddings, of tokens in Large Language Models (LLMs) are foundational
+to their ability to capture complex semantic relationships. These relationships can often be revealed through simple vector arithmetic.
+A canonical example involves the embeddings for \textit{woman} and \textit{man},
+denoted as $\bm{v}(\text{woman})$ and $\bm{v}(\text{man})$, respectively.
+The difference between these vectors, $\bm{v}(\text{woman}) - \bm{v}(\text{man})$,
+yields a new vector that points in a semantic direction associated with gender.
+ This direction is remarkably consistent across different concepts, as evidenced by the famous analogy:
+\begin{equation}
+    \bm{v}(\text{king}) - \bm{v}(\text{man}) + \bm{v}(\text{woman}) \approx \bm{v}(\text{queen}),
+\end{equation}
+This suggests that abstract features, like ``gender'', correspond to specific directions within the high-dimensional embedding space.
+
+A critical question thus arises: how many distinct semantic features can be encoded within an embedding space of dimension $d$?
+If we demand that each feature corresponds to a perfectly unique, and therefore mathematically orthogonal, direction,
+the capacity of the space is strictly limited. By definition, a $d$-dimensional space can contain at most $d$ mutually orthogonal vectors. For any two such vectors $\bm{v}_i$ and $\bm{v}_j$, their dot product must be zero ($\bm{v}_i \cdot \bm{v}_j = 0$). This linear scaling would severely constrain the model's expressive power.
+
+However, suppose the requirement for perfect orthogonality can be relaxed.
+Instead of perfect distinction, we can consider features to be sufficiently distinct if their corresponding vectors are
+``almost'' orthogonal, meaning their dot product is very close to zero
+($|\bm{v}_i \cdot \bm{v}_j| \le \varepsilon$ for some small $\varepsilon > 0$).
+This relaxation from strict orthogonality to quasi-orthogonality leads to a dramatic,
+non-intuitive increase in the expressive capacity of the space.
+
+The theoretical underpinning for this phenomenon is the
+ Johnson-Lindenstrauss lemma~\cite{johnson-1984,Dasgupta-2003,mahoney2009johnsonlindenstrauss,freksen2021ijohnsonlindenstraus}.
+The lemma states that a set of $n$  points in a high-dimensional space $\mathbb{R}^d$
+can be projected into a much lower-dimensional space $\mathbb{R}^k$,
+where $k = O(\varepsilon^{-2} \log n) = \varepsilon^{-2} O(\log n)$,
+while preserving the pairwise distances  to within a factor of $(1 \pm \varepsilon)$.
+Indeed, there is a tight bound~\cite[Section~9]{alon-2003}.
+ This translates---through the polarization identity $\bm{u} \cdot \bm{v} = \frac{1}{2} \left( \|\bm{u}\|^2 + \|\bm{v}\|^2 - \|\bm{u} - \bm{v}\|^2 \right)$ applied to the norms of the projected vectors---into the corresponding $n$
+ position vectors (from the origin to the points) also having their pairwise inner products preserved to within a small additive error,
+which is the crucial property for establishing quasi-orthogonality.
+
+While often cited for dimensionality reduction, the tight Johnson-Lindenstrauss lemma's
+implications for the capacity of a high-dimensional space are profound:
+Inverting this finding yields an exponential packing phenomenon. Let $N_{\varepsilon}(d)$ be the largest size of a set of unit vectors in $\mathbb{R}^{d}$ with pairwise inner products bounded by $\varepsilon$ in magnitude. Then there exist universal constants $c, C > 0$ such that
+\[
+  \exp\!\bigl(c\,\varepsilon^{2} d\bigr) \;\le\; N_{\varepsilon}(d) \;\le\; \exp\!\bigl(C\,\varepsilon^{2} d\bigr).
+\]
+
+
+That is, pointedly stated, a $d$-dimensional space can accommodate a set of approximately $e^{O(d\varepsilon^2)}= e^{\varepsilon^2 O(d)}$ such vectors.
+This exponential growth provides a mathematical basis for the remarkable ability of LLMs to encode a vast and
+nuanced landscape of semantic features, far exceeding the linear bounds of the space's dimensionality:
+If each interpretable property corresponds to a direction and decoders tolerate pairwise correlations up to $\varepsilon$,
+then a $d$-dimensional space can in principle host on the order of
+$e^{\varepsilon^2 O(d)}$ property directions with bounded interference.
+We refer to this exponentially larger supply of usable, nearly independent directions as \emph{quasi-dimensionality}.
 
 
 \section{Polysemy}
@@ -350,7 +412,13 @@ variety of sampling strategies~\cite{Jadhav2025}.
 
 
 Even if the temperature is set to zero, a residual stochasticity persists due to the parallelization and batch processing inherent in large-scale inference. At a temperature of 0, the source of nondeterminism is the absence of batch invariance in highly parallel kernel use:
-Any fluctuating load determines the variations of the batch size into which any given request is grouped and parallelized. This variation in batch size causes high-performance kernels for operations like matrix multiplication, normalization, and attention to alter their internal reduction strategy to maintain efficiency. At a fundamental level, a reduction is a sequence of floating-point additions; the reduction ``strategy'' specifies how these additions are partitioned and executed across parallel compute units. Because floating-point addition is lossy for two floating-point numbers with different exponents, and thus non-associative---that is, \((a + b) + c\) is not guaranteed to be bit-wise identical to \(a + (b + c)\)---any change in the reduction order can produce a numerically different result. Consequently, the final output of an individual request becomes dependent on the (for the user seemingly) nondeterministic batching process~\cite{he2025nondeterminism}.
+Any fluctuating load determines the variations of the batch size into which any given request is grouped and parallelized.
+ This variation in batch size causes high-performance kernels for operations like matrix multiplication, normalization,
+ and attention to alter their internal reduction strategy to maintain efficiency.
+At a fundamental level, a reduction is a sequence of floating-point additions; the reduction ``strategy''
+specifies how these additions are partitioned and executed across parallel compute units.
+Because floating-point addition is lossy for two floating-point numbers with different exponents,
+and thus non-associative---that is, \((a + b) + c\) is not guaranteed to be bit-wise identical to \(a + (b + c)\)---any change in the reduction order can produce a numerically different result. Consequently, the final output of an individual request becomes dependent on the (for the user seemingly) nondeterministic batching process~\cite{he2025nondeterminism}.
 
 \section{Algorithmic Capacity and the Role of Stochastic Seeding}
 
