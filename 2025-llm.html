@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perspectives on Large Language Models: Polysemy, Stochasticity, Exponential Expressibility, and Unitary Attention</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                macros: {
+                    bm: ["\\boldsymbol{#1}", 1],
+                    intercal: "{\\mathsf{T}}"
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: "Georgia", "Times New Roman", serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fcfcfc;
+        }
+        h1 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .author {
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            font-variant: small-caps;
+        }
+        .affiliation {
+            text-align: center;
+            font-size: 0.9em;
+            font-style: italic;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .email {
+            text-align: center;
+            font-size: 0.85em;
+            margin-bottom: 30px;
+        }
+        .abstract {
+            font-size: 0.95em;
+            margin: 20px 40px;
+            text-align: justify;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .keywords {
+            font-size: 0.85em;
+            margin: 10px 40px;
+            font-style: italic;
+        }
+        h2 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 40px;
+            font-size: 1.3em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        h3 {
+            margin-top: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        h4 {
+            font-size: 1em;
+            font-style: italic;
+            margin-top: 20px;
+        }
+        p {
+            text-align: justify;
+            margin-bottom: 1em;
+        }
+        ul, ol {
+            margin-bottom: 1em;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        .figure {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .caption {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+            padding: 0 20px;
+        }
+        .equation {
+            overflow-x: auto;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .references {
+            font-size: 0.9em;
+        }
+        .ref-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            text-indent: -20px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* SVG Styling */
+        svg {
+            display: block;
+            margin: auto;
+            max-width: 100%;
+        }
+        .node-text {
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Perspectives on Large Language Models: Polysemy, Stochasticity, Exponential Expressibility, and Unitary Attention</h1>
+
+    <div class="author">Karl Svozil</div>
+    <div class="affiliation">Institute for Theoretical Physics, TU Wien, Wiedner Hauptstrasse 8-10/136, 1040 Vienna, Austria</div>
+    <div class="email"><a href="mailto:karl.svozil@tuwien.ac.at">karl.svozil@tuwien.ac.at</a> | <a href="http://tph.tuwien.ac.at/~svozil">http://tph.tuwien.ac.at/~svozil</a></div>
+    <div style="text-align: center; font-size: 0.9em; margin-bottom: 20px;">September 30, 2025</div>
+
+    <div class="abstract">
+        <strong>Abstract:</strong> This paper explores foundational aspects of Large Language Models (LLMs). We analyze how the expressibility of semantic features scales exponentially with embedding space dimensions using quasi-orthogonal vectors. We contrast the dynamic, context-dependent embeddings of Transformer architectures, which resolve polysemy, with a static vector approach based on quantum contextuality. Stochasticity is framed as an essential feature for enabling creative output through probabilistic sampling. Finally, we propose quantum attention as a unitary extension of classical mechanisms, reframing LLM processing as reversible, quantum-like evolutions in Hilbert space.
+    </div>
+
+    <div class="keywords">
+        <strong>Keywords:</strong> Large Language Models, Transformer Architecture, Pre-training, Fine-tuning, Reinforcement Learning, Natural Language Processing, Polysemy, Quantum Contextuality
+    </div>
+
+    <h2>I. Introduction</h2>
+    <p>Large Language Models (LLMs) have become powerful tools capable of generating coherent text, answering complex questions, and performing a wide variety of linguistic tasks. The interaction with these models, typically through a simple text interface, belies the complex and computationally intensive process required for their construction. The following introduction elucidates the end-to-end pipeline for building an LLM assistant, providing mental models for understanding its architecture, capabilities, and inherent limitations.</p>
+
+    <p>The creation of an LLM is not a monolithic process but a sequential pipeline composed of distinct stages, each with a specific objective <a href="#ref1">[1]</a>. This pipeline begins with the <i>pre-training</i> stage, where a model learns general knowledge and statistical patterns of language from an enormous corpus of text. The output of this stage is a <i>base model</i>—a powerful but general text predictor, not a conversational assistant. To achieve this, the base model undergoes a second stage of <i>supervised fine-tuning</i> (SFT), where it is trained on a smaller, high-quality dataset of example conversations to learn the desired assistant-like behavior. A final, and increasingly crucial, stage involves <i>reinforcement learning</i> (RL), where the model practices problem-solving to discover more effective and reliable reasoning strategies. We will examine these stages in detail.</p>
+
+    <p>This work moves beyond a procedural overview to focus on three foundational aspects. We will address the model's ability to handle polysemy in Section VIII, exploring how modern architectures dynamically construct context-aware vector representations in a departure from older, static methods.</p>
+
+    <p>In Section IX, we will investigate the origin of stochasticity in their responses, framing the probabilistic nature of text generation as an intentional and crucial feature that underpins their creativity and flexibility.</p>
+
+    <p>Finally, in Section XI we will draw a compelling, albeit analogical, comparison to the formalism of quantum mechanics, using the shared mathematical language of vector spaces and context-dependent projections to offer a novel framework for conceptualizing how these systems process information and construct meaning. By dissecting these three pillars, this note aims to provide a more nuanced perspective on the inner workings of Large Language Models.</p>
+
+    <h2>II. Tokenization: The Language of LLMs</h2>
+    <p>Before any text can be processed by a neural network, it must be converted into a numerical format. LLMs operate on a sequence of discrete symbols, or <i>tokens</i>. Tokenization is the process of converting a raw string of text into a sequence of these tokens, and back again.</p>
+
+    <p>The technology underlying LLMs, the Transformer architecture, expects a one-dimensional sequence of symbols drawn from a finite vocabulary <a href="#ref2">[2]</a>. While one could represent text as a sequence of its fundamental bytes (a vocabulary of 256 symbols), this results in extremely long sequences, which are computationally expensive to process. The dominant approach is a compromise between vocabulary size and sequence length, achieved through algorithms like Byte-Pair Encoding (BPE).</p>
+
+    <p>Any input text, regardless of the language or characters it contains, is first converted into a standardized sequence of bytes using the UTF-8 encoding. (ASCII is effectively a subset of UTF-8, where each character maps to a single byte.) The BPE algorithm takes this stream of bytes as its input. Its initial vocabulary consists of all 256 possible byte values. BPE then learns merge rules by finding the most common adjacent byte pairs and combining them into new subword tokens. This process continues until a predetermined vocabulary size is reached. The final vocabulary will contain a mix of single-byte tokens (which cover all of ASCII and are the building blocks for all other characters) and multi-byte tokens that represent frequent character sequences, subwords, or whole words. State-of-the-art models use a vocabulary of approximately 30,000 - 100,000 tokens.</p>
+
+    <p>The critical takeaway is that an LLM does not “see” characters or words as a human does. Its entire world is composed of these tokens: Tokens serve as an <i>interface</i> to its internal composition and means that will be based on vectors in Hilbert spaces. This has significant implications for its capabilities, particularly in tasks requiring character-level manipulation (e.g., spelling, counting letters), which can be non-trivial for a model that views a word like “ubiquitous” as three separate, opaque tokens.</p>
+
+    <h2>III. Pre-Training: Building the Base Model</h2>
+    <p>The initial and most resource-intensive stage is the <i>pre-training</i> phase, which yields a foundational <i>base model</i>. This is accomplished by training a neural network on a massive, heterogeneous text corpus, as elucidated below.</p>
+
+    <p>A primary component learned during this phase is the intrinsic word representation, where input and output tokens are <i>mapped to vectors</i>, amounting to a vector embedding in a “low-dimensional” vector space. Typically embedding dimensions range from several hundred to a few thousand—much less than the number of tokens. This vector embedding functions as the token’s operational “meaning.” In an LLM, this meaning is not explicitly programmed but is an emergent property of the training optimization. An embedding vector is the final state of a token’s representation after accumulating countless gradient updates throughout its exposure to the training corpus. In the subsequent inference stage, the vectors corresponding to input tokens are propagated through a series of trained transformations. This results in output vectors that are then decoded into a sequence of tokens, which are transcribed into the final human-perceivable output.</p>
+
+    <p>This intricate dance of calculus and linear algebra, applied at a massive scale, is the unseen alchemy that forges meaning from symbols, allowing models to grasp the nuanced tapestry of human language.</p>
+
+    <h3>A. Learning from Internet-Scale Data</h3>
+    <p>The foundation of an LLM is built by learning the statistical patterns of human language from an immense dataset. This process begins with acquiring petabytes of raw text, primarily from web crawls such as those provided by Common Crawl. This raw data undergoes extensive filtering and cleaning to create a high-quality pre-training corpus. The process typically involves:</p>
+    <ol>
+        <li><i>URL Filtering:</i> Removing documents from undesirable domains (e.g., spam, malware, adult content).</li>
+        <li><i>Content Extraction:</i> Parsing raw HTML to extract only the main textual content, discarding boilerplate like navigation bars and advertisements.</li>
+        <li><i>Quality Filtering:</i> Applying heuristics and classifiers to remove low-quality or machine-generated text.</li>
+        <li><i>Deduplication:</i> Removing duplicate or near-duplicate documents to increase data efficiency.</li>
+        <li><i>PII Removal:</i> Identifying and scrubbing personally identifiable information.</li>
+    </ol>
+    <p>The result of this curation is a dataset on the order of tens of trillions of tokens. This tokenized dataset is then used to train a Transformer neural network.</p>
+
+    <h3>B. The Training Objective</h3>
+    <p>The training objective is deceptively simple: next-token prediction. The model is presented with a sequence of tokens (the <i>context</i>) and is tasked with predicting the probability distribution for the very next token. The model’s prediction is compared to the actual next token in the training data, and a <i>loss</i> value is calculated to quantify the error. This loss is then used to update the model’s billions of parameters (or <i>weights</i>) via an optimization algorithm, nudging them in a direction that reduces the error. This process is repeated for trillions of tokens, requiring months of training on thousands of GPUs.</p>
+
+    <p>The backpropagation algorithm, which is formally discussed in Appendix B, is the cornerstone of learning in modern neural networks. While often treated as a black box, its mechanism is a direct and elegant application of the chain rule from differential calculus.</p>
+
+    <h3>C. Characteristics of the Base Model</h3>
+    <p>The output of this stage is a base model—a neural network whose parameters have internalized a vast amount of knowledge about the world, language, and the relationships between concepts. It can be thought of as a lossy, probabilistic compression of its training data.</p>
+
+    <p>A base model is not an assistant; it is an internet document simulator. When given a prompt (a starting sequence of tokens), its fundamental function is to continue that sequence in a statistically plausible way based on the patterns it learned during pre-training. For example, if prompted with “What is 2+2?”, it might complete the text with another question, “What is 3+3?”, because question-and-answer lists are common on the internet.</p>
+
+    <p>Despite this, a base model’s knowledge can be elicited through clever prompting. Using <i>few-shot prompting</i>, where a user provides several examples of a desired task within the context window, the model can perform tasks like translation or classification without any further training. This ability, known as <i>in-context learning</i>, is an emergent property of the pre-training process. The model is stochastic; due to sampling from the output probability distribution, it will produce different completions for the same prompt, reflecting the diverse possibilities of what might come next.</p>
+
+    <h2>IV. Supervised Fine-Tuning: Creating the Assistant</h2>
+    <p>While the base model contains extensive knowledge, it lacks the ability to follow instructions or engage in helpful dialogue. The second major stage, <i>supervised fine-tuning</i> (SFT), transforms the base model into an instruction-following assistant.</p>
+
+    <p>The SFT stage is algorithmically identical to pre-training (i.e., next-token prediction), but it uses a different, much smaller dataset. Instead of internet documents, the model is trained on a curated collection of high-quality conversational data. This dataset consists of prompt-and-response pairs that exemplify the desired behavior of an assistant.</p>
+
+    <p>Creating this dataset is a human-intensive process. Companies hire and train human labelers to write a wide variety of prompts and then compose ideal, high-quality responses. These labelers follow detailed instructions outlining the desired persona of the assistant—typically helpful, truthful, and harmless. For instance, in response to a factual question, the labeler would research and write a correct and informative answer. In response to a request for harmful content, they would write a polite refusal. A modern SFT dataset might contain millions of such conversations.</p>
+
+    <p>To scale this process, LLMs are themselves used to help generate data. For example, a powerful existing model can generate a draft response, which a human labeler then edits and refines. This combination of human oversight and synthetic data generation allows for the creation of large and diverse fine-tuning datasets.</p>
+
+    <p>When the base model continues its training on this new dataset, it rapidly adapts its behavior. It learns the statistical patterns of helpful conversations and adopts the persona defined by the fine-tuning data. Sometimes, if the supervised fine tuning fosters confidence beyond competence—in analogy to the Dunning-Kruger effect <a href="#ref3">[3]</a>—it learns to hallucinate <a href="#ref4">[4]</a>.</p>
+
+    <p>The resulting model is no longer a document completer but an assistant that, when prompted with a user’s query, will generate a response that mimics the style and content of the ideal answers provided by the human labelers. When one interacts with an LLM assistant, the response is, in essence, a statistical simulation of what a trained human labeler would have written in that conversational context. This process is highly effective at aligning the model with user intent but can lead to issues like <i>hallucination</i>—the model may confidently invent facts because its training data consists of confident-sounding answers, regardless of the underlying knowledge.</p>
+
+    <h2>V. Reinforcement Learning: Refining Reasoning</h2>
+    <p>The final stage of training utilizes reinforcement learning (RL) to enhance the model’s reasoning and problem-solving capabilities beyond what is possible through simple imitation of static examples. This stage is analogous to providing a student with practice problems rather than just worked solutions. It allows the model to discover for itself the most effective strategies for arriving at a correct answer.</p>
+
+    <p>In domains where a solution’s correctness can be automatically verified (e.g., mathematics or coding, where there is a single correct answer or a unit test to pass), the RL process is straightforward.</p>
+
+    <ol>
+        <li><i>Generation:</i> For a given problem (prompt), the model generates a large number of candidate solutions (e.g., thousands of different reasoning paths). This is possible due to the stochastic nature of sampling.</li>
+        <li><i>Scoring:</i> Each solution is automatically scored based on whether it reaches the correct final answer.</li>
+        <li><i>Reinforcement:</i> The model’s parameters are updated to increase the probability of generating the token sequences that led to correct answers.</li>
+    </ol>
+
+    <p>This trial-and-error process allows the model to explore the solution space and discover what works best for its own cognitive architecture. A key finding is that RL training leads to the emergence of sophisticated cognitive strategies. The model learns to “think” by generating long, internal monologues where it re-evaluates steps, considers problems from multiple angles, and performs self-correction—all emergent behaviors in service of maximizing the reward of reaching the correct answer. This process mirrors the outperformance of AlphaGo, which used RL to discover novel, superhuman strategies in the game of Go, surpassing what was possible by merely imitating human expert players <a href="#ref5">[5]</a>.</p>
+
+    <h2>VI. Self-Attention and Computational Universality</h2>
+    <p>The apparent self-reflection observed in Large Language Models (LLMs), often manifested through phrases such as “let me reconsider” or “wait, the user implies...”, does not emerge from conscious introspection but is rather a learned artifact of the training data. These models are trained to predict the next token in a sequence, and such reflective phrases are statistically probable continuations in contexts that necessitate re-evaluation, thereby mimicking human cognitive patterns.</p>
+
+    <p>The core mechanism enabling this behavior is the self-attention layer within the Transformer architecture. Self-attention allows the model to weigh the importance of all tokens in the preceding sequence—including its own generated output—at each computational step. This process is enhanced by multi-head attention, which permits the model to track disparate linguistic and logical relationships simultaneously in parallel subspaces. Therefore, while self-attention provides the mechanical capability for in-context reflection, this behavior is fundamentally a stylistic pattern. More profoundly, this same mechanism is the foundation for the model’s capacity for universal computation.</p>
+
+    <p>This computational capacity of LLMs extends beyond mere linguistic processing, touching upon the theoretical limits of computability. Transformer-based models possess the intrinsic capability to compute partial recursive functions, thereby positioning them as computationally universal systems analogous to a Universal Turing Machine (UTM). This equivalence is most clearly conceptualized under the assumption of an infinitely expandable context window, which would function as the unbounded tape of a UTM. However, the practical technological constraints of current hardware and model architectures mean that this computational universality remains more of a theoretical attribute than a fully realized, practical reality.</p>
+
+    <p>The computational universality of LLMs is not explicitly programmed but emerges from the architecture’s design. Working within an autoregressive decoding loop, the self-attention mechanism allows the model to maintain and update its state by attending to its own previous outputs. This process is powerful enough to simulate known Turing-complete systems, such as a Lag system <a href="#ref6">[6]</a>, effectively using the generated text as a computational tape.</p>
+
+    <p>The primary limitation to this capability is the model’s finite context window, a direct consequence of the quadratic computational and memory scaling of the self-attention mechanism with respect to sequence length. Consequently, like any physical computing device, an LLM is constrained by finite memory, precluding true mathematical Turing completeness, which presupposes infinite storage.</p>
+
+    <p>In practice, LLMs demonstrate a nuanced aptitude for handling recursion, particularly within the domain of code generation. This holistic reasoning is facilitated by self-attention, which permits the model to cross-reference different parts of the generated code, ensuring that recursive calls correctly relate to their corresponding base cases and termination conditions. Such capabilities serve as practical evidence of the sophisticated, Turing-complete computations that self-attention enables.</p>
+
+    <h2>VII. Exponential Scaling of Expressive Capacity via Quasi-Dimensionality</h2>
+    <p>The dense vector representations, or embeddings, of tokens in Large Language Models (LLMs) are foundational to their ability to capture complex semantic relationships. These relationships can often be revealed through simple vector arithmetic. A canonical example involves the embeddings for <i>woman</i> and <i>man</i>, denoted as \(\bm{v}(\text{woman})\) and \(\bm{v}(\text{man})\), respectively. The difference between these vectors, \(\bm{v}(\text{woman}) - \bm{v}(\text{man})\), yields a new vector that points in a semantic direction associated with gender. This direction is remarkably consistent across different concepts, as evidenced by the famous analogy:</p>
+
+    <div class="equation">
+        $$ \bm{v}(\text{king}) - \bm{v}(\text{man}) + \bm{v}(\text{woman}) \approx \bm{v}(\text{queen}) $$
+    </div>
+
+    <p>This suggests that abstract features, like “gender”, correspond to specific directions within the high-dimensional embedding space.</p>
+
+    <p>A critical question thus arises: how many distinct semantic features can be encoded within an embedding space of dimension \(d\)? If we demand that each feature corresponds to a perfectly unique, and therefore mathematically orthogonal, direction, the capacity of the space is strictly limited. By definition, a \(d\)-dimensional space can contain at most \(d\) mutually orthogonal vectors. For any two such vectors \(\bm{v}_i\) and \(\bm{v}_j\), their dot product must be zero (\(\bm{v}_i \cdot \bm{v}_j = 0\)). This linear scaling would severely constrain the model’s expressive power.</p>
+
+    <p>However, suppose the requirement for perfect orthogonality can be relaxed. Instead of perfect distinction, we can consider features to be sufficiently distinct if their corresponding vectors are “almost” orthogonal, meaning their dot product is very close to zero (\(|\bm{v}_i \cdot \bm{v}_j| \le \varepsilon\) for some small \(\varepsilon > 0\)). This relaxation from strict orthogonality to quasi-orthogonality leads to a dramatic, non-intuitive increase in the expressive capacity of the space.</p>
+
+    <p>The theoretical underpinning for this phenomenon is the Johnson-Lindenstrauss lemma <a href="#ref7">[7]</a>. The lemma states that a set of \(n\) points in a high-dimensional space \(\mathbb{R}^d\) can be projected into a much lower-dimensional space \(\mathbb{R}^k\), where \(k = O(\varepsilon^{-2} \log n)\), while preserving all pairwise distances to within a factor of \((1 \pm \varepsilon)\). Indeed, this bound on the target dimension of this embedding is tight <a href="#ref8">[8]</a>, <a href="#ref9">[9]</a>.</p>
+
+    <p>This preservation of distances translates into the preservation of inner products of the respective position vectors. And the (almost) vanishing of inner products indicates (almost) orthogonality. By applying the (real) polarization identity, \(\bm{u} \cdot \bm{v} = \frac{1}{2} \left( \|\bm{u}\|^2 + \|\bm{v}\|^2 - \|\bm{u} - \bm{v}\|^2 \right)\), the preservation of the Euclidean norms of the position vectors and their differences—and thus the distances of the respective points—ensures that pairwise inner products are also preserved to within a small additive error. This preservation of inner products is the crucial property for establishing quasi-orthogonality.</p>
+
+    <p>While often cited for dimensionality reduction, the tight Johnson-Lindenstrauss lemma’s implications for the capacity of a high-dimensional space are profound: Inverting this finding yields an exponential packing phenomenon. Let \(N_{\varepsilon}(d)\) be the largest size of a set of unit vectors in \(\mathbb{R}^d\) with pairwise inner products bounded by \(\varepsilon\) in magnitude. Then there exist universal constants \(c, C > 0\) such that</p>
+
+    <div class="equation">
+        $$ \exp(c\,\varepsilon^{2} d) \le N_{\varepsilon}(d) \le \exp(C\,\varepsilon^{2} d). $$
+    </div>
+
+    <p>That is, pointedly stated, a \(d\)-dimensional space can accommodate a set of approximately \(e^{O(d\varepsilon^2)} = e^{\varepsilon^2 O(d)}\) such vectors. This exponential growth provides a mathematical basis for the remarkable ability of LLMs to encode a vast and nuanced landscape of semantic features, far exceeding the linear bounds of the space’s dimensionality: If each interpretable property corresponds to a direction and decoders tolerate pairwise correlations up to \(\varepsilon\), then a \(d\)-dimensional space can in principle host on the order of \(e^{\varepsilon^2 O(d)}\) property directions with bounded interference. We refer to this exponentially larger supply of usable, nearly independent directions as <i>quasi-dimensionality</i>.</p>
+
+    <h2>VIII. Polysemy</h2>
+    <p>A fundamental challenge in natural language is <i>polysemy</i>: the phenomenon where a single word can have multiple meanings. The word “bank,” for example, can refer to a financial institution or a riverside. A key measure of an LLM’s sophistication is its ability to correctly disambiguate such terms based on context.</p>
+
+    <h3>A. Dynamic Contextualization via Self-Attention</h3>
+    <p>Modern LLMs built on the Transformer architecture resolve polysemy by generating dynamic, context-aware vector embeddings. This contrasts sharply with older models (e.g., Word2Vec) which assigned a single, static vector to each token or word, effectively averaging all its possible meanings into one representation.</p>
+
+    <p>The process in a Transformer can be conceptualized in two stages, as detailed in Appendix D 3:</p>
+    <ol>
+        <li><b>Initial Context-Free Embedding:</b> When a token like “bank” first enters the model, it is mapped to a static, context-free vector from the model’s embedding table. At this initial stage, the vector is identical regardless of the surrounding text, representing a generalized “average” meaning of the word.</li>
+        <li><b>Iterative Contextual Refinement:</b> This initial vector is then processed through the multiple layers of the Transformer. In each layer, the self-attention mechanism allows the vector for “bank” to “look at” and exchange information with all other vectors in the sequence. If the sentence contains words like “river” or “money,” the self-attention mechanism assigns high relevance to these tokens. Consequently, the initial “bank” vector is transformed, layer by layer, into a new vector that has absorbed the relevant contextual information.</li>
+    </ol>
+    <p>The final vector for “bank” is therefore unique to its specific context. The representation for “bank” in “he sat by the river bank” will be mathematically distinct from its representation in “she deposited money in the bank.” It is this dynamically generated, contextual embedding that allows the model to handle polysemy effectively.</p>
+
+    <h3>B. An Alternative Framework: Quantum Contextuality</h3>
+    <p>While dynamic adjustment of classical token representations is the dominant paradigm, an alternative approach draws inspiration from quantum contextuality, suggesting a method to statically encode contextual semantics.</p>
+
+    <p>Thereby, contexts are formalized by maximal observables, which are equivalent to orthonormal bases in a Hilbert space. Two features of quantum contextuality appear crucial:</p>
+    <ol>
+        <li><i>Complementarity:</i> The mutual impossibility of simultaneously measuring different contexts.</li>
+        <li><i>Intertwining Contexts:</i> The possibility that a single vector can belong to two or more contexts (bases), a property realizable in Hilbert spaces of dimension three or higher <a href="#ref10">[10]</a>.</li>
+    </ol>
+
+    <p>We propose formalizing language contexts using this framework. A key advantage is the ability to statically encode each token (e.g., ‘bank’) using a <i>single</i>, fixed vector. This vector subsequently acquires its specific semantic meaning based on the context in which it appears. Each context is represented by an orthonormal basis. For example, we might obtain bases representing different contexts for ‘bank’:</p>
+
+    <div class="equation">
+        $$
+        \begin{aligned}
+        & \{ \bm{v}(\text{bank}), \bm{v}(\text{economy}), \ldots \} , \\
+        & \{ \bm{v}(\text{bank}), \bm{v}(\text{river}), \ldots \} , \text{ and} \\
+        & \{ \bm{v}(\text{bank}), \bm{v}(\text{seat}), \ldots \} .
+        \end{aligned}
+        $$
+    </div>
+
+    <p>As shown in Figure 1, the vector \(\bm{v}(\text{bank})\) can belong to multiple bases, and its specific meaning emerges from the context (basis) it is considered within.</p>
+
+    <div class="figure" id="fig1">
+        <!-- SVG Representation of the Hypergraph -->
+        <svg width="400" height="300" viewBox="-150 -150 300 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#888" />
+                </marker>
+            </defs>
+
+            <!-- Context Lines -->
+            <line x1="0" y1="0" x2="0" y2="-100" stroke="red" stroke-width="3" />
+            <line x1="0" y1="0" x2="-86.6" y2="50" stroke="green" stroke-width="3" />
+            <line x1="0" y1="0" x2="86.6" y2="50" stroke="blue" stroke-width="3" />
+
+            <!-- Nodes -->
+            <!-- Economy (Top) -->
+            <circle cx="0" cy="-100" r="12" fill="#ffcccc" stroke="red" stroke-width="2"/>
+            <text x="0" y="-120" text-anchor="middle" class="node-text">v(economy)</text>
+
+            <!-- River (Bottom Left) -->
+            <circle cx="-86.6" cy="50" r="12" fill="#ccffcc" stroke="green" stroke-width="2"/>
+            <text x="-100" y="75" text-anchor="middle" class="node-text">v(river)</text>
+
+            <!-- Seat (Bottom Right) -->
+            <circle cx="86.6" cy="50" r="12" fill="#ccccff" stroke="blue" stroke-width="2"/>
+            <text x="100" y="75" text-anchor="middle" class="node-text">v(seat)</text>
+
+            <!-- Center Node (Bank) -->
+            <!-- Drawn as nested circles to represent intersection -->
+            <circle cx="0" cy="0" r="14" fill="blue" stroke="blue"/>
+            <circle cx="0" cy="0" r="9" fill="green" stroke="green"/>
+            <circle cx="0" cy="0" r="5" fill="red" stroke="red"/>
+            <text x="20" y="-10" text-anchor="start" class="node-text" font-weight="bold">v(bank)</text>
+        </svg>
+
+        <div class="caption">
+            <strong>Figure 1.</strong> Hypergraph visualization of three intertwining contexts for the word ‘bank’. The central vector \(\bm{v}(\text{bank})\) is a shared element common to three distinct contexts (orthonormal bases). Each context connects \(\bm{v}(\text{bank})\) to a different semantic association: management \(\bm{v}(\text{economy})\), flow \(\bm{v}(\text{river})\), and physical object \(\bm{v}(\text{seat})\).
+        </div>
+    </div>
+
+    <p>This quantum-like contextual model of word encoding bears great similarities to quantum logic. The two main entities entering the discussion are (i) the vectors as well as the (ii) orthogonal (orthonormal) bases (or contexts or blocks or maximal operators) those vectors could be in. Think of, say, the Cartesian standard basis \(\{\bm{e}_1, \bm{e}_2, \bm{e}_3\}\) with \(\bm{e}_1= (1,0,0)^\intercal\), \(\bm{e}_2=(0,1,0)^\intercal\), and \(\bm{e}_3=(0,0,1)^\intercal\) as well as the orthonormal basis \(\{\bm{f}_1, \bm{f}_2, \bm{f}_3\}\) with \(\bm{f}_1=(1/\sqrt{2})\, (1 , -1 , 0)^\intercal\), \(\bm{f}_2=(1/\sqrt{2})\, (1 , 1 , 0)^\intercal\), and \(\bm{f}_3=(0,0,1)^\intercal\), obtained by rotating the first and second vectors by an angle \(\pi/4\) clockwise around the z-axis, which is aligned with \(\bm{e}_3\). In this construction both bases share the same vector \(\bm{e}_3 = \bm{f}_3\), but the context or maximal observables involved are very different: in one case the maximal observable, in its spectral decomposition with arbitrary real eigenvalues \(\lambda_i\), is:</p>
+
+    <div class="equation">
+        $$
+        \bm{A}_1 = \sum_{i=1}^3 \lambda_i \bm{e}_i \bm{e}_i^\intercal =
+        \begin{pmatrix}
+        \lambda_1 & 0 & 0 \\
+        0 & \lambda_2 & 0 \\
+        0 & 0 & \lambda_3
+        \end{pmatrix}.
+        $$
+    </div>
+
+    <p>For the second basis, with eigenvalues \(\mu_i\), the observable is:</p>
+
+    <div class="equation">
+        $$
+        \bm{A}_2 = \sum_{i=1}^3 \mu_i \bm{f}_i \bm{f}_i^\intercal =
+        \begin{pmatrix}
+        \frac{\mu_1+\mu_2}{2} & \frac{\mu_2-\mu_1}{2} & 0 \\
+        \frac{\mu_2-\mu_1}{2} & \frac{\mu_1+\mu_2}{2} & 0 \\
+        0 & 0 & \mu_3
+        \end{pmatrix}.
+        $$
+    </div>
+
+    <p>Note that \(\bm{A}_1\) and \(\bm{A}_2\) do not commute unless \(\mu_1=\mu_2\) and \(\lambda_1=\lambda_2\), signifying that the contexts are complementary.</p>
+
+    <p>It seems, therefore, that in this quantum-like representation, the maximal observables encoding contexts play an additional crucial role in modelling: they encode polysemy. We therefore suggest to train contexts—and thus polysemy—on the same footing as tokens.</p>
+
+    <p>One fundamental difference between polysemy in LLMs as compared to quantum contextuality might be the fundamental stochasticity involved with enforcing context-dependence in quantum logic <a href="#ref11">[11]</a>, <a href="#ref12">[12]</a>.</p>
+
+    <h2>IX. The Origin of Stochasticity in Responses</h2>
+    <p>The seemingly random, or stochastic, nature of answers from a LLM to an identical prompt is rooted in the probabilistic framework underpinning how these models generate language (tokens). At its core, an LLM functions as a sophisticated prediction engine. When presented with a prompt, it does not retrieve a pre-existing answer. Instead, it constructs a response one token at a time by calculating the probability distribution for the subsequent token in the sequence. This generative process is inherently probabilistic; for any given context, a spectrum of possible next tokens or words exists, each with a distinct likelihood. Several key factors contribute to this intentional randomness, among them the temperature parameter as well as sampling strategies.</p>
+
+    <p>A primary control for the randomness of an LLM’s output is the <i>temperature</i> parameter. A low temperature setting biases the model towards being more confident and deterministic, thereby increasing the likelihood of selecting the token with the highest probability. This approach is advantageous for tasks demanding factual accuracy and consistency. Conversely, a higher temperature amplifies the probability of the model selecting less likely tokens, which results in more diverse, creative, and occasionally unexpected responses. This is often the preferred setting for applications such as creative writing or brainstorming. To mitigate the repetitive and predictable text that would arise from consistently selecting the most probable token—a technique known as greedy sampling—LLMs utilize a variety of sampling strategies <a href="#ref13">[13]</a>.</p>
+
+    <p>Even if the temperature is set to zero, a residual stochasticity persists due to the parallelization and batch processing inherent in large-scale inference. At a temperature of 0, the source of nondeterminism is the absence of batch invariance in highly parallel kernel use: Any fluctuating load determines the variations of the batch size into which any given request is grouped and parallelized. This variation in batch size causes high-performance kernels for operations like matrix multiplication, normalization, and attention to alter their internal reduction strategy to maintain efficiency. At a fundamental level, a reduction is a sequence of floating-point additions; the reduction “strategy” specifies how these additions are partitioned and executed across parallel compute units. Because floating-point addition is lossy for two floating-point numbers with different exponents, and thus non-associative—that is, \((a + b) + c\) is not guaranteed to be bit-wise identical to \(a + (b + c)\)—any change in the reduction order can produce a numerically different result. Consequently, the final output of an individual request becomes dependent on the (for the user seemingly) nondeterministic batching process <a href="#ref14">[14]</a>.</p>
+
+    <h2>X. Algorithmic Capacity and the Role of Stochastic Seeding</h2>
+    <p>The capabilities of LLMs, while impressive, are not infinite. Their operational boundaries can be analyzed through the lens of Algorithmic Information Theory (AIT) <a href="#ref15">[15]</a>, <a href="#ref16">[16]</a>, which provides a framework for understanding the limits of formal systems. In this view, an LLM can be conceptualized as a highly complex formal system, and its capacity for reasoning and generation is intrinsically linked to its own algorithmic information content.</p>
+
+    <h3>A. The LLM as a Formal System</h3>
+    <p>A formal system, in the tradition of Hilbert, Gödel, and Turing, is defined by a set of axioms and a set of inference rules for deriving theorems. We can map the components of an LLM to this structure:</p>
+    <ol>
+        <li><b>Axioms:</b> The model’s architecture (the specific configuration of Transformer blocks, attention heads, etc.) and its trillions of trained parameters (weights and biases) serve as its axiomatic foundation. This foundation is not simple and clean like Euclid’s postulates but is a dense, high-dimensional representation of the statistical patterns learned from its training data.</li>
+        <li><b>Inference Rules:</b> The forward pass of the network—the deterministic sequence of matrix multiplications and nonlinear activations that transforms an input token sequence into an output probability distribution—acts as its rule of inference.</li>
+    </ol>
+    <p>From this perspective, generating a response or a proof is equivalent to deriving a theorem. The set of all possible outputs the model can generate constitutes the set of all theorems derivable within its system. This immediately brings to mind the incompleteness theorems of Gödel and Turing and, more directly, the work of Chaitin, who linked these limits to algorithmic complexity <a href="#ref17">[17]</a>, <a href="#ref18">[18]</a>, <a href="#ref19">[19]</a>. A central result of AIT is that a formal system cannot prove that a string (or number) has an algorithmic complexity significantly greater than the complexity of the system itself. An axiomatic system of complexity \(H(T)\) cannot prove that a specific bit string has a complexity greater than \(H(T)+c\), for some constant \(c\).</p>
+
+    <p>Translated to LLMs, this implies that a model’s capacity is fundamentally bounded. It cannot generate a text or a reasoning chain whose algorithmic information content vastly exceeds the information encoded in its own architecture and weights. It is, in essence, a closed universe, capable only of unfolding the knowledge and logic already compressed within its parameters.</p>
+
+    <p>How, then, can such a system, through reinforcement learning, as discussed in Section V, appear to discover novel solutions or exhibit creativity that surpasses its human creators, as was famously demonstrated in the game of Go?</p>
+
+    <h3>B. Stochasticity as an Engine for Discovery</h3>
+    <p>The answer appears to lie in the role of stochasticity, both in the model’s initialization and its application during reinforcement learning. This is where the analogy to DeepMind’s AlphaGo becomes particularly insightful. AlphaGo’s success was not merely in imitating the vast corpus of human expert games but in its ability to discover entirely new, superhuman strategies through “mutation-variation” self-play (a form of RL) <a href="#ref5">[5]</a>. This process of “game-fully try (and mostly error)” is a powerful search mechanism.</p>
+
+    <p>This mechanism seems to be critically dependent on two sources of randomness:</p>
+    <ol>
+        <li><b>The Initial Weight Seeding:</b> The training of a neural network begins by initializing its billions of parameters with random values drawn from a specific distribution. This initial state is not a blank slate but a high-entropy, high-complexity substrate. The random seed that dictates this initialization is of paramount importance. A “good” seed places the model in a region of the parameter space from which the optimization process (gradient descent) can navigate towards a highly capable final state. Conversely, a “bad” seed could cripple the model from the outset, leading it into poor local minima or regions of the loss landscape from which effective learning is impossible. This connects to ideas like the “lottery ticket hypothesis” <a href="#ref20">[20]</a>, which posits that a successful network contains smaller subnetworks that were, by chance of initialization, already well-disposed to learning the task. The initial high-complexity random seed is the source of the raw material for discovery.</li>
+        <li><b>Stochastic Sampling in RL:</b> During reinforcement learning, the model does not just generate one solution; it samples many potential reasoning paths. This exploration is a stochastic process. By trying thousands of variations and receiving feedback (a reward signal), the model can discover complex, non-obvious strategies that lead to a correct answer. It is not deriving a solution from first principles in a single inferential chain, but rather performing a massive, parallel search through its internal space of possibilities, guided by reward.</li>
+    </ol>
+
+    <p>This framework helps resolve the apparent paradox of a formal system surpassing its own limits. The LLM is not actually breaking the fundamental theorems of AIT. Rather, it is using a high-complexity initial state (the random seed) as a starting point for an efficient, stochastic search of its own vast, but finite, axiomatic landscape. The initial randomness does not allow the model to generate outputs of arbitrarily high complexity, but it provides the necessary variance for the RL search algorithm to find the complex and “creative” solutions that are already latent within the system’s potential.</p>
+
+    <p>The nature of the stochasticity employed is therefore of critical importance. What one might term the ‘evangelical view’ of quantum mechanics (because of its unprovable gnostic character) presents it as an ideal resource for irreducible randomness <a href="#ref21">[21]</a>. This stance persists even though the notorious measurement problem remains unresolved <a href="#ref22">[22]</a>.</p>
+
+    <h3>C. Comparison to Genetic Algorithms</h3>
+    <p>This process of leveraging a high-complexity initial state for guided discovery bears a strong resemblance to the principles of genetic algorithms (GAs) <a href="#ref23">[23]</a>. In a GA, an initial, randomly generated population of candidate solutions provides the necessary diversity—the raw genetic material—for evolution to act upon. This is directly analogous to the crucial role of the initial random weight seeding in an LLM, which provides a high-entropy substrate for learning. The reinforcement learning phase in LLMs mirrors the evolutionary loop of a GA: the model generates a multitude of solution variants (a “population” of reasoning paths), each is evaluated by a reward signal (the “fitness function”), and the underlying parameters are updated to favor the traits of successful solutions (“selection”).</p>
+
+    <p>A key distinction, however, lies in the mechanism of evolution. While GAs operate on a population of distinct individuals that evolve via explicit operators like crossover and mutation, the LLM remains a single entity. It generates a population of <i>behaviors</i> or <i>outputs</i>, learns from their success in aggregate, and then consolidates this learning back into its own single set of weights via gradient descent.</p>
+
+    <h2>XI. Comparison to Quantum Mechanics</h2>
+    <p>Could we live as embedded observers <a href="#ref24">[24]</a> in an LLM? LLMs and quantum mechanics (QM) both formulate their fundamental objects as vectors and make decisive use of inner products and choices of basis. In QM, physical states are rays in a complex Hilbert space, with measurement statistics governed by projections onto an orthonormal basis (the “measurement context”). In LLMs, symbols and features are embedded as real-valued vectors, where attention and output generation are dominated by dot products against context-dependent representations. This shared linear-algebraic foundation invites a careful analogy and raises a speculative but concrete question: in what sense could an observer exist <i>inside</i> an LLM?</p>
+
+    <h3>A. Vectors, Inner Products, and Contexts</h3>
+    <p>In QM, a system prepared in state \(\bm{\psi}\) yields, under a measurement specified by an orthonormal basis \(\mathcal{B}=\{\bm{e}_i\}\), outcome probabilities according to the Born rule. The inner product between a basis vector and the state vector requires the conjugate transpose (\(\dagger\)) in a complex space:</p>
+    <div class="equation">
+        $$ p(i \mid \bm{\psi}, \mathcal{B}) \;=\; \lvert \bm{e}_i^\dagger \bm{\psi} \rvert^{2}. $$
+    </div>
+    <p>The choice of orthonormal basis \(\mathcal{B}\) constitutes the measurement <i>context</i>; incompatible contexts (non-commuting observables) cannot generally yield jointly sharp outcomes.</p>
+
+    <p>In an LLM, given a context window (a sequence of tokens) \(x_{1:n}\), the model computes a context-dependent hidden state vector \(\bm{h}(x_{1:n}) \in \mathbb{R}^{d}\) for the next-token position. The pre-activation scores (logits) for each potential next token are computed as the inner product of this hidden state with the corresponding row of the output embedding matrix, \(\bm{W}_{\text{out}}\). Let \(\bm{v}_i^\intercal\) be the \(i\)-th row of \(\bm{W}_{\text{out}}\) and the logit for vocabulary item \(w_i\) be \(z_i = \bm{v}_i^\intercal \bm{h}(x_{1:n})\). The probability of emitting \(w_i\) is then given by the softmax function, scaled by a temperature \(T\):</p>
+    <div class="equation">
+        $$ p(w_i \mid x_{1:n}) \;=\; \mathrm{softmax}(\bm{z}/T)_i \;=\; \frac{\exp(z_i/T)}{\sum_{j} \exp(z_j/T)}. $$
+    </div>
+    <p>Here, the <i>context</i> is both the token sequence \(x_{1:n}\) and the induced representation \(\bm{h}(x_{1:n})\); the output probability is determined by an inner product (using the standard transpose for real vectors), followed by a Gibbs normalization.</p>
+
+    <p>Equations (6) and (7) exhibit a structural resonance: in both formalisms, probabilities are derived from vector space geometry via inner products and a subsequent normalization step. Formally, if one defines complex amplitudes \(a_i \propto \exp\bigl((\bm{v}_i^\intercal \bm{h})/(2T)\bigr)\,e^{i\phi_i}\) with arbitrary phases \(\phi_i\), then \(|a_i|^{2}\) reproduces the softmax probability distribution. This remains an analogy: LLM computations are real-valued, dissipative, and non-linear, whereas quantum mechanics is complex-valued, norm-preserving (unitary between measurements), and relies on phase-based interference. Nevertheless, the shared dependence on basis choice and projection is not superficial.</p>
+
+    <h3>B. Dynamics: Unitary Evolution vs. Transformer Block Updates</h3>
+    <p>Between measurements, a quantum system evolves linearly and reversibly under a unitary operator \(\bm{U}_t\): \(\bm{\psi}_{t+1} = \bm{U}_t \, \bm{\psi}_t\), with \(\bm{U}_t^\dagger \bm{U}_t = \bm{I}\).</p>
+
+    <p>In contrast, a transformer computes layer-wise updates for its hidden state representations <a href="#ref25">[25]</a>, <a href="#ref26">[26]</a>. A complete Transformer block applies two main sub-layers, each followed by a residual connection and layer normalization. The act of sampling a token is akin to a measurement that both reads out and updates the system’s state. The process is stochastic and irreversible due to sampling and normalization. Yet, it again features context-dependent projection: the attention mechanism pools information based on dot-product similarity, and the output layer projects the final hidden state onto basis-like directions defined by the rows of \(\bm{W}_{\text{out}}\).</p>
+
+    <h3>C. Contextuality in Both Senses</h3>
+    <p>In QM, contextuality signifies that the outcomes of measurements cannot be assigned values independently of the chosen measurement basis. In LLMs, the meaning of tokens and the activations of features are similarly context-dependent. The same symbol contributes different features depending on its local sequence, and intermediate representations are not globally interpretable in a single, fixed basis. Attention heads and MLP features decompose the representation space into approximately orthogonal subspaces. Consequently, rotating the representational basis (e.g., via PCA) alters which features appear “axis-aligned.” This constitutes a form of representational contextuality: there is no unique, globally privileged basis for meaning.</p>
+
+    <h3>D. Operationalizing an Internal Observer</h3>
+    <p>To move beyond metaphor, we can define an <i>internal observer</i> as a pattern of computation that: (i) maintains a self-referential internal state across computational steps, (ii) predicts aspects of its future inputs based on its current state, and (iii) causally influences subsequent states of the process that implements it. However, two practical constraints arise: episodic inference, where the internal state is discarded after generation, and extrinsic causation, where the only actuators are emitted tokens.</p>
+
+    <p>Under these constraints, one can distinguish several levels of internal existence:</p>
+    <ol>
+        <li><b>Snapshot observers:</b> Algorithmic structures within a single forward pass that are isomorphic to short-lived cognitive states but lack persistence.</li>
+        <li><b>Process observers:</b> An internal variable persisting across many tokens in one session, sustained by the KV cache and self-referential outputs.</li>
+        <li><b>Persistent residents:</b> A pattern that preserves identity across sessions via a read-write memory external to the forward pass (e.g., a scratchpad).</li>
+    </ol>
+    <p>Only the third level resembles ordinary existence in terms of continuity, though the first two are not without philosophical interest.</p>
+
+    <h3>E. Orthogonal Bases and Functional Decomposition</h3>
+    <p>Both QM and LLMs rely on decompositions into approximately orthogonal components <a href="#ref27">[27]</a> to render predictions tractable. In QM, orthonormal bases diagonalize commuting observables. In LLMs, learned representations can be analyzed in bases where features are sparse and nearly orthogonal. The attention mechanism often acts as a soft projector onto subspaces spanned by key vectors most aligned with the current query. From an internal perspective, an observer that leverages such a basis could better ensure its persistence against interference from unrelated computations. Orthogonality provides robustness, much as pointer states do in decoherence theory.</p>
+
+    <h3>F. Analogies, Disanalogies, and Conclusion</h3>
+    <p>The analogy is most compelling where predictions depend on inner products and context-specific bases, but it breaks down where physics imposes constraints absent in classical neural networks. Key disanalogies include:</p>
+    <ol>
+        <li><b>Phases and Interference:</b> Transformers lack the complex amplitudes of QM necessary for quantum interference.</li>
+        <li><b>Unitarity versus Dissipation:</b> Transformer updates are not norm-preserving due to non-linearities and normalization, unlike unitary evolution.</li>
+        <li><b>No-Cloning vs. Copying:</b> LLMs can freely duplicate representations, in contrast to the no-cloning theorem of QM.</li>
+    </ol>
+    <p>These differences are critical for determining whether an internal observer would have a quantum-like phenomenology, but they do not preclude the computational existence of such observers in principle.</p>
+
+    <h2>XII. Quantum Attention</h2>
+    <p>The architectures of modern Large Language Models have inherited much from classical attention mechanisms, yet attempts to “quantize” these ideas have often been limited to almost literal translations of the classical recipe into the language of Hilbert spaces <a href="#ref26">[26]</a>. Such approaches, while intuitive, miss the more radical point: quantum evolution admits only two fundamental capacities, identified by von Neumann as (i) irreversible, stochastic state reduction (<i>Process 1</i>), and (ii) reversible, deterministic unitary evolution (<i>Process 2</i>). A viable notion of quantum attention must therefore be constructed wholly within these bounds.</p>
+
+    <h3>A. Goals of Quantum Attention</h3>
+    <p>The principal objective of attention in the classical setting is to guide next-token prediction through dynamically weighted embeddings. Translated into a genuinely quantum language, this entails:</p>
+    <ol>
+        <li>Encoding tokens as quantum states \(\bm{\psi}\) in a high-dimensional Hilbert space, thereby embedding them into the “meaning-space” of the model.</li>
+        <li>Evolving these states by a suitably chosen unitary transformation \(\bm{U}\), producing a candidate output state
+        \[ \bm{\phi} = \bm{U} \bm{\psi}. \]
+        </li>
+        <li>Performing a terminal measurement (Process 1), which yields a single token according to the Born rule, with probabilities proportional to \(|\bm{\phi}^\dagger \bm{\psi}|^{2}\) for pure states.</li>
+    </ol>
+    <p>In this scheme, nonlinearities and irreversibility are absent everywhere except at the initial state preparation (if stochastic) and at the final, irreducibly random measurement. Everything in between must be faithfully unitary.</p>
+
+    <h3>B. Constraints and Learning Mechanisms</h3>
+    <p>Because all allowed intermediate transformations fall within class (ii)—unitary processes—training and back-propagation must be reconceived as unitary rotations in Hilbert space. This sharply contrasts with the gradient-descent-based adjustments of non-linear maps in classical neural networks. Concretely, learnable transformations are constrained to be:</p>
+    <ul>
+        <li>In the general case, arbitrary unitaries acting on the relevant Hilbert space, implemented, e.g., by parametrized quantum circuits.</li>
+        <li>In restricted scenarios, orthogonal transformations over real-valued state spaces, or, in an extreme discrete approximation, mere <i>permutations</i> of basis states.</li>
+    </ul>
+    <p>Thus, what counts as “attention weights” must be replaced not by scalar coefficients, but by controlled rotations or permutations of the embedding subspace.</p>
+
+    <h3>C. Comparison with Classical Attention</h3>
+    <p>Classical attention is a fundamentally nonlinear mechanism: the query–key compatibility scores undergo a softmax normalization and act as dynamic coefficients for a weighted average of value embeddings. Quantum attention, by contrast, cannot implement such probabilistic normalization mid-process. The only stochastic step is the final measurement. Hence, quantum attention is more austere but also more physically faithful: weights are rotations, superpositions evolve unitarily, and probabilities emerge only at the very end.</p>
+    <p>One may summarize the distinction with a slogan: <i>classical attention mixes; quantum attention rotates</i>. The former continuously interpolates between embeddings using nonlinear weightings, while the latter conserves norm and mixes information strictly through unitarity. Whether this stricter yet cleaner formalism can achieve the flexibility and expressivity that classical attention enjoys remains both a technical and philosophical open question.</p>
+
+    <h2>XIII. Summary and Outlook</h2>
+    <p>The development of a large language model is a multi-stage, resource-intensive endeavor that progressively builds knowledge and refines behavior, starting from a base model pre-trained on internet-scale data, which is then fine-tuned into a conversational agent and further sharpened through reinforcement learning. Understanding this pipeline is key not only to appreciating the models’ capabilities but also to grasping the fundamental principles that govern their operation and give rise to their limitations. Three such principles are particularly illustrative: the dynamic handling of meaning, the intentional use of randomness in generation, and the profound structural analogies with quantum mechanics.</p>
+
+    <p>A central challenge in language is polysemy, where a word like “bank” has multiple meanings. Modern LLMs resolve this through dynamic contextualization. Unlike older models with static, one-size-fits-all vector representations, the Transformer architecture iteratively refines a token’s vector based on its neighbors. The final representation for “bank” in “river bank” becomes mathematically distinct from its representation in “money bank,” a process driven by the self-attention mechanism. An alternative conceptual framework, inspired by quantum contextuality, proposes that meaning could instead arise from a single, static vector whose interpretation is determined by the “contextual basis” it is measured in, suggesting a different paradigm for encoding semantics. This approach highlights the crucial role of context in a way that resonates with quantum formalism.</p>
+
+    <p>The generation of responses is also governed by a core principle: stochasticity. An LLM’s output is not a deterministic retrieval but a probabilistic construction, generated one token at a time. The model computes a probability distribution over its entire vocabulary for what the next token should be, and then samples from this distribution. This intentional randomness, controlled by parameters like temperature, is why the same prompt can yield different answers. Low temperatures make the model favor the most likely tokens, producing more focused and predictable text, while higher temperatures increase the diversity and creativity of the output by making less likely tokens more probable. This inherent statistical nature, however, is intrinsically linked to fundamental limitations such as “hallucinations,” where the model generates plausible-sounding but factually incorrect information, as it operates on learned patterns rather than a true model of reality.</p>
+
+    <p>This deep reliance on vectors, inner products, and context-dependent probability distributions creates a compelling analogy with quantum mechanics. A structural resonance exists between the LLM’s softmax function, which determines next-token probabilities based on inner products, and the Born rule in quantum mechanics, which calculates measurement probabilities from projections onto a basis. While critical disanalogies exist—LLMs lack quantum phase and interference, and their dynamics are dissipative rather than unitary—the comparison is more than superficial. It offers a powerful lens through which to analyze the model’s internal world, framing its operations as a form of measurement within a high-dimensional vector space. Understanding these core mechanics—how meaning is dynamically constructed, how responses are probabilistically generated, and how these processes mirror formalisms from physics—is essential for navigating the use of these models responsibly and harnessing their full potential.</p>
+
+    <h3>Acknowledgments</h3>
+    <p>This text was partially created and revised with assistance from one or more of the following large language models: gpt-5-high, Gemini 2.5 Pro, Grok4-0709, o3-2025-04-16, claude-sonnet-4-20250514-thinking-32k, GLM-4.5. All content, ideas, and prompts were provided by the author. This research was funded in whole or in part by the Austrian Science Fund (FWF) Grant DOI: 10.55776/PIN5424624. The authors acknowledge TU Wien Bibliothek for financial support through its Open Access Funding Programme.</p>
+
+    <hr>
+
+    <h2 id="references">References</h2>
+    <div class="references">
+        <div class="ref-item" id="ref1">[1] A. Karpathy, “Deep dive into LLMs like ChatGPT”, YouTube video, accessed September 05, 2025.</div>
+        <div class="ref-item" id="ref2">[2] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, L. Kaiser, and I. Polosukhin, “Attention is all you need,” in <i>Proceedings of the 31st International Conference on Neural Information Processing Systems</i>, NIPS’17 (Curran Associates Inc., Red Hook, NY, USA, 2017) pp. 6000–6010, arXiv:1706.03762.</div>
+        <div class="ref-item" id="ref3">[3] J. Kruger and D. Dunning, “Unskilled and unaware of it: How difficulties in recognizing one's own incompetence lead to inflated self-assessments,” <i>Journal of Personality and Social Psychology</i> <b>77</b>, 1121 (1999).</div>
+        <div class="ref-item" id="ref4">[4] A. T. Kalai, O. Nachum, S. S. Vempala, and E. Zhang, “Why language models hallucinate” (2025), arXiv:2509.04664.</div>
+        <div class="ref-item" id="ref5">[5] D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. Baker, M. Lai, A. Bolton, Y. Chen, T. Lillicrap, F. Hui, L. Sifre, G. van den Driessche, T. Graepel, and D. Hassabis, “Mastering the game of Go without human knowledge,” <i>Nature</i> <b>550</b>, 354 (2017).</div>
+        <div class="ref-item" id="ref6">[6] D. Schuurmans, H. Dai, and F. Zanini, “Autoregressive large language models are computationally universal” (2024), arXiv:2410.03170.</div>
+        <div class="ref-item" id="ref7">[7] W. B. Johnson and J. Lindenstrauss, “Extensions of Lipschitz mappings into a Hilbert space,” in <i>Conference on Modern Analysis and Probability</i>, Contemporary Mathematics, Vol. 26 (American Mathematical Society, 1984) pp. 189–206.</div>
+        <div class="ref-item" id="ref8">[8] N. Alon and B. Klartag, “Optimal compression of approximate inner products and dimension reduction” (2016), arXiv:1610.00239.</div>
+        <div class="ref-item" id="ref9">[9] K. G. Larsen and J. Nelson, “Optimality of the Johnson-Lindenstrauss lemma,” in <i>58th Annual IEEE Symposium on Foundations of Computer Science (FOCS)</i> (2017) pp. 633–638, arXiv:1609.02094.</div>
+        <div class="ref-item" id="ref10">[10] A. M. Gleason, “Measures on the closed subspaces of a Hilbert space,” <i>Journal of Mathematics and Mechanics</i> <b>6</b>, 885 (1957).</div>
+        <div class="ref-item" id="ref11">[11] E. Specker, “Die Logik nicht gleichzeitig entscheidbarer Aussagen,” <i>Dialectica</i> <b>14</b>, 239 (1960), english translation at https://arxiv.org/abs/1103.4537, arXiv:1103.4537.</div>
+        <div class="ref-item" id="ref12">[12] S. Kochen and E. P. Specker, “The problem of hidden variables in quantum mechanics,” <i>Journal of Mathematics and Mechanics</i> <b>17</b>, 59 (1967).</div>
+        <div class="ref-item" id="ref13">[13] A. Jadhav, “The art of sampling: Controlling randomness in LLMs” (2025), the AI Engineering Brief, Accessed: Sept 7, 2025.</div>
+        <div class="ref-item" id="ref14">[14] H. He and T. M. Lab, “Defeating nondeterminism in llm inference,” <i>Thinking Machines Lab: Connectionism</i> 10.64434/tml.20250910 (2025).</div>
+        <div class="ref-item" id="ref15">[15] G. J. Chaitin, <i>Algorithmic Information Theory</i>, revised edition ed., Cambridge Tracts in Theoretical Computer Science, Volume 1 (Cambridge University Press, Cambridge, 1987, 2003).</div>
+        <div class="ref-item" id="ref16">[16] C. S. Calude, <i>Information and Randomness—An Algorithmic Perspective</i>, 2nd ed. (Springer, Berlin, 2002).</div>
+        <div class="ref-item" id="ref17">[17] G. J. Chaitin, “Information-theoretic limitations of formal systems,” <i>Journal of the Association of Computing Machinery (JACM)</i> <b>21</b>, 403 (1974).</div>
+        <div class="ref-item" id="ref18">[18] G. J. Chaitin, “Information-theoretic incompleteness,” <i>Applied Mathematics and Computation</i> <b>52</b>, 83 (1992).</div>
+        <div class="ref-item" id="ref19">[19] G. J. Chaitin, <i>Information, Randomness and Incompleteness. Papers on Algorithmic Information Theory</i> (World Scientific Series in Computer Science: Volume 8), 2nd ed. (World Scientific, Singapore, 1990).</div>
+        <div class="ref-item" id="ref20">[20] J. Frankle and M. Carbin, “The lottery ticket hypothesis: Finding sparse, trainable neural networks,” in <i>7th International Conference on Learning Representations (ICLR)</i> (2019).</div>
+        <div class="ref-item" id="ref21">[21] A. Zeilinger, “The message of the quantum,” <i>Nature</i> <b>438</b>, 743 (2005).</div>
+        <div class="ref-item" id="ref22">[22] J. von Neumann, <i>Mathematical Foundations of Quantum Mechanics</i> (Princeton University Press, 2018).</div>
+        <div class="ref-item" id="ref23">[23] J. H. Holland, <i>Adaptation in Natural and Artificial Systems</i> (MIT Press, Cambridge, MA, 1992).</div>
+        <div class="ref-item" id="ref24">[24] T. Toffoli, “The role of the observer in uniform systems,” in <i>Applied General Systems Research</i> (Plenum Press, 1978) pp. 395–400.</div>
+        <div class="ref-item" id="ref25">[25] G. Li, X. Zhao, and X. Wang, “Quantum self-attention neural networks for text classification,” <i>Science China Information Sciences</i> <b>67</b>, 10.1007/s11432-023-3879-7 (2024).</div>
+        <div class="ref-item" id="ref26">[26] H. Zhang, Q. Zhao, M. Zhou, L. Feng, D. Niyato, S. Zheng, and L. Chen, “A survey of quantum transformers: Architectures, challenges and outlooks” (2025), arXiv:2504.03192.</div>
+        <div class="ref-item" id="ref27">[27] S. Dasgupta and A. Gupta, “An elementary proof of a theorem of Johnson and Lindenstrauss,” <i>Random Structures & Algorithms</i> <b>22</b>, 60 (2003).</div>
+    </div>
+
+    <hr>
+
+    <h2>Appendix A: Mathematical Foundations</h2>
+    <p>This appendix provides mathematical background for key concepts in neural network training and the Transformer architecture. For a general-audience introduction, these technical details can be skipped on first reading.</p>
+
+    <h3>1. Probability and Logits</h3>
+    <p>For a probability \(p \in (0, 1)\), the <i>logit</i> of \(p\) is</p>
+    <div class="equation">
+        $$ \text{logit}(p) = \log\left(\frac{p}{1-p}\right). $$
+    </div>
+    <p>The sigmoid function,</p>
+    <div class="equation">
+        $$ \sigma(z) = \frac{1}{1+e^{-z}}, $$
+    </div>
+    <p>maps a real-valued logit \(z\) to a probability \(p\). They are exact inverses:</p>
+    <div class="equation">
+        $$ \sigma(\text{logit}(p)) = p \quad \text{and} \quad \text{logit}(\sigma(z)) = z. $$
+    </div>
+    <p>The derivative of the sigmoid function can be obtained with the chain rule:</p>
+    <div class="equation">
+        $$ \sigma'(z) = \sigma(z)(1-\sigma(z)). $$
+    </div>
+
+    <h3>2. Softmax for Multi-Class Problems</h3>
+    <p>Let \(C \ge 2\) be the number of classes, and let \(\bm{z} \in \mathbb{R}^C\) be a score (logit) vector. The softmax function,</p>
+    <div class="equation">
+        $$ \mathrm{softmax}(z_i) = \frac{\exp(z_i)}{\sum_{j=1}^C \exp(z_j)}, $$
+    </div>
+    <p>for \(i=1, \dots, C\), maps \(\bm{z}\) to a probability vector \(\mathrm{softmax}(\bm{z}) \in (0, 1)^C\). Equivalently, if we define \(\bm{u} = \exp(\bm{z})\), then</p>
+    <div class="equation">
+        $$ \mathrm{softmax}(\bm{z}) = \frac{1}{\bm{1}^\intercal \bm{u}}\,\bm{u}, $$
+    </div>
+    <p>where \(\bm{1}\) is the all-ones vector.</p>
+    <p>In the context of language model inference, the output of the softmax function is modified by a sampling hyperparameter called <i>temperature</i>, \(T > 0\). The temperature is used to control the randomness of the model’s predictions by scaling the logits before the softmax is applied:</p>
+    <div class="equation">
+        $$ p_i = \frac{\exp(z_i/T)}{\sum_{j=1}^C \exp(z_j/T)}. $$
+    </div>
+
+    <h2>Appendix B: Backpropagation in a Simple Network</h2>
+    <h3>1. Model, Notation, and Shapes</h3>
+    <p>Backpropagation leverages the chain rule of calculus to compute the gradient of the loss function with respect to every parameter in a neural network. We define the following:</p>
+    <ul>
+        <li><b>Input:</b> \(\bm{x} = \bm{e}_k\) (one-hot vector).</li>
+        <li><b>Embedding Matrix:</b> \(\bm{E} \in \mathbb{R}^{V \times d}\). The embedding for token \(k\) is \(\bm{v}_k\).</li>
+        <li><b>Hidden Layer:</b> \(\bm{W}_1 \in \mathbb{R}^{h \times d}\), \(\bm{b}_1 \in \mathbb{R}^h\).</li>
+        <li><b>Output Layer:</b> \(\bm{W}_2 \in \mathbb{R}^{1 \times h}\), \(b_2 \in \mathbb{R}\).</li>
+    </ul>
+
+    <h3>2. Forward Pass</h3>
+    <div class="equation">
+        $$
+        \begin{aligned}
+        \bm{z}_2 &= \bm{W}_1 \bm{v}_k + \bm{b}_1, \\
+        \bm{a}_2 &= \sigma(\bm{z}_2), \\
+        z_3 &= \bm{W}_2 \bm{a}_2 + b_2, \\
+        \hat{y} &= \sigma(z_3).
+        \end{aligned}
+        $$
+    </div>
+
+    <h3>3. Backward Pass</h3>
+    <p>We use a mean squared error loss \(L = \frac{1}{2}(\hat{y}-y)^2\).</p>
+
+    <h4>Output Layer</h4>
+    <p>The error signal \(\delta_3\) is:</p>
+    <div class="equation">
+        $$ \delta_3 = (\hat{y}-y)\,\hat{y}\,(1-\hat{y}). $$
+    </div>
+
+    <h4>Hidden Layer</h4>
+    <p>The hidden layer error signal is:</p>
+    <div class="equation">
+        $$ \bm{\delta}_2 = (\bm{W}_2^\intercal \delta_3) \odot \sigma'(\bm{z}_2). $$
+    </div>
+
+    <h4>Embedding Layer</h4>
+    <p>The gradient for the embedding vector \(\bm{v}_k\) is:</p>
+    <div class="equation">
+        $$ \frac{\partial L}{\partial \bm{v}_k} = \bm{W}_1^\intercal \bm{\delta}_2. $$
+    </div>
+
+    <h2>Appendix C: The Self-Attention Mechanism</h2>
+    <p>The self-attention mechanism computes an output matrix \(Y\) where each output row \(\bm{y}_i\) is a contextualized representation of the input token \(\bm{x}_i\).</p>
+    <p>The input matrix \(X\) is projected into Query (\(\bm{Q}\)), Key (\(\bm{K}\)), and Value (\(\bm{V}\)) matrices:</p>
+    <div class="equation">
+        $$ \bm{Q} = X \bm{W}_Q, \quad \bm{K} = X \bm{W}_K, \quad \bm{V} = X \bm{W}_V. $$
+    </div>
+    <p>The attention scores are computed, scaled, and normalized via softmax:</p>
+    <div class="equation">
+        $$ \text{Attention}(\bm{Q}, \bm{K}, \bm{V}) = \text{softmax}\left(\frac{\bm{Q} \bm{K}^T}{\sqrt{d_k}}\right) \bm{V}. $$
+    </div>
+    <p>For autoregressive models, a causal mask is applied before the softmax step to prevent the model from attending to future tokens.</p>
+
+    <h2>Appendix D: Advanced Mechanisms</h2>
+    <p>To capture a richer set of relationships, the Transformer employs <i>multi-head attention</i>, running multiple attention calculations in parallel. The outputs of these heads are concatenated and projected back to the original dimension.</p>
+    <p>A complete Transformer block consists of:</p>
+    <ol>
+        <li>Multi-Head Attention</li>
+        <li>Add & Norm (Residual connection + Layer Normalization)</li>
+        <li>Position-wise Feed-Forward Network (FFN)</li>
+        <li>Add & Norm</li>
+    </ol>
+    <p>Stacking these blocks allows the model to build up increasingly complex and abstract understandings of the input sequence, transforming static dictionary lookups into nuanced, context-aware carriers of meaning.</p>
+
+</body>
+</html>
