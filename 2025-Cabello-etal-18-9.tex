@@ -1,0 +1,171 @@
+Please write a Mathematica program that computes the minimal number of contexts that carries a single 1 and three 0's (admissible two-valued state), and the remaining context with 4 vertices value 0's. Here is Cabello's 8-9 configuration (the first number is just D=4:
+
+
+
+
+Pasting of 9 blocks
+18 atoms
+ 9 blocks
+ 0 proper subsets of blocks
+ 4   1  2  3  4
+ 4   4  5  6  7
+ 4   7  8  9 10
+ 4  10 11 12 13
+ 4  13 14 15 16
+ 4  16 17 18  1
+ 4   2  9 11 18
+ 4   3  5 12 14
+ 4   6  8 15 17
+0 2-valued evaluations of atoms:
+
+set of 2-valued evaluations of atoms:
+nonempty: no
+
+############################################################################################
+
+
+(*Cabello 8\[Dash]9 configuration Brute-force search (no Maximize/\
+Reduce) to avoid recursion issues.Computes:maxAdmissible=maximal #\
+ of contexts with exactly one 1 minZeroContexts=minimal # of all-\
+zero contexts*)
+
+ClearAll["Global`*"];
+
+(*---1. Problem data---*)
+
+atoms = Range[18];
+
+blocks = {{1, 2, 3, 4}, {4, 5, 6, 7}, {7, 8, 9, 10}, {10, 11, 12,
+    13}, {13, 14, 15, 16}, {16, 17, 18, 1}, {2, 9, 11, 18}, {3, 5, 12,
+     14}, {6, 8, 15, 17}};
+
+na = Length[atoms];
+nb = Length[blocks];
+
+(*---2. Brute-force search over all 2^18 valuations---*)
+
+maxAdmissible = -1;
+bestValuation =.;
+bestBlockCounts =.;
+
+(*Iterate over all {0,1}^18 assignments*)
+Do[(*val is a list of 18 bits:val[[i]]=value of atom i*)
+  val = assignment;
+  (*For each block,count how many 1's appear in that block*)
+  blockCounts = Total[val[[#]]] & /@ blocks;
+  (*Valid if every block has either 0 or 1 ones*)
+  If[AllTrue[blockCounts, (# == 0 || # == 1) &],
+   nAdmissible = Count[blockCounts, 1];
+   If[nAdmissible > maxAdmissible, maxAdmissible = nAdmissible;
+    bestValuation = val;
+    bestBlockCounts = blockCounts;];];, {assignment,
+   Tuples[{0, 1}, na]}];
+
+minZeroContexts = nb - maxAdmissible;
+
+(*---3. Output---*)
+
+Print["maxAdmissible = ", maxAdmissible];
+Print["minZeroContexts = ", minZeroContexts];
+
+Print["\nBest atom valuation v[i]:"];
+Do[Print["  v[", i, "] = ", bestValuation[[i]]], {i, na}];
+
+Print["\nContext counts (number of 1's in each block):"];
+Do[Print["  Context ", j, "  ", blocks[[j]], "  ->  #1's = ",
+   bestBlockCounts[[j]]], {j, nb}];
+
+admissibleContexts = Flatten@Position[bestBlockCounts, 1];
+zeroContexts = Flatten@Position[bestBlockCounts, 0];
+
+Print["\nAdmissible contexts (exactly one 1): ", admissibleContexts];
+Print["All-zero contexts: ", zeroContexts];
+
+
+
+############################################################################################
+
+
+(* 1. DEFINE CABELLO 18-9 CONFIGURATION *)
+raw = {
+   {4, 1, 2, 3, 4}, {4, 4, 5, 6, 7}, {4, 7, 8, 9, 10},
+   {4, 10, 11, 12, 13}, {4, 13, 14, 15, 16}, {4, 16, 17, 18, 1},
+   {4, 2, 9, 11, 18}, {4, 3, 5, 12, 14}, {4, 6, 8, 15, 17}
+   };
+
+(* Remove the dimension '4' from the input *)
+blocks = Rest /@ raw;
+atoms = Union[Flatten[blocks]];
+vars = Table[x[i], {i, Length[atoms]}];
+
+(* 2. DEFINE RULES *)
+(* Rule: Single 1 (Sum = 1) *)
+ruleOne[b_] := BooleanCountingFunction[{1}, Length[b]] @@ (x /@ b);
+(* Rule: Four 0s (Sum = 0) *)
+ruleZero[b_] := And @@ (! x[#] & /@ b);
+
+(* 3. FIND MINIMAL SET FOR CONTRADICTION *)
+Print["--- analyzing minimal contexts ---"];
+minimalSet = {};
+
+Do[
+  subsets = Subsets[Range[Length[blocks]], {k}];
+  (* Find a subset that CANNOT be colored with all 1s *)
+  contradictionSubset = SelectFirst[subsets,
+    SatisfiabilityInstances[And @@ (ruleOne[blocks[[#]]] & /@ #), vars] === {} &
+  ];
+
+  If[ListQ[contradictionSubset],
+   minimalSet = contradictionSubset;
+   Print["Minimal number of contexts required for contradiction: ", k];
+   Print["Context indices: ", minimalSet];
+   Break[];
+   ];
+  , {k, 1, Length[blocks]}
+];
+
+(* 4. COMPUTE AND OUTPUT VALUES FOR THE 'LEGAL' STATE *)
+(* We seek a state where (k-1) blocks are '1', and exactly 1 block is '0' *)
+
+If[Length[minimalSet] > 0,
+  Print["\n--- Computing values for the 'Remaining Context 0' state ---"];
+
+  (* We try to force the LAST context in the minimal set to be the '0' context,
+     and the rest to be '1' contexts. *)
+
+  targetZeroIndex = Last[minimalSet];
+  standardIndices = Most[minimalSet];
+
+  Print["Attempting to set Context #", targetZeroIndex, " to 0000, and others to 1000..."];
+
+  equation = ruleZero[blocks[[targetZeroIndex]]] &&
+             (And @@ (ruleOne[blocks[[#]]] & /@ standardIndices));
+
+  solution = SatisfiabilityInstances[equation, vars];
+
+  If[solution =!= {},
+   (* Convert True/False to 1/0 *)
+   values = Boole[First[solution]];
+
+   Print["\nSolution found! Here are the vertex values as Mathematica code:\n"];
+
+   (* PRETTY OUTPUT FOR COPY-PASTING *)
+   Print["vertexValues = ", values, ";"];
+
+   Print["\nInterpretation:"];
+   Print["Atom 1 value: ", values[[1]]];
+   Print["Atom 2 value: ", values[[2]]];
+   Print["..."];
+
+   (* VERIFICATION *)
+   Print["\nVerification of Context sums:"];
+   checkSum[ind_] := Total[values[[blocks[[ind]]]]];
+   Do[
+    val = checkSum[i];
+    status = If[val == 1, " (OK: Single 1)", If[val == 0, " (OK: Four 0s)", " (INVALID)"]];
+    Print["Context ", i, ": Sum = ", val, status];
+    , {i, minimalSet}];
+   ,
+   Print["No such state exists for this specific choice of zero-context."]
+   ];
+ ];
