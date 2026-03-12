@@ -8,7 +8,7 @@
 \usepackage{hyperref}
 \usepackage{orcidlink}
 \usepackage{tikz}
-\usetikzlibrary{calc,arrows.meta,decorations.pathmorphing}
+\usetikzlibrary{calc,arrows.meta,decorations.pathmorphing,decorations.pathmorphing,positioning}
 
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
@@ -130,9 +130,171 @@ external reaction constraint.
 \begin{figure*}[htbp]
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.38\textwidth]{2025-wind-chartww.jpg}
-&$\qquad$&
-\includegraphics[width=0.30\textwidth]{2025-wind-chartaw.jpg}
+%\includegraphics[width=0.38\textwidth]{2025-wind-chartww.jpg}
+%&$\qquad$&
+%\includegraphics[width=0.30\textwidth]{2025-wind-chartaw.jpg}
+%\\
+% Requires:
+% \usepackage{tikz}
+% \usetikzlibrary{calc,arrows.meta,decorations.pathmorphing}
+
+\begin{tikzpicture}[
+    scale=0.85, transform shape,
+    line cap=round,
+    line join=round,
+    >=Stealth,
+    font=\normalsize
+  ]
+  \useasboundingbox (-2.2,-0.7) rectangle (8.0,5.7);
+
+  % Key points
+  \def\rW{1.02}
+  \coordinate (W) at (0,\rW);     % wheel / gear center: tangent to ground
+  \coordinate (P) at (5.25,4.00); % propeller center
+
+  % Shaft / blade orientation
+  \def\thS{28.5}                   % shaft angle
+  \pgfmathsetmacro{\thB}{\thS+180} % blades rotated by 90° relative to previous version
+
+  % Ground
+  \draw[thick] (-2.0,0) -- (2.3,0);
+  \node[below] at (2.25,0) {ground};
+  \foreach \x in {-1.75,-1.05,-0.35,0.35,1.05,1.75}{
+    \draw (\x,0) -- ++(-0.45,-0.38);
+  }
+
+  % Wind arrows: equal length, equal spacing
+  \foreach \y in {4.80,4.05,3.30}{
+    \draw[->,thick,decorate,decoration={snake,amplitude=2pt,segment length=18pt}]
+      (-0.85,\y) -- (1.30,\y);
+  }
+  % Wind label to the right of the wind block
+  \node[anchor=west] at (1.35,4.05) {wind};
+
+  % Wheel / gear
+  \draw[thick] (W) circle (\rW);
+  \draw[thick] ($(W)+(-0.18,-0.18)$) rectangle ($(W)+(0.18,0.18)$);
+  \node at ($(W)+(0,-0.45)$) {gear};
+
+  % Drivetrain / shaft
+  \draw[thick] (W) -- (P);
+
+  % Wheel rotation arrow (counterclockwise)
+  \draw[->,thick] ($(W)+(205:1.45)$)
+    arc[start angle=205,end angle=125,radius=1.45];
+
+  % Propeller blades
+  % Unshaded blade
+  \begin{scope}[shift={(P)}, rotate=\thB]
+    \path[draw=black,thick,fill=white]
+      (0,0)
+      .. controls (0.10,0.10) and (0.50,0.65) .. (0.32,1.28)
+      .. controls (0.02,1.58) and (-0.28,0.92) .. (-0.10,0.12)
+      -- cycle;
+  \end{scope}
+
+  % Shaded blade
+  \begin{scope}[shift={(P)}, rotate={\thB+180}]
+    \path[draw=black,thick,fill=gray!45]
+      (0,0)
+      .. controls (0.10,0.10) and (0.50,0.65) .. (0.32,1.28)
+      .. controls (0.02,1.58) and (-0.28,0.92) .. (-0.10,0.12)
+      -- cycle;
+  \end{scope}
+
+  % Propeller hub
+  \fill (P) circle (1.4pt);
+
+  % Propeller rotation arrow (clockwise)
+  \draw[->,thick] ($(P)+(65:0.95)$)
+    arc[start angle=65,end angle=-10,radius=0.95];
+
+  % Propeller label
+  \node at ($(P)+(0.55,-1.8)$) {propeller};
+
+\end{tikzpicture}
+&&
+% Requires:
+% \usepackage{tikz}
+% \usetikzlibrary{calc,arrows.meta,decorations.pathmorphing}
+
+\begin{tikzpicture}[
+    scale=0.85, transform shape,
+    line cap=round,
+    line join=round,
+    >=Stealth,
+    font=\normalsize
+  ]
+  \useasboundingbox (-2.2,-0.7) rectangle (8.0,5.7);
+
+  % Key points
+  \def\rW{1.02}
+  \coordinate (W) at (0,\rW);     % wheel / reverse-gear center: tangent to ground
+  \coordinate (P) at (5.25,4.00); % propeller center
+
+  % Shaft / blade orientation
+  \def\thS{28.5}                   % shaft angle
+  \pgfmathsetmacro{\thB}{\thS+180} % same blade orientation as the downwind panel
+
+  % Ground
+  \draw[thick] (-2.0,0) -- (1.65,0);
+  \node[below] at (2.15,0) {ground};
+  \foreach \x in {-1.75,-1.05,-0.35,0.35,1.05,1.55}{
+    \draw (\x,0) -- ++(-0.45,-0.38);
+  }
+
+  % Wind arrows: equal length, equal spacing
+  \foreach \y in {4.80,4.05,3.30}{
+    \draw[->,thick,decorate,decoration={snake,amplitude=2pt,segment length=18pt}]
+      (-0.85,\y) -- (1.30,\y);
+  }
+  % Wind label to the right of the wind block
+  \node[anchor=west] at (1.35,4.05) {wind};
+
+  % Wheel / reverse gear
+  \draw[thick] (W) circle (\rW);
+  \draw[thick] ($(W)+(-0.28,-0.28)$) rectangle ($(W)+(0.28,0.28)$);
+  \draw[thick] ($(W)+(-0.16,-0.16)$) rectangle ($(W)+(0.16,0.16)$);
+  \node[align=center] at ($(W)+(0,+0.52)$) {reverse};
+  \node[align=center] at ($(W)+(0,-0.62)$) {gear};
+
+  % Drivetrain / shaft
+  \draw[thick] (W) -- (P);
+
+  % Wheel rotation arrow (counterclockwise, opposite to downwind)
+  \draw[->,thick] ($(W)+(125:1.45)$)
+    arc[start angle=125,end angle=205,radius=1.45];
+
+  % Propeller blades
+  % Unshaded blade
+  \begin{scope}[shift={(P)}, rotate=\thB]
+    \path[draw=black,thick,fill=white]
+      (0,0)
+      .. controls (0.10,0.10) and (0.50,0.65) .. (0.32,1.28)
+      .. controls (0.02,1.58) and (-0.28,0.92) .. (-0.10,0.12)
+      -- cycle;
+  \end{scope}
+
+  % Shaded blade
+  \begin{scope}[shift={(P)}, rotate={\thB+180}]
+    \path[draw=black,thick,fill=gray!45]
+      (0,0)
+      .. controls (0.10,0.10) and (0.50,0.65) .. (0.32,1.28)
+      .. controls (0.02,1.58) and (-0.28,0.92) .. (-0.10,0.12)
+      -- cycle;
+  \end{scope}
+
+  % Propeller hub
+  \fill (P) circle (1.4pt);
+
+  % Propeller rotation arrow (clockwise)
+  \draw[->,thick] ($(P)+(65:0.95)$)
+    arc[start angle=65,end angle=-10,radius=0.95];
+
+  % Propeller label
+  \node at ($(P)+(0.55,-1.8)$) {propeller};
+
+\end{tikzpicture}
 \\
 (a) Downwind Operation && (b) Upwind Operation
 \end{tabular}
@@ -1039,8 +1201,8 @@ The preceding analogies---the gearbox and the lever---both show that speed ampli
 To make this requirement explicit, consider the following simple thought experiment~\cite{popescu_talk_2024}.
 %proposed by Professor Sandu Popescu, which we may call the \emph{Popescu Glide}~\cite{popescu_talk_2024}.
 
-Imagine Ann standing on a dock while Bob sits in a small boat that is free to
-drift horizontally with negligible resistance. Bob attempts to reach Ann by
+Imagine Alice standing on a dock while Bob sits in a small boat that is free to
+drift horizontally with negligible resistance. Bob attempts to reach Alice by
 walking from the stern to the bow. As he walks forward, the boat slides
 backward. Because no external \emph{horizontal} forces act on the combined
 Bob--boat system, its center of mass remains fixed, even though Bob expends internal energy while walking: Bob's forward motion is
@@ -1098,8 +1260,125 @@ impulse) is required.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\columnwidth]{2025-wind-f-AliceBobPopescu.jpg}
-\caption{Schematic of the ``Popescu Glide'' thought experiment. Bob's forward motion inside his frictionless boat causes the boat to recoil backward. Without an external interaction, such as paddling in the water, the center of mass of the Bob--boat system remains fixed, and he cannot achieve net propulsion.}
+%\includegraphics[width=0.8\columnwidth]{2025-wind-f-AliceBobPopescu.jpg}
+%\\
+\begin{tikzpicture}[
+    scale=0.7, transform shape,
+    line cap=round,
+    line join=round,
+    >=Stealth,
+    font=\normalsize
+  ]
+  \useasboundingbox (-5.2,-0.8) rectangle (6.6,9.4);
+
+  %============================
+  % TOP PANEL: INITIAL
+  %============================
+  \begin{scope}[yshift=5.2cm]
+
+    \node[above] at (0,-1) {(a) Initial configuration};
+
+    % Water surface (wavy)
+    \draw[thick,decorate,decoration={snake,amplitude=1.5pt,segment length=20pt}]
+      (-5.0,0) -- (6.0,0);
+
+    % Left side: Alice
+    \begin{scope}[shift={(-3.0,0.4)}]
+      % Boat / dock outline
+      \draw[thick, fill=white] (-1.8,1.0) -- (-1.5,0) -- (1.2,0) -- (1.5,1.0) -- cycle;
+
+      % Alice (stick figure)
+      \draw[thick] (-0.15,2.4) circle (0.25);     % head
+      \draw[thick] (-0.15,2.15) -- (-0.15,1.0);   % body
+      \draw[thick] (-0.15,1.8) -- (-0.6,1.4);     % left arm
+      \draw[thick] (-0.15,1.8) -- (0.3,1.4);      % right arm
+      \draw[thick] (-0.15,1.0) -- (-0.6,0.3);     % left leg
+      \draw[thick] (-0.15,1.0) -- (0.3,0.3);      % right leg
+
+      \node[above] at (-0.15,2.8) {Alice};
+    \end{scope}
+
+    % Right side: Bob's boat, initial state only
+    \begin{scope}[shift={(1.55,0.4)}]
+      % Initial boat (solid)
+      \draw[thick, fill=white] (-1.3,1.0) -- (-1.0,0) -- (1.7,0) -- (2.0,1.0) -- cycle;
+
+      % Initial Bob (solid): on the right side of the boat
+      \draw[thick] (0.95,2.4) circle (0.25);      % head
+      \draw[thick] (0.95,2.15) -- (0.95,1.0);     % body
+      \draw[thick] (0.95,1.8) -- (0.50,1.4);      % left arm
+      \draw[thick] (0.95,1.8) -- (1.40,1.4);      % right arm
+      \draw[thick] (0.95,1.0) -- (0.50,0.3);      % left leg
+      \draw[thick] (0.95,1.0) -- (1.40,0.3);      % right leg
+
+      \node[above] at (0.95,2.8) {Bob};
+    \end{scope}
+
+  \end{scope}
+
+  %============================
+  % BOTTOM PANEL: FINAL
+  %============================
+  \begin{scope}[yshift=0cm]
+
+   \node[above] at (0,-1) {(b) Final configuration};
+
+    % Water surface (wavy)
+    \draw[thick,decorate,decoration={snake,amplitude=1.5pt,segment length=20pt}]
+      (-5.0,0) -- (6.0,0);
+
+    % Left side: Alice
+    \begin{scope}[shift={(-3.0,0.4)}]
+      % Boat / dock outline
+      \draw[thick, fill=white] (-1.8,1.0) -- (-1.5,0) -- (1.2,0) -- (1.5,1.0) -- cycle;
+
+      % Alice (stick figure)
+      \draw[thick] (-0.15,2.4) circle (0.25);     % head
+      \draw[thick] (-0.15,2.15) -- (-0.15,1.0);   % body
+      \draw[thick] (-0.15,1.8) -- (-0.6,1.4);     % left arm
+      \draw[thick] (-0.15,1.8) -- (0.3,1.4);      % right arm
+      \draw[thick] (-0.15,1.0) -- (-0.6,0.3);     % left leg
+      \draw[thick] (-0.15,1.0) -- (0.3,0.3);      % right leg
+
+      \node[above] at (-0.15,2.8) {Alice};
+    \end{scope}
+
+    % Right side: Bob's boat, final state only (dashed)
+    \begin{scope}[shift={(2.45,0.4)}]
+      % Final boat (dashed)
+      \draw[dashed, thick] (-1.3,1.0) -- (-1.0,0) -- (1.7,0) -- (2.0,1.0) -- cycle;
+
+      % Final Bob (dashed): shifted left relative to the boat
+      \draw[dashed, thick] (-0.35,2.4) circle (0.25);     % head
+      \draw[dashed, thick] (-0.35,2.15) -- (-0.35,1.0);   % body
+      \draw[dashed, thick] (-0.35,1.8) -- (-0.80,1.4);    % left arm
+      \draw[dashed, thick] (-0.35,1.8) -- (0.10,1.4);     % right arm
+      \draw[dashed, thick] (-0.35,1.0) -- (-0.80,0.3);    % left leg
+      \draw[dashed, thick] (-0.35,1.0) -- (0.10,0.3);     % right leg
+
+      \node[above] at (-0.35,2.8) {Bob};
+    \end{scope}
+
+    % Displacement arrows and labels
+    % Bob's motion relative to the water: leftward
+    \draw[->,thick] (1.5,2) -- (0.9,2);
+    \draw[->,thick] (1.5,2) -- (0.6,2);
+    \node[above] at (1,2.2) {$\Delta x_{\mathrm{Bob}}$};
+
+    % Boat recoil: rightward
+    \draw[->,thick] (4.9,0.8) -- (5.55,0.8);
+    \draw[->,thick] (4.8,0.8) -- (6.05,0.8);
+    \node[above] at (5.4,1) {$\Delta x_{\mathrm{boat}}$};
+
+  \end{scope}
+
+\end{tikzpicture}
+\caption{Schematic of the ``Popescu Glide'' thought experiment.
+(a) Initial configuration.
+(b) Final configuration after Bob attempts to move toward Alice: Bob moves
+leftward within his frictionless boat while the boat recoils rightward.
+Without an external interaction, such as paddling in the water, the center of
+mass of the Bob--boat system remains fixed, and he cannot achieve net propulsion.}
 \label{fig:popescu-glide}
 \end{figure}
 
@@ -1120,7 +1399,7 @@ sustained momentum exchange between air and ground (or water) and thereby makes
 faster-than-the-wind travel possible.
 
 Kirk Thomas McDonald has pointed out that, under more realistic assumptions,
-Bob may be able to reduce the separation to Ann by exploiting effects that are
+Bob may be able to reduce the separation to Alice by exploiting effects that are
 absent in the idealized ``glide'' model~\cite{McDonald2026priv}.
 
 One possibility is for Bob to jump off the boat. If the dock is close enough,
