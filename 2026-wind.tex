@@ -8,7 +8,7 @@
 \usepackage{hyperref}
 \usepackage{orcidlink}
 \usepackage{tikz}
-\usetikzlibrary{calc,arrows.meta}
+\usetikzlibrary{calc,arrows.meta,decorations.pathmorphing}
 
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
@@ -836,9 +836,143 @@ propeller, which drives the wheels (lower rack) against the ground. As before, t
 \begin{figure*}[htbp]
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.48\textwidth]{2025-wind-lww.jpg}
-&$\qquad$&
-\includegraphics[width=0.48\textwidth]{2025-wind-law.jpg}
+%\includegraphics[width=0.48\textwidth]{2025-wind-lww.jpg}
+%&$\qquad$&
+%\includegraphics[width=0.48\textwidth]{2025-wind-law.jpg}
+%\\
+% Requires:
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta,calc,decorations.pathmorphing}
+
+\begin{tikzpicture}[
+    line cap=round,
+    line join=round,
+    >=Stealth,
+    font=\normalsize
+  ]
+  \useasboundingbox (-4.2,0.6) rectangle (4.5,7.2);
+
+  \begin{scope}[yshift=1.5cm]
+
+    % Key points
+    \coordinate (P)   at (0,0);      % pivot
+    \coordinate (T)   at (0,4.6);    % top of lever (current)
+    \coordinate (Tf)  at (2.15,4.0); % top of lever (rotated / future)
+
+    % Ground
+    \draw[thick] (-4.0,0) -- (4.1,0);
+
+    % Pivot support
+    \draw[thick] (-0.18,-0.22) -- (P) -- (0.18,-0.22) -- cycle;
+    \fill (0,0) circle (2pt);
+
+    % Current lever / mast
+    \draw[thick] (P) -- (T);
+
+    % Current platform
+    \draw[thick] (-0.55,4.6) -- (0.55,4.6);
+
+    % Future/rotated position (draw first, so sail box can cover it)
+    \draw[dashed] (P) -- (Tf);
+    \draw[dashed] ($(Tf)+(-0.42,0.18)$) -- ($(Tf)+(0.42,-0.18)$);
+
+    % Sail box, opaque
+    \draw[thick, fill=white] (-1.05,0.95) rectangle (1.05,2.35);
+    \node at (0,1.65) {sail};
+
+    % Rotation arrow as a circular arc centered at the pivot P
+    \draw[->,thick] ($(P)+(87:3.5)$) arc[start angle=87,end angle=65,radius=3.5];
+    \draw[->,thick] ($(P)+(87:3.5)$) arc[start angle=87,end angle=70,radius=3.5];
+
+    % Wind arrows
+    \node at (-3.0,4.2) {wind};
+    \foreach \y in {3.0,2.1,1.2}{
+      \draw[->,thick,decorate,decoration={snake,amplitude=2pt,segment length=18pt}]
+        (-3.75,\y) -- (-1.95,\y);
+    }
+
+    % Platform label
+    \node at ($(P)+(0,5.0)$) {platform};
+    \node at ($(P)+(0,-0.55)$) {pivot};
+
+  \end{scope}
+\end{tikzpicture}
+&&
+% Requires:
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta,calc,decorations.pathmorphing}
+
+\begin{tikzpicture}[
+    line cap=round,
+    line join=round,
+    >=Stealth,
+    font=\normalsize
+  ]
+  \useasboundingbox (-4.2,-0.4) rectangle (4.5,8.2);
+
+  % Angles
+  \def\thCur{15}   % current lever angle
+  \def\thFut{58}   % future lever angle
+
+  % Wind arrows and label (kept fixed)
+  \node at (-0.55,4.55) {wind};
+  \draw[->,thick,decorate,decoration={snake,amplitude=2pt,segment length=18pt}]
+    (-4.0,4.15) -- (-2.85,3.25);
+  \draw[->,thick,decorate,decoration={snake,amplitude=2pt,segment length=18pt}]
+    (-3.55,4.75) -- (-2.35,3.85);
+  \draw[->,thick,decorate,decoration={snake,amplitude=2pt,segment length=18pt}]
+    (-3.1,5.15) -- (-1.9,4.25);
+
+  % Entire lever arrangement shifted upward by 1 units
+  \begin{scope}[yshift=1cm]
+
+    % Key points
+    \coordinate (P)       at (1.05,1.25);                    % pivot
+    \coordinate (Sattach) at ($(P)+({180+\thCur}:2.45)$);   % sail attachment point on lever
+    \coordinate (R)       at ($(P)+(\thCur:2.95)$);         % current right end
+    \coordinate (Rf)      at ($(P)+(\thFut:3.25)$);         % future right end / platform center
+    \coordinate (Rb)      at ($(P)+({180+\thFut}:2.15)$);   % lower dashed extension
+
+    % Current lever: exactly through pivot
+    \draw[thick] (Sattach) -- (R);
+
+    % Future/rotated lever position (dashed): extended below, cut at tilted platform
+    \draw[dashed] (Rb) -- (Rf);
+
+    % Pivot support: same size/style as previous drawing
+    \draw[thick] ($(P)+(-0.18,-0.22)$) -- (P) -- ($(P)+(0.18,-0.22)$) -- cycle;
+    \fill (P) circle (2pt);
+
+    % Current platform: perpendicular to current lever
+    \draw[thick] ($(R)+({\thCur+90}:0.55)$) -- ($(R)+({\thCur-90}:0.55)$);
+
+    % Future platform: perpendicular to future lever, dashed
+    \draw[dashed] ($(Rf)+({\thFut+90}:0.55)$) -- ($(Rf)+({\thFut-90}:0.55)$);
+
+    % Sail box: smaller, moved closer to the pivot
+    \node[
+      draw,
+      thick,
+      fill=white,
+      minimum width=1.20cm,
+      minimum height=2.10cm,
+      rotate=\thCur,
+      anchor=east,
+      inner sep=0pt
+    ] at (Sattach) {sail};
+
+    % Rotation arrows as circular arcs centered at the pivot P
+    \draw[->,thick] ($(P)+(200:1.15)$) arc[start angle=200,end angle=234,radius=1.15];
+    \draw[->,thick] ($(P)+(200:1.15)$) arc[start angle=200,end angle=224,radius=1.15];
+    \draw[->,thick] ($(P)+(18:2.0)$)   arc[start angle=18,end angle=56,radius=2.0];
+    \draw[->,thick] ($(P)+(18:2.0)$)   arc[start angle=18,end angle=46,radius=2.0];
+
+    % Labels
+    \node at ($(Rf)+(1.0,0.10)$) {platform};
+    \node at ($(P)+(0.20,-0.55)$) {pivot};
+
+  \end{scope}
+\end{tikzpicture}
 \\
 (a) Downwind Analogy && (b) Upwind Analogy
 \end{tabular}
