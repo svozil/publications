@@ -35,7 +35,7 @@
 \definecolor{statefive}{HTML}{7C52B8}  % violet
 \definecolor{lightfalse}{HTML}{E6E6E6}
 
-% --- TikZ tiles ---
+% --- TikZ tiles for figures ---
 \tikzset{
   qtile/.style={draw=black, minimum width=4.2mm, minimum height=4.2mm, inner sep=0pt},
   tileone/.style={qtile, fill=stateone},
@@ -47,6 +47,21 @@
   tilesep/.style={qtile, fill=black},
   tileblank/.style={qtile, fill=white, draw=gray!30}
 }
+
+% --- Colored squares for code listings ---
+% --- Colored squares for code listings ---
+\newcommand{\CodeSq}[1]{%
+  {%
+    \setlength{\fboxsep}{0pt}%
+    \fcolorbox{black}{#1}{\rule{0pt}{1.5ex}\rule{1.5ex}{0pt}}%
+  }%
+}
+\newcommand{\GreenSq}{\CodeSq{stateone}}
+\newcommand{\BlueSq}{\CodeSq{statetwo}}
+\newcommand{\RedSq}{\CodeSq{statethree}}
+\newcommand{\OrangeSq}{\CodeSq{statefour}}
+\newcommand{\VioletSq}{\CodeSq{statefive}}
+\newcommand{\BlackSq}{\CodeSq{black}}
 
 % --- Simple listing replacement ---
 \newcounter{listing}
@@ -66,7 +81,8 @@
 
 \begin{document}
 
-\title{Quantum Structures as Generative Scores: Partition Logic, Prolog, and Aesthetic Form}
+\title{Quantum Structures as Generative Scores:\\
+Partition Logic, Prolog, and Aesthetic Form}
 
 \author{Christian Jendreiko}
 \author{Karl Svozil}
@@ -344,15 +360,12 @@ d &\to s_2\,s_4\,br\,s_1\,s_3\,s_5\,n,
 e &\to s_1\,s_3\,br\,s_2\,s_4\,s_5.
 \label{eq:vgrammar}
 \end{align}
-This is the structural core of the \emph{Quantum Square}. The grammar fixes the arrangement of symbols row by row; the subsequent rendering map turns those symbols into colored squares, letters, or sound events.
+This is the structural core of the \emph{Quantum Square}. The grammar fixes the arrangement of symbols row by row, beginning with the start rule as the point of entry for the generation:
+\begin{equation}
+q \to a\,b\,c\,d\,e.
+\end{equation}
 
-The important point is that the logical structure and the perceptible realization remain distinct. The V-logic determines the combinatorial arrangement, whereas the choice of color, typography, or sound belongs to the rendering stage. This separation is what allows the same partition-logical source to function both as a formal object and as a generative score.
-
-\section{The Quantum Square: hypergraph, schema, and tile image}
-
-\subsection{A color repertoire}
-
-To obtain a visual realization, we map the five state symbols to five colors:
+To obtain a visual realization, we map the five state symbols to five squares of identical size with five colors:
 \begin{align}
 s_1 &\mapsto \text{green},
 &
@@ -363,11 +376,17 @@ s_3 &\mapsto \text{red},
 s_4 &\mapsto \text{orange},
 &
 s_5 &\mapsto \text{violet}.
-\label{eq:colormap}
+\label{eq:vpalette}
 \end{align}
-The separator \(br\) is rendered as a black square. In the row-wise version below, blank white cells are used only for alignment; they are not part of the logic.
+The separator \(br\) is rendered as a black square. The third layer is a simple renderer.
 
-Figure~\ref{fig:vlogic} presents three views of the same source structure: panel~(a) shows the underlying V-logic as a Greechie-style hypergraph, panel~(b) shows the corresponding atom-state incidence schema, and panel~(c) shows the grammar-oriented tile realization that we call the \emph{Quantum Square}.
+The important point is that the logical structure and the perceptible realization remain distinct. The V-logic determines the combinatorial arrangement, whereas the choice of colored squares belongs to the repertoire layer. The same structural rows can be rendered with different palettes or in different media, such as color, typography, or sound. This separation is what allows the same partition-logical source to function both as a formal object and as a generative score.
+
+In practical applications, the colored squares can be replaced by HTML fragments, SVG instructions, MIDI events, OSC messages, or calls to a graphics or sound engine. Thus the same logical skeleton can generate not only tile images but also textual works or sonic pieces.
+
+\section{The Quantum Square: hypergraph, schema, and output}
+
+Figure~\ref{fig:vlogic} presents three views of the same source structure: panel~(a) shows the underlying V-logic as a Greechie-style hypergraph, panel~(b) shows the corresponding atom-state incidence schema, and panel~(c) shows the grammar-oriented tile output that we call the \emph{Quantum Square}.
 
 \begin{figure*}[t]
 \centering
@@ -381,22 +400,22 @@ Figure~\ref{fig:vlogic} presents three views of the same source structure: panel
 
 % orange context
 \filldraw[fill=orange, draw=orange] (0,2) circle (3pt);
-\node[below] at (0,1.8) {$a$};
+\node[yshift=-10pt] at (0,2) {$a$};
 
 \filldraw[fill=orange, draw=orange] (0.9,1) circle (3pt);
-\node[below] at (0.9,0.8) {$b$};
+\node[yshift=-10pt] at (0.9,1) {$b$};
 
 % shared node c
 \filldraw[fill=orange, draw=orange] (1.8,0) circle (4pt);
 \filldraw[fill=blue,   draw=blue]   (1.8,0) circle (2pt);
-\node[below] at (1.8,-0.2) {$c$};
+\node[yshift=-10pt] at (1.8,0) {$c$};
 
 % blue context
 \filldraw[fill=blue, draw=blue] (2.7,1) circle (3pt);
-\node[below] at (2.7,0.8) {$d$};
+\node[yshift=-10pt] at (2.7,1) {$d$};
 
 \filldraw[fill=blue, draw=blue] (3.6,2) circle (3pt);
-\node[below] at (3.6,1.8) {$e$};
+\node[yshift=-10pt] at (3.6,2) {$e$};
 
 \end{tikzpicture}
 &
@@ -431,25 +450,22 @@ Figure~\ref{fig:vlogic} presents three views of the same source structure: panel
   row sep=1pt,
   column sep=1pt,
   ampersand replacement=\&] {
-|[tileone]| \& |[tiletwo]| \& |[tilesep]| \& |[tilethree]| \& |[tilefour]| \& |[tilefive]| \& |[tileblank]| \\
-|[tilethree]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilefive]| \& |[tileblank]| \\
-|[tileblank]| \& |[tilefive]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilethree]| \& |[tilefour]| \\
-|[tiletwo]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tilethree]| \& |[tilefive]| \& |[tileblank]| \\
-|[tileone]| \& |[tilethree]| \& |[tilesep]| \& |[tiletwo]| \& |[tilefour]| \& |[tilefive]| \& |[tileblank]| \\
+|[tileone]| \& |[tiletwo]| \& |[tilesep]| \& |[tilethree]| \& |[tilefour]| \& |[tilefive]| \\
+|[tilethree]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilefive]| \\
+|[tilefive]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilethree]| \& |[tilefour]| \\
+|[tiletwo]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tilethree]| \& |[tilefive]| \\
+|[tileone]| \& |[tilethree]| \& |[tilesep]| \& |[tiletwo]| \& |[tilefour]| \& |[tilefive]| \\
 };
 \node[left=4mm of m-1-1] {\small \(a\)};
 \node[left=4mm of m-2-1] {\small \(b\)};
 \node[left=4mm of m-3-1] {\small \(c\)};
 \node[left=4mm of m-4-1] {\small \(d\)};
 \node[left=4mm of m-5-1] {\small \(e\)};
-
-\node at ($(m-1-1.north west)!0.5!(m-1-2.north east)+(0,0.28)$) {\scriptsize true};
-\node at ($(m-1-4.north west)!0.5!(m-1-7.north east)+(0,0.28)$) {\scriptsize false};
 \end{tikzpicture}
 \\
 (a) & (b) & (c)
 \end{tabular}
-\caption{Three representations of the V-logic \(L_{12}\). (a) Greechie-style hypergraph. (b) Atom-state incidence schema, with colored cells indicating \(v_i(x)=1\) and gray cells indicating \(v_i(x)=0\). (c) The grammar-oriented tile realization, the \emph{Quantum Square}. In each row, squares left of the black separator correspond to states in which the atom is true; squares right of the separator correspond to states in which it is false. Blank cells are layout padding only.}
+\caption{Three representations of the V-logic \(L_{12}\). (a) Greechie-style hypergraph. (b) Atom-state incidence schema, with colored cells indicating \(v_i(x)=1\) and gray cells indicating \(v_i(x)=0\). (c) The grammar-oriented tile output, the \emph{Quantum Square}. In each row, the states assigning value \(1\) to the atom are listed first, then a black separator, and then the states assigning value \(0\).}
 \label{fig:vlogic}
 \end{figure*}
 
@@ -515,7 +531,7 @@ T(e)&=\{s_3\},
 T(f)&=\{s_2,s_4\}.
 \label{eq:trianglesupports}
 \end{align}
-Applying the translation scheme of Sec.~IV yields the start rule
+Applying the translation scheme of the previous section yields the start rule
 \begin{equation}
 q_{\triangle}\to a\,b\,c\,d\,e\,f
 \end{equation}
@@ -614,12 +630,12 @@ Figure~\ref{fig:triangletableau} presents the triangle logic in the same three-p
   row sep=1pt,
   column sep=1pt,
   ampersand replacement=\&] {
-|[tileblank]| \& |[tileone]| \& |[tilesep]| \& |[tiletwo]| \& |[tilethree]| \& |[tilefour]| \\
-|[tiletwo]| \& |[tilethree]| \& |[tilesep]| \& |[tileone]| \& |[tilefour]| \& |[tileblank]| \\
-|[tileblank]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilethree]| \\
-|[tileone]| \& |[tiletwo]| \& |[tilesep]| \& |[tilethree]| \& |[tilefour]| \& |[tileblank]| \\
-|[tileblank]| \& |[tilethree]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilefour]| \\
-|[tiletwo]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tilethree]| \& |[tileblank]| \\
+|[tileone]| \& |[tilesep]| \& |[tiletwo]| \& |[tilethree]| \& |[tilefour]| \\
+|[tiletwo]| \& |[tilethree]| \& |[tilesep]| \& |[tileone]| \& |[tilefour]| \\
+|[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilethree]| \\
+|[tileone]| \& |[tiletwo]| \& |[tilesep]| \& |[tilethree]| \& |[tilefour]| \\
+|[tilethree]| \& |[tilesep]| \& |[tileone]| \& |[tiletwo]| \& |[tilefour]| \\
+|[tiletwo]| \& |[tilefour]| \& |[tilesep]| \& |[tileone]| \& |[tilethree]| \\
 };
 
 \node[left=4mm of t-1-1] {\small \(a\)};
@@ -628,14 +644,11 @@ Figure~\ref{fig:triangletableau} presents the triangle logic in the same three-p
 \node[left=4mm of t-4-1] {\small \(d\)};
 \node[left=4mm of t-5-1] {\small \(e\)};
 \node[left=4mm of t-6-1] {\small \(f\)};
-
-\node at ($(t-1-1.north west)!0.5!(t-1-2.north east)+(0,0.28)$) {\scriptsize true};
-\node at ($(t-1-4.north west)!0.5!(t-1-6.north east)+(0,0.28)$) {\scriptsize false};
 \end{tikzpicture}
 \\
 (a) & (b) & (c)
 \end{tabular}
-\caption{Triangle-logic generalization of the \emph{Quantum Square}. (a) Greechie-style depiction of the triangle logic associated with Eq.~\eqref{eq:trianglepartitions}. The intertwining atoms \(a\), \(c\), and \(e\) are shown by concentric circles because each belongs to two contexts. (b) Atom-state incidence schema. (c) Tile rendering obtained from the grammar in Eq.~\eqref{eq:trianglegrammar}, using four recurring state colors and a black separator between support and complement.}
+\caption{Triangle-logic generalization of the \emph{Quantum Square}. (a) Greechie-style depiction of the triangle logic associated with Eq.~\eqref{eq:trianglepartitions}. The intertwining atoms \(a\), \(c\), and \(e\) are shown by concentric circles because each belongs to two contexts. (b) Atom-state incidence schema. (c) Tile rendering obtained from the grammar in Eq.~\eqref{eq:trianglegrammar}, using four recurring state colors and a black separator between support and complement. Each row lists the states with value \(1\), then the separator, and then the states with value \(0\).}
 \label{fig:triangletableau}
 \end{figure*}
 
@@ -645,137 +658,70 @@ The triangle logic also illustrates a broader point. The generative method does 
 
 \section{Prolog realizations}
 
-For the sake of conceptual clarity, it is useful to separate in code the \emph{structural layer} from the \emph{repertoire layer}. The structural layer stores the grammar skeleton; the repertoire layer maps symbolic tokens to a medium-specific output.
+For the sake of conceptual clarity, it is useful to separate in code the structural layer from the repertoire layer.
 
 \subsection{V-logic code}
 
-\listingtitle{lst:structure}{Structural layer: the V-logic stored as a sequence of symbolic rows.}
+\listingtitle{lst:vlogiccomplete}{Complete V-logic code: structural layer, repertoire layer, and rendering layer. The colored squares are typeset here as LaTeX renderings of the palette used in Fig.~\ref{fig:vlogic}(c).}
 \begin{codeblock}
-% order of rows in the final artifact
-rows([a,b,c,d,e]).
+% start rule:
+v_logic --> a,b,c,d,e.
 
-% structural layer: symbolic rows
-row(a, [s1,s2,sep,s3,s4,s5]).
-row(b, [s3,s4,sep,s1,s2,s5]).
-row(c, [s5,sep,s1,s2,s3,s4]).
-row(d, [s2,s4,sep,s1,s3,s5]).
-row(e, [s1,s3,sep,s2,s4,s5]).
-\end{codeblock}
+% structural layer:
+a --> s1,s2,br,s3,s4,s5,n.
+b --> s3,s4,br,s1,s2,s5,n.
+c --> s5,br,s1,s2,s3,s4,n.
+d --> s2,s4,br,s1,s3,s5,n.
+e --> s1,s3,br,s2,s4,s5.
 
-The next layer gives a simple repertoire mapping and renderer. The point is not to optimize code, but to make the conceptual separation explicit: the logic defines the structure, while the repertoire determines its perceptible realization.
+% repertoire layer:
+s1 --> [\GreenSq{}].
+s2 --> [\BlueSq{}].
+s3 --> [\RedSq{}].
+s4 --> [\OrangeSq{}].
+s5 --> [\VioletSq{}].
 
-\listingtitle{lst:repertoire}{Repertoire layer and simple renderer. The same structural rows can be rendered with different palettes or in different media.}
-\begin{codeblock}
-% palette: a symbolic visual repertoire
-glyph(s1, '[G] ').
-glyph(s2, '[B] ').
-glyph(s3, '[R] ').
-glyph(s4, '[O] ').
-glyph(s5, '[V] ').
-glyph(sep,'[#] ').
+br --> [\BlackSq{}].
+n  --> [{\textbackslash}n].
 
-render_symbol(Sym) :-
-    glyph(Sym, G),
-    format('~w', [G]).
-
-render_row(Name) :-
-    row(Name, Symbols),
-    forall(member(S, Symbols), render_symbol(S)),
-    nl.
-
+% rendering layer:
 output :-
-    rows(Rows),
-    forall(member(R, Rows), render_row(R)).
+    nl,nl,nl,
+    phrase(v_logic, Ls),
+    format("~s", [Ls]),
+    nl,nl,nl,nl.
 \end{codeblock}
 
-This is deliberately modest. In practical applications, the predicate \texttt{glyph/2} can be replaced by HTML fragments, SVG instructions, MIDI events, OSC messages, or calls to a graphics or sound engine. Thus the same logical skeleton can generate not only tile images but also textual works or sonic pieces.
+The V-logic determines the combinatorial arrangement, whereas the choice of colored squares belongs to the repertoire layer. The same structural rows can be rendered with different palettes or in different media, such as color, typography, or sound.
+
+In practical applications, the colored squares can be replaced by HTML fragments, SVG instructions, MIDI events, OSC messages, or calls to a graphics or sound engine. Thus the same logical skeleton can generate not only tile images but also textual works or sonic pieces.
 
 \subsection{Triangle-logic code}
 
 The same strategy applies to the triangle logic. The only structural change is the replacement of the five V-logic rows by six rows associated with the six atoms \(a,\dots,f\), together with a repertoire that uses only four state symbols.
 
-\listingtitle{lst:trianglecode}{Structural layer: the triangle logic stored as symbolic rows. The same rendering predicates can be reused with a four-state palette.}
+\listingtitle{lst:trianglecode}{Triangle-logic code with the same layered organization.}
 \begin{codeblock}
-% order of rows in the final artifact
-triangle_rows([a,b,c,d,e,f]).
+% start rule:
+triangle_logic --> a,b,c,d,e,f.
 
-% structural layer: symbolic rows
-triangle_row(a, [s1,sep,s2,s3,s4]).
-triangle_row(b, [s2,s3,sep,s1,s4]).
-triangle_row(c, [s4,sep,s1,s2,s3]).
-triangle_row(d, [s1,s2,sep,s3,s4]).
-triangle_row(e, [s3,sep,s1,s2,s4]).
-triangle_row(f, [s2,s4,sep,s1,s3]).
+% structural layer:
+a --> s1,br,s2,s3,s4,n.
+b --> s2,s3,br,s1,s4,n.
+c --> s4,br,s1,s2,s3,n.
+d --> s1,s2,br,s3,s4,n.
+e --> s3,br,s1,s2,s4,n.
+f --> s2,s4,br,s1,s3,n.
 
-triangle_output :-
-    triangle_rows(Rows),
-    forall(member(R, Rows), (
-        triangle_row(R, Symbols),
-        forall(member(S, Symbols), render_symbol(S)),
-        nl
-    )).
+% repertoire layer:
+s1 --> [\GreenSq{}].
+s2 --> [\BlueSq{}].
+s3 --> [\RedSq{}].
+s4 --> [\OrangeSq{}].
+
+br --> [\BlackSq{}].
+n  --> [{\textbackslash}n].
 \end{codeblock}
-
-\section{Probability as a second generative layer}
-
-\subsection{Classical and quantum overlays}
-
-A central lesson of the partition-logic literature is that the same logical or graph-theoretic structure does not determine a unique probability theory \cite{GroetschelLovaszSchrijver1986}. If a partition logic has separating two-valued states, one may form classical probabilities as convex combinations
-\begin{equation}
-p_{\mathrm{cl}}(x)=\sum_{i=1}^{N}\lambda_i\,v_i(x),
-\qquad
-\lambda_i\ge 0,
-\qquad
-\sum_i \lambda_i=1.
-\label{eq:classicalprob}
-\end{equation}
-If, in addition, a faithful orthogonal representation exists, one may assign Born-type probabilities
-\begin{equation}
-p_{\mathrm{q}}(x)=|\langle \psi|x\rangle|^2.
-\label{eq:quantumprob}
-\end{equation}
-
-Generatively, these probabilities can be used as a second layer placed on top of the logical skeleton. For example,
-\begin{align}
-\text{brightness}(x) &= f\!\left(p(x)\right),
-\nonumber\\
-\text{opacity}(x) &= g\!\left(p(x)\right),
-\nonumber\\
-\text{duration}(x) &= h\!\left(p(x)\right),
-\end{align}
-or similarly size, repetition rate, timbral richness, spatial spread, or animation speed.
-
-\subsection{Formal Example E: two weightings of the V-logic}
-
-Consider first the uniform classical mixture \(\lambda_i=1/5\). Then Eq.~\eqref{eq:classicalprob} yields
-\begin{equation}
-p_{\mathrm{cl}}(a)=p_{\mathrm{cl}}(b)=p_{\mathrm{cl}}(d)=p_{\mathrm{cl}}(e)=\frac{2}{5},
-\qquad
-p_{\mathrm{cl}}(c)=\frac{1}{5}.
-\end{equation}
-So a weighted visual variant might render \(c\) with lower area, lower opacity, or shorter duration than the other atoms.
-
-Now take the Hilbert-space realization of Eq.~\eqref{eq:hilbertrealization}, choose \(|\psi\rangle=|a\rangle\), and set \(\theta=\pi/4\). Then
-\begin{equation}
-p_{\mathrm{q}}(a)=1,\quad p_{\mathrm{q}}(b)=0,\quad p_{\mathrm{q}}(c)=0,\quad
-p_{\mathrm{q}}(d)=\frac{1}{2},\quad p_{\mathrm{q}}(e)=\frac{1}{2}.
-\end{equation}
-Table~\ref{tab:weights} compares the two overlays.
-
-\begin{table}[t]
-\caption{Two different probabilistic overlays on the same V-logic skeleton.}
-\label{tab:weights}
-\begin{ruledtabular}
-\begin{tabular}{lccccc}
- & \(a\) & \(b\) & \(c\) & \(d\) & \(e\) \\
-\hline
-uniform classical & \(2/5\) & \(2/5\) & \(1/5\) & \(2/5\) & \(2/5\) \\
-quantum, \(|\psi\rangle=|a\rangle\) & \(1\) & \(0\) & \(0\) & \(1/2\) & \(1/2\)
-\end{tabular}
-\end{ruledtabular}
-\end{table}
-
-This distinction is crucial for science communication. If an artifact is presented as expressing a physical weighting, then one must specify which weighting it instantiates. Otherwise one risks turning a structural visualization into an ambiguous or misleading representation of physical content.
 
 \section{Humanities- and design-oriented interpretation}
 
@@ -789,7 +735,7 @@ This score-like character is important because it avoids two extremes. On the on
 
 A decisive methodological advantage of the SGLG approach is the separation between structural template and sign repertoire. The structural template specifies where something may occur and in what relation to other elements. The sign repertoire specifies what kind of thing will occur there.
 
-This distinction is pedagogically valuable. Students can hold the structure constant while changing the repertoire, thereby seeing what belongs to syntax and what belongs to materialization. Conversely, they can hold the repertoire constant while changing the logical source, thereby seeing how formal structure affects the character of the resulting artifact.
+This distinction opens a wide field of aesthetic exploration and is pedagogically valuable. Students can hold the structure constant while changing the repertoire, thereby seeing what belongs to syntax and what belongs to materialization. Conversely, they can hold the repertoire constant while changing the logical source, thereby seeing how formal structure affects the character of the resulting artifact.
 
 The same V-logic may therefore become:
 \begin{itemize}
@@ -797,9 +743,12 @@ The same V-logic may therefore become:
 \item a typographic grid,
 \item a sequence of syllables,
 \item a rhythmic or harmonic pattern,
+\item a sound piece,
 \item or a data-driven animation.
 \end{itemize}
 This is what we mean by a transmedial potential.
+
+A sound piece can be generated in which the structure of the partition logic becomes audible rather than visible. A first prototype of this idea was developed by Christian Jendreiko in collaboration with the composer Klaus Roeder. Further work in this direction is being pursued by a research group led by Christian Jendreiko at HSD University of Applied Sciences in D\"usseldorf.
 
 \subsection{From diagram to perceptual offering}
 
@@ -821,76 +770,22 @@ First, the construction is not limited to the V-logic. Any finite partition logi
 
 Second, not every interesting finite quantum structure is a partition logic. Some configurations important in quantum foundations have no separating set of two-valued states. For those, a different but related translation strategy would be needed, perhaps based directly on faithful orthogonal representations rather than state supports.
 
-Third, the distinction between logical skeleton and probabilistic overlay is not just philosophically neat; it is generatively useful. It allows one to keep the same formal artifact while varying how strongly individual elements are emphasized. This makes it possible to compare classical, quantum, or even purely aesthetic weightings on the same base form.
+Third, the distinction between logical skeleton and repertoire is not merely a convenience of notation. It is what allows one and the same source structure to appear across media and to function both as a formal object and as a generative score.
 
 Fourth, the method invites empirical investigation. Which mappings are most understandable to non-specialist audiences? Which visual or sonic forms best communicate overlap of contexts? When does aesthetic richness enhance understanding, and when does it obscure it? These are open interdisciplinary research questions.
 
 \section{Conclusion}
 
-We have proposed and exemplified a concrete bridge between partition logic and Generative Logic. The bridge consists of a translation from finite partition logics with separating two-valued states into simple non-recursive grammars, together with a principled separation between formal skeleton, sign repertoire, and probabilistic overlay.
+We have proposed and exemplified a concrete bridge between partition logic and Generative Logic. The bridge consists of a translation from finite partition logics with separating two-valued states into simple non-recursive grammars, together with a principled separation between formal skeleton, sign repertoire, and rendering layer.
 
-Using the V-logic \(L_{12}\), we derived a modular visual artifact, the \emph{Quantum Square}, and showed multiple renderings of the same source structure. We also gave additional formal examples, including a horizontal sum of binary partitions, a triangle-logic generalization, and two distinct probability overlays on the same logic.
+Using the V-logic \(L_{12}\), we derived a modular visual artifact, the \emph{Quantum Square}, and showed multiple renderings of the same source structure. We also gave additional formal examples, including a horizontal sum of binary partitions and a triangle-logic generalization.
 
 The broader significance of the method is double. For design and artistic research, it opens a disciplined way of using logical structures as generative scores. For science communication, it offers a way to externalize complementarity and finite event structure without collapsing them into informal metaphor. In both cases, the central insight is the same: abstract structures need not remain abstract. They can be transformed into perceptible forms while retaining their formal identity.
 
-\appendix
-
-\section{A parameterized repertoire layer}
-\label{app:parameterized}
-
-The separation between structure and repertoire can be made more explicit by parameterizing the output mode. The following sketch shows the idea.
-
-\listingtitle{lst:paramrepertoire}{Sketch of a parameterized repertoire layer. A single structural skeleton can drive several media-oriented repertoires.}
-\begin{codeblock}
-% structural rows as before:
-row(a, [s1,s2,sep,s3,s4,s5]).
-row(b, [s3,s4,sep,s1,s2,s5]).
-row(c, [s5,sep,s1,s2,s3,s4]).
-row(d, [s2,s4,sep,s1,s3,s5]).
-row(e, [s1,s3,sep,s2,s4,s5]).
-
-% multiple repertoires:
-palette(color,  s1, '[G] ').
-palette(color,  s2, '[B] ').
-palette(color,  s3, '[R] ').
-palette(color,  s4, '[O] ').
-palette(color,  s5, '[V] ').
-palette(color,  sep,'[#] ').
-
-palette(letter, s1, 'A ').
-palette(letter, s2, 'B ').
-palette(letter, s3, 'C ').
-palette(letter, s4, 'D ').
-palette(letter, s5, 'E ').
-palette(letter, sep,'| ').
-
-palette(sound,  s1, 'c4 ').
-palette(sound,  s2, 'e4 ').
-palette(sound,  s3, 'g4 ').
-palette(sound,  s4, 'a4 ').
-palette(sound,  s5, 'd5 ').
-palette(sound,  sep,'/ ').
-
-render_symbol(Mode, Sym) :-
-    palette(Mode, Sym, Out),
-    format('~w', [Out]).
-
-render_row(Mode, Name) :-
-    row(Name, Symbols),
-    forall(member(S, Symbols), render_symbol(Mode, S)),
-    nl.
-\end{codeblock}
-
-This code is conceptually important because it makes explicit that the structure does not belong to one medium only.
-
 \begin{acknowledgments}
-This research arises from an ongoing dialogue between artistic research, design pedagogy, logic programming, and the foundations of quantum theory. Christian Jendreiko gratefully acknowledges collaborations and discussions in the context of ongoing visual and sonic experiments, including exchanges with Klaus Roeder and colleagues.
-
-This research was funded in whole or in part by the \textit{Austrian Science Fund (FWF)} [Grant \textit{DOI:10.55776/PIN5424624}].
-The author acknowledges TU Wien Bibliothek for financial support through its Open Access Funding Programme.
+This research was funded in whole or in part by the \textit{Austrian Science Fund (FWF)} [Grant \textit{DOI:10.55776/PIN5424624}]. The author acknowledges TU Wien Bibliothek for financial support through its Open Access Funding Programme.
 \end{acknowledgments}
 
 \bibliography{svozil}
-
 
 \end{document}
