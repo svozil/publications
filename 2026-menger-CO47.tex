@@ -15,85 +15,11 @@
 \usepackage{amsthm}
 \usepackage{bm} % bold math
 \usepackage{graphicx}
-\usepackage{tikz}
-\usetikzlibrary{decorations.markings,lindenmayersystems}
-\usepackage{pgfplots}
-\pgfplotsset{compat=1.18}
 \usepackage{orcidlink}
 \usepackage{hyperref}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}[theorem]{Corollary}
-
-% --- DEFINITIONS FOR FIGURES (MUST BE IN PREAMBLE) ---
-
-% Configuration parameters for Menger Sponge
-\definecolor{cubeface1}{RGB}{180,180,180}  % Right face
-\definecolor{cubeface2}{RGB}{220,220,220}  % Top face
-\definecolor{cubeface3}{RGB}{140,140,140}  % Front face
-\definecolor{cubeedge}{RGB}{80,80,80}      % Edge color
-
-\newcommand\mengersponge[2][]{
-    \pgfkeys{
-        /menger/.cd,
-        draw edges/.initial=true,
-        edge width/.initial=0.1pt,
-        .unknown/.style={\pgfkeyscurrentname/.style={#1}}
-    }
-    \pgfkeys{/menger/.cd, #1}
-
-    \pgfmathsetmacro\level{int(#2 - 1)}
-    \ifnum \level = 0 \relax
-        \mengercube
-    \else
-        \begin{scope}[scale=0.333333]
-            \foreach \x in {-2,0,2} {
-                \foreach \y in {-2,0,2} {
-                    \foreach \z in {-2,0,2} {
-                        \pgfmathsetmacro{\skipthis}{
-                            (\x==0 && \y==0) || (\x==0 && \z==0) || (\y==0 && \z==0) ? 1 : 0
-                        }
-                        \ifnum\skipthis=0
-                            \begin{scope}[shift={(\x,\y,\z)}]
-                                \mengersponge[#1]{\level}
-                            \end{scope}
-                        \fi
-                    }
-                }
-            }
-        \end{scope}
-    \fi
-}
-
-\newcommand\mengercube{
-    \filldraw[
-        fill=cubeface1,
-        draw=cubeedge,
-        line width=\pgfkeysvalueof{/menger/edge width}
-    ] (1,1,1) -- (1,1,-1) -- (1,-1,-1) -- (1,-1,1) -- cycle;
-    \filldraw[
-        fill=cubeface2,
-        draw=cubeedge,
-        line width=\pgfkeysvalueof{/menger/edge width}
-    ] (1,1,1) -- (1,1,-1) -- (-1,1,-1) -- (-1,1,1) -- cycle;
-    \filldraw[
-        fill=cubeface3,
-        draw=cubeedge,
-        line width=\pgfkeysvalueof{/menger/edge width}
-    ] (1,1,1) -- (1,-1,1) -- (-1,-1,1) -- (-1,1,1) -- cycle;
-}
-
-% Koch curve
-\pgfdeclarelindenmayersystem{Koch curve}{
-  \rule{F -> F+F--F+F}
-}
-
-% Cantor set
-\pgfdeclarelindenmayersystem{Cantor set}{
-  \rule{F -> FfF}
-  \rule{f -> fff}
-}
-% --- END OF FIGURE DEFINITIONS ---
 
 \begin{document}
 
@@ -107,10 +33,10 @@
 \date{\today}
 
 \begin{abstract}
-Once space is modeled as a background substratum of uniform positive energy density $\rho_0$, the gravitational repulsion sometimes invoked under the heading of ``anti-gravity'' becomes a generic and unexotic phenomenon: in the Newtonian and linearized-gravity regimes, any localized region from which substratum is absent acts, relative to the background, as a negative effective mass and produces repulsive accelerations on test bodies in its exterior. The apparent negativity is a renormalization artifact of background subtraction, structurally identical to the construction that produces the Casimir energy, the effective mass of holes in a filled electronic band, and the peculiar gravity of cosmological voids; no energy conditions of the fundamental substratum are violated. We prove a universality theorem: in the Newtonian/linearized regime, the leading exterior field of a hole depends only on its volume, with shape information---fractal dimension, lacunarity, topology---entering only through subleading multipoles suppressed by $(\mathcal{R}/r)^2$. In the exact relativistic treatment we distinguish a Lorentz-scalar substratum (exterior Schwarzschild--de Sitter, static configurations requiring an Israel thin shell) from a dust-like substratum (exterior FLRW, hole as a Lema\^itre--Tolman--Bondi void), and we resolve the Bondi runaway via an Archimedean argument: the hole is buoyantly pushed away from any positive mass while the positive mass is gravitationally repelled by the hole, yielding mutual repulsion rather than runaway pursuit. The Menger sponge serves only as a visualization: at leading order any hole repels identically.
+Once space is modeled as a background substratum of uniform positive energy density $\rho_0$, the gravitational repulsion sometimes invoked under the heading of ``anti-gravity'' becomes a generic and unexotic phenomenon: in the Newtonian and linearized-gravity regimes, any localized region from which substratum is absent acts, relative to the background, as a negative effective mass and produces repulsive accelerations on test bodies in its exterior. The apparent negativity is a renormalization artifact of background subtraction, structurally identical to the construction that produces the Casimir energy, the effective mass of holes in a filled electronic band, and the peculiar gravity of cosmological voids; no energy conditions of the fundamental substratum are violated. We prove a universality theorem: in the Newtonian/linearized regime, the leading exterior field of a hole depends only on its volume, with shape information---fractal dimension, lacunarity, topology---entering only through subleading multipoles suppressed by $(\mathcal{R}/r)^2$. In the exact relativistic treatment we distinguish a Lorentz-scalar substratum (exterior Schwarzschild--de Sitter, static configurations requiring an Israel thin shell) from a dust-like substratum (exterior FLRW, hole as a Lema\^itre--Tolman--Bondi void). The Bondi pair-runaway objection is resolved by an Archimedean mechanism: the hole is buoyantly pushed away from any positive mass while the positive mass is gravitationally repelled by the hole, yielding mutual repulsion rather than runaway pursuit, with momentum balance supplied by the substratum itself.
 \end{abstract}
 
-\keywords{anti-gravity, background substratum, cosmological voids, induced gravity, Menger sponge, Schwarzschild--de Sitter, Israel junction conditions}
+\keywords{anti-gravity, background substratum, cosmological voids, induced gravity, Schwarzschild--de Sitter, Israel junction conditions, Archimedean buoyancy}
 
 \maketitle
 
@@ -129,7 +55,7 @@ The thesis we wish to defend can be stated in a single sentence:
 
 This claim is, on closer inspection, neither speculative nor original at the level of physical content. What is novel here is the reframing: the recognition that three superficially disparate phenomena---the Casimir effect, the negative effective mass of band holes, and the peculiar gravity of cosmic voids---share a common mathematical structure, and that this structure suffices to remove the air of pathology surrounding gravitationally repulsive solutions whenever a background is available to subtract.
 
-We make this case in stages. In Sec.~\ref{sec:substratum} we state the substratum hypothesis and distinguish two physically inequivalent versions of it---a Lorentz-scalar (vacuum-energy-like) substratum and a frame-fixing (dust-like) substratum---both of which support the central thesis but lead to different exact relativistic geometries. Section~\ref{sec:newtonian} establishes the thesis in the Newtonian limit by direct application of the shell theorem to a background-subtracted negative source. Section~\ref{sec:relativistic} treats the relativistic version with proper care: we derive the exterior geometry for both substratum types (Schwarzschild--de Sitter for the Lorentz-scalar case; a different geometry for the dust case) and treat the hole boundary using the Israel junction conditions, which require either an explicit thin shell or a non-static dynamical boundary. Section~\ref{sec:universality} states and proves a universality theorem, valid in the Newtonian/linearized regime, to the effect that the leading exterior field of a hole depends only on its volume; this is the technical core of the paper, and it explains in what precise sense the shape of the absence---fractal or otherwise---is irrelevant. Section~\ref{sec:menger} presents the Menger sponge as an illustrative example, chosen for its visual clarity but not for any essential role in the physics. Section~\ref{sec:exotic} confronts the energy-condition and Bondi-runaway objections, the latter being resolved by an Archimedean buoyancy argument that yields mutual repulsion between hole and positive mass without invoking any pathological dynamics. We conclude in Sec.~\ref{sec:discuss}.
+We make this case in stages. In Sec.~\ref{sec:substratum} we state the substratum hypothesis and distinguish two physically inequivalent versions of it---a Lorentz-scalar (vacuum-energy-like) substratum and a frame-fixing (dust-like) substratum---both of which support the central thesis but lead to different exact relativistic geometries. Section~\ref{sec:newtonian} establishes the thesis in the Newtonian limit by direct application of the shell theorem to a background-subtracted negative source. Section~\ref{sec:relativistic} treats the relativistic version with proper care: we derive the exterior geometry for both substratum types (Schwarzschild--de Sitter for the Lorentz-scalar case; a different geometry for the dust case) and treat the hole boundary using the Israel junction conditions, which require either an explicit thin shell or a non-static dynamical boundary. Section~\ref{sec:universality} states and proves a universality theorem, valid in the Newtonian/linearized regime, to the effect that the leading exterior field of a hole depends only on its volume; this is the technical core of the paper, and it explains in what precise sense the shape of the absence---fractal, foamy, or smooth---is irrelevant. Section~\ref{sec:exotic} confronts the energy-condition and Bondi-runaway objections, the latter being resolved by an Archimedean buoyancy argument that yields mutual repulsion between hole and positive mass without invoking any pathological dynamics. We conclude in Sec.~\ref{sec:discuss}.
 
 \section{Two versions of the substratum hypothesis}
 \label{sec:substratum}
@@ -170,7 +96,7 @@ The background-subtracted effective stress-energy
 T^{\mathrm{eff}}_{\mu\nu}(\mathbf{x}) = T_{\mu\nu}(\mathbf{x}) - T^{(0)}_{\mu\nu}
 \label{eq:Teff_def}
 \end{equation}
-vanishes outside the hole and equals $-T^{(0)}_{\mu\nu}$ inside. We emphasize once more that this negativity is a property of the \emph{difference} field $T^{\mathrm{eff}}_{\mu\nu}$, not of any fundamental matter field. The underlying substratum has $\rho \geq 0$ everywhere; the apparent negative density inside $\Omega$ is the bookkeeping consequence of measuring deviations from a positive baseline.
+vanishes outside the hole and equals $-T^{(0)}_{\mu\nu}$ inside. It is $T^{\mathrm{eff}}_{\mu\nu}$, not $T_{\mu\nu}$, that sources the \emph{local} gravitational field produced by the defect relative to the background; the absolute $T^{(0)}_{\mu\nu}$ enters only through the global cosmological geometry. The implications of this distinction for the energy conditions are taken up in Sec.~\ref{sec:exotic}.
 
 In the Newtonian and linearized-GR regimes, only the energy-density component $\rho^{\mathrm{eff}} = -\rho_0\, \chi_\Omega(\mathbf{x})$ sources the gravitational field, and Type A and Type B substrata yield identical predictions. In the exact (nonlinear) relativistic regime, the difference between the two types becomes important, as discussed in Sec.~\ref{sec:relativistic}.
 
@@ -339,45 +265,9 @@ and in particular, the leading $1/r$ exterior fields of the two holes are identi
 \paragraph{Restriction to the linear regime.}
 The proof of Theorem~\ref{thm:universality} is a Newtonian multipole expansion and uses linear superposition of the contributions from individual mass elements. This linearity is exact in Newtonian gravity and in linearized GR but fails in the nonlinear regime: the exact static exterior of a non-spherical absence in GR is not, in general, the multipole expansion of a Newtonian potential. In the nonlinear regime, asymmetric absences source gravitational radiation if they evolve dynamically, and even static asymmetric holes will produce exterior geometries that differ from the Newtonian multipole answer at higher orders in $GM/(c^2 r)$. The universality result should therefore be read as a statement about the dominant Newtonian/weak-field exterior, valid whenever $r \gg \mathcal{R}$ and $GM_{\mathrm{eff}}/(c^2 r) \ll 1$. In this regime---which covers all empirically accessible situations short of the strong-field limit---the conclusion holds: the shape of the hole is invisible at leading order.
 
-The physical content of Theorem~\ref{thm:universality} and Corollary~\ref{cor:universality} is the following. \emph{In the regime where the linearized analysis applies, the shape of a hole is invisible at leading order in its exterior gravitational field.} A spherical cavity, a cubical cavity, a Swiss-cheese arrangement of small cavities, a random foam, and a Menger sponge of equal total absent volume all produce the same leading $1/r$ repulsive potential outside their common bounding sphere. Shape information enters only through the quadrupole and higher multipoles, which decay as $r^{-(\ell+1)}$ and become negligible at distances $r \gg \mathcal{R}$.
+The physical content of Theorem~\ref{thm:universality} and Corollary~\ref{cor:universality} is the following. \emph{In the regime where the linearized analysis applies, the shape of a hole is invisible at leading order in its exterior gravitational field.} A spherical cavity, a cubical cavity, a Swiss-cheese arrangement of small cavities, a random foam, and a Menger sponge~\cite{Menger1926a_reprint,Edgar_ClassicsOnFractals} of equal total absent volume all produce the same leading $1/r$ repulsive potential outside their common bounding sphere. The last example is instructive: at iteration $n$ the Menger-sponge absence in a cube of side $\mathcal{R}$ has volume $V_n = \mathcal{R}^3[1-(20/27)^n]$, and in the limit $n\to\infty$ the entire cube becomes the absence, producing the same leading $G\rho_0\mathcal{R}^3/r$ potential as a spherical cavity of the same volume---despite Hausdorff dimension $D_H = \ln 20/\ln 3 \approx 2.73$ and vanishing Lebesgue measure of the retained substratum in the limit. Shape information enters only through the quadrupole and higher multipoles, which decay as $r^{-(\ell+1)}$ and become negligible at distances $r \gg \mathcal{R}$.
 
-This universality is what justifies---and what limits---the role of the Menger sponge in the present work. It is one of infinitely many shapes that a hole can take, all of which give rise, at leading order, to identical repulsive exterior fields. The fractal dimension, lacunarity, self-similarity, and detailed topology of the absence are physically silent at the dominant order. They survive only as fingerprints in the subleading multipole structure---fingerprints that, for any fixed total absent volume, are bounded above by $(\mathcal{R}/r)^2$ corrections to the leading effect.
-
-The corollary also explains, retroactively, why the construction in earlier formulations of this circle of ideas appears ad hoc: the elaborate parametrizations of the absence in terms of fractal dimensions and defect-strength parameters do no work that the volume of the absence does not already do.
-
-\section{The Menger sponge as illustration}
-\label{sec:menger}
-
-For concreteness, and because it offers a striking visual realization of an absence with rich internal structure, we briefly describe the Menger sponge~\cite{Menger1926a_reprint,Edgar_ClassicsOnFractals}. The sponge is constructed by starting with a unit cube, dividing it into 27 sub-cubes, removing the central sub-cube and the six face-centered sub-cubes, and iterating this prescription on each of the 20 surviving sub-cubes ad infinitum. The resulting set is a universal curve with Hausdorff dimension $D_H = \ln 20 / \ln 3 \approx 2.7268$ and vanishing Lebesgue measure in the limit of infinite iteration.
-
-\begin{figure}[ht]
-\centering
-\resizebox{.36\textwidth}{!}{
-\begin{tikzpicture}[
-    x={(0.866cm,-0.5cm)},
-    y={(0cm,1cm)},
-    z={(-0.866cm,-0.5cm)},
-    scale=2
-]
-    \mengersponge{3}
-\end{tikzpicture}
-}
-\caption{The Menger sponge at the third iteration. In the present framework, the visible material represents the substratum and the cavities represent the absence. By Theorem~\ref{thm:universality}, the leading exterior gravitational field of this configuration depends only on the total absent volume, in the linearized regime, and is identical to that of a single spherical cavity of equal volume.}
-\label{fig:menger}
-\end{figure}
-
-A Menger-sponge-shaped absence in the substratum (Fig.~\ref{fig:menger}) is a perfectly admissible region $\Omega$ in the sense of Theorem~\ref{thm:universality}: it is bounded, measurable, and has well-defined volume at every finite iteration. At iteration $n$, the absent volume is
-\begin{equation}
-V_n = \mathcal{R}^3 \left[1 - \left(\tfrac{20}{27}\right)^n\right],
-\label{eq:Vn}
-\end{equation}
-where $\mathcal{R}$ is the side length of the bounding cube. As $n \to \infty$, $V_n \to \mathcal{R}^3$: the substratum disappears entirely, leaving an absence of total volume equal to the bounding cube. The leading exterior gravitational field is then, by Theorem~\ref{thm:universality},
-\begin{equation}
-\Phi_\infty(\mathbf{r}) = \frac{G \rho_0 \mathcal{R}^3}{r} + \mathcal{O}(\mathcal{R}^2 / r^3),
-\end{equation}
-identical to the leading field of a uniform cubical absence and (to within the multipole correction) to that of a spherical absence of the same volume.
-
-We stress what this calculation does \emph{not} show. It does not show that the fractal structure of the Menger sponge plays any role in producing the repulsion. It does not show that the Hausdorff dimension $D_H$ enters the exterior physics at any order. It does not show that the elaborate self-similar microstructure of the sponge is physically necessary, or even physically relevant, for the central thesis of the paper. The sponge serves here only as a visualizable example of an absence, chosen because absence is hard to depict and the sponge makes it easy. Any other absence of the same volume would do equally well; the cavities of the sponge are pedagogy, not physics.
+The corollary explains, retroactively, why earlier formulations of this circle of ideas appear ad hoc: elaborate parametrizations of the absence in terms of fractal dimensions and defect-strength parameters do no work that the volume of the absence does not already do.
 
 \section{Why this is not exotic matter}
 \label{sec:exotic}
@@ -405,18 +295,23 @@ This is not a rhetorical move; it is the standard interpretive posture of three 
 
 Bondi's classical argument~\cite{bondi-1957} considers a pair of fundamental masses, one positive and one negative, both treated as autonomous dynamical point particles obeying $\mathbf{F} = m \mathbf{a}$ with their respective signed inertial masses. The negative mass is gravitationally repelled by the positive mass while gravitationally attracted to it (because $-m \cdot \mathbf{F}_{\mathrm{attractive}} =$ acceleration in the $+\mathbf{F}$ direction, but with reversed kinematic effect once $m < 0$). The pair accelerates indefinitely in the same direction, violating any sensible notion of dynamical stability.
 
-In the substratum framework, the resolution of this paradox is not philosophical but mechanical, and it follows from elementary fluid mechanics. Consider a positive mass $M_+$ placed at finite distance from a hole of effective mass $M_{\mathrm{eff}} = -|M_{\mathrm{eff}}| < 0$. There are two physical effects, which must be analyzed together:
+In the substratum framework, the resolution of this paradox is not philosophical but mechanical, and it follows from elementary fluid mechanics. Consider a positive mass $M_+$ placed at finite distance $r$ from a hole of effective mass $M_{\mathrm{eff}} = -|M_{\mathrm{eff}}| < 0$, and let $\hat{\mathbf{n}}$ denote the unit vector pointing from the hole's centroid toward $M_+$. Two physical effects operate simultaneously.
 
-\emph{(i) Gravitational force on the positive mass due to the hole.} Treating the hole as a static negative effective source, the positive mass experiences a gravitational acceleration directed \emph{away} from the hole, of magnitude $G|M_{\mathrm{eff}}|/r^2$ at separation $r$. The positive mass is repelled.
+\emph{(i) Gravitational force on the positive mass due to the hole.} Treating the hole as a static negative effective source, the positive mass experiences a gravitational acceleration directed \emph{away} from the hole, i.e., along $+\hat{\mathbf{n}}$,
+\begin{equation}
+\mathbf{a}_{M_+} = +\frac{G|M_{\mathrm{eff}}|}{r^2}\, \hat{\mathbf{n}},
+\label{eq:aMplus}
+\end{equation}
+with the $+\hat{\mathbf{n}}$ sign inherited from $M_{\mathrm{eff}} < 0$ in the standard Newtonian or weak-field acceleration $\mathbf{a} = -G M_{\mathrm{eff}} \hat{\mathbf{n}}/r^2$.
 
-\emph{(ii) Buoyant force on the hole due to the positive mass.} The substratum surrounding the hole is gravitationally attracted toward $M_+$. As the substratum accelerates toward $M_+$, the absence of substratum---the hole---is buoyantly displaced in the \emph{opposite} direction, by precisely the same Archimedean mechanism that causes a bubble in water to rise against gravity. Let $\hat{\mathbf{n}}$ denote the unit vector pointing from the hole toward $M_+$. The substratum at the hole's location is gravitationally accelerated toward $M_+$ with $\mathbf{g}_{\mathrm{at\ hole}}(M_+) = +(GM_+/r^2)\hat{\mathbf{n}}$, and the hole, as a buoyant absence, acquires the opposite acceleration:
+\emph{(ii) Buoyant force on the hole due to the positive mass.} The substratum surrounding the hole is gravitationally attracted toward $M_+$, acquiring at the hole's location an acceleration $\mathbf{g}_{\mathrm{at\ hole}}(M_+) = +(G M_+/r^2)\hat{\mathbf{n}}$. The hole, as the \emph{absence} of substratum within a flowing medium, is Archimedean: its acceleration is opposite to that of the displaced fluid, by the same mechanism that causes a bubble in water to rise against gravity. Hence
 \begin{equation}
 \mathbf{a}_{\mathrm{hole}} = -\mathbf{g}_{\mathrm{at\ hole}}(M_+) = -\frac{G M_+}{r^2}\, \hat{\mathbf{n}}.
 \label{eq:archimedes}
 \end{equation}
-The minus sign expresses that the hole accelerates \emph{away} from $M_+$.
+The $-\hat{\mathbf{n}}$ sign expresses that the hole accelerates \emph{away} from $M_+$.
 
-The two effects therefore agree in direction: the positive mass and the hole accelerate \emph{away from each other}. This is not the Bondi runaway, in which the two objects accelerate in the same direction with the negative-mass partner ``chasing'' the positive one indefinitely. It is, instead, ordinary mutual repulsion, of the same sign as electrostatic repulsion between like charges, with momentum and energy supplied by the substratum's gravitational interaction with $M_+$.
+Equations~\eqref{eq:aMplus} and~\eqref{eq:archimedes} are oppositely signed with respect to $\hat{\mathbf{n}}$, with $M_+$ accelerating along $+\hat{\mathbf{n}}$ and the hole along $-\hat{\mathbf{n}}$. Since $M_+$ sits at $+\hat{\mathbf{n}}$ relative to the hole by construction, both objects accelerate \emph{away from each other}. This is not the Bondi runaway, in which the two objects accelerate in the same direction with the negative-mass partner ``chasing'' the positive one indefinitely. It is, instead, ordinary mutual repulsion, of the same sign as electrostatic repulsion between like charges, with the momentum balance supplied by the substratum's own gravitational response to $M_+$: the medium, not the hole, is the reservoir.
 
 The Bondi paradox arises from treating the negative-mass object as an autonomous Newtonian particle with intrinsic negative inertia. In the substratum framework, the hole is not such a particle: it is a buoyant displacement in a fluid background, and its dynamics are governed by the Archimedean response of the surrounding substratum. The hole has no intrinsic inertia of its own; it inherits its dynamical response from the substratum it displaces.
 
@@ -427,11 +322,9 @@ We conclude that the standard objections to negative-mass Schwarzschild solution
 \section{Discussion}
 \label{sec:discuss}
 
-We have argued that gravitational repulsion is a generic and unexotic phenomenon once space is modeled as a background substratum, with two important qualifications relative to the most naive form of the claim. First, the exact relativistic geometry depends on the substratum's equation of state, and a careful treatment requires either a Lorentz-scalar substratum (whose exterior is Schwarzschild--de Sitter and whose hole boundary requires an Israel-type thin shell) or a frame-fixing dust-like substratum (whose exterior is FLRW and whose hole is a Lema\^itre--Tolman--Bondi void, dynamically evolving without any thin shell). Second, the universality theorem---that the shape of the hole is invisible at leading order---is exact only in the Newtonian/linearized regime. In the nonlinear regime, asymmetric holes generate non-Schwarzschild multipole structure in their exteriors and, if dynamical, gravitational radiation; the universality result then degrades to a leading-order statement about the dominant $1/r$ Newtonian piece, which remains shape-independent.
+We have argued that gravitational repulsion is a generic and unexotic phenomenon once space is modeled as a background substratum, with two qualifications relative to the most naive form of the claim. First, the exact relativistic geometry depends on the substratum's equation of state: a Lorentz-scalar substratum has Schwarzschild--de Sitter exterior with a static boundary requiring an Israel thin shell, while a frame-fixing dust-like substratum has FLRW exterior with a Lema\^itre--Tolman--Bondi hole boundary that evolves smoothly. Second, the universality theorem---that the shape of the hole is invisible at leading order---is exact only in the Newtonian/linearized regime; in the nonlinear regime it degrades to a statement about the dominant $1/r$ Newtonian piece, which remains shape-independent. With these qualifications the principal claim stands: a hole in a positive-energy substratum produces a repulsive $1/r$ potential whose magnitude is fixed by the absent volume and whose sign is fixed by background subtraction; the energy conditions of the underlying substratum are nowhere violated; and the Bondi runaway is replaced, via Archimedean buoyancy, by ordinary mutual repulsion.
 
-What remains, after these qualifications, is the principal substantive claim: in the regime where the linearized analysis applies---which covers essentially all empirically accessible situations short of the strong-field limit---a hole in a positive-energy substratum produces a repulsive $1/r$ potential whose magnitude is fixed by the absent volume and whose sign is fixed by the act of background subtraction. The negativity is a renormalization artifact, not a fundamental pathology; the energy conditions of the underlying substratum are nowhere violated; and the Bondi runaway instability is replaced, via Archimedean buoyancy, by ordinary mutual repulsion. The Menger sponge with which we began plays no essential role in this physics: at leading order, the volume of the absence is everything, and the fractal structure---or any other shape detail---is invisible.
-
-The principal universality result has a methodological consequence worth stating explicitly. Earlier formulations of the present circle of ideas attached considerable interpretive weight to the fractal character of the absent region: Hausdorff dimensions, defect-strength parameters, and microscopic length scales were invoked to fix the magnitude of the effective mass. Theorem~\ref{thm:universality} shows that, in the linearized regime, this interpretive apparatus is unnecessary. The leading exterior field of any bounded hole is fixed by its volume alone; the fractal, foamy, or smooth character of the absence enters only through subleading multipoles. The Menger sponge is a vivid illustration of an absence with intricate internal structure, but its intricacy is gravitationally inert at the leading order.
+The universality result has a methodological consequence worth stating explicitly. Earlier formulations of this circle of ideas attached interpretive weight to the fractal character of the absent region: Hausdorff dimensions, defect-strength parameters, and microscopic length scales were invoked to fix the magnitude of the effective mass. Theorem~\ref{thm:universality} shows that in the linearized regime this apparatus is unnecessary. The leading exterior field of any bounded hole is fixed by its volume alone; fractal or otherwise, the detailed shape is gravitationally inert at the dominant order.
 
 Several limitations of the present framework deserve acknowledgment.
 
@@ -439,13 +332,11 @@ Several limitations of the present framework deserve acknowledgment.
 
 \emph{The boundary requires care.} As emphasized in Sec.~\ref{sec:israel}, a static Type A hole requires a thin shell at its boundary, with surface tension determined by the substratum's negative pressure. This shell is not exotic matter, but it is a stress-energy concentration that must be included in any honest accounting of the configuration's energy budget. In the dynamical (Type B / void) picture, the boundary evolves smoothly without any shell, and the framework reduces to the well-developed LTB void cosmology.
 
-\emph{The universality is linearized.} The shape-independence of the leading repulsion is exact only in the Newtonian/linearized regime. Strong-field generalizations would require the construction of explicit non-spherical exact solutions of the Einstein equations with absent matter, and we make no such construction here.
-
 \emph{Observational signatures.} The cleanest observational test of the substratum picture would be the detection of compact objects with anomalously repulsive gravitational fields: defocusing rather than focusing gravitational lensing, anomalous Shapiro time advances rather than delays, or systematic outward perturbations on test-body trajectories. None of these has been observed at sub-cosmological scales. At cosmological scales, the repulsive peculiar gravity of voids \emph{is} observed and constitutes the closest existing empirical realization of the substratum picture; whether it can be extended to compact astrophysical objects is an open question.
 
-A natural extension of the present work is to ask whether the substratum framework offers a fresh perspective on the late-time accelerated expansion of the universe~\cite{Riess1998,Perlmutter1999}. If the universe is filled with a Type A substratum and its large-scale structure is dominated by underdense voids, then the framework presented here predicts that void-dominated regions repel each other, which on cosmological scales contributes additively to a positive cosmological constant in a void-rich cosmography. We do not pursue this connection here, but note it as a direction in which the substratum picture might make contact with observational cosmology beyond the level of analogy.
+A natural extension of the present work is to ask whether the substratum framework offers a fresh perspective on the late-time accelerated expansion of the universe~\cite{Riess1998,Perlmutter1999}. If the universe is filled with a Type A substratum and its large-scale structure is dominated by underdense voids, then the framework presented here predicts that void-dominated regions repel each other, contributing additively to a positive effective cosmological term in a void-rich cosmography. We do not pursue this connection here, but note it as a direction in which the substratum picture might make contact with observational cosmology beyond the level of analogy.
 
-In summary: in the regime where the linearized analysis applies, holes repel, generically, at leading order, independently of their shape. This is not a new mathematical fact---it is shell theorem, Birkhoff (applied to the source-free interior), and multipole expansion applied to a background-subtracted source---but it is, we believe, a useful reframing of what gravitational repulsion is and why it should not be regarded as exotic. The Menger sponge with which we began serves only to remind the eye that absence can have structure; the physics, at leading order, sees only the absence.
+In summary: in the regime where the linearized analysis applies, holes repel, generically, at leading order, independently of their shape. This is not a new mathematical fact---it is the shell theorem, Birkhoff (applied to the source-free interior), and multipole expansion applied to a background-subtracted source---but it is, we believe, a useful reframing of what gravitational repulsion is and why it should not be regarded as exotic. The physics, at leading order, sees only the volume of the absence.
 
 \begin{acknowledgments}
 The author thanks an anonymous referee for incisive criticism of an earlier version of this manuscript, in particular for emphasizing the misapplication of Birkhoff's theorem to a non-vacuum exterior, the necessity of treating the boundary via the Israel junction conditions, the distinction between Lorentz-scalar and dust-like substrata, and the Archimedean resolution of the Bondi runaway, all of which substantially shaped the present version.
