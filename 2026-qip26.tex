@@ -1,10 +1,33 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[
+  twocolumn,
+  aps,
+  pra,
+  showkeys,
+  amsmath,amssymb,
+  longbibliography
+]{revtex4-2}
+
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathptmx}
+\usepackage{amsthm}
 \usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{geometry}
-\geometry{margin=1.2in}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{calc,matrix,positioning}
+\usepackage{alltt}
+\usepackage[
+  breaklinks=true,
+  colorlinks=true,
+  citecolor=blue,
+  linkcolor=blue,
+  urlcolor=blue
+]{hyperref}
+\usepackage{orcidlink}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
 
 % Theorem environments
 \newtheorem{theorem}{Theorem}
@@ -15,307 +38,364 @@
 \newtheorem{example}[theorem]{Example}
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
+\newtheorem*{problem*}{Open Problem}
 
 \begin{document}
 
 \title{Contexts and pseudocontexts}
-\author{Mirko Navara$^1$ \and Karl Svozil$^2$}
-\date{
-    $^1$ Faculty of Electrical Engineering,\\
-    Czech Technical University in Prague, Czechia\\[1ex]
-    $^2$ Institute for Theoretical Physics, TU Wien, Austria
-}
 
-\maketitle
+\author{Mirko Navara\,\orcidlink{0000-0002-0880-5992}}
+\affiliation{Faculty of Electrical Engineering, Czech Technical
+University in Prague, Technick\'a 2, CZ-166~27 Prague 6,
+Czech Republic}
+\email{navara@fel.cvut.cz}
+
+\author{Karl Svozil\,\orcidlink{0000-0001-6554-2802}}
+\affiliation{Institute for Theoretical Physics, TU Wien,
+Wiedner Hauptstrasse 8-10/136, A-1040 Vienna, Austria}
+\email{karl.svozil@tuwien.ac.at}
+
+\date{\today}
 
 \begin{abstract}
-In the projection lattice of a finite-dimensional Hilbert space, an orthogonal
-basis---a \emph{context}---is characterised by the property that its atomic
-probabilities sum to one on every state.  We study a weakening of this
-condition in which two tuples of atoms induce the same probability sum on
-every state.  Such pairs are called \emph{pseudocontexts}.  In finite
-dimension this is equivalent to two distinct rank-one decompositions of the
-same positive operator on its support, placing the notion naturally among
-finite frame-theoretic constructions.  Size $k=1$ is trivial; size $k=2$
-already admits genuinely nonorthogonal examples over both $\mathbb{R}$ and
-$\mathbb{C}$; and, in fact, examples exist for every $k\ge 2$.  We present
-the operator formulation, give a general explicit construction, analyse the
-spectral structure of the associated structure operator, illustrate the
-symmetric $k=3$ case, and list the remaining classification problems.
+In the projection lattice of a finite-dimensional Hilbert space, an
+orthogonal basis---a \emph{context}---is characterised by the property
+that its atomic probabilities sum to one on every state.  We study a
+weakening of this condition in which two tuples of atoms induce the same
+probability sum on every state.  Such pairs are called
+\emph{pseudocontexts}.  In finite dimension this is equivalent to two
+distinct rank-one decompositions of the same positive operator, placing
+the notion naturally among finite frame-theoretic constructions.  Size
+$k=1$ is trivial; size $k=2$ already admits genuinely nonorthogonal
+examples over~$\mathbb{C}$; and, in fact, examples exist for every
+$k\ge 2$.  For $k\ge 3$ genuine pseudocontexts also exist over
+$\mathbb{R}$.  We present the operator formulation, give a general
+explicit construction, analyse the spectral structure of the associated
+structure operator, illustrate the symmetric $k=3$ case with a figure,
+and list the remaining classification problems.
 \end{abstract}
+
+\keywords{projection lattice, pseudocontext, rank-one decomposition,
+structure operator, quantum contextuality}
+
+\maketitle
 
 % ------------------------------------------------------------------
 \section{Introduction}
 % ------------------------------------------------------------------
 
-Let $L$ be the lattice of projections in a Hilbert space of finite dimension
-$n\ge 3$.  Its atoms (minimal non-zero elements) correspond to one-dimensional
-subspaces, represented by nonzero vectors.  States are described by
-probability measures $P\colon L\to[0,1]$.  We denote by $S(L)$ the set of
-all states on~$L$.
+Let $L$ be the lattice of projections in a Hilbert space of finite
+dimension $n\ge 3$.  Its atoms (minimal non-zero elements) correspond
+to one-dimensional subspaces, represented by nonzero vectors.  States
+are described by probability measures $P\colon L\to[0,1]$.  We denote
+by $S(L)$ the set of all states on~$L$.
 
-Vectors $a_1,\ldots,a_n$ form a \emph{context} if they compose an orthogonal
-basis.  In this case (and only in this case) they satisfy
+Vectors $a_1,\ldots,a_n$ form a \emph{context} if they compose an
+orthogonal basis.  In this case (and only in this case) they satisfy
 \begin{equation}
   \forall P\in S(L):\quad \sum_{i=1}^{n}P(a_i)=1.
-  \label{eq1}
+  \label{eq:context}
 \end{equation}
 The present note concerns weaker additive identifications obtained by
-comparing two tuples of atoms that are not required to be orthogonal.  Such
-\emph{pseudocontexts} are quantum-logical shadows of orthomodular-lattice
-constructions of Mayet--Navara--Rogalewicz \cite{mayet2000} and have direct
-physical meaning: they encode state-independent empirical equivalences between
-families of generally noncommuting observables.  The answer is simple:
-pseudocontexts already exist for $k=2$, and, more generally, for every
-$k\ge 2$.
+comparing two tuples of atoms that are not required to be orthogonal.
+Such \emph{pseudocontexts} are quantum-logical shadows of
+orthomodular-lattice constructions of Mayet--Navara--Rogalewicz
+\cite{Mayet_2000} and have direct physical meaning: they encode
+state-independent empirical equivalences between families of generally
+noncommuting observables.  The answer is simple: pseudocontexts already
+exist for $k=2$ over~$\mathbb{C}$, and, more generally, for every
+$k\ge 2$; for $k\ge 3$ they exist over $\mathbb{R}$ as well.
 
 % ------------------------------------------------------------------
 \section{Preliminaries}
 % ------------------------------------------------------------------
 
 Throughout, $H$ is a complex Hilbert space with $\dim H=n\ge 3$, and
-$L=L(H)$ is the orthomodular lattice of its closed subspaces.  Its atoms
-correspond to one-dimensional subspaces, or equivalently to \emph{rays}
-spanned by nonzero vectors.  We identify an atom with any representative unit
-vector $a$ and write $P_a=|a\rangle\langle a|$ for the orthogonal projection
-onto the ray it spans.
+$L=L(H)$ is the orthomodular lattice of its closed subspaces.  Its
+atoms correspond to one-dimensional subspaces, or equivalently to
+\emph{rays} spanned by nonzero vectors.  We identify an atom with any
+representative unit vector $a$ and write $P_a=|a\rangle\langle a|$ for
+the orthogonal projection onto the ray it spans.
 
-A \emph{state} is a map $P\colon L\to[0,1]$ with $P(I)=1$ that is finitely
-additive on orthogonal families.  By Gleason's theorem \cite{gleason1957},
-every state arises from a density operator $\rho$ via
+A \emph{state} is a map $P\colon L\to[0,1]$ with $P(I)=1$ that is
+finitely additive on orthogonal families.  By Gleason's theorem
+\cite{Gleason}, every state arises from a density operator $\rho$ via
 \begin{equation}
-  P(a)=\mathrm{tr}(\rho P_a),\qquad \rho\ge 0,\quad\mathrm{tr}\,\rho=1.
-  \label{eq2}
+  P(a)=\operatorname{tr}(\rho P_a),\qquad
+  \rho\ge 0,\quad\operatorname{tr}\rho=1.
+  \label{eq:gleason}
 \end{equation}
-The key consequence we use repeatedly is that two self-adjoint operators that
-agree on every state are equal as operators.
+The key consequence we use repeatedly is that two self-adjoint operators
+that agree on every state are equal as operators.
 
 % ------------------------------------------------------------------
 \section{Contexts and pseudocontexts}
 % ------------------------------------------------------------------
 
-The operator form of \eqref{eq1} is elementary and is the starting point for
-everything that follows.
+The operator form of \eqref{eq:context} is elementary and is the
+starting point for everything that follows.
 
-\begin{proposition}[Contexts]\label{prop1}
-Unit vectors $a_1,\ldots,a_n\in H$ form an orthonormal basis if and only if
+\begin{proposition}[Contexts]\label{prop:context}
+Unit vectors $a_1,\ldots,a_n\in H$ form an orthonormal basis if and
+only if
 \begin{equation}
   \sum_{i=1}^{n}P_{a_i}=I.
-  \label{eq3}
+  \label{eq:context-op}
 \end{equation}
 \end{proposition}
 
 \begin{proof}
-The forward implication is immediate.  For the converse, fix $j$ and evaluate
-\eqref{eq3} on the vector $a_j$:
+The forward implication is immediate.  For the converse, fix $j$ and
+evaluate \eqref{eq:context-op} on the vector $a_j$:
 \[
   1=\langle a_j,I\,a_j\rangle=\sum_{i=1}^{n}|\langle a_i,a_j\rangle|^2.
 \]
 The term with $i=j$ already contributes $1$, so all others must vanish.
-Hence $\langle a_i,a_j\rangle=0$ for $i\neq j$.  As this holds for every
-$j$, the family is orthonormal, and being of size $n$ in an $n$-dimensional
-space it is an orthonormal basis.
+Hence $\langle a_i,a_j\rangle=0$ for $i\neq j$.  As this holds for
+every $j$, the family is orthonormal, and being of size $n$ in an
+$n$-dimensional space it is an orthonormal basis.
 \end{proof}
 
-Combined with \eqref{eq2}, Proposition~\ref{prop1} recovers \eqref{eq1} as a
-state-theoretic characterisation of orthogonal bases.
+Combined with \eqref{eq:gleason}, Proposition~\ref{prop:context}
+recovers \eqref{eq:context} as a state-theoretic characterisation of
+orthogonal bases.
 
-\begin{definition}[Pseudocontext]\label{def2}
-Let $k\ge 1$.  A \emph{pseudocontext} of size $k$ is a pair of $k$-tuples of
-atoms $(a_1,\ldots,a_k)$, $(b_1,\ldots,b_k)$ such that
+\begin{definition}[Pseudocontext]\label{def:pc}
+Let $k\ge 1$.  A \emph{pseudocontext of size $k$} is a pair of
+$k$-tuples of atoms $(a_1,\ldots,a_k)$, $(b_1,\ldots,b_k)$ such that
 \begin{enumerate}
   \item[(i)]  each tuple contains pairwise distinct atoms,
   \item[(ii)] the two tuples are disjoint as sets of rays, so that
               $|\{a_1,\ldots,a_k,b_1,\ldots,b_k\}|=2k$, and
   \item[(iii)] $\displaystyle\forall P\in S(L):\quad
                \sum_{i=1}^{k}P(a_i)=\sum_{i=1}^{k}P(b_i)$.
-              \label{eq4}
 \end{enumerate}
-A pseudocontext is called \emph{genuine} if neither $k$-tuple is a context.
+A pseudocontext is called \emph{genuine} if neither $k$-tuple is a
+context.
 \end{definition}
 
 \begin{remark}
-Condition~(i) excludes repeated atoms within a single tuple; condition~(ii)
-ensures the two tuples are truly distinct.  Both are part of the definition;
-without them the notion degenerates trivially.
+Condition~(i) excludes repeated atoms within a single tuple;
+condition~(ii) ensures the two tuples are truly distinct as collections
+of rays.  Both conditions are part of the definition; without them the
+notion degenerates trivially.
 \end{remark}
 
-By \eqref{eq2}, condition~(iii) of Definition~\ref{def2} is equivalent to
-the operator identity
+By \eqref{eq:gleason}, condition~(iii) of Definition~\ref{def:pc} is
+equivalent to the operator identity
 \begin{equation}
   T:=\sum_{i=1}^{k}P_{a_i}=\sum_{i=1}^{k}P_{b_i},
-  \label{eq5}
+  \label{eq:opid}
 \end{equation}
 which we call the \emph{structure operator} of the pseudocontext.  Thus
-pseudocontexts are precisely pairs of distinct rank-one decompositions of a
-single positive operator on its support.  This places them naturally among
-finite frame-theoretic constructions: contexts are the special case in which
-the structure operator is the identity on the relevant subspace; in general,
-pseudocontexts are rank-one decompositions of a common positive operator.  If
-the common operator is proportional to the identity on its support, the family
-is a tight frame; after normalisation on that support one obtains a POVM\@.
+pseudocontexts are precisely pairs of distinct rank-one decompositions
+of a single positive operator.  This places them naturally among finite
+frame-theoretic constructions: contexts are the special case in which
+the structure operator is the identity on the relevant subspace; in
+general, pseudocontexts are rank-one decompositions of a common positive
+operator.  If the common operator is proportional to the identity on its
+support, the family is a tight frame; after normalisation on that support
+one obtains a POVM\@.
 
 \begin{remark}[Connection to SIC-POVMs]
-When the common structure operator satisfies $T=\frac{k}{n}I$ (tight frame on
-all of $H$), each family $\{P_{a_i}\}$ and $\{P_{b_i}\}$ scaled by $n/k$
-forms a symmetric informationally complete POVM (SIC-POVM) if $k=n^2$ and
-the frame vectors are equiangular \cite{zauner1999,renes2004}.  Pseudocontexts
-therefore generalise the SIC-POVM notion by dropping both the tightness and
-equiangularity requirements.
+When the common structure operator satisfies $T=\frac{k}{n}I$ (tight
+frame on all of $H$), each family $\{P_{a_i}\}$ and $\{P_{b_i}\}$
+scaled by $n/k$ forms a symmetric informationally complete POVM
+(SIC-POVM) if $k=n^2$ and the frame vectors are equiangular
+\cite{renes2004}.  Pseudocontexts therefore generalise the SIC-POVM
+notion by dropping both the tightness and equiangularity requirements.
 \end{remark}
 
 % ------------------------------------------------------------------
 \section{The smallest cases}
 % ------------------------------------------------------------------
 
-\begin{proposition}[Size $k=1$]\label{prop3}
+\begin{proposition}[Size $k=1$]\label{prop:k1}
 There is no pseudocontext of size $k=1$.  This holds for every $n\ge 1$.
 \end{proposition}
 
 \begin{proof}
 The condition $P(a_1)=P(b_1)$ for all $P\in S(L)$ is equivalent, via
-\eqref{eq2}, to $P_{a_1}=P_{b_1}$.  This rank-one identity forces $a_1$ and
-$b_1$ to span the same ray, contradicting distinctness condition~(ii).
+\eqref{eq:gleason}, to $P_{a_1}=P_{b_1}$.  This rank-one identity
+forces $a_1$ and $b_1$ to span the same ray, contradicting the
+distinctness condition~(ii) of Definition~\ref{def:pc}.
 \end{proof}
 
-\begin{remark}
-Every pseudocontext of size $k\ge 2$ can be realised in a two-dimensional
-subspace (and hence embedded into $\mathbb{C}^n$ for any $n\ge 2$): all
-constructions in Sections~\ref{sec:k2} and~\ref{sec:allk} live in
-$\mathrm{span}\{e_1,e_2\}$.  The case $\mathbb{C}^1$ is excluded since every
-unit vector spans the unique ray, making the distinctness condition
+\begin{remark}[Minimal ambient dimension]
+Every pseudocontext of size $k\ge 2$ can be realised inside a
+two-dimensional subspace, and hence embedded into $\mathbb{C}^n$ for
+any $n\ge 2$: all constructions in Sections~\ref{sec:k2}
+and~\ref{sec:allk} live in $\mathrm{span}\{e_1,e_2\}$.  For $k\ge 3$
+the construction also works over $\mathbb{R}^n$.  No pseudocontext of
+any size exists in dimension $n=1$, since there every unit vector spans
+the unique ray, making the distinctness condition
 $|\{a_i\}\cup\{b_i\}|=2k$ impossible.
 \end{remark}
 
+% ------------------------------------------------------------------
 \subsection{Pseudocontexts of size \texorpdfstring{$k=2$}{k=2}}
 \label{sec:k2}
+% ------------------------------------------------------------------
 
-\begin{corollary}[Size $k=2$, complex]\label{cor4}
-There are genuinely nonorthogonal pseudocontexts of size $k=2$ in $\mathbb{C}^n$
-for every $n\ge 2$.
+The $k=2$ case requires complex scalars; we show below that no genuine
+real pseudocontext of size $k=2$ exists, while the complex case allows such configurations.
+
+\begin{corollary}[Size $k=2$, complex]\label{cor:k2c}
+There are genuinely nonorthogonal pseudocontexts of size $k=2$ in
+$\mathbb{C}^n$ for every $n\ge 2$.
 \end{corollary}
 
 \begin{proof}
-Embed $\mathbb{C}^2$ into $\mathbb{C}^n$ as the span of the first two basis
-vectors and set
+Embed $\mathbb{C}^2$ into $\mathbb{C}^n$ as the span of the first two
+basis vectors and set
 \[
-  u_\pm=\Bigl(\tfrac{\sqrt{3}}{2},\pm\tfrac{1}{2},0,\ldots,0\Bigr),\qquad
-  v_\pm=\Bigl(\tfrac{\sqrt{3}}{2},\pm\tfrac{i}{2},0,\ldots,0\Bigr).
+  u_\pm=\Bigl(\tfrac{\sqrt{3}}{2},\,\pm\tfrac{1}{2},\,0,\ldots,0\Bigr),
+  \qquad
+  v_\pm=\Bigl(\tfrac{\sqrt{3}}{2},\,\pm\tfrac{i}{2},\,0,\ldots,0\Bigr).
 \]
-Then
+A direct computation gives
 \[
   P_{u_+}+P_{u_-}=P_{v_+}+P_{v_-}=
   \begin{pmatrix}3/2&0\\0&1/2\end{pmatrix}\oplus 0_{n-2}.
 \]
-The four rays are distinct.  Within each pair, $\langle u_+,u_-\rangle
-=-\tfrac{1}{4}\neq 0$ and $\langle v_+,v_-\rangle=\tfrac{1}{4}\neq 0$, so
-neither pair is orthogonal.  Hence neither pair is a context, and the
-pseudocontext is genuine.
+The four rays are distinct: $u_+$ and $u_-$ differ by a sign in the
+real second coordinate; $v_+$ and $v_-$ differ by a sign in the
+imaginary second coordinate; and $u_\pm$ versus $v_\pm$ differ by a
+factor of $i$ in the second coordinate, which is not a real scalar.
+Within each pair, $\langle u_+,u_-\rangle=-\tfrac{1}{4}\neq 0$ and
+$\langle v_+,v_-\rangle=\tfrac{1}{4}\neq 0$, so neither pair is
+orthogonal, and hence neither pair is a context.  The pseudocontext is
+therefore genuine.
 \end{proof}
 
-\begin{remark}[Real pseudocontexts of size $k=2$]\label{rem5}
-Genuine pseudocontexts of size $k=2$ exist over \emph{real} Hilbert spaces as
-well.  In $\mathbb{R}^2$ consider the operator $T=\mathrm{diag}(3/2,1/2)$ and
-the two decompositions
+\begin{remark}[Real vs.\ complex for $k=2$]\label{rem:realvscomplex}
+Genuinely nonorthogonal pseudocontexts of size $k=2$ strictly require
+complex Hilbert spaces.
+To see why, suppose
+$T=P_{u_+}+P_{u_-}=P_{v_+}+P_{v_-}$ with all four vectors in
+$\mathbb{R}^2$.  Write $u_+ = (\cos\alpha, \sin\alpha)$ and
+$u_- = (\cos\beta, \sin\beta)$.  Then
 \[
-  u_\pm=\Bigl(\tfrac{\sqrt{3}}{2},\pm\tfrac{1}{2}\Bigr),\qquad
-  v_\pm=\Bigl(\tfrac{1}{2},\pm\tfrac{\sqrt{3}}{2}\Bigr).
+  T = \begin{pmatrix}
+        \cos^2\!\alpha + \cos^2\!\beta &
+        \cos\alpha\sin\alpha + \cos\beta\sin\beta \\
+        \cos\alpha\sin\alpha + \cos\beta\sin\beta &
+        \sin^2\!\alpha + \sin^2\!\beta
+      \end{pmatrix}.
 \]
-One checks directly that $P_{u_+}+P_{u_-}=P_{v_+}+P_{v_-}=T$, the four rays
-are distinct, and $\langle u_+,u_-\rangle=-\tfrac{1}{4}\neq 0$, so the
-pseudocontext is genuine.  Thus complex phases are \emph{not} necessary for
-$k=2$; they merely provide one convenient route to the construction.  For
-$k\ge 3$, real pseudocontexts also exist, as demonstrated by
-Example~\ref{ex8}.
+For the off-diagonal entry to vanish (which is required if $T$ is to
+be diagonal in the standard basis, as in the complex example above), we
+need $\sin(\alpha+\beta)\cos(\alpha-\beta)=0$ modulo the constraint that
+$u_+$ and $u_-$ are not collinear.  The solutions over $\mathbb{R}$ that
+make $T$ diagonal force $\{u_+,u_-\}$ to be symmetric about one of the
+coordinate axes, which uniquely determines the unordered pair of rays
+$\{u_+,u_-\}$ from $T$.  Hence no second distinct real pair $\{v_+,v_-\}$
+with the same $T$ can exist.  When $T$ is a scalar multiple of the
+identity, any two-element unit-vector decomposition satisfies
+$\operatorname{tr}(T)=2$ and $T=I$, forcing the two vectors to be
+orthogonal (a context), so no genuine pseudocontext arises.  Thus no
+genuine real pseudocontext of size $k=2$ exists.
+This observation was made in~\cite{NSvozil:QS24}, without noticing that the situation is different in complex spaces.
+The availability of
+a continuous complex phase is what makes Corollary~\ref{cor:k2c}
+possible.  For $k\ge 3$, however, genuine pseudocontexts exist over
+$\mathbb{R}$, as shown in Example~\ref{ex:mb}.
 \end{remark}
 
 % ------------------------------------------------------------------
-\section{Pseudocontexts of every size \texorpdfstring{$k\ge 2$}{k>=2}}
+\section{Pseudocontexts of every size
+         \texorpdfstring{$k\ge 2$}{k>=2}}
 \label{sec:allk}
 % ------------------------------------------------------------------
 
-\begin{theorem}[Complex-phase construction]\label{thm6}
-Let $H$ contain an orthonormal pair $e_1,e_2$.  Fix an integer $k\ge 2$, let
-$\omega=e^{2\pi i/k}$, choose $\alpha\in(0,\pi/2)$, and choose $\phi\in\mathbb{R}$
-such that $e^{i\phi}$ is not a $k$th root of unity.  Define unit vectors
-\[
-  a_j=\cos\alpha\,e_1+\sin\alpha\,\omega^j e_2,\qquad
-  b_j=\cos\alpha\,e_1+\sin\alpha\,e^{i\phi}\omega^j e_2,\qquad
-  j=0,\ldots,k-1.
-\]
-Then the $2k$ rays spanned by the $a_j$ and $b_j$ are pairwise distinct, and
+\begin{theorem}[Complex-phase construction]\label{thm:allk}
+Let $H$ contain an orthonormal pair $e_1,e_2$.  Fix an integer $k\ge 2$,
+let $\omega=e^{2\pi i/k}$, choose $\alpha\in(0,\pi/2)$, and choose
+$\phi\in\mathbb{R}$ such that $e^{i\phi}$ is not a $k$th root of unity.
+Define unit vectors
+\begin{align*}
+  a_j &= \cos\alpha\,e_1+\sin\alpha\,\omega^j e_2,\\
+  b_j &= \cos\alpha\,e_1+\sin\alpha\,e^{i\phi}\omega^j e_2,
+  \qquad j=0,\ldots,k-1.
+\end{align*}
+Then the $2k$ rays spanned by the $a_j$ and $b_j$ are pairwise distinct,
+and
 \[
   \sum_{j=0}^{k-1}P_{a_j}=\sum_{j=0}^{k-1}P_{b_j}
-  =k\bigl(\cos^2\alpha\,P_{e_1}+\sin^2\alpha\,P_{e_2}\bigr).
+  =k\bigl(\cos^2\!\alpha\;P_{e_1}+\sin^2\!\alpha\;P_{e_2}\bigr).
 \]
-Hence $(a_0,\ldots,a_{k-1})$ and $(b_0,\ldots,b_{k-1})$ form a pseudocontext
-of size $k$.  If $\alpha\neq\pi/4$, then the pseudocontext is genuine.
+Hence $(a_0,\ldots,a_{k-1})$ and $(b_0,\ldots,b_{k-1})$ form a
+pseudocontext of size $k$.  If $\alpha\neq\pi/4$, then the pseudocontext
+is genuine.
 \end{theorem}
 
 \begin{proof}
 Write $c=\cos\alpha$ and $s=\sin\alpha$.  For each $j$,
-\[
-  P_{a_j}=c^2 P_{e_1}+s^2 P_{e_2}
-          +cs\bigl(\omega^{-j}|e_1\rangle\langle e_2|
-                  +\omega^{j}|e_2\rangle\langle e_1|\bigr),
-\]
-and
-\[
-  P_{b_j}=c^2 P_{e_1}+s^2 P_{e_2}
-          +cs\bigl(e^{-i\phi}\omega^{-j}|e_1\rangle\langle e_2|
-                  +e^{i\phi}\omega^{j}|e_2\rangle\langle e_1|\bigr).
-\]
-Summing over $j=0,\ldots,k-1$ and using $\sum_{j=0}^{k-1}\omega^j=0$ gives
+\begin{align*}
+  P_{a_j} &= c^2 P_{e_1}+s^2 P_{e_2}
+             +cs\bigl(\omega^{-j}|e_1\rangle\langle e_2|
+                     +\omega^{j}|e_2\rangle\langle e_1|\bigr),\\
+  P_{b_j} &= c^2 P_{e_1}+s^2 P_{e_2}
+             +cs\bigl(e^{-i\phi}\omega^{-j}|e_1\rangle\langle e_2|
+                     +e^{i\phi}\omega^{j}|e_2\rangle\langle e_1|\bigr).
+\end{align*}
+Summing over $j=0,\ldots,k-1$ and using $\sum_{j=0}^{k-1}\omega^j=0$
+cancels all off-diagonal terms, giving
 \[
   \sum_{j=0}^{k-1}P_{a_j}=\sum_{j=0}^{k-1}P_{b_j}
   =k\bigl(c^2 P_{e_1}+s^2 P_{e_2}\bigr).
 \]
 
 \textit{Distinctness.}
-Suppose $a_j=\lambda a_\ell$ for some scalar $\lambda$.  Since $c\neq 0$,
-comparing first coordinates gives $\lambda=1$, and then $\omega^j=\omega^\ell$,
-so $j=\ell$ (among $\{0,\ldots,k-1\}$).  Hence the $a_j$ are pairwise
-distinct rays.  The identical argument shows the $b_j$ are pairwise distinct
-rays.  If $a_j=\lambda b_\ell$, then $\lambda=1$ and $\omega^j=e^{i\phi}\omega^\ell$,
-i.e.\ $e^{i\phi}=\omega^{j-\ell}$, which contradicts the assumption that
-$e^{i\phi}$ is not a $k$th root of unity.  Hence no $a_j$ coincides with any
-$b_\ell$.
+If $a_j=\lambda a_\ell$ for some scalar $\lambda$, then comparing first
+coordinates (which equal $c\neq 0$) gives $\lambda=1$, and then
+$\omega^j=\omega^\ell$, so $j=\ell$.  Hence the $a_j$ are pairwise
+distinct rays; the identical argument applies to the $b_j$.  If
+$a_j=\lambda b_\ell$, then $\lambda=1$ and
+$\omega^j=e^{i\phi}\omega^\ell$, i.e.\ $e^{i\phi}=\omega^{j-\ell}$,
+contradicting the assumption that $e^{i\phi}$ is not a $k$th root of
+unity.  Hence no $a_j$ coincides with any $b_\ell$.
 
 \textit{Genuineness.}
 For $j\neq\ell$ within the $a$-tuple,
 \[
-  \langle a_j,a_\ell\rangle=c^2+s^2\omega^{\ell-j}.
+  \langle a_j,a_\ell\rangle = c^2+s^2\omega^{\ell-j}.
 \]
 This vanishes only if $c^2=s^2$ (i.e.\ $\alpha=\pi/4$) and
-$\omega^{\ell-j}=-1$.  So for $\alpha\neq\pi/4$ no two distinct vectors in
-the $a$-tuple are orthogonal.  An identical computation gives
-$\langle b_j,b_\ell\rangle=c^2+s^2\omega^{\ell-j}$, so the same conclusion
-holds for the $b$-tuple.  Hence neither tuple is a context when
-$\alpha\neq\pi/4$.
+$\omega^{\ell-j}=-1$.  So for $\alpha\neq\pi/4$ no two distinct vectors
+in the $a$-tuple are orthogonal.  An identical computation gives
+$\langle b_j,b_\ell\rangle=c^2+s^2\omega^{\ell-j}$, so the same
+conclusion holds for the $b$-tuple.  Hence neither tuple is a context
+when $\alpha\neq\pi/4$.
 \end{proof}
 
-\begin{remark}\label{rem7}
+\begin{remark}\label{rem:tight}
 At the special value $\alpha=\pi/4$, the structure operator becomes
-$\frac{k}{2}I_{\mathrm{span}\{e_1,e_2\}}$, so the construction yields a
-unit-norm tight frame on the two-dimensional support.  For $k=2$ this reduces
-to a context; for $k\ge 3$ it gives a highly symmetric pseudocontext
-(cf.\ Remark~\ref{rem9}).
+$\frac{k}{2}I_{\mathrm{span}\{e_1,e_2\}}$, so the construction yields
+a unit-norm tight frame on the two-dimensional support.  For $k=2$ this
+reduces to a context; for $k\ge 3$ it gives a highly symmetric
+pseudocontext (cf.\ Remark~\ref{rem:trine}).
 \end{remark}
 
 % ------------------------------------------------------------------
 \section{A symmetric \texorpdfstring{$k=3$}{k=3} example}
+\label{sec:symk3}
 % ------------------------------------------------------------------
 
-The case $k=3$ admits a very transparent planar representation; it is the
-finite-dimensional analogue of the Mercedes--Benz frame.
+The case $k=3$ admits a very transparent planar representation; it is
+the finite-dimensional analogue of the Mercedes--Benz frame.
 
-\begin{example}[Mercedes--Benz type pseudocontext]\label{ex8}
-Fix a two-dimensional subspace $V\subset H$ with orthonormal basis $(e_1,e_2)$,
-and fix an angle $\theta\in(0,\pi)\setminus\{0,\pi/3,2\pi/3,\pi\}$ (modulo
-$\pi$).  Put, for $j=0,1,2$,
+\begin{example}[Mercedes--Benz type pseudocontext]\label{ex:mb}
+Fix a two-dimensional subspace $V\subset H$ with orthonormal basis
+$(e_1,e_2)$, and fix an angle $\theta$ satisfying
+$\theta\not\equiv 0$, $\theta\not\equiv\pi/3$, and
+$\theta\not\equiv 2\pi/3$ modulo~$\pi$.
+Put, for $j=0,1,2$,
 \[
   a_j=\cos\!\Bigl(\tfrac{2\pi j}{3}\Bigr)e_1
-     +\sin\!\Bigl(\tfrac{2\pi j}{3}\Bigr)e_2,\qquad
+     +\sin\!\Bigl(\tfrac{2\pi j}{3}\Bigr)e_2,
+\]
+\[
   b_j=\cos\!\Bigl(\tfrac{2\pi j}{3}+\theta\Bigr)e_1
      +\sin\!\Bigl(\tfrac{2\pi j}{3}+\theta\Bigr)e_2.
 \]
@@ -323,87 +403,140 @@ Then the six rays are pairwise distinct, and
 \[
   \sum_{j=0}^{2}P_{a_j}=\sum_{j=0}^{2}P_{b_j}=\tfrac{3}{2}I_V.
 \]
-Thus $\{a_0,a_1,a_2\}$ and $\{b_0,b_1,b_2\}$ form a genuine pseudocontext of
-size $k=3$ over $\mathbb{R}$.
+Thus $\{a_0,a_1,a_2\}$ and $\{b_0,b_1,b_2\}$ form a genuine
+pseudocontext of size $k=3$ over $\mathbb{R}$.
 \end{example}
 
 \begin{proof}
 In the basis $(e_1,e_2)$, each projector has the form
 \[
   P_{\cos\varphi\,e_1+\sin\varphi\,e_2}
-  =\begin{pmatrix}\cos^2\varphi&\cos\varphi\sin\varphi\\
-                  \cos\varphi\sin\varphi&\sin^2\varphi\end{pmatrix}.
+  =\begin{pmatrix}\cos^2\!\varphi&\cos\varphi\sin\varphi\\
+                  \cos\varphi\sin\varphi&\sin^2\!\varphi\end{pmatrix}.
 \]
 For $\varphi_j=2\pi j/3$ and for $\varphi_j=\theta+2\pi j/3$, the
 trigonometric identities
 \[
   \sum_{j=0}^{2}\cos(2\varphi_j)=0,\qquad
-  \sum_{j=0}^{2}\sin(2\varphi_j)=0
+  \sum_{j=0}^{2}\sin(2\varphi_j)=0,
 \]
-imply that the off-diagonal terms cancel while the diagonal terms each sum to
-$3/2$.  Hence both sums equal $\frac{3}{2}I_V$.
+which hold for any arithmetic progression of three angles spaced
+$2\pi/3$ apart, imply that the off-diagonal terms cancel while the
+diagonal terms each sum to $3/2$.  Hence both sums equal
+$\frac{3}{2}I_V$.
 
-The exclusion $\theta\notin\{0,\pi/3,2\pi/3,\pi\}$ (modulo $\pi$) is needed
-to guarantee that no vector $b_j$ coincides with any $a_\ell$ or with
-$-a_\ell$ (same ray).  Specifically: $\theta=0$ gives $b_j=a_j$; $\theta=\pi$
-gives $b_j=-a_j$ (same ray); $\theta=\pi/3$ maps the $b$-triple onto the
-$a$-triple (as a set); and $\theta=2\pi/3$ similarly identifies the two sets
-with a permutation.
-
-Since $c^2\neq s^2$ at $\alpha=\pi/4$ is not applicable here (all vectors
-have unit norm in $\mathbb{R}^2$ with $c=\cos(2\pi j/3)$ varying), neither
-triple consists of mutually orthogonal vectors for generic $\theta$, so the
-pseudocontext is genuine.
+The three excluded residue classes modulo~$\pi$ account for all
+collisions between the two triples:
+\begin{itemize}
+  \item $\theta\equiv 0\pmod{\pi}$: every $b_j$ coincides with $a_j$
+        or $-a_j$, giving the same ray.
+  \item $\theta\equiv\pi/3\pmod{\pi}$: the $b$-triple is a cyclic
+        permutation of the $a$-triple as a set of rays.
+  \item $\theta\equiv 2\pi/3\pmod{\pi}$: the $b$-triple is again a
+        permutation of the $a$-triple.
+\end{itemize}
+For all other values of $\theta$ the six rays are pairwise distinct.
+Genuineness holds because for generic $\theta$ no two vectors within
+the same triple are orthogonal (the angle between consecutive vectors
+in each triple is $2\pi/3\neq\pi/2$), so neither triple is a context.
 \end{proof}
 
-\begin{remark}[Complex trine description]\label{rem9}
-Example~\ref{ex8} has a compact complex analogue.  Let $\omega=e^{2\pi i/3}$
-and embed $V$ into $\mathbb{C}^n$ as $\mathrm{span}\{e_1,e_2\}$.  The
-\emph{trines}
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[scale=2.6, >={Stealth[length=2.2mm,width=1.8mm]}]
+  % reference circle
+  \draw[thin, gray!40] (0,0) circle (1);
+  % axes
+  \draw[->, gray] (-1.3,0) -- (1.45,0)
+    node[black, right] {$e_1$};
+  \draw[->, gray] (0,-1.3) -- (0,1.45)
+    node[black, above] {$e_2$};
+  % a-vectors (solid, blue): angles 0, 120, 240 degrees
+  \foreach \ang/\lbl/\pos in {%
+      0/{$a_0$}/{above right},%
+    120/{$a_1$}/{above left},%
+    240/{$a_2$}/{below left}}%
+  {
+    \draw[blue!70!black, very thick, ->] (0,0) -- (\ang:1);
+    \node[blue!70!black, \pos] at (\ang:1.08) {\lbl};
+  }
+  % b-vectors (dashed, red): rotated by theta = 30 degrees
+  \foreach \ang/\lbl/\pos in {%
+     30/{$b_0$}/{above right},%
+    150/{$b_1$}/{left},%
+    270/{$b_2$}/{below right}}%
+  {
+    \draw[red!70!black, very thick, dashed, ->] (0,0) -- (\ang:1);
+    \node[red!70!black, \pos] at (\ang:1.08) {\lbl};
+  }
+  % rotation angle theta
+  \draw[thin, ->] (0.33,0) arc (0:30:0.33);
+  \node at (15:0.47) {$\theta$};
+\end{tikzpicture}
+\caption{The Mercedes--Benz pseudocontext of Example~\ref{ex:mb},
+drawn for $\theta=\pi/6$.  The solid blue rays $a_0,a_1,a_2$ and the
+dashed red rays $b_0,b_1,b_2$ are two distinct unordered triples in
+the plane $V$, yet the associated rank-one projectors have the same
+sum $\tfrac{3}{2}I_V$.}
+\label{fig:mb}
+\end{figure}
+
+\begin{remark}[Complex trine description]\label{rem:trine}
+Example~\ref{ex:mb} has a compact complex analogue.  Let
+$\omega=e^{2\pi i/3}$ and embed $V$ into $\mathbb{C}^n$ as
+$\mathrm{span}\{e_1,e_2\}$.  The \emph{trines}
 \[
-  u_j=\tfrac{1}{\sqrt{2}}\bigl(1,\omega^j,0,\ldots,0\bigr),\qquad
-  v_j=\tfrac{1}{\sqrt{2}}\bigl(1,e^{i\phi}\omega^j,0,\ldots,0\bigr),\qquad
-  j=0,1,2,
+  u_j=\tfrac{1}{\sqrt{2}}\bigl(1,\omega^j,0,\ldots,0\bigr),\quad
+  v_j=\tfrac{1}{\sqrt{2}}\bigl(1,e^{i\phi}\omega^j,0,\ldots,0\bigr),
+  \quad j=0,1,2,
 \]
 yield the same phenomenon after a change of basis in $V$.  The identity
-$1+\omega+\omega^2=0$ makes the off-diagonal entries of $\sum_j P_{u_j}$
-cancel, giving the common structure operator $\frac{3}{2}I_V$.  This form is
-most natural in frame-theoretic discussions and in connection with the
-Weyl--Heisenberg group.
+$1+\omega+\omega^2=0$ makes the off-diagonal entries of
+$\sum_j P_{u_j}$ cancel, giving the common structure operator
+$\frac{3}{2}I_V$.  This form is most natural in frame-theoretic
+discussions and in connection with the Weyl--Heisenberg group.
 \end{remark}
 
-\begin{remark}[Nondegenerate structure operators]\label{rem10}
+\begin{remark}[Nondegenerate structure operators]\label{rem:nondegenerate}
 The trine family is highly symmetric: its structure operator is a scalar
 multiple of the identity on its support.  More complicated examples with
-nondegenerate structure operators occur already in dimension three; see, for
-instance, the coordinatisations discussed in \cite{navara2024form,
-navara2025exploring}.  Such examples are useful when one wants to move beyond
-purely symmetric frame orbits.
+nondegenerate structure operators occur already in dimension three; see,
+for instance, the coordinatisations discussed in
+\cite{2023-navara-svozil,navara-2024-e}.  The main difference is that
+the pseudocontext in Example~\ref{ex:mb} has only one constant value in
+the probability sum, while the advanced constructions admit a larger
+range of values, still respecting the equality.  Such examples are
+useful when one wants to move beyond purely symmetric frame orbits.
 \end{remark}
+
+Similar constructions \cite{Mayet_2000} were known when $L$ was a more
+general orthomodular lattice \cite{kalmbach-83}.  Some of these lattices
+can be represented as subsets of a Hilbert lattice
+\cite{2023-navara-svozil,navara-2024-e}.
 
 % ------------------------------------------------------------------
 \section{Spectral structure and canonical forms}
+\label{sec:spectral}
 % ------------------------------------------------------------------
 
 We analyse the general properties of the structure operator
-\[
-  T=\sum_{i=1}^{k}P_{a_i}
-\]
-associated with a $k$-tuple of unit vectors $(a_1,\ldots,a_k)$ in $H$.
+$T=\sum_{i=1}^{k}P_{a_i}$ associated with a $k$-tuple of unit vectors
+$(a_1,\ldots,a_k)$ in $H$.
 
 \subsection{Gram representation and spectral equivalence}
 
 \begin{definition}[Analysis operator and Gram matrix]
-Let $A\colon\mathbb{C}^k\to H$ be defined by $Ae_i=a_i$, where $(e_i)$ is
-the standard basis of $\mathbb{C}^k$.  The \emph{analysis operator} is
-$A^\dagger\colon H\to\mathbb{C}^k$, and the \emph{Gram matrix} is
+Let $A\colon\mathbb{C}^k\to H$ be defined by $Ae_i=a_i$, where $(e_i)$
+is the standard basis of $\mathbb{C}^k$.  The \emph{analysis operator}
+is $A^\dagger\colon H\to\mathbb{C}^k$, and the \emph{Gram matrix} is
 \[
   G:=A^\dagger A=\bigl(\langle a_i,a_j\rangle\bigr)_{i,j=1}^k.
 \]
 \end{definition}
 
 \begin{proposition}[Frame operator factorisation]\label{prop:AAstar}
-The structure operator admits the factorisation $T=AA^\dagger$, and $G=A^\dagger A$.
+The structure operator admits the factorisation $T=AA^\dagger$, and
+$G=A^\dagger A$.
 \end{proposition}
 
 \begin{proposition}[Spectral equivalence]\label{prop:spectral_equivalence}
@@ -411,16 +544,14 @@ The nonzero spectra of $T$ and $G$ coincide (including multiplicities):
 \[
   \sigma(T)\setminus\{0\}=\sigma(G)\setminus\{0\}.
 \]
-In particular,
-\[
-  \mathrm{rank}(T)=\mathrm{rank}(G)\le\min(k,n).
-\]
+In particular, $\mathrm{rank}(T)=\mathrm{rank}(G)\le\min(k,n)$.
 \end{proposition}
 
 \begin{proof}
-This is the standard singular-value correspondence between $AA^\dagger$ and
-$A^\dagger A$: if $AA^\dagger v=\lambda v$ with $\lambda\neq 0$, then
-$A^\dagger A(A^\dagger v)=\lambda(A^\dagger v)$ and $A^\dagger v\neq 0$.
+This is the standard singular-value correspondence between $AA^\dagger$
+and $A^\dagger A$: if $AA^\dagger v=\lambda v$ with $\lambda\neq 0$,
+then $A^\dagger A(A^\dagger v)=\lambda(A^\dagger v)$ and
+$A^\dagger v\neq 0$.
 \end{proof}
 
 \subsection{Spectral constraints}
@@ -428,171 +559,146 @@ $A^\dagger A(A^\dagger v)=\lambda(A^\dagger v)$ and $A^\dagger v\neq 0$.
 \begin{proposition}[Trace identities]\label{prop:trace}
 The structure operator satisfies
 \[
-  \mathrm{tr}(T)=k,\qquad
-  \mathrm{tr}(T^2)=\sum_{i,j=1}^{k}|\langle a_i,a_j\rangle|^2.
+  \operatorname{tr}(T)=k,\qquad
+  \operatorname{tr}(T^2)=\sum_{i,j=1}^{k}|\langle a_i,a_j\rangle|^2.
 \]
-The diagonal terms $i=j$ each contribute $1$, giving $\mathrm{tr}(T^2)\ge k$,
-with equality if and only if the vectors are mutually orthogonal.
+The diagonal terms $i=j$ each contribute $1$, giving
+$\operatorname{tr}(T^2)\ge k$, with equality if and only if the vectors
+are mutually orthogonal.
 \end{proposition}
 
 \begin{proof}
-$\mathrm{tr}(T)=\sum_i\mathrm{tr}(P_{a_i})=k$.  For the second identity,
-$\mathrm{tr}(T^2)=\sum_{i,j}\mathrm{tr}(P_{a_i}P_{a_j})=\sum_{i,j}|\langle
-a_i,a_j\rangle|^2$.
+$\operatorname{tr}(T)=\sum_i\operatorname{tr}(P_{a_i})=k$.  For the
+second identity,
+$\operatorname{tr}(T^2)=\sum_{i,j}\operatorname{tr}(P_{a_i}P_{a_j})
+=\sum_{i,j}|\langle a_i,a_j\rangle|^2$.  Diagonal terms contribute $k$;
+off-diagonal terms are non-negative, and vanish simultaneously if and
+only if all off-diagonal inner products are zero.
 \end{proof}
 
-\begin{proposition}[Non-orthogonality and spectral spread]\label{prop:strict}
+\begin{proposition}[Non-orthogonality and spectral spread]
+\label{prop:strict}
 If the vectors $(a_i)$ are not mutually orthogonal, then
-\[
-  \mathrm{tr}(T^2)>k.
-\]
-Equivalently, the spectrum of $T$ is non-flat and $\lambda_{\max}>1$.
+$\operatorname{tr}(T^2)>k$, the spectrum of $T$ is non-flat, and
+$\lambda_{\max}(T)>1$.
 \end{proposition}
 
 \begin{proposition}[Majorisation constraint]\label{prop:maj}
 Suppose $k\le n$.  Let $\lambda(T)=(\lambda_1,\ldots,\lambda_n)$ be the
-eigenvalues of $T$ in decreasing order (padded with zeros), and let
-$d=(1,\ldots,1,0,\ldots,0)$ be the vector with $k$ ones and $n-k$ zeros.
-Then
-\[
-  \lambda(T)\succ d.
-\]
+eigenvalues of $T$ in decreasing order (padded with zeros to length $n$),
+and let $d=(1,\ldots,1,0,\ldots,0)\in\mathbb{R}^n$ have $k$ ones and
+$n-k$ zeros.  Then $\lambda(T)\succ d$.
 \end{proposition}
 
 \begin{proof}
-The diagonal entries of the Gram matrix $G$ are $G_{ii}=\|a_i\|^2=1$.  By
-the Schur--Horn theorem, the vector of diagonal entries of $G$ is majorised by
-the vector of its eigenvalues.  Since $G$ and $T$ share the same nonzero
-eigenvalues (Proposition~\ref{prop:spectral_equivalence}), the eigenvalue
-vector of $T$ (padded with $n-k$ zeros when $k\le n$) majorises
-$d=(1,\ldots,1,0,\ldots,0)$.
+The diagonal entries of $G$ are $G_{ii}=\|a_i\|^2=1$, so the diagonal
+of $G$ is $(1,\ldots,1)\in\mathbb{R}^k$.  By the Schur--Horn theorem,
+$\lambda(G)\succ(1,\ldots,1)$.  Since $G$ and $T$ share the same nonzero
+eigenvalues (Proposition~\ref{prop:spectral_equivalence}), padding
+$\lambda(G)$ with $n-k$ zeros gives $\lambda(T)$, and
+$\lambda(T)\succ d$ follows.
 
-\emph{Note on the overcomplete case $k>n$.}  When $k>n$ the Gram matrix $G$
-is $k\times k$ with rank at most $n$; the majorisation statement must then be
-formulated for the $k$-dimensional eigenvalue vector of $G$ against
-$(1,\ldots,1)\in\mathbb{R}^k$, and the above argument applies to $G$ in place
-of $T$.
+\smallskip\noindent\textit{Overcomplete case $k>n$.}  When $k>n$ the
+Gram matrix $G$ is $k\times k$ with rank at most $n$; the majorisation
+is then best stated for the $k$-dimensional eigenvalue vector of $G$
+against $(1,\ldots,1)\in\mathbb{R}^k$, and the Schur--Horn argument
+applies to $G$ directly.
 \end{proof}
 
 \begin{proposition}[Operator bounds]\label{prop:bounds}
-The structure operator satisfies
-\[
-  0\le T\le kI.
-\]
-Moreover, if $\mu:=\max_{i\neq j}|\langle a_i,a_j\rangle|$, then
+The structure operator satisfies $0\le T\le kI$.  Moreover, if
+$\mu:=\max_{i\neq j}|\langle a_i,a_j\rangle|$, then
 \[
   \lambda_{\max}(T)\le 1+(k-1)\mu.
 \]
 \end{proposition}
 
 \begin{proof}
-Positivity $T\ge 0$ is immediate, and $T\le kI$ since each $P_{a_i}\le I$.
-For the sharper bound, apply the Ger\v{s}gorin circle theorem to the Gram
-matrix $G$: since $G_{ii}=1$ and $|G_{ij}|\le\mu$ for $i\neq j$, every
-eigenvalue of $G$ lies in a disk centred at $1$ with radius
-$\sum_{j\neq i}|G_{ij}|\le(k-1)\mu$.  Because the nonzero eigenvalues of $T$
-and $G$ coincide, $\lambda_{\max}(T)\le 1+(k-1)\mu$.
+Positivity $T\ge 0$ is immediate, and $T\le kI$ since each
+$P_{a_i}\le I$.  For the eigenvalue bound, apply the Ger\v{s}gorin
+circle theorem to $G$: since $G_{ii}=1$ and $|G_{ij}|\le\mu$ for
+$i\neq j$, every eigenvalue of $G$ lies in a disk centred at $1$ with
+radius at most $(k-1)\mu$.  Since the nonzero eigenvalues of $T$ and
+$G$ coincide, $\lambda_{\max}(T)\le 1+(k-1)\mu$.
 \end{proof}
 
 \subsection{Commutant and symmetry}
 
 \begin{definition}[Commutant]
-Let
-\[
-  \mathcal{C}(T):=\{U\in U(H):UT=TU\}
-\]
-be the unitary commutant of $T$.
+The \emph{unitary commutant} of $T$ is
+$\mathcal{C}(T):=\{U\in U(H):UT=TU\}$.
 \end{definition}
 
 \begin{proposition}[Structure of the commutant]\label{prop:commutant}
-Let $T=\sum_\alpha\lambda_\alpha P_\alpha$ be the spectral decomposition of
-$T$ with distinct eigenvalues $\lambda_\alpha$ and orthogonal projections
-$P_\alpha$ of ranks $m_\alpha$.  Then
-\[
-  \mathcal{C}(T)\cong\prod_\alpha U(m_\alpha).
-\]
+Let $T=\sum_\alpha\lambda_\alpha P_\alpha$ be the spectral decomposition
+of $T$ with distinct eigenvalues $\lambda_\alpha$ and orthogonal
+projections $P_\alpha$ of ranks $m_\alpha$.  Then
+$\mathcal{C}(T)\cong\prod_\alpha U(m_\alpha)$.
 \end{proposition}
 
 \begin{remark}
 Spectral degeneracies ($m_\alpha>1$) give rise to continuous families of
-distinct rank-one decompositions of $T$ (as in tight frames), whereas simple
-spectrum leads to strong rigidity.  This explains why the tight-frame
-(scalar-multiple-of-identity) case in Remark~\ref{rem7} is so rich in
-pseudocontexts.
+distinct rank-one decompositions of $T$ (as in tight frames), whereas
+simple spectrum leads to strong rigidity.  This explains why the
+tight-frame case (Remark~\ref{rem:tight}) is so rich in pseudocontexts.
 \end{remark}
 
-\subsection{Canonical normal form of the structure operator}
+\subsection{Canonical normal form}
 
 \begin{proposition}[Spectral normal form]\label{prop:normalform}
-Every structure operator is unitarily equivalent to a diagonal operator
-\[
-  T\cong\mathrm{diag}(\lambda_1,\ldots,\lambda_r,0,\ldots,0),
-\]
-where $\lambda_i>0$, $\sum_{i=1}^r\lambda_i=k$, and $r=\mathrm{rank}(T)$.
+Every structure operator is unitarily equivalent to
+$\mathrm{diag}(\lambda_1,\ldots,\lambda_r,0,\ldots,0)$ with
+$\lambda_i>0$, $\sum_{i=1}^r\lambda_i=k$, and $r=\mathrm{rank}(T)$.
 \end{proposition}
 
 \subsection{Canonical parametrisation of all decompositions}
 
-We now describe all rank-one decompositions of a fixed positive operator $T$.
-
-\begin{theorem}[Canonical decomposition via the analysis operator]
-\label{thm:canonical}
+\begin{theorem}[Canonical decomposition]\label{thm:canonical}
 Let $T$ be a positive operator of rank $r$ with spectral decomposition
-\[
-  T=\sum_{i=1}^{r}\lambda_i|e_i\rangle\langle e_i|,\quad\lambda_i>0,
-\]
-and set $\Lambda=\mathrm{diag}(\lambda_1,\ldots,\lambda_r)$.
+$T=\sum_{i=1}^{r}\lambda_i|e_i\rangle\langle e_i|$, $\lambda_i>0$, and
+set $\Lambda=\mathrm{diag}(\lambda_1,\ldots,\lambda_r)$.
 
-Every rank-one decomposition $T=\sum_{j=1}^{k}P_{a_j}$ with $\|a_j\|=1$ is
-obtained as follows.  There exists a matrix $C\in\mathbb{C}^{r\times k}$ such
-that
+Every rank-one decomposition $T=\sum_{j=1}^{k}P_{a_j}$ with $\|a_j\|=1$
+corresponds to a matrix $C\in\mathbb{C}^{r\times k}$ satisfying
 \begin{equation}
-  CC^\dagger=\Lambda,\qquad \|c_j\|^2=1\text{ for all }j,
+  CC^\dagger=\Lambda,\qquad \|c_j\|^2=1\;\text{ for all }j,
   \label{eq:Ccond}
 \end{equation}
-where $c_j$ is the $j$-th column of $C$, and $a_j=\sum_{i=1}^{r}c_{ij}e_i$.
-Conversely, every matrix $C$ satisfying \eqref{eq:Ccond} defines a valid
-decomposition.
-
-A necessary condition for such a $C$ to exist is that $\lambda_i\le k-r+1$
-for all $i$ \cite{casazza2006}.
+where $c_j$ is the $j$-th column of $C$, via
+$a_j=\sum_{i=1}^{r}c_{ij}e_i$.  Conversely, every such $C$ defines a
+valid decomposition.
 \end{theorem}
 
 \begin{proof}
-Let $T=AA^\dagger$ be any factorisation with columns $a_j$.  In the
-eigenbasis of $T$, write $A=UC$ where $U$ diagonalises $T$ (restricted to
-$\mathrm{supp}(T)$).  Then $T=AA^\dagger=UCC^\dagger U^\dagger$, so
-$CC^\dagger=\Lambda$.  The column-norm condition follows from $\|a_j\|=1$.
-The converse is a direct computation.
+Let $T=AA^\dagger$ with columns $a_j$.  In the eigenbasis of $T$, write
+$A=UC$ where $U$ is the unitary diagonalising $T$ on its support.  Then
+$CC^\dagger=U^\dagger TU\big|_{\mathrm{supp}(T)}=\Lambda$, and
+$\|c_j\|=\|a_j\|=1$.  The converse is a direct computation.
 \end{proof}
 
 \begin{corollary}[Unitary freedom]\label{cor:unitary}
-Among all rank-one decompositions of $T$ into $k$ (not necessarily unit-norm)
-vectors, any two are related by right multiplication $A\mapsto AU$ for some
-$U\in U(k)$.  Imposing the unit-norm constraint \eqref{eq:Ccond} cuts out a
-submanifold of this orbit; in general, the $U(k)$-action is not transitive on
-the unit-norm decompositions.
+Among all rank-one decompositions of $T$ into $k$ (not necessarily
+unit-norm) vectors, any two are related by $A\mapsto AU$ for some
+$U\in U(k)$.  Imposing the unit-norm constraint \eqref{eq:Ccond} cuts
+out a submanifold of this $U(k)$-orbit; the action of $U(k)$ is not
+transitive on unit-norm decompositions in general.
 \end{corollary}
 
 \subsection{Characterisation of pseudocontexts}
 
 \begin{proposition}[Operator equivalence criterion]\label{prop:pseudo_equiv}
-Two $k$-tuples $(a_i)$ and $(b_i)$ of distinct rays form a pseudocontext if
-and only if their corresponding matrices $C_A,C_B$ (expressed in the
-eigenbasis of $T$) satisfy
+Two $k$-tuples $(a_i)$ and $(b_i)$ of distinct rays form a pseudocontext
+if and only if their matrices $C_A,C_B$ in the eigenbasis of $T$ both
+satisfy \eqref{eq:Ccond}:
 \[
   C_A C_A^\dagger=C_B C_B^\dagger=\Lambda.
 \]
 \end{proposition}
 
 \begin{remark}
-Thus pseudocontexts correspond to distinct points in the space
-\[
-  \bigl\{C\in\mathbb{C}^{r\times k}:CC^\dagger=\Lambda,\,\|c_j\|=1\bigr\}/\!\sim,
-\]
-where $\sim$ identifies decompositions giving the same set of rays.  This is
-the space of inequivalent rank-one decompositions of a fixed positive operator
-with prescribed column norms.
+Pseudocontexts correspond to distinct points in the space
+$\{C\in\mathbb{C}^{r\times k}:CC^\dagger=\Lambda,\,\|c_j\|=1\}/{\sim}$,
+where $\sim$ identifies decompositions that yield the same set of rays.
 \end{remark}
 
 \subsection{Extremal spectral bounds}
@@ -600,179 +706,128 @@ with prescribed column norms.
 \begin{proposition}[Rayleigh bounds]\label{prop:rayleigh}
 For any density operator $\rho$,
 \[
-  \lambda_{\min}(T)\le\mathrm{tr}(\rho T)\le\lambda_{\max}(T).
+  \lambda_{\min}(T)\le\operatorname{tr}(\rho T)\le\lambda_{\max}(T).
 \]
+Both bounds are tight, achieved by pure states on the corresponding
+eigenvectors of $T$.
 \end{proposition}
-
-\begin{remark}
-These bounds are tight (achieved by pure states supported on the eigenvectors
-of $T$).  They determine the quantum range of the probability sums
-$\sum_i P(a_i)$ that define the pseudocontext.
-\end{remark}
 
 \subsection{Examples of nondegenerate spectra}
 
-Explicit three-dimensional implementations of nondegenerate structure operators
-satisfying the bounds above were derived in \cite{navara2024form} in the study
-of generalised gadget hypergraphs.
+Explicit three-dimensional implementations of nondegenerate structure
+operators were derived in \cite{2023-navara-svozil}.
 
 \begin{itemize}
-\item \textbf{15-atom hypergraph ($T_1$).}  A pseudocontext of size $k=3$
-  generated from a generalised firefly logic yields a structure operator
-  $T_1$ with eigenvalues
-  \[
-    \lambda_1=2,\quad
-    \lambda_2=\tfrac{7+\sqrt{21}}{14}\approx 0.827,\quad
-    \lambda_3=\tfrac{7-\sqrt{21}}{14}\approx 0.173.
-  \]
-  One checks $\mathrm{tr}(T_1)=3$ and $\lambda_{\max}=2>1$, consistent with
-  Proposition~\ref{prop:strict}.  The Ger\v{s}gorin bound of
-  Proposition~\ref{prop:bounds} is satisfied as well.
 
-\item \textbf{36-atom hypergraph ($T_2$).}  A larger generalised
-  true-implies-false gadget gives another $k=3$ pseudocontext.  Its structure
-  operator is $T_2=\mathrm{diag}(1/5,1/5,13/5)$.  Here $\mathrm{tr}(T_2)=3$
-  and the spatial frame is stretched anisotropically with $\lambda_{\max}=13/5>1$.
+\item \textbf{15-atom hypergraph ($T_1$).}  A pseudocontext of size
+  $k=3$ from a generalised firefly logic yields
+  \[
+    \lambda_1=2,\;\;
+    \lambda_2=\tfrac{7+\sqrt{21}}{14}\approx 0.827,\;\;
+    \lambda_3=\tfrac{7-\sqrt{21}}{14}\approx 0.173,
+  \]
+  with $\operatorname{tr}(T_1)=3$ and $\lambda_{\max}=2>1$, consistent
+  with Proposition~\ref{prop:strict}.
+
+\item \textbf{36-atom hypergraph ($T_2$).}  A larger true-implies-false
+  gadget gives $T_2=\mathrm{diag}(1/5,1/5,13/5)$ with
+  $\operatorname{tr}(T_2)=3$ and $\lambda_{\max}=13/5>1$.
+
 \end{itemize}
 
 % ------------------------------------------------------------------
 \section{Physical interpretation and constraints}
 % ------------------------------------------------------------------
 
-A pseudocontext $(\{a_i\},\{b_i\})$ implements an empirical equivalence
-between two families of rank-one observables $A_i=P_{a_i}$ and
-$B_i=P_{b_i}$.  Although the operators within each family are generally
-noncommuting, the two linear functionals
+A pseudocontext $(\{a_i\},\{b_i\})$ implements a state-independent
+empirical equivalence between two families of rank-one observables
+$A_i=P_{a_i}$ and $B_i=P_{b_i}$.  Although the operators within each
+family are generally noncommuting, the two linear functionals
 \[
-  \rho\longmapsto\sum_i\mathrm{tr}(\rho A_i),\qquad
-  \rho\longmapsto\sum_i\mathrm{tr}(\rho B_i)
+  \rho\longmapsto\sum_i\operatorname{tr}(\rho A_i),\qquad
+  \rho\longmapsto\sum_i\operatorname{tr}(\rho B_i)
 \]
-agree on the whole state space.  Because the structure operators are identical,
-this equivalence is strictly state-independent.
+agree on the whole state space.
 
-The spectral decomposition of $T$ establishes absolute quantum limits on these
-probability sums.  By the Rayleigh--Ritz theorem (Proposition~\ref{prop:rayleigh}),
+The spectral decomposition of $T$ establishes absolute quantum limits
+on these probability sums.  By Proposition~\ref{prop:rayleigh},
 \begin{equation}
   \lambda_{\min}(T)\le\sum_{i=1}^{k}P(a_i)\le\lambda_{\max}(T).
-  \label{eq:bounds}
+  \label{eq:qbounds}
 \end{equation}
-These bounds are tight.  For the 36-atom hypergraph example \cite{navara2024form},
-the structure operator $T_2=\mathrm{diag}(1/5,1/5,13/5)$ confines the quantum
-probability sum to the interval $[1/5,\,13/5]=[0.2,\,2.6]$.  A classical
-hidden-variable model based on two-valued ($\{0,1\}$) truth assignments to
-projections---subject to the consistency requirement that exactly one atom in
-each orthogonal basis receives the value $1$---would allow the sum to range
-over the integer values $\{0,1,2,3\}$, which includes $0$ and $3$.  Because
-$T_2$ has no eigenvalue equal to $0$ or $3$, quantum mechanics forbids these
-extreme classical values; the quantum system cannot reach them.  This
-discrepancy is a signature of Kochen--Specker-type contextuality
-\cite{kochen1967}.
+These bounds are tight.
 
-We note that this state-independent additive equivalence is related to, but
-distinct from, the operational notion of contextuality introduced by Spekkens
-\cite{spekkens2005}, which applies to arbitrary experimental procedures
-(preparations, transformations, and unsharp measurements) rather than to sharp
-projective measurements alone.  A precise comparison is beyond the scope of
-this note.
+For the 36-atom hypergraph example \cite{2023-navara-svozil}, the
+structure operator $T_2=\mathrm{diag}(1/5,1/5,13/5)$ confines the
+quantum probability sum to $[1/5,\,13/5]=[0.2,\,2.6]$.  A classical
+hidden-variable model based on two-valued ($\{0,1\}$) truth assignments
+to projections---subject to the consistency requirement that exactly one
+atom in each orthogonal basis receives the value $1$---would allow the
+sum to range over $\{0,1,2,3\}$, which includes the extreme values $0$
+and $3$.  Because $T_2$ has no eigenvalue equal to $0$ or $3$, quantum
+mechanics forbids these extremes; the quantum system cannot reach them.
+This discrepancy is a signature of Kochen--Specker-type contextuality
+\cite{cabello-96,kochen1}.
 
-In the language of quantum information theory, the collections $\{A_i\}$ and
-$\{B_i\}$ are distinct rank-one operator decompositions of the same positive
-operator.  If the common operator is proportional to the identity on its
-support, they form a tight frame; after normalisation one obtains a POVM\@.
-From a foundational standpoint, this is a state-independent additive
-equivalence closely related to, but distinct from, Kochen--Specker-type
-contextuality \cite{kochen1967,cabello1996}.
+This state-independent additive equivalence is related to, but distinct
+from, the operational notion of contextuality introduced by Spekkens
+\cite{Spekkens-04}, which applies to arbitrary experimental procedures
+(preparations, transformations, and unsharp measurements) rather than
+to sharp projective measurements alone.  A precise comparison is beyond
+the scope of this note.
+
+In the language of quantum information, $\{A_i\}$ and $\{B_i\}$ are
+distinct rank-one decompositions of the same positive operator.  When
+this operator is proportional to the identity on its support, the
+families form tight frames; after normalisation they yield POVMs.
 
 % ------------------------------------------------------------------
 \section{Open problems}
 % ------------------------------------------------------------------
 
-Having established the existence of pseudocontexts for every size $k\ge 2$
-and isolated a simple $k=3$ illustration, we highlight the remaining questions
-regarding their deeper classification.
-
-\paragraph{Open Problem (Classification).}
+\begin{problem*}[Classification]
 Classify, up to unitary equivalence, all pseudocontexts of size $k$ in
 $\mathbb{C}^n$.  Even for small $(k,n)$, the orbit structure is not yet
 transparent.
+\end{problem*}
 
-\paragraph{Open Problem (Lattice representability).}
-Characterise which orthomodular lattices carrying a pseudocontext-type additive
-identification admit a faithful embedding into some $L(\mathbb{C}^n)$,
-sharpening the partial results of \cite{navara2024form,navara2025exploring}.
+\begin{problem*}[Lattice representability]
+Characterise which orthomodular lattices carrying a pseudocontext-type
+additive identification admit a faithful embedding into some
+$L(\mathbb{C}^n)$, sharpening the partial results of
+\cite{2023-navara-svozil,navara-2024-e}.
+\end{problem*}
 
-\paragraph{Open Problem (Frame-symmetry characterisation).}
-Can one characterise pseudocontexts purely in terms of symmetries of the
-underlying rank-one frame---for example, in terms of unitaries commuting with
-the structure operator and permuting the atoms of the two decompositions?
+\begin{problem*}[Frame-symmetry characterisation]
+Can one characterise pseudocontexts purely in terms of symmetries of
+the underlying rank-one frame, for example in terms of unitaries
+commuting with the structure operator and permuting the atoms of the
+two decompositions?
+\end{problem*}
 
-\paragraph{Open Problem (Minimal ambient dimension).}
-Although every pseudocontext of size $k\ge 2$ can be realised in dimension
-$n=2$, what is the minimal $n$ for which \emph{all} pseudocontexts of a given
-combinatorial type occur?  For Kochen--Specker configurations this question
-has a long history; the pseudocontext analogue is open.
+\begin{problem*}[Minimal ambient dimension]
+Although every pseudocontext of size $k\ge 2$ can be realised in
+dimension $n=2$ over $\mathbb{C}$, what is the minimal $n$ for which
+\emph{all} pseudocontexts of a given combinatorial type occur?  For
+Kochen--Specker configurations this question has a long history; the
+pseudocontext analogue is open.
+\end{problem*}
+
+\begin{problem*}[Minimal size over $\mathbb{R}$]
+Example~\ref{ex:mb} shows that genuine pseudocontexts exist over
+$\mathbb{R}$ for $k=3$.  Remark~\ref{rem:realvscomplex} shows they do
+not exist for $k=2$.  It remains to give a complete proof that $k=3$
+is the minimal size for genuine real pseudocontexts, and to classify
+all such minimal examples up to orthogonal equivalence.
+\end{problem*}
 
 % ------------------------------------------------------------------
-\section*{Acknowledgement}
-% ------------------------------------------------------------------
-
+\begin{acknowledgments}
 This research was funded in part by the Austrian Science Fund (FWF)
-10.55776/PIN5424624 and the Czech Science Foundation (GA\v{C}R) 25-20013L.
+10.55776/PIN5424624 and the Czech Science Foundation
+(GA\v{C}R)~25-20013L. The authors declare no conflict of interest.
+\end{acknowledgments}
 
-% ------------------------------------------------------------------
-\begin{thebibliography}{99}
-% ------------------------------------------------------------------
-
-\bibitem{gleason1957}
-Gleason, A.M.: Measures on the closed subspaces of a Hilbert space.
-\emph{J.\ Math.\ Mech.}~\textbf{6} (1957), 885--893.
-
-\bibitem{kalmbach1983}
-Kalmbach, G.: \emph{Orthomodular Lattices}.  Academic Press, London, 1983.
-
-\bibitem{mayet2000}
-Mayet, R., Navara, M., Rogalewicz, V.: Orthomodular lattices with rich state
-spaces.  \emph{Algebra Universalis}~\textbf{43} (2000), 1--30.
-
-\bibitem{navara2024form}
-Navara, M., Svozil, K.: Form of contextuality predicting probabilistic
-equivalence between two sets of three mutually noncommuting observables.
-\emph{Physical Review~A}~\textbf{109} (2024), 022222.
-DOI~10.1103/PhysRevA.109.022222.
-
-\bibitem{navara2025exploring}
-Navara, M., Svozil, K.: Exploring quantum contextuality with the quantum
-M\"{o}bius--Escher--Penrose hypergraph.
-\emph{Physical Review~A}~\textbf{111} (2025), 042209.
-DOI~10.1103/PhysRevA.111.042209.
-
-\bibitem{kochen1967}
-Kochen, S., Specker, E.P.: The problem of hidden variables in quantum
-mechanics.  \emph{J.\ Math.\ Mech.}~\textbf{17} (1967), 59--87.
-
-\bibitem{cabello1996}
-Cabello, A., Estebaranz, J.M., Garc\'{\i}a-Alcaine, G.: Bell--Kochen--Specker
-theorem: A proof with 18 vectors.  \emph{Phys.\ Lett.\ A}~\textbf{212}
-(1996), 183--187.
-
-\bibitem{spekkens2005}
-Spekkens, R.W.: Contextuality for preparations, transformations, and unsharp
-measurements.  \emph{Phys.\ Rev.\ A}~\textbf{71} (2005), 052108.
-
-\bibitem{zauner1999}
-Zauner, G.: Quantendesigns: Grundz\"{u}ge einer nichtkommutativen
-Designtheorie.  Doctoral dissertation, Universit\"{a}t Wien, 1999.
-
-\bibitem{renes2004}
-Renes, J.M., Blume-Kohout, R., Scott, A.J., Caves, C.M.: Symmetric
-informationally complete quantum measurements.  \emph{J.\ Math.\ Phys.}\
-\textbf{45} (2004), 2171--2180.
-
-\bibitem{casazza2006}
-Casazza, P.G., Le\'{o}n, M.T.: Existence and construction of finite frames
-with a given frame operator.  \emph{Illinois J.\ Math.}~\textbf{50} (2006),
-477--496.
-
-\end{thebibliography}
+\bibliography{svozil}
 
 \end{document}
