@@ -1805,80 +1805,106 @@ the resulting impossibility of a real realization.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-(* Mathematica script that checks all orthogonality relations for the exact C^3 realization at C=1 *)
+
+
+(* ==================================================================== *)
+(* Verification of the Exact C^3 Realization of the C=1 Octagon         *)
+(* ==================================================================== *)
 
 ClearAll["Global`*"];
 
-(* --- constants --- *)
+(* 1. Define the algebraic constants *)
 p = (Sqrt[14] + Sqrt[2])/4;
 q = (Sqrt[14] - Sqrt[2])/4;
 
-(* --- inner rays --- *)
+(* 2. Define the ray representatives *)
+
+(* Intertwining vertex *)
+c  = {0, 0, 1};
+
+(* Inner rays *)
 a1 = {1, 1, 0};
 a2 = {1, -1, 0};
 b1 = {1, I, 0};
 b2 = {1, -I, 0};
-c  = {0, 0, 1};
 
-(* --- midpoint rays --- *)
+(* Midpoint rays *)
 v0 = {1, -1, Sqrt[2]};
 v4 = {1, -1, -Sqrt[2]};
 
-v1 = {1, I, p + I q};
-v5 = {1, I, -p - I q};
+v1 = {1, I, p + I*q};
+v5 = {1, I, -p - I*q};
 
-v2 = {1, 1, -I Sqrt[2]};
-v6 = {1, 1, I Sqrt[2]};
+v2 = {1, 1, -I*Sqrt[2]};
+v6 = {1, 1, I*Sqrt[2]};
 
-v3 = {1, -I, q - I p};
-v7 = {1, -I, -q + I p};
+v3 = {1, -I, q - I*p};
+v7 = {1, -I, -q + I*p};
 
-(* --- corner rays --- *)
-v01 = {-p + I (q + Sqrt[2]),  Sqrt[2] - p + I q,      1 - I};
-v12 = { Sqrt[2] - p + I q,    p - I (q + Sqrt[2]),    1 + I};
-v23 = { q + Sqrt[2] + I p,   -q + I (Sqrt[2] - p),   -1 + I};
-v34 = { q + I (p - Sqrt[2]),   q + Sqrt[2] + I p,    -1 - I};
+(* Corner rays *)
+v01 = {-p + I*(q + Sqrt[2]),  Sqrt[2] - p + I*q,      1 - I};
+v12 = { Sqrt[2] - p + I*q,    p - I*(q + Sqrt[2]),    1 + I};
+v23 = { q + Sqrt[2] + I*p,   -q + I*(Sqrt[2] - p),   -1 + I};
+v34 = { q + I*(p - Sqrt[2]),   q + Sqrt[2] + I*p,    -1 - I};
 
-v45 = { p - I (q + Sqrt[2]),  -Sqrt[2] + p - I q,      1 - I};
-v56 = {-Sqrt[2] + p - I q,    -p + I (q + Sqrt[2]),    1 + I};
-v67 = {-q - Sqrt[2] - I p,     q - I (Sqrt[2] - p),   -1 + I};
-v70 = {-q - I (p - Sqrt[2]),  -q - Sqrt[2] - I p,     -1 - I};
+v45 = { p - I*(q + Sqrt[2]),  -Sqrt[2] + p - I*q,      1 - I};
+v56 = {-Sqrt[2] + p - I*q,    -p + I*(q + Sqrt[2]),    1 + I};
+v67 = {-q - Sqrt[2] - I*p,     q - I*(Sqrt[2] - p),   -1 + I};
+v70 = {-q - I*(p - Sqrt[2]),  -q - Sqrt[2] - I*p,     -1 - I};
 
-(* --- helper: pairwise inner products in one context --- *)
-pairwiseIPs[ctx_List] := Simplify[
-  Conjugate[#1].#2 & @@@ Subsets[ctx, {2}]
+
+(* 3. Group the 14 Contexts *)
+contexts = {
+  (* Inner contexts *)
+  {"D0", {v0, a1, v4}},
+  {"D1", {v1, b2, v5}},
+  {"D2", {v2, a2, v6}},
+  {"D3", {v3, b1, v7}},
+
+  (* Perimeter contexts *)
+  {"E0", {v70, v0, v01}},
+  {"E1", {v01, v1, v12}},
+  {"E2", {v12, v2, v23}},
+  {"E3", {v23, v3, v34}},
+  {"E4", {v34, v4, v45}},
+  {"E5", {v45, v5, v56}},
+  {"E6", {v56, v6, v67}},
+  {"E7", {v67, v7, v70}},
+
+  (* Added C=1 contexts *)
+  {"C1a", {a1, c, a2}},
+  {"C1b", {b1, c, b2}}
+};
+
+
+(* 4. Verification Logic *)
+(* Computes the standard complex inner product u^\dagger v for all pairs in a context *)
+VerifyContext[{name_, rays_}] := Module[{pairs, innerProducts, isOrthogonal},
+  pairs = Subsets[rays, {2}];
+  innerProducts = FullSimplify[Conjugate[#[[1]]] . #[[2]] & /@ pairs];
+
+  (* A context of 3 rays has 3 pairs. All inner products must be exactly 0 *)
+  isOrthogonal = (innerProducts === {0, 0, 0});
+
+  Print[StringTemplate["Context ``: ``"] @@ {
+    StringPadRight[name, 3],
+    If[isOrthogonal, "OK (Orthogonal)", "FAILED"]
+  }];
+
+  isOrthogonal
+]
+
+
+(* 5. Run the Verification *)
+Print["--- Verifying all 14 Contexts ---"];
+results = VerifyContext /@ contexts;
+
+Print["\nOVERALL RESULT: ",
+  If[And @@ results,
+    "SUCCESS. All 14 contexts are perfectly orthogonal.",
+    "FAILURE."
+  ]
 ];
-
-checkContext[name_String, ctx_List] := Module[{ips},
-  ips = pairwiseIPs[ctx];
-  Print[name, "  ->  ", ips];
-  And @@ (ips === ConstantArray[0, Length[ips]])
-];
-
-(* --- all 14 contexts: 8 perimeter + 4 inner + 2 added C=1 contexts --- *)
-contexts = <|
-  "D0" -> {v0, a1, v4},
-  "D1" -> {v1, b2, v5},
-  "D2" -> {v2, a2, v6},
-  "D3" -> {v3, b1, v7},
-
-  "E0" -> {v70, v0, v01},
-  "E1" -> {v01, v1, v12},
-  "E2" -> {v12, v2, v23},
-  "E3" -> {v23, v3, v34},
-  "E4" -> {v34, v4, v45},
-  "E5" -> {v45, v5, v56},
-  "E6" -> {v56, v6, v67},
-  "E7" -> {v67, v7, v70},
-
-  "C1a" -> {a1, c, a2},
-  "C1b" -> {b1, c, b2}
-|>;
-
-(* --- run the verification --- *)
-results = KeyValueMap[checkContext, contexts];
-
-Print["All contexts orthogonal: ", And @@ results];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
