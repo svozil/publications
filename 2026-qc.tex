@@ -8,33 +8,29 @@
 ]{revtex4-2}
 
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath,amssymb,amsfonts,amsthm}
-\usepackage{bm}
 \usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{bm}
 \usepackage{braket}
-\usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{orcidlink}
+\usepackage{hyperref}
 
 \hypersetup{
   colorlinks=true,
   linkcolor=blue,
   citecolor=blue,
-  urlcolor=blue
+  urlcolor=blue,
+  pdftitle={The Physical and Contextual Limits of Quantum Speedup},
+  pdfauthor={Karl Svozil},
+  pdfkeywords={quantum computation, contextuality, quantum universality, Turing universality}
 }
-
-\newtheorem{proposition}{Proposition}
-\newtheorem{corollary}[proposition]{Corollary}
-\newtheorem{remark}[proposition]{Remark}
-\newtheorem{definition}[proposition]{Definition}
-
 
 \begin{document}
 
 \title{The Physical and Contextual Limits of Quantum Speedup}
 
-\author{Karl Svozil\,\orcidlink{0000-0001-6554-2802}}
+\author{Karl Svozil \orcidlink{0000-0001-6554-2802}}
 \email{karl.svozil@tuwien.ac.at}
 \affiliation{Institute for Theoretical Physics, TU Wien,
 Wiedner Hauptstrasse 8-10/136, 1040 Vienna, Austria}
@@ -42,55 +38,50 @@ Wiedner Hauptstrasse 8-10/136, 1040 Vienna, Austria}
 \date{\today}
 
 \begin{abstract}
-Quantum computation is frequently popularized as the simultaneous execution of exponentially many classical computations. This paper argues that this ``branchwise parallelism'' metaphor is not only misleading, but fundamentally at odds with the physical mechanics of quantum information. Quantum speedups do not arise from parallel classical evaluation, but rather from the reversible embedding of algebraic structures that are made accessible through carefully engineered interference. We clarify this mechanism by exploring the stringent physical constraints on quantum computation: the impossibility of unitary garbage erasure, the contextual nature of copying and deletion, and the prevention of a single global classical history due to quantum contextuality. Finally, drawing an instructive analogy to high-dimensional representation learning, we highlight that the exponential dimension of Hilbert space provides a vast geometry for quasi-orthogonal embedding, not a reservoir for unlimited classical readout. Ultimately, quantum computation is best understood as context-dependent, thermodynamically embedded, reversible information processing.
+Quantum computation is often popularized as the simultaneous execution of exponentially many classical computations. This paper argues that such ``branchwise parallelism'' is misleading. Quantum speedups arise not from parallel classical evaluation, but from reversible embeddings of algebraic structure made accessible through engineered interference. We clarify this mechanism through several constraints: unitary garbage erasure is impossible, copying and deletion are context-dependent, and contextuality blocks a single global classical history. We also distinguish circuit or unitary universality from Turing universality: dense generation of unitaries is not the same as symbolic computation over unbounded inputs with recursion and self-reference. In closed unitary dynamics there is no nontrivial absorbing halting state. Exponential Hilbert-space dimension therefore supplies a geometry for interference and quasi-orthogonal embedding, not unlimited classical readout.
 \end{abstract}
 
-
-\keywords{quantum computation, quantum parallelism, contextuality, Landauer principle, no-cloning theorem, no-deletion theorem, interference}
+\keywords{quantum computation, quantum parallelism, contextuality, Landauer principle, no-cloning theorem, no-deletion theorem, interference, quantum universality, Turing universality}
 
 \maketitle
 
-% --------------------------------------------------------------------
 \section{Introduction}
-% --------------------------------------------------------------------
 
-A common description of quantum computation says that a quantum computer evaluates a function on many inputs ``at once.'' The image is seductive: a register is placed in a superposition, a function is applied to all components, and a final measurement extracts the desired answer. This picture is often invoked when discussing Deutsch--Jozsa~\cite{DeutschJozsa1992}, Simon's algorithm~\cite{Simon1997}, Shor's algorithm~\cite{Shor1994}, Grover search~\cite{Grover1996}, and related oracle or Fourier-sampling procedures~\cite{Cleve1998,NielsenChuang}.
+A common description of quantum computation says that a quantum computer evaluates a function on many inputs ``at once.'' The image is seductive: a register is placed in a superposition, a function is applied to all components, and a final measurement extracts the desired answer. This picture is often invoked when discussing Deutsch--Jozsa~\cite{deutsch:92}, Simon's algorithm~\cite{Simon1997}, Shor's algorithm~\cite{shor:94}, Grover search~\cite{grover}, and related oracle or Fourier-sampling procedures~\cite{cleve:98,nielsen-book}.
 
 Taken literally, however, this picture is wrong. A quantum computer does not return the list of all computed values. The components of a superposition cannot be individually inspected, copied, deleted, or archived as classical alternatives. They are amplitudes in a Hilbert-space vector, and only suitably arranged interference effects become accessible in a final measurement.
 
 The thesis of this article is the following:
 Quantum speedups are not many classical computations performed in parallel. They arise when the relevant predicate of a task can be embedded into a unitary evolution so that it becomes accessible by interference in a chosen measurement context. At the same time, copying and erasure are physically constrained by no-cloning, no-deletion, and Landauer irreversibility, while contextuality prevents the intermediate process from being interpreted as a single global classical history or as a noncontextual value assignment.
 
-This formulation is deliberately restrictive. It does not deny quantum speedup. It denies that ``parallel classical computation'' explains it.
+A related ambiguity concerns the word ``universal.'' Circuit or unitary universality means that a finite gate set can approximate a large class of unitary transformations. Turing universality, by contrast, concerns the symbolic simulation of arbitrary effective procedures on inputs of unbounded length. These are not the same notion. A family of quantum circuits may define an algorithm in the complexity-theoretic sense only when a uniform classical or quantum rule generates the appropriate circuit for each input size. A single finite circuit, or even a universal finite gate set, is not by itself equivalent to the class of partial recursive functions.
 
-% --------------------------------------------------------------------
+This formulation is deliberately restrictive. It does not deny quantum speedup. It denies that ``parallel classical computation'' explains it, and it denies that circuit universality should be conflated with Turing universality.
+
 \section{Superposition is not branchwise readout}
-% --------------------------------------------------------------------
 
 Let an $n$-qubit state be written in the computational basis as
 \[
 \ket{\psi}=\sum_{x\in\{0,1\}^n}\alpha_x\ket{x}.
 \]
-The formal dimension of the Hilbert space is $2^n$, and this exponential dimension is often used to motivate quantum parallelism. But the amplitudes $\alpha_x$ are not classical memory cells. A measurement yields one outcome per run, with probabilities determined by the Born rule. Recovering the amplitudes requires many similarly prepared systems and many measurement settings, i.e., tomography.
+The dimension of the Hilbert space is $2^n$, and this exponential dimension is often used to motivate quantum parallelism. But the amplitudes $\alpha_x$ are not classical memory cells. A measurement yields one outcome per run, with probabilities determined by the Born rule. Recovering the amplitudes requires many similarly prepared systems and many measurement settings, i.e., tomography.
 
 Thus a superposition can be acted on linearly, but it cannot be read branch by branch. Holevo's theorem gives one precise expression of this limitation: the accessible classical information extractable from an $n$-qubit ensemble cannot exceed $n$ bits per use~\cite{Holevo1973}. The state vector may contain exponentially many amplitudes, but the accessible classical readout is sharply constrained.
 
 This is the first reason why the naive parallelism metaphor is misleading. The superposed components can interfere, but they are not simultaneously available classical facts.
 
-% --------------------------------------------------------------------
 \section{The useful mechanism: spread, compute, detect}
-% --------------------------------------------------------------------
 
 Many quantum algorithms have the schematic form
-\begin{align}
+\begin{align*}
 \ket{0}^{\otimes n}
-&\longmapsto
-\frac{1}{\sqrt{2^n}}\sum_x\ket{x} \nonumber   \\
-& \quad \longmapsto
-\frac{1}{\sqrt{2^n}}\sum_x(-1)^{f(x)}\ket{x}  \nonumber   \\
-& \quad  \quad \longmapsto
-\text{measurable interference pattern}.  \nonumber
-\end{align}
+&\xrightarrow{\text{spread}}
+\frac{1}{\sqrt{2^n}}\sum_x\ket{x} \\
+&\xrightarrow{\text{compute}}
+\frac{1}{\sqrt{2^n}}\sum_x(-1)^{f(x)}\ket{x} \\
+&\xrightarrow{\text{detect}}
+\textnormal{measurable interference pattern}.
+\end{align*}
 The middle step may be produced by phase kickback. If
 \[
 U_f\ket{x}\ket{y}=\ket{x}\ket{y\oplus f(x)}
@@ -127,11 +118,9 @@ the parity
 \[
 b_1\oplus b_2\oplus\cdots\oplus b_N
 \]
-depends on every input bit. Exact quantum computation of parity still requires at least $N/2$ queries~\cite{Farhi1998}, and the polynomial-method bounds show that for total Boolean functions the quantum and classical query complexities are polynomially related, ruling out arbitrary exponential speedup~\cite{Beals2001}. Superposition alone is therefore not the resource. Detectable interference structure is.
+depends on every input bit. Exact quantum computation of parity still requires at least $N/2$ queries~\cite{Farhi-98}, and the polynomial-method bounds show that for total Boolean functions the quantum and classical query complexities are polynomially related, ruling out arbitrary exponential speedup~\cite{bbcmw-01}. Superposition alone is therefore not the resource. Detectable interference structure is.
 
-% --------------------------------------------------------------------
 \section{Garbage is not erased by unitarity}
-% --------------------------------------------------------------------
 
 A second misconception concerns garbage. Classical irreversible computation often hides the physical cost of deleting information. Quantum computation cannot do so, because closed-system evolution is unitary:
 \[
@@ -139,7 +128,7 @@ A second misconception concerns garbage. Classical irreversible computation ofte
 \qquad
 U^\dagger U=I.
 \]
-A many-to-one classical map cannot be implemented unitarily on the input alone. It must be embedded reversibly, for example as
+A non-injective classical function cannot be implemented by a unitary acting only on the input register. It must be embedded reversibly, for example as
 \[
 U_f:\ket{x}\ket{y}\mapsto\ket{x}\ket{y\oplus f(x)}.
 \]
@@ -153,16 +142,12 @@ If a reversible computation produces
 \]
 the garbage register $\ket{g(x)}$ cannot simply be deleted. It must be uncomputed, exported, measured, or thermodynamically reset.
 
-\begin{proposition}[No isolated unitary erasure]
-\label{prop:noerase}
+\emph{No isolated unitary erasure.}
 Let $\ket{\phi_1}$ and $\ket{\phi_2}$ be two normalized pure states on a Hilbert space $\mathcal H$ which are not identical up to a global phase. Then there is no unitary $U$ on $\mathcal H$ and no fixed normalized state $\ket{0}\in\mathcal H$ such that
 \[
 U\ket{\phi_1}=U\ket{\phi_2}=\ket{0}.
 \]
-\end{proposition}
-
-\begin{proof}
-Unitaries preserve inner products. If both equalities held, then
+Indeed, unitaries preserve inner products. If both equalities held, then
 \[
 \braket{\phi_1|\phi_2}
 =
@@ -173,20 +158,15 @@ Unitaries preserve inner products. If both equalities held, then
 1,
 \]
 so $\ket{\phi_1}$ and $\ket{\phi_2}$ would coincide up to a global phase, contradicting the assumption.
-\end{proof}
 
-\begin{corollary}[Three routes out of garbage]
-Let $\ket{g(x)}_B$ be a garbage register produced by reversible evaluation of a non-constant function $g$ on input $x$. There is no unitary acting on $B$ alone that resets $\ket{g(x)}_B$ to $\ket{0}_B$. The garbage can be removed only by
+Consequently, if $\ket{g(x)}_B$ is a garbage register produced by reversible evaluation of a non-constant function $g$ on input $x$, there is no unitary acting on $B$ alone that resets $\ket{g(x)}_B$ to $\ket{0}_B$. The garbage can be removed only by
 (i) uncomputation, using the input register $A$, which is reversible and redistributes rather than destroys the information;
 (ii) coupling $B$ to an environment, dissipating the information thermodynamically; or
 (iii) measurement of $B$, creating a classical record whose subsequent reset is subject to Landauer's principle.
-\end{corollary}
 
-Bennett's reversible-computation analysis shows how intermediate garbage can be uncomputed~\cite{Bennett1973,Bennett1982,Bennett2003}; it does not make physical erasure free. Landauer's principle locates the cost in reset, coarse graining, or environmental dissipation~\cite{Landauer1961}. Whether the Landauer--Bennett account fully exorcises Maxwell's demon remains a point of philosophical dispute~\cite{EarmanNorton1998,EarmanNorton1999,Norton2005}, but the operational lesson for quantum computation is unambiguous: unitary dynamics does not delete information.
+Bennett's reversible-computation analysis shows how intermediate garbage can be uncomputed~\cite{bennett-73,bennett-82,Bennett2003}; it does not make physical erasure free. Landauer's principle locates the cost in reset, coarse graining, or environmental dissipation~\cite{landauer:61}. Whether the Landauer--Bennett account fully exorcises Maxwell's demon remains a point of philosophical dispute~\cite{Earman1998435,Earman19991,Norton2005}, but the operational lesson for quantum computation is unambiguous: unitary dynamics does not delete information.
 
-% --------------------------------------------------------------------
 \section{Copying and deletion are contextual}
-% --------------------------------------------------------------------
 
 Classical information can be copied because it is encoded in distinguishable states. Quantum information cannot generally be copied. If a unitary cloner existed with
 \[
@@ -198,7 +178,7 @@ then inner-product preservation would imply
 \[
 \braket{\psi|\phi}=\braket{\psi|\phi}^2,
 \]
-so the two states must be either identical or orthogonal. This is the no-cloning theorem~\cite{WoottersZurek1982,Dieks1982}. For mixed states, the no-broadcasting theorem says that a set of density operators can be broadcast if and only if they pairwise commute~\cite{Barnum1996}. The no-deletion theorem gives the dual obstruction: an unknown quantum state cannot be deleted from one copy while leaving another intact~\cite{PatiBraunstein2000}.
+so the two states must be either identical or orthogonal. This is the no-cloning theorem~\cite{wo-zu,dieks}. For mixed states, the no-broadcasting theorem says that a set of density operators can be broadcast if and only if they pairwise commute~\cite{Barnum1996}. The no-deletion theorem gives the dual obstruction: an unknown quantum state cannot be deleted from one copy while leaving another intact~\cite{PatiBraunstein2000}.
 
 These results identify the boundary of classicality. Within a fixed orthonormal basis one may copy basis labels,
 \[
@@ -206,34 +186,63 @@ These results identify the boundary of classicality. Within a fixed orthonormal 
 \]
 but this copies information only relative to that basis; it does not copy an arbitrary unknown state. In algebraic terms, classical copyability is confined to a commuting context.
 
-\begin{definition}[Context]
-A context is a maximal set of mutually commuting observables, equivalently a maximal Boolean subalgebra of the projection lattice. In the nondegenerate finite-dimensional case it corresponds to an orthonormal basis and the projectors generated by it.
-\end{definition}
+Here a \emph{context} means a maximal set of mutually commuting observables, equivalently a maximal Boolean subalgebra of the projection lattice. In the nondegenerate finite-dimensional case it corresponds to an orthonormal basis and the projectors generated by it.
 
 Quantum computation therefore manipulates information that is not globally copyable or disposable. Only after a context is selected, typically by measurement or decoherence, do classical records emerge.
 
-% --------------------------------------------------------------------
 \section{Contextuality and the absence of a global classical history}
-% --------------------------------------------------------------------
 
-Quantum algorithms move between incompatible descriptions: computational basis, phase basis, Fourier basis, stabilizer basis, and measurement basis. This already expresses complementarity. A state sharp in one basis is generally delocalized in another.
+Quantum algorithms move between incompatible descriptions: computational basis, phase basis, Fourier basis, stabilizer basis, and measurement basis. These basis changes already express complementarity. A state sharp in one basis is generally delocalized in another.
 
-In Hilbert spaces of dimension at least three, the Kochen--Specker theorem strengthens this point: one cannot assign pre-existing values to all observables independently of the commuting context in which they are measured~\cite{KochenSpecker1967,Bell1966,Mermin1993}. Operational versions extend contextuality to preparations, transformations, and unsharp measurements~\cite{Spekkens2005}. For single qubits the standard Kochen--Specker obstruction is absent; simple hidden-variable representations of projective qubit measurements can be constructed. Nevertheless, complementarity still prevents joint sharp values for noncommuting observables and so blocks simultaneous classicalization of all measurement bases.
+In Hilbert spaces of dimension at least three, the Kochen--Specker theorem strengthens this point: one cannot assign pre-existing values to all observables independently of the commuting context in which they are measured~\cite{kochen1,bell-66,mermin-93}. Operational versions extend contextuality to preparations, transformations, and unsharp measurements~\cite{Spekkens-04}. For single qubits the standard Kochen--Specker obstruction is absent; simple hidden-variable representations of projective qubit measurements can be constructed. Nevertheless, complementarity still prevents joint sharp values for noncommuting observables and so blocks simultaneous classicalization of all measurement bases.
 
 This matters for quantum computation. The intermediate stages of an algorithm cannot generally be interpreted as a single classical trajectory through pre-existing values. The algorithm is a sequence of context changes implemented by unitary transformations and terminated by a final measurement context. What becomes classical is not the whole history, but the final record.
 
-Resource-theoretic results support this perspective.
-Stabilizer operations admit efficient classical simulation~\cite{GottesmanKnill,AaronsonGottesman2004}; universal quantum computation requires additional nonstabilizer resources such as magic states, Wigner negativity, or contextuality~\cite{Howard2014,Veitch2014,Raussendorf2013}. Here ``universal'' is meant in the circuit-theoretic sense: the gate set generates a dense subgroup of $U(2^n)$ and can approximate arbitrary $n$-qubit unitaries. This should not be confused with Turing universality, which concerns the class of computable functions. The exact nonstabilizer resource depends on the model and the dimension parity, but the general message is stable: superposition alone is not enough.
+Resource-theoretic results support this perspective. Stabilizer operations admit efficient classical simulation~\cite{GottesmanKnill,AaronsonGottesman2004}. Universal quantum computation in the circuit sense requires resources beyond the stabilizer fragment. Depending on the formalism and dimension, these resources may be described operationally as magic states, phase-space theoretically as Wigner-function negativity, or foundationally as contextuality~\cite{Howard-2014,Veitch2014,Raussendorf2013}. These characterizations are related but not identical. The stable message is that superposition alone is not enough.
 
-% --------------------------------------------------------------------
+\section{Quantum universality versus Turing universality}
+
+The word ``universal'' is used in two substantially different senses in computation theory and quantum information theory. Confusing them leads to conceptual errors.
+
+In the quantum-circuit literature, a finite gate set is called universal if circuits over that gate set can approximate arbitrary unitary transformations on $n$ qubits, typically to arbitrary accuracy in operator norm. In this sense, universality is a statement about the dense generation of groups such as $U(2^n)$ or $SU(2^n)$ by finite collections of gates. It is a statement about controllability of finite-dimensional Hilbert spaces.
+
+Turing universality is different. A Turing-universal device is not merely a generator of transformations on a fixed finite-dimensional space. It acts on symbolic inputs of arbitrary length, admits arbitrarily long computations, supports parsing and composition of programs, and allows self-reference through coding of machines by strings~\cite{turing-36}. This is the setting in which partial recursive functions, undecidability, universal simulation, and the halting problem arise.
+
+Thus a finite quantum circuit, by itself, does not define the same kind of object as a Turing machine. A circuit on $n$ qubits implements a unitary transformation
+\[
+U_n:\mathbb C^{2^n}\to\mathbb C^{2^n}.
+\]
+It is a finite-dimensional, norm-preserving map. It has no unbounded tape, no open-ended input parsing, and no intrinsic recursion. It also has no autonomous mechanism for extending its own computation to arbitrary symbolic length. A family of circuits $\{C_n\}_{n\geq 1}$ may compute a language or function in the complexity-theoretic sense only when there is a uniform rule generating the circuit $C_n$ from $n$. That uniformity condition is itself algorithmic and is normally supplied classically, or by a specified higher-level quantum model such as a quantum Turing machine~\cite{deutsch,be-va}.
+
+This distinction is important for the phrase ``quantum computable function.'' In the finite-circuit model, a circuit computes only a finite input-output relation, usually probabilistically and after measurement. A uniform circuit family computes a sequence of such relations. A quantum Turing machine or another uniform quantum model can be compared to classical Turing computation, but then the usual Church--Turing issue concerns computability, while the quantum advantage concerns complexity. Standard quantum computation is not believed to enlarge the class of computable classical functions beyond the partial recursive ones; rather, it may reduce the resources needed for some computable tasks.
+
+There is an additional physical obstruction to importing the ordinary Turing-machine halting picture into closed unitary dynamics. A classical computation may enter an absorbing halting configuration: once halted, the machine remains halted while its output is read. A nontrivial absorbing halt state is incompatible with reversible unitary evolution if distinct pre-halting states are to flow into it.
+
+A nontrivial absorbing halt state is incompatible with unitary evolution for a simple reason: unitaries are injective. Suppose a normalized halting state $\ket{h}$ is fixed,
+\[
+U\ket{h}=\ket{h},
+\]
+and suppose some distinct normalized pre-halting state $\ket{\psi}\ne e^{i\theta}\ket{h}$ also evolves into the same halting state,
+\[
+U\ket{\psi}=\ket{h}.
+\]
+Then
+\[
+U\ket{\psi}=U\ket{h},
+\]
+and injectivity of $U$ implies $\ket{\psi}=\ket{h}$, a contradiction. Equivalently, unitarity preserves inner products and cannot map distinct computational histories into one absorbing terminal configuration.
+
+The point is not that quantum algorithms cannot terminate operationally. They do terminate in practice because an external classical controller applies a prescribed finite circuit and then measures; or because a clock register, flag qubit, or history state is used; or because an open-system process creates an irreversible record. The point is narrower and more conceptual: a closed unitary dynamics cannot possess a nontrivial absorbing halt state of the classical kind. Unitary evolution is one-to-one. It can permute, rotate, entangle, and phase-shift states, but it cannot many-to-one collapse distinct computational histories into a final terminal configuration without exporting information elsewhere.
+
+This reinforces the main thesis. Quantum circuit universality is a powerful notion of finite-dimensional controllability and approximation. Turing universality is a notion of symbolic, unbounded, self-referential computation. They intersect in uniform models of quantum computation, but they are not identical. Treating ``universal quantum computation'' as if it automatically meant Turing universality obscures the distinction between unitary dynamics, measurement, and algorithmic control.
+
 \section{Miniaturization and high-dimensional representation}
-% --------------------------------------------------------------------
 
 There are two broader motivations for this reframing.
 
-First, miniaturization makes quantum information processing unavoidable. Classical bits are physical metastable systems. Their stability depends on energy barriers, redundancy, dissipation, and environmental decoherence. As devices shrink, discreteness, tunneling, thermal fluctuations, measurement back-action, and coherence become harder to ignore. Classical computation is not the fundamental regime; it is an engineered regime stabilized by einselection through environmental decoherence~\cite{Zurek2003}. Quantum computation may therefore be less an exotic alternative than the natural information theory of sufficiently small controlled systems.
+First, miniaturization makes quantum information processing unavoidable. Classical bits are physical metastable systems. Their stability depends on energy barriers, redundancy, dissipation, and environmental decoherence. As devices shrink, discreteness, tunneling, thermal fluctuations, measurement back-action, and coherence become harder to ignore. Classical computation is not the fundamental regime; it is an engineered regime stabilized by einselection through environmental decoherence~\cite{RevModPhys.75.715}. Quantum computation may therefore be less an exotic alternative than the natural information theory of sufficiently small controlled systems.
 
-Second, there is an instructive analogy with high-dimensional representation learning. Large language models exploit high-dimensional vector spaces in which many directions can be nearly orthogonal. Concentration of measure supports the coexistence of many weakly interfering semantic directions~\cite{Levy,Vershynin}. Quantum Hilbert spaces likewise exploit high-dimensional geometry. But in both cases large representational dimension does not imply unlimited accessible information. One must extract, compress, project, or measure. Quasi-orthogonality is a resource, not a miracle.
+Second, there is an instructive analogy with high-dimensional representation learning. Large language models exploit high-dimensional vector spaces in which many directions can be nearly orthogonal. Concentration of measure supports the coexistence of many weakly interfering semantic directions~\cite{ledoux2001concentration,vershynin2018high}. Quantum Hilbert spaces likewise exploit high-dimensional geometry. But in both cases large representational dimension does not imply unlimited accessible information. One must extract, compress, project, or measure. Quasi-orthogonality is a resource, not a miracle.
 
 The shared moral is:
 \[
@@ -243,13 +252,13 @@ The shared moral is:
 \]
 In quantum computation, this limitation is enforced by measurement, Holevo bounds, no-cloning, and contextuality. In vector semantics, it appears as finite context, finite sampling, and the need to compress distributed representations into discrete outputs.
 
-% --------------------------------------------------------------------
 \section{Conclusion}
-% --------------------------------------------------------------------
 
 Quantum computation is not classical computation performed in exponentially many parallel worlds whose results can later be inspected. Its power lies in reversible amplitude manipulation, phase-sensitive computation, and contextual measurement. Speedup appears when the desired predicate can be encoded into a unitary process and made visible by interference in an appropriate final context.
 
 The negative constraints are just as important as the positive mechanism. Garbage cannot be erased by unitary dynamics; it must be uncomputed or exported, and physical reset is thermodynamic. Unknown quantum states cannot be freely copied, broadcast, or deleted. Contextuality prevents the assignment of a single global classical history to the computation.
+
+Nor should circuit or unitary universality be confused with Turing universality. A finite universal gate set provides dense control over unitary transformations; it is not, by itself, a symbolic machine with arbitrary parsing, recursion, self-reference, and a classical halting semantics. In closed unitary dynamics there is no nontrivial absorbing halt state. Termination and output extraction require clocks, flags, measurements, or external control.
 
 Thus quantum computation is neither magic parallelism nor ordinary classical computation in disguise. It is context-dependent, thermodynamically embedded, reversible information processing whose useful answers must be engineered as interference phenomena.
 
@@ -257,172 +266,6 @@ Thus quantum computation is neither magic parallelism nor ordinary classical com
 The author thanks Noson Yanofsky for stimulating discussions on quantum computation, thermodynamics, and the conceptual status of quantum information.
 \end{acknowledgments}
 
-% --------------------------------------------------------------------
-\begin{thebibliography}{99}
-
-\bibitem{Landauer1961}
-R. Landauer,
-Irreversibility and heat generation in the computing process,
-IBM J. Res. Dev. \textbf{5}, 183--191 (1961).
-
-\bibitem{Bennett1973}
-C. H. Bennett,
-Logical reversibility of computation,
-IBM J. Res. Dev. \textbf{17}, 525--532 (1973).
-
-\bibitem{Bennett1982}
-C. H. Bennett,
-The thermodynamics of computation---a review,
-Int. J. Theor. Phys. \textbf{21}, 905--940 (1982).
-
-\bibitem{Bennett2003}
-C. H. Bennett,
-Notes on Landauer's principle, reversible computation, and Maxwell's Demon,
-Stud. Hist. Philos. Mod. Phys. \textbf{34}, 501--510 (2003).
-
-\bibitem{EarmanNorton1998}
-J. Earman and J. D. Norton,
-Exorcist XIV: The wrath of Maxwell's demon. Part I. From Maxwell to Szilard,
-Stud. Hist. Philos. Mod. Phys. \textbf{29}, 435--471 (1998).
-
-\bibitem{EarmanNorton1999}
-J. Earman and J. D. Norton,
-Exorcist XIV: The wrath of Maxwell's demon. Part II. From Szilard to Landauer
-and beyond,
-Stud. Hist. Philos. Mod. Phys. \textbf{30}, 1--40 (1999).
-
-\bibitem{Norton2005}
-J. D. Norton,
-Eaters of the lotus: Landauer's principle and the return of Maxwell's demon,
-Stud. Hist. Philos. Mod. Phys. \textbf{36}, 375--411 (2005).
-
-\bibitem{WoottersZurek1982}
-W. K. Wootters and W. H. Zurek,
-A single quantum cannot be cloned,
-Nature \textbf{299}, 802--803 (1982).
-
-\bibitem{Dieks1982}
-D. Dieks,
-Communication by EPR devices,
-Phys. Lett. A \textbf{92}, 271--272 (1982).
-
-\bibitem{Barnum1996}
-H. Barnum, C. M. Caves, C. A. Fuchs, R. Jozsa, and B. Schumacher,
-Noncommuting mixed states cannot be broadcast,
-Phys. Rev. Lett. \textbf{76}, 2818--2821 (1996).
-
-\bibitem{PatiBraunstein2000}
-A. K. Pati and S. L. Braunstein,
-Impossibility of deleting an unknown quantum state,
-Nature \textbf{404}, 164--165 (2000).
-
-\bibitem{Holevo1973}
-A. S. Holevo,
-Bounds for the quantity of information transmitted by a quantum communication channel,
-Probl. Inf. Transm. \textbf{9}, 177--183 (1973).
-
-\bibitem{DeutschJozsa1992}
-D. Deutsch and R. Jozsa,
-Rapid solution of problems by quantum computation,
-Proc. R. Soc. Lond. A \textbf{439}, 553--558 (1992).
-
-\bibitem{Simon1997}
-D. R. Simon,
-On the power of quantum computation,
-SIAM J. Comput. \textbf{26}, 1474--1483 (1997).
-
-\bibitem{Shor1994}
-P. W. Shor,
-Algorithms for quantum computation: discrete logarithms and factoring,
-in \textit{Proceedings of the 35th Annual Symposium on Foundations of Computer Science}
-(IEEE, 1994), pp. 124--134.
-
-\bibitem{Grover1996}
-L. K. Grover,
-A fast quantum mechanical algorithm for database search,
-in \textit{Proceedings of the 28th Annual ACM Symposium on Theory of Computing}
-(ACM, 1996), pp. 212--219.
-
-\bibitem{Cleve1998}
-R. Cleve, A. Ekert, C. Macchiavello, and M. Mosca,
-Quantum algorithms revisited,
-Proc. R. Soc. Lond. A \textbf{454}, 339--354 (1998).
-
-\bibitem{NielsenChuang}
-M. A. Nielsen and I. L. Chuang,
-\textit{Quantum Computation and Quantum Information}
-(Cambridge University Press, Cambridge, 2000).
-
-\bibitem{Farhi1998}
-E. Farhi, J. Goldstone, S. Gutmann, and M. Sipser,
-A limit on the speed of quantum computation in determining parity,
-Phys. Rev. Lett. \textbf{81}, 5442--5444 (1998).
-
-\bibitem{Beals2001}
-R. Beals, H. Buhrman, R. Cleve, M. Mosca, and R. de Wolf,
-Quantum lower bounds by polynomials,
-J. ACM \textbf{48}, 778--797 (2001).
-
-\bibitem{KochenSpecker1967}
-S. Kochen and E. P. Specker,
-The problem of hidden variables in quantum mechanics,
-J. Math. Mech. \textbf{17}, 59--87 (1967).
-
-\bibitem{Bell1966}
-J. S. Bell,
-On the problem of hidden variables in quantum mechanics,
-Rev. Mod. Phys. \textbf{38}, 447--452 (1966).
-
-\bibitem{Mermin1993}
-N. D. Mermin,
-Hidden variables and the two theorems of John Bell,
-Rev. Mod. Phys. \textbf{65}, 803--815 (1993).
-
-\bibitem{Spekkens2005}
-R. W. Spekkens,
-Contextuality for preparations, transformations, and unsharp measurements,
-Phys. Rev. A \textbf{71}, 052108 (2005).
-
-\bibitem{GottesmanKnill}
-D. Gottesman,
-The Heisenberg representation of quantum computers,
-arXiv:quant-ph/9807006.
-
-\bibitem{AaronsonGottesman2004}
-S. Aaronson and D. Gottesman,
-Improved simulation of stabilizer circuits,
-Phys. Rev. A \textbf{70}, 052328 (2004).
-
-\bibitem{Howard2014}
-M. Howard, J. Wallman, V. Veitch, and J. Emerson,
-Contextuality supplies the magic for quantum computation,
-Nature \textbf{510}, 351--355 (2014).
-
-\bibitem{Veitch2014}
-V. Veitch, S. A. H. Mousavian, D. Gottesman, and J. Emerson,
-The resource theory of stabilizer quantum computation,
-New J. Phys. \textbf{16}, 013009 (2014).
-
-\bibitem{Raussendorf2013}
-R. Raussendorf,
-Contextuality in measurement-based quantum computation,
-Phys. Rev. A \textbf{88}, 022322 (2013).
-
-\bibitem{Zurek2003}
-W. H. Zurek,
-Decoherence, einselection, and the quantum origins of the classical,
-Rev. Mod. Phys. \textbf{75}, 715--775 (2003).
-
-\bibitem{Levy}
-M. Ledoux,
-\textit{The Concentration of Measure Phenomenon}
-(American Mathematical Society, Providence, RI, 2001).
-
-\bibitem{Vershynin}
-R. Vershynin,
-\textit{High-Dimensional Probability: An Introduction with Applications in Data Science}
-(Cambridge University Press, Cambridge, 2018).
-
-\end{thebibliography}
+\bibliography{svozil}
 
 \end{document}
