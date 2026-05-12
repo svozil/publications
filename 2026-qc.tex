@@ -8,37 +8,35 @@
 ]{revtex4-2}
 
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}          % explicit UTF-8
 \usepackage{mathtools}
 \usepackage{amssymb}
-\usepackage{bm}
+% \usepackage{bm}      % uncomment only if you need bold math
 \usepackage{braket}
-\usepackage{xcolor}
+% \usepackage{xcolor}  % uncomment only if you plan to use colors
 \usepackage{orcidlink}
-\usepackage{hyperref}
-
+\usepackage{hyperref}                % must be loaded AFTER orcidlink
 \hypersetup{
   colorlinks=true,
   linkcolor=blue,
   citecolor=blue,
   urlcolor=blue,
   pdftitle={The Physical and Contextual Limits of Quantum Speedup},
-  pdfauthor={Karl Svozil},
-  pdfkeywords={quantum computation, contextuality, quantum universality, Turing universality}
+  pdfauthor={Karl Svozil}
 }
 
 \begin{document}
 
 \title{The Physical and Contextual Limits of Quantum Speedup}
 
-\author{Karl Svozil \orcidlink{0000-0001-6554-2802}}
-\email{karl.svozil@tuwien.ac.at}
+\author{Karl Svozil \orcidlink{0000-0001-6554-2802}\email{karl.svozil@tuwien.ac.at}}
 \affiliation{Institute for Theoretical Physics, TU Wien,
 Wiedner Hauptstrasse 8-10/136, 1040 Vienna, Austria}
 
 \date{\today}
 
 \begin{abstract}
-Quantum computation is often popularly described as the simultaneous execution of exponentially many classical computations. This article offers a conceptual clarification of why that ``branchwise parallelism'' picture is misleading: by branchwise parallelism we mean the idea that the components of a superposition behave as independently inspectable classical computational branches. Quantum speedups arise instead from reversible embeddings of algebraic structure made accessible through engineered interference patterns. We review this mechanism through several constraints: unitary garbage erasure is impossible, copying and deletion are context-dependent, and contextuality obstructs a single global classical history. We also distinguish circuit or unitary universality from Turing universality: dense generation of unitaries is not the same as symbolic computation over unbounded inputs with recursion, uniformity, and self-reference. In closed unitary dynamics there is no nontrivial absorbing halting state of the classical many-to-one kind; operational termination requires clocks, flags, measurements, open-system records, or external control. Exponential Hilbert-space dimension supplies a geometry for interference and high-dimensional embedding, not unlimited classical readout.
+Quantum computation is frequently mischaracterized as the simultaneous execution of exponentially many classical computations. This article offers a conceptual clarification of why this ``branchwise parallelism'' picture is misleading, demonstrating that the components of a quantum superposition cannot be treated as independently readable classical branches. Quantum speedups arise instead from reversible embeddings of algebraic structure made accessible through engineered interference patterns. We review this mechanism through several constraints: unitary garbage erasure is impossible, copying and deletion are context-dependent, and contextuality obstructs a single global classical history. We also distinguish circuit or unitary universality from Turing universality: dense generation of unitaries is not the same as symbolic computation over unbounded inputs with recursion, uniformity, and self-reference. In closed unitary dynamics there is no nontrivial absorbing halting state of the classical many-to-one kind; operational termination requires clocks, flags, measurements, open-system records, or external control. Exponential Hilbert-space dimension supplies a geometry for interference and high-dimensional embedding, not unlimited classical readout.
 \end{abstract}
 
 \keywords{quantum computation, quantum parallelism, contextuality, Landauer principle, no-cloning theorem, no-deletion theorem, interference, quantum universality, Turing universality}
@@ -59,6 +57,12 @@ A related ambiguity concerns the word ``universal.'' Circuit or unitary universa
 This formulation is deliberately restrictive. It does not deny quantum speedup. It denies that branchwise classical computation explains it, and it denies that circuit universality should be conflated with Turing universality.
 
 The claim is not meant to settle interpretive questions about Everettian or many-worlds accounts of quantum computation. Advocates of such accounts have argued that quantum algorithms can be understood in terms of computations distributed across branches or worlds~\cite{deutsch,hewitt-horsman-2009,wallace2012emergent}. The narrower point made here is operational and model-theoretic: the components of a superposition are not independently readable classical records, and the computational advantage is realized only when the global unitary evolution and final measurement context convert phase relations into an accessible statistic.
+
+The paper is therefore mainly clarificatory.  Its technical contribution
+is the leakage construction in Appendix~\ref{app:leaky-bv}, which gives a
+simple unitary interpolation between the Bernstein--Vazirani interference
+pattern and ordinary value-query behavior by exporting a tunable amount
+of which-path information to an inaccessible witness.
 
 \section{Superposition is not branchwise readout}
 
@@ -88,10 +92,10 @@ The middle step may be produced by phase kickback. If
 \[
 U_f\ket{x}\ket{y}=\ket{x}\ket{y\oplus f(x)}
 \]
-and the target is prepared in
-\[
+and the target register  \(\ket{y}\) is prepared in
+\(
 \ket{-}=\frac{\ket{0}-\ket{1}}{\sqrt2},
-\]
+\)
 then
 \[
 U_f\ket{x}\ket{-}=(-1)^{f(x)}\ket{x}\ket{-}.
@@ -130,6 +134,8 @@ the parity
 b_1\oplus b_2\oplus\cdots\oplus b_N
 \]
 depends on every input bit. Exact quantum computation of parity requires exactly $\lceil N/2\rceil$ queries, giving at most a factor-of-two improvement over the deterministic classical query complexity~\cite{Farhi-98}. More generally, polynomial-method bounds show that for total Boolean functions the bounded-error quantum and classical query complexities are polynomially related, ruling out arbitrary exponential speedup for such black-box total functions~\cite{bbcmw-01}. Superposition alone is therefore not the resource. Detectable interference structure is.
+
+Appendix~\ref{app:leaky-bv} gives a concrete interpolation of this point for the Bernstein--Vazirani problem. A unitary oracle is modified so that a tunable part of the computational-basis path label is exported to an inaccessible witness register. The Boolean function is unchanged and the enlarged dynamics remains unitary, but the accessible interference pattern is progressively destroyed as more path information leaks.
 
 \section{Garbage is not erased by unitarity}
 
@@ -170,6 +176,10 @@ Indeed, unitaries preserve inner products. If both equalities held, then
 1,
 \]
 so $\ket{\phi_1}$ and $\ket{\phi_2}$ would coincide as rays, contradicting the assumption.
+This is the same elementary isometric obstruction that underlies the
+no-cloning and no-deletion results: closed reversible dynamics preserves
+distinguishability and therefore cannot freely merge, duplicate, or
+discard unknown alternatives.
 
 Consequently, if $\ket{g(x)}_B$ is a garbage register produced by reversible evaluation of a non-constant function $g$ on input $x$, there is no unitary acting on $B$ alone that resets $\ket{g(x)}_B$ to $\ket{0}_B$ for all $x$. The garbage can be removed only by
 (i) uncomputation, using the input register $A$, which is reversible and redistributes rather than destroys the information;
@@ -221,9 +231,26 @@ Quantum algorithms move between incompatible descriptions: computational basis, 
 
 In Hilbert spaces of dimension at least three, the Kochen--Specker theorem strengthens this point: one cannot assign pre-existing values to all observables independently of the commuting context in which they are measured~\cite{kochen1,bell-66,mermin-93}. Operational versions extend contextuality to preparations, transformations, and unsharp measurements~\cite{Spekkens-04}. For single qubits the standard Kochen--Specker obstruction for projective measurements is absent; simple hidden-variable representations of projective qubit measurements can be constructed. This qualification is important: generalized measurements can exhibit Kochen--Specker-type contextuality even for a single qubit~\cite{cabello-2003-qubit-povm}. Nevertheless, complementarity already prevents joint sharp values for noncommuting projective observables and so blocks simultaneous classicalization of all measurement bases.
 
-This matters for quantum computation. The intermediate stages of an algorithm cannot generally be interpreted as a single classical trajectory through pre-existing values. The algorithm is a sequence of context changes implemented by unitary transformations and terminated by a final measurement context. What becomes classical is not the whole history, but the final record.
+This matters for quantum computation. The intermediate stages of an algorithm cannot generally be interpreted as a single classical trajectory through pre-existing values. The algorithm is a sequence of context changes implemented by unitary transformations and terminated by a final measurement context. What becomes classical is not the whole history, but only the final record.  Between preparation and measurement there is no classically charted path, only coherent evolution whose intermediate description is basis-dependent---like Musil's bridge whose solid piers stand only at the beginning and the end, while the passage through imaginary quantities in between nevertheless leads from real input to real output~\cite{musil-toerless}.
 
-Resource-theoretic results support this perspective, but with important qualifications. Stabilizer operations admit efficient classical simulation by the Gottesman--Knill theorem~\cite{GottesmanKnill,AaronsonGottesman2004}; hence universal quantum advantage in the circuit model requires resources outside the efficiently simulable stabilizer fragment. Depending on the formalism and dimension, these resources may be described operationally as magic states, phase-space theoretically as Wigner-function negativity, or foundationally as contextuality~\cite{Howard-2014,Veitch2014,Raussendorf2013}. These characterizations are related but not identical. In particular, the clean necessity results connecting contextuality with magic-state quantum computation are most direct in odd-prime-dimensional qudit settings, while the qubit case involves additional subtleties. The stable message is therefore not that contextuality alone is the complete source of speedup, but that nonclassical computational advantage requires resources beyond mere coherent superposition.
+Resource-theoretic results support this perspective, but with important
+qualifications.  Stabilizer operations admit efficient classical
+simulation by the Gottesman--Knill theorem~\cite{GottesmanKnill,
+AaronsonGottesman2004}; hence universal quantum advantage in the circuit
+model requires resources outside the efficiently simulable stabilizer
+fragment.  Depending on the formalism and dimension, these resources may
+be described operationally as magic states, phase-space theoretically as
+Wigner-function negativity, or foundationally as contextuality
+\cite{Howard-2014,Veitch2014,Raussendorf2013}.  These characterizations
+are related but not identical.  In particular, the clean necessity
+results connecting contextuality with magic-state quantum computation
+are most direct in odd-prime-dimensional qudit settings, while the qubit
+case involves additional subtleties.  The stable message is therefore
+not that contextuality alone is the complete source of speedup.  Rather,
+quantum algorithms exploit transformations between incompatible
+contexts, and genuine advantage requires resources that prevent the
+whole computation from being represented as a single efficiently
+simulable classical stochastic process.
 
 \section{Quantum universality versus Turing universality}
 
@@ -243,58 +270,360 @@ A family of circuits $\{C_n\}_{n\geq 1}$ may compute a language or function in t
 
 This distinction is important for the phrase ``quantum computable function.'' In the finite-circuit model, a circuit computes only a finite input-output relation, usually probabilistically and after measurement. A uniform circuit family computes a sequence of such relations. A quantum Turing machine or another uniform quantum model can be compared to classical Turing computation, but then the usual Church--Turing issue concerns computability, while the quantum advantage concerns complexity. Standard quantum computation is not believed to enlarge the class of computable classical functions beyond the partial recursive ones; rather, it may reduce the resources needed for some computable tasks.
 
-There is an additional physical obstruction to importing the ordinary absorbing-state picture of classical halting directly into closed unitary dynamics. A classical irreversible computation may enter an absorbing halting configuration: once halted, the machine remains halted while its output is read. This many-to-one terminal behavior is incompatible with isolated unitary evolution. The point is not that standard quantum models lack operational termination; quantum Turing machines and circuit models use halt qubits, clocks, measurement protocols, or externally prescribed stopping rules~\cite{deutsch,be-va,myers-1997,ozawa-1998}. The point is narrower: a closed unitary cannot implement a nontrivial absorbing halt state into which distinct pre-halting states collapse.
+A related point concerns halting.  Classical irreversible computation may
+enter an absorbing terminal configuration: many distinct pre-halting
+configurations can evolve into one stable halt state.  Such many-to-one
+absorption is not a primitive of closed unitary dynamics.  If
+\(U\ket{h}=\ket{h}\) and \(U\ket{\psi}=\ket{h}\), then injectivity of
+\(U\) gives \(\ket{\psi}=\ket{h}\).  Thus a closed unitary may coherently
+mark, clock, or correlate halting information, but it cannot collapse
+distinct computational histories into a single absorbing halt state
+without exporting information to additional degrees of freedom.
 
-Indeed, suppose a normalized halting state $\ket{h}$ is fixed,
-\[
-U\ket{h} = \ket{h},
-\]
-and suppose some distinct normalized pre-halting state $\ket{\psi} \neq e^{i\theta}\ket{h}$ also evolves into the same halting state,
-\[
-U\ket{\psi} = \ket{h}.
-\]
-Then
-\[
-U\ket{\psi} = U\ket{h},
-\]
-and since $U$ is unitary, hence invertible, hence injective, this forces $\ket{\psi} = \ket{h}$, contradicting the assumption. Thus a unitary may coherently mark, clock, or correlate halting information, but it cannot many-to-one collapse distinct computational histories into a single absorbing terminal configuration without exporting information to additional degrees of freedom.
-
-This observation should not be confused with a no-go theorem against quantum computation or quantum Turing machines. Myers emphasized difficulties associated with fully quantum halting schemes, while Ozawa and subsequent analyses refined monitoring and halt-flag protocols so that operational halting can be treated without spoiling the computation~\cite{myers-1997,ozawa-1998}. The present claim is only that the classical absorbing halt state is not itself a closed-unitary primitive.
+This elementary observation is not a no-go theorem against quantum
+Turing machines.  Standard quantum models implement operational
+termination through halt flags, clocks, external control, or measurement
+protocols~\cite{deutsch,be-va,myers-1997,ozawa-1998}.  The point is only
+that the classical absorbing-state picture is not itself a closed-unitary
+primitive.
 
 This reinforces the main thesis. Quantum circuit universality is a powerful notion of finite-dimensional controllability and approximation. Turing universality is a notion of symbolic, unbounded, self-referential computation under an explicit uniformity condition. They intersect in uniform models of quantum computation, but they are not identical. Treating ``universal quantum computation'' as if it automatically meant Turing universality obscures the distinction between unitary dynamics, measurement, and algorithmic control.
 
-\section{Miniaturization and high-dimensional representation}
-
-There are two broader motivations for this reframing.
-
-First, miniaturization makes quantum information processing unavoidable. Classical bits are physical metastable systems. Their stability depends on energy barriers, redundancy, dissipation, and environmental decoherence. As devices shrink, discreteness, tunneling, thermal fluctuations, measurement back-action, and coherence become harder to ignore. Classical computation is not the fundamental regime; it is an engineered regime stabilized by einselection through environmental decoherence~\cite{RevModPhys.75.715}. Quantum computation may therefore be less an exotic alternative than the natural information theory of sufficiently small controlled systems.
-
-Second, there is a limited but useful analogy with high-dimensional representation learning. Large vector spaces allow many directions to be nearly orthogonal, and concentration of measure makes such quasi-orthogonality typical in high dimension~\cite{ledoux2001concentration,vershynin2018high}. Quantum Hilbert spaces likewise exploit high-dimensional geometry. But in neither case does large representational dimension imply unrestricted readout. Information must be extracted through projections, measurements, sampling, or compression. Thus high dimension is a resource for structured representation and interference, not a license for arbitrary classical access.
-
-The shared moral is:
-\[
-\text{large dimension}
-\;\not\Rightarrow\;
-\text{unlimited readout}.
-\]
-In quantum computation, this limitation is enforced by measurement, Holevo bounds, no-cloning, and contextuality. In vector semantics, it appears as finite context, finite sampling, and the need to compress distributed representations into discrete outputs.
-
 \section{Conclusion}
 
-Quantum computation is not classical computation performed in exponentially many parallel branches whose results can later be inspected. Its power lies in reversible amplitude manipulation, phase-sensitive computation, and contextual measurement. Speedup appears when the desired predicate can be encoded into a unitary process and made visible by interference in an appropriate final context.
+Quantum computation is not classical computation performed in
+exponentially many parallel branches whose results can later be
+inspected.  Its power lies in reversible amplitude manipulation,
+phase-sensitive computation, and contextual measurement.  Speedup appears
+when the desired predicate can be encoded into a unitary process and made
+visible by interference in an appropriate final context.
 
-The negative constraints are just as important as the positive mechanism. Garbage cannot be erased by unitary dynamics; it must be uncomputed or exported, and physical reset is thermodynamic. Unknown quantum states cannot be freely copied, broadcast, or deleted. Contextuality prevents the assignment of a single global classical history to the computation.
+Exponential Hilbert-space dimension should not be mistaken for
+exponentially accessible classical storage.  Large dimension provides
+room for structured embeddings and interference, but readout is
+constrained by measurement, Holevo bounds, and the chosen context.  In
+this sense high-dimensional quantum state space is a resource for
+controlled recombination, not for unrestricted branchwise inspection.
 
-Nor should circuit or unitary universality be confused with Turing universality. A finite universal gate set provides dense control over unitary transformations; it is not, by itself, a symbolic machine with arbitrary parsing, recursion, self-reference, and a classical halting semantics. In closed unitary dynamics there is no nontrivial absorbing halt state of the classical many-to-one kind. Termination and output extraction require clocks, flags, measurements, open-system records, or external control.
+The negative constraints are just as important as the positive
+mechanism.  Garbage cannot be erased by unitary dynamics; it must be
+uncomputed or exported, and physical reset is thermodynamic.  Unknown
+quantum states cannot be freely copied, broadcast, or deleted.
+Incompatible contexts prevent the assignment of a single efficiently
+simulable classical history to the computation.
 
-Thus quantum computation is neither magic parallelism nor ordinary classical computation in disguise. It is context-dependent, thermodynamically embedded, reversible information processing whose useful answers must be engineered as interference phenomena.
+Nor should circuit or unitary universality be confused with Turing
+universality.  A finite universal gate set provides dense control over
+unitary transformations; it is not, by itself, a symbolic machine with
+arbitrary parsing, recursion, self-reference, and a classical halting
+semantics.  In closed unitary dynamics there is no nontrivial absorbing
+halt state of the classical many-to-one kind.  Termination and output
+extraction require clocks, flags, measurements, open-system records, or
+external control.
+
+Thus quantum computation is neither magic parallelism nor ordinary
+classical computation in disguise.  It is context-dependent,
+thermodynamically embedded, reversible information processing whose
+useful answers must be engineered as interference phenomena.
 
 \begin{acknowledgments}
+This text emerged from communication with Noson S. Yanofsky regarding his upcoming book.
+It was partially created and revised with assistance from large language models; however, all content, ideas, and prompts were provided by the author. Any errors or misconceptions remain the author's sole responsibility.
+
 This research was funded in whole or in part by the \textit{Austrian Science Fund (FWF)} [Grant \href{https://doi.org/10.55776/PIN5424624}{DOI:10.55776/PIN5424624}].
 The author acknowledges TU Wien Bibliothek for financial support through its Open Access Funding Programme.
 
-This text was partially created and revised with assistance from large language models. All content, ideas, and prompts were provided by the author.
 \end{acknowledgments}
+
+% ------------------------------------------------------------------
+\appendix
+\section{A unitary leakage knob for Bernstein--Vazirani interference}
+\label{app:leaky-bv}
+% ------------------------------------------------------------------
+
+The Bernstein--Vazirani algorithm gives a particularly transparent
+example of quantum speedup by interference rather than by any literal
+parallel readout of classical function values~\cite{be-va,
+nielsen-book,NaseriEtAl2022}.  Let
+\(a\in\mathbb F_2^n\) be an unknown string and define
+\begin{equation}
+        f_a(x)=a\cdot x \pmod 2 ,
+        \qquad x\in\mathbb F_2^n .
+\end{equation}
+The usual reversible oracle is
+\begin{equation}
+        O_a\ket{x}\ket{y}
+        =
+        \ket{x}\ket{y\oplus f_a(x)} .
+\end{equation}
+With the target register initialized in
+\(\ket{-}=(\ket{0}-\ket{1})/\sqrt 2\), this oracle acts by phase
+kickback,
+\[
+        O_a\ket{x}\ket{-}
+        =
+        (-1)^{a\cdot x}\ket{x}\ket{-}.
+\]
+Thus
+\begin{align}
+\ket{0^n}\ket{-}
+&\xrightarrow{H^{\otimes n}}
+2^{-n/2}\sum_x \ket{x}\ket{-}  \nonumber \\
+&\xrightarrow{O_a}
+2^{-n/2}\sum_x (-1)^{a\cdot x}\ket{x}\ket{-}
+ \nonumber \\
+&\xrightarrow{H^{\otimes n}}
+\ket{a}\ket{-}.
+\end{align}
+Equivalently, the final amplitude of \(\ket{z}\) is
+\begin{equation}
+        2^{-n}\sum_{x\in\mathbb F_2^n}
+        (-1)^{(a\oplus z)\cdot x}
+        =
+        \delta_{z,a}.
+\end{equation}
+The hidden string is therefore recovered exactly with one coherent query.
+The essential step is not the evaluation of many classical values, but
+the conversion of a global phase character into a computational-basis
+population by a Fourier transform over \(\mathbb F_2^n\).
+
+We now introduce a reversible modification that degrades this
+interference without changing the Boolean function \(f_a\).  Let
+\(S\subseteq\{1,\ldots,n\}\) have cardinality \(k\), and let
+\(\bar S\) denote its complement.  For \(x\in\mathbb F_2^n\), write
+\[
+        x_S=(x_i)_{i\in S}\in\mathbb F_2^k,
+        \qquad
+        x_{\bar S}=(x_i)_{i\in \bar S}\in\mathbb F_2^{n-k},
+\]
+where a fixed ordering of the coordinates in \(S\) and \(\bar S\) is
+understood.  Thus \(x_S\) and \(x_{\bar S}\) denote the subvectors of
+\(x\) supported on \(S\) and on its complement, respectively.  Define the
+unitary permutation
+\begin{equation}
+\label{eq:leaky-bv-oracle}
+        W_a^S\ket{x}\ket{y}\ket{e}
+        =
+        \ket{x}\ket{y\oplus f_a(x)}\ket{e\oplus x_S},
+\end{equation}
+where the third register is a witness, garbage, or environmental
+register.  The oracle still computes the same function \(f_a\), and the
+enlarged map is reversible.  However, if the third register is not
+coherently available to the algorithm, then it carries which-path
+information about the computational-basis label \(x\).  Here
+``which-path'' is meant in the standard interferometric sense: a record
+relative to a chosen computational basis, not an independently readable
+classical computation carried by a component of the superposition.  In
+this respect the construction is a tunable version of the familiar
+which-way suppression of interference~\cite{PhysRevA.25.2208,Englert1996,
+RevModPhys.75.715,Lent2020}.  It is also closely related to Aaronson's
+discussion of garbage in quantum query models, where sufficiently
+informative garbage in an oracle response is suggested to behave, in
+appropriate settings, like decoherence or measurement of the response
+\cite{Aaronson2021OpenProblems}.
+
+\medskip
+\noindent\textbf{Claim: partial loss of the Bernstein--Vazirani interference pattern.}
+Let the query register be initialized in \(\ket{+}^{\otimes n}\), the
+answer register in \(\ket{-}\), and the witness register in
+\(\ket{0^k}\).  Apply \(W_a^S\), trace out the witness register, and
+then apply \(H^{\otimes n}\) to the query register.  The final
+measurement distribution on the query register is
+\begin{equation}
+\label{eq:leaky-bv-distribution}
+        \Pr(z)
+        =
+        2^{-k}\,
+        \mathbf 1\!\left[z_{\bar S}=a_{\bar S}\right] .
+\end{equation}
+Thus one coherent Bernstein--Vazirani-style query determines the
+\(n-k\) components of \(a\) outside \(S\) with certainty, while the
+observed coordinates \(z_S\) are uniformly distributed over
+\(\mathbb F_2^k\) and carry no information about \(a_S\).  In
+particular, the usual one-query speedup survives only on those
+coordinates whose computational-basis path labels have not been exported
+to the inaccessible witness.
+
+Operationally, after this first query one may recover the remaining
+coordinates by \(k\) ordinary value queries on the standard basis vectors
+\(e_i\), \(i\in S\), since \(f_a(e_i)=a_i\).  This gives a natural
+query count \(1+k\) for \(k<n\).  At the endpoint \(k=n\), the first
+Bernstein--Vazirani-style query gives the uniform distribution and is
+best omitted, so the standard \(n\) value queries suffice.  Hence this
+simple strategy interpolates as
+\begin{equation}
+\label{eq:leaky-bv-query-cost}
+        Q_{\rm strat}(n,k)
+        =
+        \begin{cases}
+        1+k, & 0\leq k<n,\\
+        n,   & k=n.
+        \end{cases}
+\end{equation}
+The point needed here is not a separate optimality theorem for arbitrary
+adaptive use of the leaked channel, but the underlying structural fact
+proved below: the phase-interference channel available after tracing out
+the witness contains no dependence on \(a_S\).  Therefore no strategy
+using only this dephased interference channel can extract \(a_S\); after
+\(a_{\bar S}\) has been recovered, at least \(k\) independent value
+queries are needed to determine the remaining \(k\)-bit string \(a_S\).
+
+\medskip
+\noindent\emph{Proof.}
+After the first Hadamard transform and the application of \(W_a^S\), the
+joint state is
+\begin{equation}
+\label{eq:leaky-bv-joint-state}
+        \ket{\psi_a^S}
+        =
+        2^{-n/2}\sum_{x\in\mathbb F_2^n}
+        (-1)^{a\cdot x}\ket{x}\ket{-}\ket{x_S}.
+\end{equation}
+Tracing out the witness register gives the reduced density operator on
+the query register
+\begin{equation}
+\label{eq:leaky-bv-reduced-state}
+        \rho_a^S
+        =
+        2^{-n}
+        \sum_{\substack{x,x'\in\mathbb F_2^n\\ x_S=x'_S}}
+        (-1)^{a\cdot(x\oplus x')}
+        \ket{x}\bra{x'} .
+\end{equation}
+Hence coherences remain only between computational-basis components that
+agree on the coordinates in \(S\).  The witness register has therefore
+implemented a perfect which-path record for those coordinates.
+
+Now apply \(H^{\otimes n}\) and measure in the computational basis.  For
+\(z\in\mathbb F_2^n\),
+\begin{align}
+        \Pr(z)
+        &=
+        \bra{z}H^{\otimes n}\rho_a^S H^{\otimes n}\ket{z}       \\
+        &=
+        2^{-2n}
+        \sum_{\substack{x,x'\in\mathbb F_2^n\\ x_S=x'_S}}
+        (-1)^{a\cdot(x\oplus x')+z\cdot(x\oplus x')} .
+\end{align}
+Set \(t=x\oplus x'\).  The constraint \(x_S=x'_S\) is equivalent to
+\(t_S=0\).  For each such \(t\), there are \(2^n\) choices of \(x\).
+Therefore
+\begin{align}
+        \Pr(z)
+        &=
+        2^{-n}
+        \sum_{\substack{t\in\mathbb F_2^n\\ t_S=0}}
+        (-1)^{(a\oplus z)\cdot t}                                      \\
+        &=
+        2^{-n}
+        \sum_{t_{\bar S}\in\mathbb F_2^{n-k}}
+        (-1)^{(a_{\bar S}\oplus z_{\bar S})\cdot t_{\bar S}} .
+\end{align}
+By character orthogonality over \(\mathbb F_2^{n-k}\),
+\begin{equation}
+        \sum_{t_{\bar S}\in\mathbb F_2^{n-k}}
+        (-1)^{(a_{\bar S}\oplus z_{\bar S})\cdot t_{\bar S}}
+        =
+        \begin{cases}
+        2^{n-k}, & z_{\bar S}=a_{\bar S},\\
+        0,       & z_{\bar S}\neq a_{\bar S}.
+        \end{cases}
+\end{equation}
+This proves Eq.~\eqref{eq:leaky-bv-distribution}.
+
+It remains to identify what information remains available through the
+interference channel.  Consider the effective reduced oracle obtained
+from one call to \(W_a^S\) followed by tracing out the witness register.
+For the phase-kickback use of the answer register, this reduced channel
+on the query register is
+\begin{equation}
+\label{eq:leaky-bv-reduced-channel}
+        \mathcal E_a^S(\rho)
+        =
+        D_a
+        \left(
+        \sum_{s\in\mathbb F_2^k} P_s \rho P_s
+        \right)
+        D_a^\dagger ,
+\end{equation}
+where
+\begin{equation}
+        D_a=\sum_x (-1)^{a\cdot x}\ket{x}\bra{x}
+\end{equation}
+and
+\begin{equation}
+        P_s=\sum_{x:x_S=s}\ket{x}\bra{x}.
+\end{equation}
+Equivalently, in matrix elements,
+\begin{equation}
+        \mathcal E_a^S(\rho)
+        =
+        \sum_{\substack{x,x'\\x_S=x'_S}}
+        (-1)^{a\cdot(x\oplus x')}
+        \rho_{x x'}\ket{x}\bra{x'} .
+\end{equation}
+Inside each block \(x_S=x'_S=s\), the contribution of \(a_S\) cancels:
+\begin{equation}
+        a\cdot(x\oplus x')
+        =
+        a_{\bar S}\cdot(x_{\bar S}\oplus x'_{\bar S}) .
+\end{equation}
+Therefore the reduced phase-interference channel depends on \(a\) only
+through \(a_{\bar S}\).  The hidden components \(a_S\) are not merely
+hard to extract by the final Hadamard transform; they are absent from
+the accessible phase channel once the witness has been traced out.
+
+The same dephasing in the \(x_S\) basis occurs for any preparation of
+the answer register, since the witness records \(x_S\) independently of
+the answer-register state.  Consequently, once \(a_{\bar S}\) has been
+obtained by the surviving Bernstein--Vazirani interference, the remaining
+components \(a_S\) must be learned, if at all, through ordinary value
+information in
+\begin{equation}
+        f_a(x)=a_S\cdot x_S+a_{\bar S}\cdot x_{\bar S}.
+\end{equation}
+Since \(a_{\bar S}\) is then known, a standard value query supplies one
+linear equation over the unknown vector \(a_S\in\mathbb F_2^k\).  Querying
+the standard basis vectors \(e_i\), \(i\in S\), recovers these \(k\)
+components directly.  This proves the stated interpolation strategy in
+Eq.~\eqref{eq:leaky-bv-query-cost}. \(\square\)
+
+\medskip
+The two extremes make the physical point explicit.  For \(k=0\), no
+computational-basis path label is exported and the ordinary one-query
+Bernstein--Vazirani interference pattern is recovered.  For \(k=n\), the
+witness records the entire computational-basis label \(x\), all
+off-diagonal terms in that basis are removed from the algorithm's
+accessible state, and the final Hadamard transform has no global phase
+pattern left to recombine.  The Boolean function \(f_a\) has still been
+evaluated coherently by a unitary permutation on the enlarged system.
+What has been lost is not evaluation but recombination.
+
+This example shows that reversibility alone is not the relevant
+criterion.  The map \(W_a^S\) is a unitary permutation on the enlarged
+Hilbert space.  If the witness register remains coherently accessible,
+one may uncompute it and restore the full interference pattern.  If,
+however, the witness register has escaped into an inaccessible
+environment, then the reduced dynamics available to the algorithm is no
+longer reversible.  The witness register is precisely the ununcomputed
+garbage identified in the main text as an obstruction to free unitary
+erasure, here promoted to a tunable knob.  The speedup is lost not
+because the Boolean function \(f_a\) has changed, nor because the global
+dynamics has ceased to be unitary, but because an inaccessible
+which-path record selects a computational-basis context incompatible
+with the later Fourier-basis recombination.
+
+Pointedly stated, this demonstrates that a quantum computer does not
+``compute all branches at once and let us read them''---where the
+scare-quoted branch language names precisely the classical picture being
+rejected.  If it did,
+leaking the computational-basis path labels to a witness register would
+not matter: the function \(f_a(x)\) was still computed.  Instead, the
+appendix shows that the speedup relies on \emph{recombining amplitudes}
+by interference.  When uncomputation is blocked by an inaccessible
+witness, the accessible dynamics is dephased in the computational basis,
+the interference is quenched, and the lost coordinates must be recovered,
+if at all, by ordinary value queries.
 
 \bibliography{svozil}
 
