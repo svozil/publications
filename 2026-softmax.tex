@@ -15,6 +15,8 @@
 \usepackage{amsthm}
 \usepackage{orcidlink}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
 \usepackage{hyperref}
 
 \hypersetup{
@@ -151,7 +153,7 @@ of dispersion-free states~\cite{greechie-1974,wright:pent}. In
 odd-cycle scenarios, the admissible weight assigning \(1/2\) to each
 cyclic atom and zero to the remaining atoms exceeds the classical
 bound; for odd cycles of length at least five it also exceeds the
-usual Lovasz/KCBS quantum value~\cite{lovasz-79,Klyachko-2008,
+usual Lov{\'a}sz/KCBS quantum value~\cite{lovasz-79,Klyachko-2008,
 Bub-2009}. Such a weight is obtained as a limiting softmax
 assignment. But the beyond-classical or beyond-quantum character
 belongs to the weight's location in the polytope, not to the
@@ -275,7 +277,7 @@ p(a)=\langle \psi|\Pi_a|\psi\rangle .
 The corresponding quantum set will be denoted schematically by
 \(\mathcal Q(L)\). Its precise definition depends on dimension,
 rank, and representation conventions. For exclusivity-graph
-formulations, related relaxations are governed by Lovasz-theta-type
+formulations, related relaxations are governed by Lov{\'a}sz-theta-type
 quantities~\cite{lovasz-79,Cabello-2014-gtatqc}.
 
 Whenever a Born-rule representation exists with projectors satisfying
@@ -310,7 +312,7 @@ one fixes a particular Hilbert-space representation in advance: not
 every abstract two-valued state need be represented inside that fixed
 representation. Throughout, claims of being beyond quantum are
 therefore relative to a specified quantum representation or to a
-specified graph-theoretic quantum set, such as the Lovasz-theta set
+specified graph-theoretic quantum set, such as the Lov{\'a}sz-theta set
 for exclusivity graphs.
 
 The terminology should also be fixed. In what follows,
@@ -810,7 +812,7 @@ If a weight belongs to
 then it is beyond the specified quantum set. This claim is
 representation-dependent: one must specify the Hilbert-space
 dimension, rank of projectors, and exclusivity convention. In
-odd-cycle scenarios with the usual Lovasz-theta convention, the
+odd-cycle scenarios with the usual Lov{\'a}sz-theta convention, the
 quantum maximum of the cyclic sum is given by
 Eq.~\eqref{eq:lovasz-odd-cycle} below, whereas the admissible
 half-weight gives \(n/2\).
@@ -836,6 +838,19 @@ Born-rule realizable, exotic, or beyond the chosen quantum set.
 Softmax and generalized softmax rules address the first item
 automatically. They address the second only if cross-context
 constraints are imposed. They do not decide the third or fourth.
+
+Thus admissible probabilities on a pasted logic can go beyond
+classical, and in some cases beyond quantum, bounds. The odd-cycle
+half-weights provide the simplest example: they are normalized and
+single-valued on every context, hence belong to \(\mathcal W(L)\), but
+they lie outside the classical convex hull; for odd cycles of length
+at least five they also exceed the usual Lov{\'a}sz/KCBS quantum bound.
+This beyond-classical or beyond-quantum character is not produced by
+softmax normalization itself. It is a property of the event structure
+and of the selected admissible weight. Softmax or generalized softmax
+coordinates merely provide a parametrization---or, for boundary
+weights such as the half-weight, a limiting parametrization---of that
+weight.
 
 %------------------------------------------------------------
 \section{Odd cycles and exotic half-weights}
@@ -898,7 +913,7 @@ The half-weight~\eqref{eq:odd-cycle-half-weight} gives
 and therefore violates the classical bound by \(1/2\).
 
 For the usual exclusivity-graph quantum model on an odd cycle, the
-Lovasz-theta value is
+Lov{\'a}sz-theta value is~\cite{lovasz-79}
 \begin{equation}
 \vartheta(C_n)=
 \frac{n\cos(\pi/n)}
@@ -922,27 +937,253 @@ usual quantum set for these odd-cycle exclusivity scenarios. For
 \(n=5\), Eq.~\eqref{eq:lovasz-odd-cycle} gives \(\sqrt5\), recovering
 the KCBS value.
 
-The half-weight is obtained as a limiting ordinary softmax by setting
+Generalized-softmax path between midpoint states and half-weights:
+The softmax construction can be stated in a way that makes the
+inessential role of the exponential link explicit. Let \(g\) be any
+strictly positive link function and choose a symmetric global score
+assignment
 \[
-u(a_i)=0,\qquad u(x_i)=-M.
+u(a_i)=u_0,\qquad u(x_i)=t
+\quad (i=1,\ldots,n).
 \]
-Then
+Then each context \(C_i=\{a_i,a_{i+1},x_i\}\) has normalizer
 \[
-P_M(a_i)=
-\frac{1}{2+e^{-\beta M}},
+Z_i=2g(u_0)+g(t),
+\]
+and therefore
+\[
+p_t(a_i)=p_t(a_{i+1})
+=
+\frac{g(u_0)}{2g(u_0)+g(t)},
+\,
+p_t(x_i)=
+\frac{g(t)}{2g(u_0)+g(t)}.
+\]
+Equivalently, writing
+\[
+r(t)=\frac{g(t)}{g(u_0)}
+\]
+gives the link-independent form
+\[
+p_t(a_i)=p_t(a_{i+1})
+=
+\frac{1}{2+r(t)},
+\,
+p_t(x_i)=
+\frac{r(t)}{2+r(t)}.
+\]
+This family is single-valued on shared atoms: every cyclic atom
+\(a_i\) has the same probability in the two contexts in which it
+occurs.
+
+The parameter \(r(t)\) interpolates between three instructive
+regimes. For \(r(t)\to\infty\), one obtains the deterministic
+midpoint assignment
+\[
+p_t(x_i)\to1,\qquad p_t(a_i)\to0.
+\]
+This is a valid two-valued weight. On an odd cycle, however, it does
+not lift to an admissible three-coloring in which the midpoint atoms
+are assigned one fixed color: the two remaining colors would have to
+alternate around an odd cycle, which is impossible. For \(r(t)=1\),
+all three atoms in each context have equal positive coordinate and
+\[
+p_t(a_i)=p_t(a_{i+1})=p_t(x_i)=\frac13.
+\]
+For \(r(t)\to0\), the midpoint atoms are suppressed and one obtains
+the exotic boundary half-weight
+\[
+p_t(a_i)\to\frac12,\qquad p_t(x_i)\to0,
+\]
+which is Eq.~\eqref{eq:odd-cycle-half-weight}. Thus generalized
+softmax supplies a smooth fractional path through the same odd-cycle
+obstruction: the failed integral alternation of colors is replaced,
+at the opposite boundary, by the symmetric fractional assignment
+\(1/2,1/2,0\) in every context.
+
+For the ordinary exponential link \(g(u)=e^{\beta u}\), one may set
+\(u_0=0\). Then
+\[
+r(t)=e^{\beta t},
+\]
+so the three regimes correspond to \(t\to+\infty\), \(t=0\), and
+\(t\to-\infty\), respectively. Equivalently, setting \(t=-M\) and
+sending \(M\to\infty\) gives the limiting construction
+\[
+p_t(a_i)\to\frac12,\qquad p_t(x_i)\to0.
+\]
+For finite real-valued scores the exponential softmax remains
+strictly positive and therefore approximates, but does not exactly
+attain, this boundary weight. For a general positive link \(g\), the
+half-weight is approached whenever
+\[
+r(t)=\frac{g(t)}{g(u_0)}\to0,
+\]
+or, equivalently, whenever the positive coordinate assigned to the
+context-specific atom \(x_i\) is suppressed relative to the cyclic
+atoms. This requires \(0\) to lie in the closure of the attainable
+coordinate ratios.
+
+For the ordinary exponential link \(g(u)=e^{\beta u}\), a convenient
+one-parameter family is obtained by choosing the global scores
+\[
+u(a_i)=0,\qquad u(x_i)=t
+\quad (i=1,\ldots,n),
+\]
+with \(\beta>0\). In each context
+\(C_i=\{a_i,a_{i+1},x_i\}\), the normalizing factor is
+\[
+Z_i=e^{\beta u(a_i)}+e^{\beta u(a_{i+1})}+e^{\beta u(x_i)}
+=2+e^{\beta t},
+\]
+so that
+\[
+p_t(a_i)=p_t(a_{i+1})
+=
+\frac{1}{2+e^{\beta t}},
 \qquad
-P_M(x_i)=
-\frac{e^{-\beta M}}{2+e^{-\beta M}},
+p_t(x_i)=
+\frac{e^{\beta t}}{2+e^{\beta t}}.
 \]
-and \(M\to\infty\) yields
-Eq.~\eqref{eq:odd-cycle-half-weight}. For a general positive link
-\(g\), the same limiting construction is obtained by choosing scores
-such that
+This family is single-valued on the shared atoms \(a_i\) and
+interpolates between three distinguished regimes. For \(t=0\), all
+three atoms in each context have equal score and one obtains the
+uniform assignment
+\[
+p_0(a_i)=p_0(a_{i+1})=p_0(x_i)=\frac13.
+\]
+For \(t\to-\infty\), the context-specific atoms \(x_i\) are
+suppressed and one obtains the exotic boundary half-weight
+\[
+p_t(a_i)\to\frac12,\qquad p_t(x_i)\to0,
+\]
+which is Eq.~\eqref{eq:odd-cycle-half-weight}. For \(t\to+\infty\),
+the midpoint atoms dominate and one obtains the limiting assignment
+\[
+p_t(a_i)\to0,\qquad p_t(x_i)\to1.
+\]
+
+For finite real-valued scores the exponential softmax remains strictly
+positive and therefore approximates, but does not exactly attain, the
+boundary half-weight. For a general positive link \(g\), the same
+limiting construction is obtained by choosing scores such that
 \[
 g(u(a_i))=1,\qquad g(u(x_i))=\varepsilon,
 \]
 and then taking \(\varepsilon\to0\), provided \(0\) lies in the
 closure of the range of \(g\).
+
+Table~\ref{tab:pentagon-three-regimes} records the explicit
+probability values for the three distinguished assignments in the
+pentagon case, and Fig.~\ref{fig:pentagon-ax} shows the corresponding
+logic in the notation used here.
+
+\begin{table}[ht]
+\caption{Explicit probability values for the ten atoms of the pentagon
+logic in the three distinguished regimes of the softmax path:
+the midpoint limit (\(t\to+\infty\)), the uniform state (\(t=0\)),
+and the half-weight (\(t\to-\infty\)).}
+\label{tab:pentagon-three-regimes}
+\begin{ruledtabular}
+\begin{tabular}{lcccccccccc}
+Regime
+& \(a_1\) & \(x_1\)
+& \(a_2\) & \(x_2\)
+& \(a_3\) & \(x_3\)
+& \(a_4\) & \(x_4\)
+& \(a_5\) & \(x_5\) \\
+\colrule
+Midpoint limit
+& \(0\) & \(1\)
+& \(0\) & \(1\)
+& \(0\) & \(1\)
+& \(0\) & \(1\)
+& \(0\) & \(1\) \\
+Uniform state
+& \(\tfrac13\) & \(\tfrac13\)
+& \(\tfrac13\) & \(\tfrac13\)
+& \(\tfrac13\) & \(\tfrac13\)
+& \(\tfrac13\) & \(\tfrac13\)
+& \(\tfrac13\) & \(\tfrac13\) \\
+Half-weight
+& \(\tfrac12\) & \(0\)
+& \(\tfrac12\) & \(0\)
+& \(\tfrac12\) & \(0\)
+& \(\tfrac12\) & \(0\)
+& \(\tfrac12\) & \(0\)
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[scale=0.36]
+
+\newdimen\ms
+\ms=0.05cm
+
+\tikzstyle{every path}=[line width=1pt]
+\tikzstyle{c3}=[circle,inner sep={\ms/8},minimum size=6*\ms]
+\tikzstyle{c2}=[circle,inner sep={\ms/8},minimum size=3*\ms]
+
+\newdimen\R
+\R=6cm
+
+\path
+  ({90 + 0 * 360 /5}:\R) coordinate(a1)
+  ({90 + 36 + 0 * 360 /5}:{\R * sqrt((25+10*sqrt(5))/(50+10*sqrt(5)))}) coordinate(x1)
+  ({90 + 1 * 360 /5}:\R) coordinate(a2)
+  ({90 + 36 + 1 * 360 /5}:{\R * sqrt((25+10*sqrt(5))/(50+10*sqrt(5)))}) coordinate(x2)
+  ({90 + 2 * 360 /5}:\R) coordinate(a3)
+  ({90 + 36 + 2 * 360 /5}:{\R * sqrt((25+10*sqrt(5))/(50+10*sqrt(5)))}) coordinate(x3)
+  ({90 + 3 * 360 /5}:\R) coordinate(a4)
+  ({90 + 36 + 3 * 360 /5}:{\R * sqrt((25+10*sqrt(5))/(50+10*sqrt(5)))}) coordinate(x4)
+  ({90 + 4 * 360 /5}:\R) coordinate(a5)
+  ({90 + 36 + 4 * 360 /5}:{\R * sqrt((25+10*sqrt(5))/(50+10*sqrt(5)))}) coordinate(x5)
+;
+
+\draw[color=orange]  (a1) -- (x1) -- (a2);
+\draw[color=red]     (a2) -- (x2) -- (a3);
+\draw[color=green]   (a3) -- (x3) -- (a4);
+\draw[color=blue]    (a4) -- (x4) -- (a5);
+\draw[color=magenta] (a5) -- (x5) -- (a1);
+
+\draw (a1) coordinate[c3,fill=orange,label=90:{\footnotesize \(a_1\)}];
+\draw (a1) coordinate[c2,fill=magenta];
+
+\draw (a2) coordinate[c3,fill=red,label={left:\footnotesize \(a_2\)}];
+\draw (a2) coordinate[c2,fill=orange];
+
+\draw (a3) coordinate[c3,fill=green,label={left:\footnotesize \(a_3\)}];
+\draw (a3) coordinate[c2,fill=red];
+
+\draw (a4) coordinate[c3,fill=blue,label={right:\footnotesize \(a_4\)}];
+\draw (a4) coordinate[c2,fill=green];
+
+\draw (a5) coordinate[c3,fill=magenta,label={right:\footnotesize \(a_5\)}];
+\draw (a5) coordinate[c2,fill=blue];
+
+\draw (x1) coordinate[c3,fill=orange,label={above left:\footnotesize \(x_1\)}];
+\draw (x2) coordinate[c3,fill=red,label={left:\footnotesize \(x_2\)}];
+\draw (x3) coordinate[c3,fill=green,label={below:\footnotesize \(x_3\)}];
+\draw (x4) coordinate[c3,fill=blue,label={right:\footnotesize \(x_4\)}];
+\draw (x5) coordinate[c3,fill=magenta,label={above right:\footnotesize \(x_5\)}];
+
+\node[orange,font=\scriptsize]  at ($(x1)!0.28!(0,0)$) {\(C_1\)};
+\node[red,font=\scriptsize]     at ($(x2)!0.28!(0,0)$) {\(C_2\)};
+\node[green,font=\scriptsize]   at ($(x3)!0.28!(0,0)$) {\(C_3\)};
+\node[blue,font=\scriptsize]    at ($(x4)!0.28!(0,0)$) {\(C_4\)};
+\node[magenta,font=\scriptsize] at ($(x5)!0.28!(0,0)$) {\(C_5\)};
+
+\end{tikzpicture}
+\caption{Pentagon logic in the notation of
+Sec.~\ref{sec:odd-cycles}. The cyclic atoms
+\(a_1,\ldots,a_5\) are intertwining atoms, each shared by two adjacent
+contexts. The atoms \(x_1,\ldots,x_5\) are context-specific. Each
+colored broken line represents one context
+\(C_i=\{a_i,a_{i+1},x_i\}\), with indices understood modulo~\(5\).}
+\label{fig:pentagon-ax}
+\end{figure}
 
 \subsection{Triangle}
 
@@ -951,32 +1192,89 @@ half-weight has
 \[
 \sum_{i=1}^3p(a_i)=\frac32,
 \]
-whereas the classical bound is \(1\). The graph-theoretic comparison
-at \(n=3\) is degenerate: the three-cycle is also the complete graph
-\(K_3\), and it is not a KCBS-type scenario in the usual sense. We
-therefore use the triangle only as the minimal example of an
-admissible but nonclassical weight. The pentagon \(n=5\) is the first
-nontrivial case in which the classical bound, the quantum Lovasz/KCBS
-bound, and the admissible half-weight are all distinct.
+whereas the classical bound is
+\[
+\alpha(C_3)=1.
+\]
+Thus the triangle already exhibits the basic phenomenon: an admissible
+single-valued weight can lie outside the classical convex hull. The
+graph-theoretic quantum comparison at \(n=3\), however, is degenerate.
+The three-cycle coincides with the complete graph \(K_3\), and it is
+not a KCBS-type scenario in the usual sense. We therefore use the
+triangle only as the minimal example of an admissible but nonclassical
+weight. The pentagon \(n=5\), shown in Fig.~\ref{fig:pentagon-ax}, is
+the first nontrivial case in which the classical bound, the quantum
+Lov{\'a}sz/KCBS bound, and the admissible half-weight are all distinct.
 
 \subsection{Pentagon}
 
-For \(n=5\), the construction gives the pentagon/pentagram logic.
-The half-weight has
+For \(n=5\), the construction gives the pentagon/pentagram logic of
+Fig.~\ref{fig:pentagon-ax}. The ten atoms are
 \[
-\sum_{i=1}^5p(a_i)=\frac52,
+a_1,\ldots,a_5,\qquad x_1,\ldots,x_5,
 \]
-whereas the classical bound is \(2\) and the usual quantum/KCBS bound
-is
+with contexts
+\[
+C_i=\{a_i,a_{i+1},x_i\},
+\]
+where indices are understood modulo~\(5\). The three distinguished
+assignments along the softmax path are listed explicitly in
+Table~\ref{tab:pentagon-three-regimes}.
+
+For the half-weight,
+\[
+p(a_i)=\frac12,\qquad p(x_i)=0,
+\]
+one obtains
+\[
+\sum_{i=1}^5p(a_i)=\frac52.
+\]
+This exceeds the classical bound
+\[
+\alpha(C_5)=2
+\]
+and also the usual quantum/KCBS bound
 \[
 \vartheta(C_5)=\sqrt5.
 \]
 Thus the pentagon half-weight is admissible, nonclassical, and beyond
-the standard quantum five-cycle model. It is nevertheless obtained as
-a limiting softmax assignment. The softmax representation therefore
-does not explain the beyond-quantum character of the weight; it only
-parametrizes, in the closure of the positive softmax image, a point
-already present in \(\mathcal W(L)\).
+the standard quantum five-cycle model.
+
+Along the generalized-softmax path, the cyclic weight is
+\[
+\sum_{i=1}^5 p_t(a_i)
+=
+\frac{5}{2+r(t)},
+\qquad
+r(t)=\frac{g(t)}{g(u_0)}.
+\]
+It exceeds the classical bound \(2\) precisely when
+\[
+\frac{5}{2+r(t)}>2,
+\]
+that is,
+\[
+r(t)<\frac12.
+\]
+It exceeds the usual KCBS/Lov{\'a}sz value \(\sqrt5\) precisely when
+\[
+\frac{5}{2+r(t)}>\sqrt5,
+\]
+or equivalently
+\[
+r(t)<\sqrt5-2.
+\]
+Thus finite generalized-softmax coordinates already enter the
+nonclassical and beyond-quantum regions once the midpoint atoms
+\(x_i\) are sufficiently suppressed relative to the cyclic atoms
+\(a_i\). The exact half-weight \(5/2\), however, is reached only in
+the boundary limit \(r(t)\to0\). For the ordinary exponential link,
+this condition is \(e^{\beta t}\to0\), i.e. \(t\to-\infty\).
+
+The softmax representation therefore does not explain the
+beyond-quantum character of the weight. It only parametrizes, in the
+closure of the positive generalized-softmax image, a point already
+present in the admissible-weight polytope \(\mathcal W(L)\).
 
 %------------------------------------------------------------
 \section{Empirical and modelling implications}
@@ -1082,7 +1380,7 @@ The exotic examples are especially instructive. The odd-cycle
 half-weights are single-valued in the operational sense: each atom
 has one value and each context is normalized. They are nevertheless
 not classical mixtures of two-valued states. For odd cycles of length
-at least five, the same assignments exceed the usual Lovasz/KCBS
+at least five, the same assignments exceed the usual Lov{\'a}sz/KCBS
 quantum bounds. A limiting softmax can represent these weights, but
 it does not explain them. Their existence is a property of the
 pasted event structure.
@@ -1160,7 +1458,7 @@ exponential softmax is singled out.
 Odd cyclic logics provide minimal examples. They support half-weights
 that are normalized and single-valued but not classical; for odd
 cycles of length at least five, these weights exceed the usual
-Lovasz/KCBS quantum bound. They are obtained as limiting softmax
+Lov{\'a}sz/KCBS quantum bound. They are obtained as limiting softmax
 assignments, but their exoticity belongs to the event structure and
 the admissible-weight polytope, not to the exponential function.
 
