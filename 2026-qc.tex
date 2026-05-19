@@ -37,7 +37,7 @@ Wiedner Hauptstra{\ss}e 8-10/136, 1040 Vienna, Austria}
 \date{\today}
 
 \begin{abstract}
-Quantum computation is frequently mischaracterized as the simultaneous execution of exponentially many classical computations. This article offers a conceptual clarification of why this ``branchwise parallelism'' picture is misleading, demonstrating that the components of a quantum superposition cannot be treated as independently readable classical branches. Quantum speedups arise instead from reversible embeddings of algebraic structure made accessible through engineered interference patterns. We review this mechanism through several constraints: unitary garbage erasure is impossible, copying and deletion are context-dependent, and contextuality obstructs a single global classical history. We also distinguish circuit or unitary universality from Turing universality: dense generation of unitaries is not the same as symbolic computation over unbounded inputs with recursion, uniformity, and self-reference. In closed unitary dynamics there is no nontrivial absorbing halting state of the classical many-to-one kind; operational termination requires clocks, flags, measurements, open-system records, or external control. Exponential Hilbert-space dimension supplies a geometry for interference and high-dimensional embedding, not unlimited classical readout.
+Quantum computation is frequently mischaracterized as the simultaneous execution of exponentially many classical computations. This article offers a conceptual clarification of why this ``branchwise parallelism'' picture is misleading, demonstrating that the components of a quantum superposition cannot be treated as independently readable classical branches. Quantum speedups arise instead from reversible embeddings of algebraic structure made accessible through engineered interference patterns; more precisely, many speedups identify a class in a partition of possible instances rather than reconstructing the full instance. We review this mechanism through several constraints: unitary garbage erasure is impossible, copying and deletion are context-dependent, and contextuality obstructs a single global classical history. We also distinguish circuit or unitary universality from Turing universality: dense generation of unitaries is not the same as symbolic computation over unbounded inputs with recursion, uniformity, and self-reference. In closed unitary dynamics there is no nontrivial absorbing halting state of the classical many-to-one kind; operational termination requires clocks, flags, measurements, open-system records, or external control. Exponential Hilbert-space dimension supplies a geometry for interference and high-dimensional embedding, not unlimited classical readout.
 \end{abstract}
 
 \keywords{quantum computation, quantum parallelism, contextuality, Landauer principle, no-cloning theorem, no-deletion theorem, interference, quantum universality, Turing universality}
@@ -51,7 +51,7 @@ A common description of quantum computation says that a quantum computer evaluat
 Taken literally, however, this picture is wrong. A quantum computer does not return the list of all computed values. The components of a superposition cannot be individually inspected, copied, deleted, or archived as classical alternatives. They are amplitudes in a Hilbert-space vector, and only suitably arranged interference effects become accessible in a final measurement context, where a context is understood as a compatible set of observables, or equivalently a choice of measurement basis in the nondegenerate finite-dimensional case.
 
 The thesis of this article is the following:
-Quantum speedups are not many classical computations performed in parallel. They arise when the relevant predicate of a task can be embedded into a unitary evolution so that it becomes accessible by interference in a chosen measurement context. At the same time, copying and erasure are physically constrained by no-cloning, no-deletion, and Landauer irreversibility, while contextuality prevents the intermediate process from being interpreted as a single global classical history or as a noncontextual value assignment.
+Quantum speedups are not many classical computations performed in parallel. They arise when the relevant predicate of a task, often a cell in a partition of possible problem instances, can be embedded into a unitary evolution so that it becomes accessible by interference in a chosen measurement context. At the same time, copying and erasure are physically constrained by no-cloning, no-deletion, and Landauer irreversibility, while contextuality prevents the intermediate process from being interpreted as a single global classical history or as a noncontextual value assignment.
 
 A related ambiguity concerns the word ``universal.'' Circuit or unitary universality means that a finite gate set can approximate a large class of unitary transformations. Turing universality, by contrast, concerns the symbolic simulation of arbitrary effective procedures on inputs of unbounded length. These are not the same notion. A family of quantum circuits may define an algorithm in the complexity-theoretic sense only when a uniform classical or quantum rule generates the appropriate circuit for each input size. A single finite circuit, or even a universal finite gate set, is not by itself equivalent to the class of partial recursive functions.
 
@@ -119,6 +119,26 @@ Applying the final Hadamard transform $H^{\otimes n}$ gives the amplitude of $\k
 \frac{1}{2^n}\sum_x(-1)^{f(x)}.
 \]
 This amplitude is $\pm1$ for constant functions and $0$ for balanced functions. The promise makes the global predicate visible as complete constructive or destructive interference.
+
+This example also clarifies what the quantum ``acceleration'' is an acceleration of.  It is not, in general, an acceleration of the recovery of a unique classical object.  It is an acceleration of a decision problem whose answer is a coarse-grained class.  For the original one-bit Deutsch problem, the four functions
+\[
+        f:\{0,1\}\to\{0,1\}
+\]
+are not individually identified.  They are partitioned into the two classes
+\[
+        \Pi_D
+        =
+        \bigl\{\{00,11\},\{01,10\}\bigr\},
+\]
+where the strings denote the ordered value pairs \(f(0)f(1)\).  Equivalently, the accessible answer is the parity
+\[
+        f(0)\oplus f(1),
+\]
+or, in the usual terminology, the distinction between constant and balanced functions.  The final interference pattern is therefore not a readout of \(f(0)\) and \(f(1)\) separately.  It is a readout of the partition cell containing \(f\).
+
+This is the natural decision-theoretic form of the mechanism.  A problem instance set \(\Omega\) is supplied with a partition \(\Pi\), and the task is not to determine \(\omega\in\Omega\) but to determine its equivalence class \([\omega]_\Pi\).  Quantum speedup is possible only when the oracle and the measurement basis can be arranged so that different cells of \(\Pi\) are represented by distinguishable interference patterns, while distinctions inside a cell are deliberately discarded.  Earlier work on quantum state identification used precisely this language for generalized Deutsch-type problems: trivalent functions of a trit were grouped into equipartitions, and the question was whether the corresponding functional classes could be separated by quantum state identifications~\cite{2007-tkadlec-svozil-springer}.  In the present terminology, those examples emphasize the same point: the useful answer is a partition label, not a complete table of values.
+
+There is no contradiction between this coarse-graining and the lower-bound results discussed below.  Coarse-graining by itself is not enough.  The partition must be compatible with an efficiently implementable unitary encoding and with a final measurement context in which the relevant classes are separated by interference.  Arbitrary partitions of arbitrary black-box data need not have this property.
 
 Shor's algorithm is a more sophisticated example. Modular exponentiation is computed reversibly, but the algorithm does not read all values of
 \[
@@ -296,8 +316,9 @@ Quantum computation is not classical computation performed in
 exponentially many parallel branches whose results can later be
 inspected.  Its power lies in reversible amplitude manipulation,
 phase-sensitive computation, and contextual measurement.  Speedup appears
-when the desired predicate can be encoded into a unitary process and made
-visible by interference in an appropriate final context.
+when the desired predicate---often a partition label rather than a full
+classical description of the instance---can be encoded into a unitary
+process and made visible by interference in an appropriate final context.
 
 Exponential Hilbert-space dimension should not be mistaken for
 exponentially accessible classical storage.  Large dimension provides
@@ -625,6 +646,8 @@ by interference.  When uncomputation is blocked by an inaccessible
 witness, the accessible dynamics is dephased in the computational basis,
 the interference is quenched, and the lost coordinates must be recovered,
 if at all, by ordinary value queries.
+
+
 
 \bibliography{svozil}
 
