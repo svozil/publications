@@ -31,7 +31,7 @@
 
 \begin{document}
 
-\title{Perspectives on Large Language Models: Polysemy, Stochasticity, Exponential Expressibility, and Unitary Attention}
+\title{Perspectives on Large Language Models: Polysemy, Stochasticity, Exponential Expressibility, and a Quantum-Attention Analogue}
 
 \author{Karl Svozil\,\orcidlink{0000-0001-6554-2802}}
 \email{karl.svozil@tuwien.ac.at}
@@ -41,7 +41,7 @@
 \date{\today}
 
 \begin{abstract}
-This paper explores foundational aspects of Large Language Models (LLMs). We analyze how the expressibility of semantic features scales exponentially with embedding space dimensions using quasi-orthogonal vectors. We contrast the dynamic, context-dependent embeddings of Transformer architectures, which resolve polysemy, with a static vector approach based on quantum contextuality. Stochasticity is framed as an essential feature for enabling creative output through probabilistic sampling. Finally, we propose quantum attention as a unitary extension of classical mechanisms, reframing LLM processing as reversible, quantum-like evolutions in Hilbert space.
+This paper explores foundational aspects of Large Language Models (LLMs). We analyze how the expressibility of semantic features scales exponentially with embedding-space dimension through quasi-orthogonal vectors. We contrast the dynamic, context-dependent embeddings of Transformer architectures, which resolve polysemy, with a static vector approach inspired by quantum contextuality. Stochasticity is framed as an essential feature of probabilistic generation, enabling flexible and creative output while also imposing characteristic limitations. Finally, we discuss a speculative quantum-attention analogue, asking what would have to change if attention were constrained to unitary evolution and terminal measurement rather than nonlinear softmax mixing.
 \end{abstract}
 
 \keywords{Large Language Models, Transformer Architecture, Pre-training, Fine-tuning, Reinforcement Learning, Natural Language Processing, Polysemy, Quantum Contextuality}
@@ -62,7 +62,7 @@ Section~\ref{section:ExpScal} discusses the exponential supply of quasi-orthogon
 Section~\ref{section:Polysemy} addresses the model's ability to handle polysemy, exploring how modern architectures dynamically construct context-aware vector representations in a departure from older, static methods.
 Section~\ref{section:stochasticity} investigates the origin of stochasticity in responses, framing probabilistic text generation as an intentional and crucial feature that underpins creativity and flexibility.
 Section~\ref{section:AIT} then qualifies this stochasticity through the lens of algorithmic information and bounded search.
-Finally, Sections~\ref{section:qm} and~\ref{section:quantum_attention} draw a deliberately analogical comparison to quantum mechanics and unitary attention, using the shared mathematical language of vector spaces, inner products, and context-dependent projections to conceptualize how these systems process information and construct meaning.
+Finally, Sections~\ref{section:qm} and~\ref{section:quantum_attention} draw a deliberately analogical comparison to quantum mechanics and discuss a speculative quantum-attention analogue. The point is not to identify present LLMs with quantum systems, but to use the shared mathematical language of vector spaces, inner products, and context-dependent projections to clarify both the analogy and its limits.
 
 
 
@@ -87,8 +87,7 @@ State-of-the-art models use a vocabulary of approximately $30,000-100,000$ token
 
 The critical takeaway is that an LLM does not ``see'' characters or words as a human does.
 Its entire world is composed of these tokens:
-Tokens serve as \textit{interface}
-to its internal composition and means that will be based on vectors in Hilbert spaces.
+Tokens are the discrete interface to the model's internal vectorial representations; subsequent processing acts on these vectors rather than on characters or words directly.
 This has significant implications for its capabilities,
 particularly in tasks requiring character-level manipulation (e.g., spelling, counting letters),
 which can be non-trivial for a model that views a word like ``ubiquitous'' as three separate, opaque tokens.
@@ -101,8 +100,7 @@ The initial and most resource-intensive stage is the \textit{pre-training} phase
 This is accomplished by training a neural network on a massive, heterogeneous text corpus, as elucidated below.
 
 A primary component learned during this phase is the intrinsic word representation,
-where input and output tokens are \textit{mapped to vectors}, amounting to a vector  embedding in a ``low-dimensional''
-vector space.
+where input and output tokens are \textit{mapped to vectors}, amounting to a vector embedding in a space whose dimension is much smaller than the vocabulary size but still high-dimensional in the geometric sense relevant below.
 Typically embedding dimensions range from several hundred to a few thousand---much less than the number of tokens.
 This vector embedding functions as the token's operational ``meaning.''
 In an LLM, this meaning is not explicitly programmed but is an emergent property of the training optimization.
@@ -113,9 +111,7 @@ This results in output vectors that are then decoded into a sequence of tokens,
 which are transcribed into the final human-perceivable output.
 
 
-This intricate dance of calculus and linear algebra,
-applied at a massive scale, is the unseen alchemy that forges meaning from symbols,
-allowing models to grasp the nuanced tapestry of human language.
+At scale, this repeated application of calculus and linear algebra produces structured vector representations that support syntactic, semantic, and pragmatic regularities in language.
 
 
 \subsection{Learning from Internet-Scale Data}
@@ -190,7 +186,7 @@ surpassing what was possible by merely imitating human expert players~\cite[Fig.
 
 The apparent self-reflection observed in Large Language Models (LLMs), often manifested through phrases such as ``let me reconsider'' or ``wait, the user implies...'', does not emerge from conscious introspection but is rather a learned artifact of the training data. These models are trained to predict the next token in a sequence, and such reflective phrases are statistically probable continuations in contexts that necessitate re-evaluation, thereby mimicking human cognitive patterns.
 
-The core mechanism enabling this behavior is the self-attention layer within the Transformer architecture. Self-attention allows the model to weigh the importance of all tokens in the preceding sequence---including its own generated output---at each computational step. This process is enhanced by multi-head attention, which permits the model to track disparate linguistic and logical relationships simultaneously in parallel subspaces. Therefore, while self-attention provides the mechanical capability for in-context reflection, this behavior is fundamentally a stylistic pattern. More profoundly, this same mechanism is one route by which autoregressive models can approximate nontrivial algorithmic computation.
+The core mechanism enabling this behavior is the self-attention layer within the Transformer architecture. Self-attention allows the model to weigh the importance of all tokens in the preceding sequence---including its own generated output---at each computational step. This process is enhanced by multi-head attention, which permits the model to track disparate linguistic and logical relationships simultaneously in parallel subspaces. Therefore, while self-attention provides the mechanical capability for in-context reflection, this behavior is fundamentally a learned stylistic and computational pattern. The same mechanism is one route by which autoregressive models can approximate nontrivial algorithmic computation.
 
 This computational capacity of LLMs extends beyond mere linguistic processing, touching upon the theoretical limits of computability. Idealized autoregressive Transformer architectures, when supplemented with unbounded context or an external tape-like memory, can simulate Turing-complete systems. Actual deployed LLMs, however, are finite-state physical systems with bounded context, bounded numerical precision, and bounded compute. Their universality is therefore an idealized architectural property, not a literal property of any finite deployed model.
 
@@ -230,12 +226,59 @@ The relevant requirement, however, is not exact orthogonality but approximate di
 \end{equation}
 Small overlap is tolerable if the downstream readout can absorb the resulting interference. This relaxation from strict orthogonality to quasi-orthogonality leads to a dramatic increase in the number of directions that can coexist.
 
-The basic geometric reason is concentration of measure. For a fixed unit vector $\bm{u}$ and a random unit vector $\bm{v}$ on the unit sphere in $\mathbb{R}^d$, the overlap $\bm{u}\cdot\bm{v}$ has mean zero and typical magnitude of order $d^{-1/2}$. More quantitatively, concentration bounds give
+\paragraph*{Heuristic concentration argument.}
+The reason is already visible before invoking any formal packing theorem.
+Let
+\[
+        \bm{x}=(x_1,\ldots,x_d)\in\mathbb{R}^d
+\]
+be a unit vector chosen without a preferred direction.  Then
+\[
+        x_1^2+\cdots+x_d^2=1 .
+\]
+Rotational invariance suggests that the norm is spread over the available
+coordinates, so a typical coordinate weight is of order $1/d$.  Now fix a unit
+direction $\bm{u}$.  By rotational invariance one may choose coordinates so
+that $\bm{u}=\bm{e}_1$.  The squared overlap with the random direction is
+then
+\[
+        |\bm{u}\cdot\bm{x}|^2=x_1^2 .
+\]
+Thus the overlap with any fixed direction is typically of order $d^{-1/2}$ in
+amplitude, or $1/d$ in squared amplitude.  A macroscopic overlap
+$|\bm{u}\cdot\bm{x}|>\varepsilon$ therefore requires one coordinate to carry
+an anomalously large fraction of the total norm.  In high dimension such an
+event is exponentially unlikely.  This is the elementary concentration-of-measure
+intuition behind L\'evy's lemma on the sphere.  In the complex Hilbert-space
+analogue, for a Haar-random unit vector $\psi\in\mathbb{C}^D$ and a
+fixed unit vector $\phi$, unitary invariance gives $\phi=e_1$ and hence
+\[
+        |\langle\phi,\psi\rangle|^2=|\psi_1|^2 .
+\]
+The exact tail probability is
+\[
+        \Pr\bigl\{|\langle\phi,\psi\rangle|^2\geq\varepsilon\bigr\}
+        =(1-\varepsilon)^{D-1}
+        \leq \exp[-(D-1)\varepsilon] .
+\]
+For real embedding vectors the analogous spherical concentration estimate has
+the same operative scaling,
 \begin{equation}
-  \Pr\bigl(|\bm{u}\cdot\bm{v}|\geq \varepsilon\bigr)
+  \Pr\bigl(|\bm{u}\cdot\bm{x}|\geq \varepsilon\bigr)
   \leq 2\exp(-c d\varepsilon^2)
 \end{equation}
-for a universal constant $c>0$. In trained representations the raw dimension $d$ is often not the correct quantity: anisotropy, low intrinsic dimension, and narrow activation cones reduce the concentration dimension. We therefore write $d_{\mathrm{eff}}$ for the effective dimension controlling the approximately isotropic part of the representation being probed~\cite{svozil-2026-llm}.
+for a universal constant $c>0$.  Consequently, if $N$ random directions are
+sampled, a union-bound estimate gives a probability at most of order
+$N^2\exp(-c d\varepsilon^2)$ that some pair has overlap larger than
+$\varepsilon$.  Hence $N$ may grow exponentially in $d\varepsilon^2$ while
+all pairwise overlaps remain small with high probability.  This is the
+heuristic core of the exponential quasi-orthogonal capacity used below.
+
+In trained representations the raw dimension $d$ is often not the correct
+quantity: anisotropy, low intrinsic dimension, and narrow activation cones
+reduce the concentration dimension. We therefore write $d_{\mathrm{eff}}$ for
+the effective dimension controlling the approximately isotropic part of the
+representation being probed~\cite{svozil-2026-llm}.
 
 The same concentration phenomenon underlies the Johnson--Lindenstrauss lemma~\cite{johnson-1984}. That lemma states that a set of $n$ points in a high-dimensional space can be projected into a lower-dimensional space of dimension $k=O(\varepsilon^{-2}\log n)$ while preserving pairwise distances up to a factor of $(1\pm\varepsilon)$; the bound on the target dimension is tight~\cite{alon2016optimal,larsen-nelson-2017}. For the present purpose, the implication is best read in the reverse direction: a space whose effective dimension is $d_{\mathrm{eff}}$ can support exponentially many candidate directions with small pairwise overlap. Up to constants in the exponent, the kinetic coexistence scale is
 \begin{equation}
@@ -329,7 +372,7 @@ For example, we might obtain bases representing different contexts for `bank':
 As shown in Figure~\ref{fig:intertwining_contexts}, the vector $\bm{v}(\text{bank})$
 can belong to multiple bases, and its specific meaning emerges from the context (basis) it is considered within.
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
     \centering
 \begin{tikzpicture}[scale=0.5,
     outer_node/.style={circle, draw, minimum size=0.3cm, inner sep=0pt},
@@ -356,7 +399,7 @@ can belong to multiple bases, and its specific meaning emerges from the context 
 The central vector $\bm{v}(\text{bank})$ is a shared element common to three distinct contexts (orthonormal bases). Each context connects $\bm{v}(\text{bank})$
 to a different semantic association: financial $\bm{v}(\text{economy})$, riparian $\bm{v}(\text{river})$, and seating-related $\bm{v}(\text{seat})$.}
     \label{fig:intertwining_contexts}
-\end{figure}
+\end{figure*}
 
 
 
@@ -400,8 +443,8 @@ For nondegenerate choices in both two-dimensional blocks, the observables do not
 
 It seems, therefore, that in this quantum-like representation,
 the maximal observables encoding contexts play an additional crucial role in modelling:
-they encode polysemy.
-We therefore suggest to train contexts---and thus polysemy---on the same footing as tokens.
+they determine which sense of a polysemous token is operationally accessible.
+This suggests a possible architecture in which context bases, or basis-selection operators, are trainable objects on a footing comparable to token embeddings.
 
 This leaves a mechanistic question.
 In a Transformer, the surrounding tokens themselves compute the contextual update through attention.
@@ -697,27 +740,24 @@ philosophical open question.
 
 \subsection{Implications}
 
-The implications are sobering and exciting at once.
-On the sobering side, many of the workhorse techniques of classical deep learning,
+The implications are restrictive but conceptually clarifying.
+Many workhorse techniques of classical deep learning,
 such as gradient backpropagation through non-linear activations,
-are unavailable in their standard form. On the exciting side, however,
-quantum attention reorients learning toward symmetry operations, reversible dynamics,
-and combinatorial richness---offering the prospect of
-models that are less fragile, more interpretable, and governed by deep conservation laws.
+are unavailable in their standard form. A quantum-attention analogue would instead shift the emphasis toward symmetry operations, reversible dynamics,
+and controlled basis changes.
 If classical transformers are powered by the calculus of weighted averages,
-their quantum cousins would be powered by the geometry of Hilbert space rotations.
-``Paying attention,'' in such a universe, would mean aligning one's basis just right,
-before the final measurement tosses its fundamental dice.
+a genuinely unitary analogue would be powered by the geometry of Hilbert-space rotations.
+In such a scheme, ``attention'' would mean selecting or coherently aligning an appropriate basis before a final measurement converts amplitudes into token probabilities.
 
 \section{Summary and Outlook}
 
-The development of a large language model is a multi-stage, resource-intensive endeavor that progressively builds knowledge and refines behavior, starting from a base model pre-trained on internet-scale data, which is then fine-tuned into a conversational agent and further sharpened through reinforcement learning. Understanding this pipeline is key not only to appreciating the models' capabilities but also to grasping the structural principles that govern their operation and give rise to their limitations. The most important of these are the high-dimensional supply of quasi-orthogonal semantic directions, the dynamic handling of meaning, the intentional use of randomness in generation, the bounded character of algorithmic search, and the profound but limited structural analogies with quantum mechanics.
+The development of a large language model is a multi-stage, resource-intensive endeavor that progressively builds knowledge and refines behavior, starting from a base model pre-trained on internet-scale data, which is then fine-tuned into a conversational agent and further sharpened through reinforcement learning. Understanding this pipeline is key not only to appreciating the models' capabilities but also to grasping the structural principles that govern their operation and give rise to their limitations. The most important of these are the high-dimensional supply of quasi-orthogonal semantic directions, the dynamic handling of meaning, the intentional use of randomness in generation, the bounded character of algorithmic search, and the limited but instructive structural analogies with quantum mechanics.
 
 A central challenge in language is polysemy, where a word like ``bank'' has multiple meanings. Modern LLMs resolve this through dynamic contextualization. Unlike older models with static, one-size-fits-all vector representations, the Transformer architecture iteratively refines a token's vector based on its neighbors. The final representation for ``bank'' in ``river bank'' becomes mathematically distinct from its representation in ``money bank,'' a process driven by the self-attention mechanism. An alternative conceptual framework, inspired by quantum contextuality, proposes that meaning could instead arise from a single, static vector whose interpretation is determined by the ``contextual basis'' it is measured in, suggesting a different paradigm for encoding semantics. This approach highlights the crucial role of context in a way that resonates with quantum formalism.
 
 The generation of responses is also governed by a core principle: stochasticity. An LLM's output is not a deterministic retrieval but a probabilistic construction, generated one token at a time. The model computes a probability distribution over its entire vocabulary for what the next token should be, and then samples from this distribution. This intentional randomness, controlled by parameters like temperature, is why the same prompt can yield different answers. Low temperatures make the model favor the most likely tokens, producing more focused and predictable text, while higher temperatures increase the diversity and creativity of the output by making less likely tokens more probable. This inherent statistical nature, however, is intrinsically linked to fundamental limitations such as ``hallucinations,'' where the model generates plausible-sounding but factually incorrect information, as it operates on learned patterns rather than a true model of reality.
 
-This deep reliance on vectors, inner products, and context-dependent probability distributions creates a compelling analogy with quantum mechanics. A structural resonance exists between the LLM's softmax function, which determines next-token probabilities based on inner products, and the Born rule in quantum mechanics, which calculates measurement probabilities from projections onto a basis. While critical disanalogies exist---LLMs lack quantum phase and interference, and their dynamics are dissipative rather than unitary---the comparison is more than superficial. It offers a useful lens through which to analyze the model's internal world, while also clarifying what would have to change in a genuinely unitary attention mechanism: nonlinear mixing would have to be replaced by reversible rotations, with probabilities appearing only at preparation or measurement. Understanding these core mechanics---how meaning is dynamically constructed, how responses are probabilistically generated, how algorithmic capacity remains bounded, and how these processes mirror but do not instantiate quantum formalisms---is essential for navigating the use of these models responsibly and harnessing their full potential.
+This reliance on vectors, inner products, and context-dependent probability distributions creates a useful analogy with quantum mechanics. A structural resonance exists between the LLM's softmax function, which determines next-token probabilities from inner products, and the Born rule in quantum mechanics, which calculates measurement probabilities from projections onto a basis. Critical disanalogies remain decisive: LLMs lack quantum phase and interference, and their dynamics are dissipative rather than unitary. Precisely for that reason, the analogy is most useful when it clarifies what would have to change in a genuinely unitary attention mechanism: nonlinear mixing would have to be replaced by reversible rotations, with probabilities appearing only at preparation or measurement. Understanding these core mechanisms---how meaning is dynamically constructed, how responses are probabilistically generated, how algorithmic capacity remains bounded, and how these processes resemble but do not instantiate quantum formalisms---is essential for using such models responsibly.
 
 \begin{acknowledgments}
 This text was partially created and revised with assistance from one or more of the following large language models: gpt-5-high, Gemini 2.5 Pro, Grok4-0709, o3-2025-04-16, claude-sonnet-4-20250514-thinking-32k, GLM-4.5. All content, ideas, and prompts were provided by the author.
@@ -1075,22 +1115,3 @@ Thus, the statement that ``each block refines and enriches the token representat
 
 
 \end{document}
-
-
-
-Quantum attention:
-
-* previous implementation have mostly concentrated on an almost literal transcription of the classical attention mechanism, but we have to radically change that, as quantum capacities are limited to
-** von Neumann Process 1 (irreversible measurements) and
-** process 2 (one-to-one, reversible) unitary state evolution.
-
-
-* going back to the ultimate goal of the attention mechanism is to creat next-token (word)-predictions, by generating
-** proper token word embeddings by quantum states in a high-dimensional Hilbert space |\psi> , as well as
-** proper unitary evolution U of the final output state |\phi> = U |\psi> , followed by
-** a state measuremt that yields one instance with probabilities, associated with  | < \phi | \psi> |^2 in case of pure states.
-
-* There is  no nonlinearity or irreversibility or randomness, with the exception of (the possibility of the initial state and) the Process 1 type measurement at the end
-
-* any back-propagation and learning must be of process type 2 (a unitary rotation in Hilbert space). (Unitary  can be restricted to othogonal transformations, andf, in the extreme discrete case, to permutations).
-
