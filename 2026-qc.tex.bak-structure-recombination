@@ -4,7 +4,6 @@
   reprint,
   longbibliography,
   nofootinbib,
-  showkeys,
   superscriptaddress
 ]{revtex4-2}
 
@@ -38,10 +37,10 @@ Wiedner Hauptstra{\ss}e 8-10/136, 1040 Vienna, Austria}
 \date{\today}
 
 \begin{abstract}
-Quantum computation is not many classical computations running in parallel, but controlled interference in Hilbert space.  Amplitude is spread, problem structure is folded into phases, and measurement detects the invariant made visible by recombination.  What is exposed is usually not a branchwise table of values, but a structure-matched statistic such as a parity, period, symmetry class, or marked subspace.  Quantum advantage comes from matching the relevant structure to an efficient interference pattern, under the constraints of measurement contexts, thermodynamic irreversibility, and contextuality.
+Quantum computation is frequently mischaracterized as the simultaneous execution of exponentially many classical computations. This article offers a conceptual clarification of why this ``branchwise parallelism'' picture is misleading, demonstrating that the components of a quantum superposition cannot be treated as independently readable classical branches. Quantum speedups arise instead from reversible embeddings of algebraic structure made accessible through engineered interference patterns; more precisely, many speedups identify a class in a partition of possible instances rather than reconstructing the full instance. We review this mechanism through several constraints: unitary garbage erasure is impossible, copying and deletion are context-dependent, and contextuality obstructs a single global classical history. We also distinguish circuit or unitary universality from Turing universality: dense generation of unitaries is not the same as symbolic computation over unbounded inputs with recursion, uniformity, and self-reference. In closed unitary dynamics there is no nontrivial absorbing halting state of the classical many-to-one kind; operational termination requires clocks, flags, measurements, open-system records, or external control. Exponential Hilbert-space dimension supplies a geometry for interference and high-dimensional embedding, not unlimited classical readout.
 \end{abstract}
 
-\keywords{quantum computation, quantum interference, structure-matched recombination, contextuality, quantum speedup}
+\keywords{quantum computation, quantum parallelism, contextuality, Landauer principle, no-cloning theorem, no-deletion theorem, interference, quantum universality, Turing universality}
 
 \maketitle
 
@@ -52,13 +51,13 @@ A common description of quantum computation says that a quantum computer evaluat
 Taken literally, however, this picture is wrong. A quantum computer does not return the list of all computed values. The components of a superposition cannot be individually inspected, copied, deleted, or archived as classical alternatives. They are amplitudes in a Hilbert-space vector, and only suitably arranged interference effects become accessible in a final measurement context, where a context is understood as a compatible set of observables, or equivalently a choice of measurement basis in the nondegenerate finite-dimensional case.
 
 The thesis of this article is the following:
-Quantum speedups are not many classical computations performed in parallel. They arise when the algebraic or spectral structure relevant to a task can be embedded into coherent amplitudes and then recombined so that the desired invariant is concentrated in a chosen measurement context.  Coarse-grained outputs, such as partition labels, are common because invariants are natural targets for interference, but coarseness is not itself the source of the advantage.  At the same time, copying and erasure are physically constrained by no-cloning, no-deletion, and Landauer irreversibility, while contextuality prevents the intermediate process from being interpreted as a single global classical history or as a noncontextual value assignment.
+Quantum speedups are not many classical computations performed in parallel. They arise when the relevant predicate of a task, often a cell in a partition of possible problem instances, can be embedded into a unitary evolution so that it becomes accessible by interference in a chosen measurement context. At the same time, copying and erasure are physically constrained by no-cloning, no-deletion, and Landauer irreversibility, while contextuality prevents the intermediate process from being interpreted as a single global classical history or as a noncontextual value assignment.
 
 A related ambiguity concerns the word ``universal.'' Circuit or unitary universality means that a finite gate set can approximate a large class of unitary transformations. Turing universality, by contrast, concerns the symbolic simulation of arbitrary effective procedures on inputs of unbounded length. These are not the same notion. A family of quantum circuits may define an algorithm in the complexity-theoretic sense only when a uniform classical or quantum rule generates the appropriate circuit for each input size. A single finite circuit, or even a universal finite gate set, is not by itself equivalent to the class of partial recursive functions.
 
 This formulation is deliberately restrictive. It does not deny quantum speedup. It denies that branchwise classical computation explains it, and it denies that circuit universality should be conflated with Turing universality.
 
-The claim is not meant to settle interpretive questions about Everettian or many-worlds accounts of quantum computation. Advocates of such accounts have argued that quantum algorithms can be understood in terms of computations distributed across branches or worlds~\cite{deutsch,hewitt-horsman-2009,wallace2012emergent}. The narrower point made here is operational and model-theoretic: the components of a superposition are not independently readable classical records, and the computational advantage is realized only when the global unitary evolution and final measurement context convert phase relations into an accessible, structure-matched statistic.
+The claim is not meant to settle interpretive questions about Everettian or many-worlds accounts of quantum computation. Advocates of such accounts have argued that quantum algorithms can be understood in terms of computations distributed across branches or worlds~\cite{deutsch,hewitt-horsman-2009,wallace2012emergent}. The narrower point made here is operational and model-theoretic: the components of a superposition are not independently readable classical records, and the computational advantage is realized only when the global unitary evolution and final measurement context convert phase relations into an accessible statistic.
 
 The paper is therefore mainly clarificatory.  Its technical contribution
 is the leakage construction in Appendix~\ref{app:leaky-bv}, which gives a
@@ -78,7 +77,7 @@ Thus a superposition can be acted on linearly, but it cannot be read branch by b
 
 The state vector may contain exponentially many amplitudes, but the accessible classical readout is sharply constrained. This is the first reason why the naive parallelism metaphor is misleading. The superposed components can interfere, but they are not simultaneously available classical facts.
 
-\section{The useful mechanism: structure-matched recombination}
+\section{The useful mechanism: spread, compute, detect}
 
 Many oracle-based and Fourier-sampling quantum algorithms have the schematic form
 \begin{align*}
@@ -102,11 +101,9 @@ then
 \[
 U_f\ket{x}\ket{-}=(-1)^{f(x)}\ket{x}\ket{-}.
 \]
-The values of $f(x)$ are not read out individually. They are converted into phases. The final measurement is useful only if those phases are recombined in a basis matched to the structure one wants to detect.
+The values of $f(x)$ are not read out individually. They are converted into phases. The final measurement is useful only if those phases interfere so that the desired predicate becomes detectable.
 
-This is the essential mechanism sometimes summarized as spread, compute, detect, or spread, fold, detect.  The algorithm spreads amplitude, encodes structure coherently, and then folds the amplitudes back together so that constructive and destructive interference concentrate a relevant invariant in a chosen measurement context.
-
-Here ``structure-matched'' is meant operationally, but not vacuously.  In the examples below the match has two main forms: character, period, or hidden-subgroup structure, as in Bernstein--Vazirani, Simon, and Shor, where a Fourier transform turns an invariant into spectral concentration; and spectral or geometric concentration in a low-dimensional invariant subspace, as in Grover search and the Hein--Tanner lattice examples.
+This is the essential mechanism: spread, compute, detect. The algorithm spreads amplitude, computes coherently, and then detects a global feature through interference in a chosen measurement context.
 
 Deutsch--Jozsa is the simplest example. After phase kickback, the query register is in the state
 \[
@@ -123,7 +120,7 @@ Applying the final Hadamard transform $H^{\otimes n}$ gives the amplitude of $\k
 \]
 This amplitude is $\pm1$ for constant functions and $0$ for balanced functions. The promise makes the global predicate visible as complete constructive or destructive interference.
 
-This example also clarifies what the quantum ``acceleration'' is an acceleration of in this particular case.  The speedup is not an acceleration of the recovery of a unique classical table of values.  It is an acceleration of a decision problem whose answer is a coarse-grained class, because that class is exactly the invariant concentrated by the final interference pattern.  For the original one-bit Deutsch problem, the four functions
+This example also clarifies what the quantum ``acceleration'' is an acceleration of.  It is not, in general, an acceleration of the recovery of a unique classical object.  It is an acceleration of a decision problem whose answer is a coarse-grained class.  For the original one-bit Deutsch problem, the four functions
 \[
         f:\{0,1\}\to\{0,1\}
 \]
@@ -139,15 +136,15 @@ where the strings denote the ordered value pairs \(f(0)f(1)\).  Equivalently, th
 \]
 or, in the usual terminology, the distinction between constant and balanced functions.  The final interference pattern is therefore not a readout of \(f(0)\) and \(f(1)\) separately.  It is a readout of the partition cell containing \(f\).
 
-This is one natural decision-theoretic form of the mechanism.  A problem instance set \(\Omega\) is supplied with a partition \(\Pi\), and the task is not to determine \(\omega\in\Omega\) but to determine its equivalence class \([\omega]_\Pi\).  Quantum speedup is possible only when the oracle and the measurement basis can be arranged so that different cells of \(\Pi\) are represented by distinguishable interference patterns, while distinctions inside a cell are deliberately discarded.  Earlier work on quantum state identification used precisely this language for generalized Deutsch-type problems: trivalent functions of a trit were grouped into equipartitions, and the question was whether the corresponding functional classes could be separated by quantum state identifications~\cite{2007-tkadlec-svozil-springer}.  In the present terminology, those examples emphasize that the useful immediate answer is a partition label, not a complete table of values.
+This is the natural decision-theoretic form of the mechanism.  A problem instance set \(\Omega\) is supplied with a partition \(\Pi\), and the task is not to determine \(\omega\in\Omega\) but to determine its equivalence class \([\omega]_\Pi\).  Quantum speedup is possible only when the oracle and the measurement basis can be arranged so that different cells of \(\Pi\) are represented by distinguishable interference patterns, while distinctions inside a cell are deliberately discarded.  Earlier work on quantum state identification used precisely this language for generalized Deutsch-type problems: trivalent functions of a trit were grouped into equipartitions, and the question was whether the corresponding functional classes could be separated by quantum state identifications~\cite{2007-tkadlec-svozil-springer}.  In the present terminology, those examples emphasize the same point: the useful answer is a partition label, not a complete table of values.
 
-This should not be read as a strict opposition between partial and full answers.  Coarse-graining is a common way for a task to align with interference, but it is not the operative criterion.  The operative criterion is structural compatibility: the relevant invariant must be encoded by an efficiently implementable unitary and separated by a final measurement context.  Arbitrary partitions of arbitrary black-box data need not have this property, and a structure-matched intermediate statistic may sometimes be classically processed into a complete answer.
+There is no contradiction between this coarse-graining and the lower-bound results discussed below.  Coarse-graining by itself is not enough.  The partition must be compatible with an efficiently implementable unitary encoding and with a final measurement context in which the relevant classes are separated by interference.  Arbitrary partitions of arbitrary black-box data need not have this property.
 
 Shor's algorithm is a more sophisticated example. Modular exponentiation is computed reversibly, but the algorithm does not read all values of
 \[
 f(x)=a^x\bmod N.
 \]
-Instead, periodicity is sampled through a quantum Fourier transform. The success comes from algebraic structure: translation symmetry becomes spectral concentration.  Shor's algorithm is therefore an important warning against saying that interference is useful only for ``partial'' knowledge.  The quantum subroutine exposes a period rather than a full table of modular-exponentiation values, but that period can be converted by continued fractions and greatest-common-divisor computations into the full factorization of \(N\).  The final classical answer may be complete even when the quantum readout is an invariant.
+Instead, periodicity is sampled through a quantum Fourier transform. The success comes from algebraic structure: translation symmetry becomes spectral concentration.
 
 The same observation explains why generic predicates are not made easy by superposition. For an arbitrary Boolean string
 \[
@@ -157,13 +154,13 @@ the parity
 \[
 b_1\oplus b_2\oplus\cdots\oplus b_N
 \]
-depends on every input bit. Exact quantum computation of parity requires exactly $\lceil N/2\rceil$ queries, giving at most a factor-of-two improvement over the deterministic classical query complexity~\cite{Farhi-98}. More generally, polynomial-method bounds show that for total Boolean functions the bounded-error quantum and classical query complexities are polynomially related, ruling out arbitrary exponential speedup for such black-box total functions~\cite{bbcmw-01}. Superposition alone is therefore not the resource. Structure-matched recombination is.
+depends on every input bit. Exact quantum computation of parity requires exactly $\lceil N/2\rceil$ queries, giving at most a factor-of-two improvement over the deterministic classical query complexity~\cite{Farhi-98}. More generally, polynomial-method bounds show that for total Boolean functions the bounded-error quantum and classical query complexities are polynomially related, ruling out arbitrary exponential speedup for such black-box total functions~\cite{bbcmw-01}. Superposition alone is therefore not the resource. Detectable interference structure is.
 
-Appendix~\ref{app:leaky-bv} gives a concrete interpolation of this point for the Bernstein--Vazirani problem. A unitary oracle is modified so that a tunable part of the computational-basis path label is exported to an inaccessible witness register. The Boolean function is unchanged and the enlarged dynamics remains unitary, but the accessible interference pattern is progressively destroyed as more path information leaks.  The appendix also shows that interference and full value recovery are composable: the surviving recombination recovers the coordinates still structurally available to it, and ordinary value queries can supply the rest.
+Appendix~\ref{app:leaky-bv} gives a concrete interpolation of this point for the Bernstein--Vazirani problem. A unitary oracle is modified so that a tunable part of the computational-basis path label is exported to an inaccessible witness register. The Boolean function is unchanged and the enlarged dynamics remains unitary, but the accessible interference pattern is progressively destroyed as more path information leaks.
 
 Another illustration of this principle is provided by spatial-search and wave-communication constructions on regular lattices.  The basic image is that of a coherent wave spread over a whole lattice.  A locally marked site acts like a resonant defect: it is different enough from the background to be distinguished, but close enough in frequency to the extended lattice mode to exchange amplitude with it.  The lattice then functions as a global carrier.  In the lattice-search analysis of Hein and Tanner, this picture is made precise by an avoided crossing between the extended symmetric state and a localized defect state.  The resulting dynamics rotates amplitude from the delocalized state into the marked localization.  In their related wave-communication proposal, the same mechanism is extended to several marked vertices: with two marked defects, amplitude can be transferred between sender and receiver through the symmetric carrier state~\cite{hein2010quantum,hein2010wave}.
 
-This is a spectral, spatial-search analogue of Grover-type amplitude amplification: the advantage is not produced by simultaneously readable computational branches, but by coherent wave interference that converts a phase/scattering perturbation into an observable amplitude concentration.  Grover search also clarifies why ``structure'' should not be inflated until it explains everything.  The database is unstructured in the sense that it contains no exploitable character, period, or hidden-subgroup promise; the useful structure is only the two-dimensional geometry spanned by the uniform state and the marked subspace.  The poverty of this structure is reflected in the quadratic, rather than exponential, speedup.  The example is also useful because the same mechanism can be realized with classical coherent waves, supporting the interpretation that at least this class of quantum speedups is wave-mechanical rather than intrinsically tied to measurement collapse or many-world branch readout.  This does not contradict the resource-theoretic discussion below: the wave realization illustrates recombination without, by itself, an efficient classical reproduction of the quantum encoding, since it pays for the full physical lattice or mode structure, whereas a quantum implementation may encode the corresponding walk space more economically when the structure permits.  Interference in a medium is therefore a necessary image for the positive mechanism, but not by itself a sufficient account of quantum computational advantage; the Hilbert-space encoding economy is structure-gated, typically in promise or oracle settings rather than for arbitrary total functions, and the constraints discussed below are also part of the story.
+This is a spectral, spatial-search analogue of Grover-type amplitude amplification: the advantage is not produced by simultaneously readable computational branches, but by coherent wave interference that converts a phase/scattering perturbation into an observable amplitude concentration.  The example is also useful because the same mechanism can be realized with classical coherent waves.  Thus it supports the interpretation that at least this class of quantum speedups is wave-mechanical rather than intrinsically tied to measurement collapse or many-world branch readout.  The usual resource caveat remains: a classical wave realization pays for the full physical lattice or mode structure, whereas a quantum implementation may encode the corresponding walk space differently.
 
 
 
@@ -263,8 +260,6 @@ In Hilbert spaces of dimension at least three, the Kochen--Specker theorem stren
 
 This matters for quantum computation. The intermediate stages of an algorithm cannot generally be interpreted as a single classical trajectory through pre-existing values. The algorithm is a sequence of context changes implemented by unitary transformations and terminated by a final measurement context. What becomes classical is not the whole history, but only the final record.  Between preparation and measurement there is no classically charted path, only coherent evolution whose intermediate description is basis-dependent---like Musil's bridge whose solid piers stand only at the beginning and the end, while the passage through imaginary quantities in between nevertheless leads from real input to real output~\cite{musil-toerless}.
 
-This separates two questions that are often conflated.  Structure-matched recombination explains where the accessible answer comes from; resource-theoretic obstructions explain why the same transformation is not, in general, reproducible by an efficient classical stochastic process.  A quantum advantage requires the conjunction.
-
 Resource-theoretic results support this perspective, but with important
 qualifications.  Stabilizer operations admit efficient classical
 simulation by the Gottesman--Knill theorem~\cite{GottesmanKnill,
@@ -323,36 +318,23 @@ This reinforces the main thesis. Quantum circuit universality is a powerful noti
 
 \section{Conclusion}
 
-Quantum speedup, in the sense considered here, involves a conjunction.
-Structure-matched recombination explains where the accessible answer
-comes from: problem structure is encoded in coherent amplitudes and
-concentrated in a measurement context by interference.  Resource
-constraints explain why the same transformation is not, in general,
-reproducible by an efficient classical stochastic process.  Neither
-condition alone suffices.
-
-Quantum computation is therefore not classical computation performed in
+Quantum computation is not classical computation performed in
 exponentially many parallel branches whose results can later be
 inspected.  Its power lies in reversible amplitude manipulation,
 phase-sensitive computation, and contextual measurement.  Speedup appears
-when the structure relevant to the task can be encoded into a unitary
+when the desired predicate---often a partition label rather than a full
+classical description of the instance---can be encoded into a unitary
 process and made visible by interference in an appropriate final context.
-Often the immediately measured object is a partition label, period,
-parity, or marked subspace rather than a full classical description of
-the instance.  But such coarse-graining is a common consequence of
-structure-matched recombination, not the criterion itself; an invariant
-may still determine a complete classical answer after post-processing.
 
 Exponential Hilbert-space dimension should not be mistaken for
 exponentially accessible classical storage.  Large dimension provides
 room for structured embeddings and interference, but readout is
 constrained by measurement, Holevo bounds, and the chosen context.  In
 this sense high-dimensional quantum state space is a resource for
-controlled, structure-matched recombination, not for unrestricted
-branchwise inspection.
+controlled recombination, not for unrestricted branchwise inspection.
 
-The negative constraints are just as important.  Garbage cannot be
-erased by unitary dynamics; it must be
+The negative constraints are just as important as the positive
+mechanism.  Garbage cannot be erased by unitary dynamics; it must be
 uncomputed or exported, and physical reset is thermodynamic.  Unknown
 quantum states cannot be freely copied, broadcast, or deleted.
 Incompatible contexts prevent the assignment of a single efficiently
@@ -370,11 +352,7 @@ external control.
 Thus quantum computation is neither magic parallelism nor ordinary
 classical computation in disguise.  It is context-dependent,
 thermodynamically embedded, reversible information processing whose
-useful answers must be engineered as interference phenomena.  More
-pointedly, quantum speedup is interference-enabled, structure-matched
-amplitude recombination; coarse-graining the target predicate is one
-common way to obtain the required match, but it is the match, not the
-coarseness, that does the work.
+useful answers must be engineered as interference phenomena.
 
 \begin{acknowledgments}
 This text emerged from communication with Noson S. Yanofsky regarding his upcoming book.
@@ -499,12 +477,8 @@ coordinates by \(k\) ordinary value queries on the standard basis vectors
 \(e_i\), \(i\in S\), since \(f_a(e_i)=a_i\).  This gives a natural
 query count \(1+k\) for \(k<n\).  At the endpoint \(k=n\), the first
 Bernstein--Vazirani-style query gives the uniform distribution and is
-best omitted, so the standard \(n\) value queries suffice.  Thus the
-interference step and ordinary value recovery are not opposed: a
-structure-matched interference readout can supply the part of the answer
-that remains coherently recombinable, while additional value queries can
-complete the full classical string.  Hence this simple strategy
-interpolates as
+best omitted, so the standard \(n\) value queries suffice.  Hence this
+simple strategy interpolates as
 \begin{equation}
 \label{eq:leaky-bv-query-cost}
         Q_{\rm strat}(n,k)
@@ -668,17 +642,16 @@ which-path record selects a computational-basis context incompatible
 with the later Fourier-basis recombination.
 
 Pointedly stated, this demonstrates that a quantum computer does not
-``compute all branches at once and let us independently read them''---where the
+``compute all branches at once and let us read them''---where the
 scare-quoted branch language names precisely the classical picture being
 rejected.  If it did,
 leaking the computational-basis path labels to a witness register would
 not matter: the function \(f_a(x)\) was still computed.  Instead, the
 appendix shows that the speedup relies on \emph{recombining amplitudes}
-by interference in the basis matched to the hidden linear character.
-When uncomputation is blocked by an inaccessible witness, the accessible
-dynamics is dephased in the computational basis, the interference is
-quenched, and the lost coordinates must be recovered, if at all, by
-ordinary value queries.
+by interference.  When uncomputation is blocked by an inaccessible
+witness, the accessible dynamics is dephased in the computational basis,
+the interference is quenched, and the lost coordinates must be recovered,
+if at all, by ordinary value queries.
 
 
 
