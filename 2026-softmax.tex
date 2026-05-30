@@ -29,6 +29,16 @@
   pdfkeywords={softmax, partition logic, no-disturbance, exotic probabilities, non-Boolean event structures}
 }
 
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{LeanCode}{Verbatim}{
+  fontsize=\scriptsize,
+  frame=single,
+  numbers=left,
+  numbersep=6pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
 %------------------------------------------------------------
 % Theorem-like environments
 %------------------------------------------------------------
@@ -1474,6 +1484,8 @@ directions would turn the present geometric observation into a
 practical modeling framework.
 
 %------------------------------------------------------------
+Appendix~\ref{app:lean-verification} records a Lean~4/mathlib formalization of the finite representation, gluing, and pentagon half-weight claims. The verified artifacts are included verbatim so that the computational proof certificate can be inspected independently of the surrounding exposition.
+
 \section{Conclusion}
 \label{sec:conclusion}
 %------------------------------------------------------------
@@ -1529,6 +1541,643 @@ TU Wien Bibliothek for financial support through its Open Access
 Funding Programme.
 \end{acknowledgments}
 
+\clearpage
+\onecolumngrid
+\appendix
+
+\section{Lean verification artifacts}
+\label{app:lean-verification}
+
+This appendix records the Lean 4 formalization used to verify the finite claims about gluing, generalized-softmax coordinates, and the pentagon half-weight. The project was checked with Lean \texttt{v4.30.0} and mathlib \texttt{v4.30.0}; the command \texttt{lake build} completed successfully, and the source contains no \texttt{sorry}, \texttt{admit}, or \texttt{axiom}.
+
+The formalization separates three layers. First, Appendix~\ref{app:lean-core} defines finite event structures, admissible weights, positive coordinates, and the representation theorem for scaled link-function preimages. Second, Appendix~\ref{app:lean-gluing} formalizes local context-wise distributions, single-valuedness, the normalizer-ratio calculation, and the theorem that single-valued local distributions glue to a global admissible weight. Third, Appendix~\ref{app:lean-pentagon} formalizes the pentagon example: the half-weight is admissible, every two-valued state and every finite classical mixture obeys the cyclic bound \(2\), the half-weight has cyclic sum \(5/2\), and \(5/2>\sqrt 5\). The same file also verifies the positive softmax-coordinate path and its boundary endpoint at the half-weight.
+
+\begin{table}[h]
+\caption{Lean files included in the verification appendix.}
+\label{tab:lean-files}
+\begin{ruledtabular}
+\begin{tabular}{ll}
+File & Main content \\
+\colrule
+\texttt{lean-toolchain} & Lean compiler pin \\
+\texttt{lakefile.lean} & mathlib dependency pin \\
+\texttt{SoftmaxVerification.lean} & project import root \\
+\texttt{Core.lean} & event structures and representation theorem \\
+\texttt{Gluing.lean} & gluing and softmax-to-weight theorem \\
+\texttt{Pentagon.lean} & pentagon half-weight and bounds \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\subsection{Project files}
+\label{app:lean-project}
+
+\paragraph{\texttt{lean-toolchain}.} Lean compiler pin.
+\begin{LeanCode}
+leanprover/lean4:v4.30.0
+\end{LeanCode}
+
+\paragraph{\texttt{lakefile.lean}.} Lake project file and mathlib dependency.
+\begin{LeanCode}
+import Lake
+open Lake DSL
+
+package SoftmaxVerification where
+
+require mathlib from git
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.30.0"
+
+@[default_target]
+lean_lib SoftmaxVerification where
+\end{LeanCode}
+
+\paragraph{\texttt{SoftmaxVerification.lean}.} Root Lean import file.
+\begin{LeanCode}
+import SoftmaxVerification.Core
+import SoftmaxVerification.Gluing
+import SoftmaxVerification.Pentagon
+\end{LeanCode}
+
+\subsection{Core representation theorem}
+\label{app:lean-core}
+
+\paragraph{\texttt{SoftmaxVerification/Core.lean}.} Finite event structures, admissible weights, positive coordinates, and the link-function representation theorem.
+\begin{LeanCode}
+import Mathlib
+
+open scoped BigOperators
+
+namespace SoftmaxVerification
+
+/--
+A finite event structure in the sense used in the softmax paper.
+
+`atoms` is the ambient finite set of atoms.  Each context is itself a finite
+set of atoms, and `context_subset` records that contexts do not contain
+anything outside the ambient atom set.
+-/
+structure EventStructure (Atom : Type*) [DecidableEq Atom] where
+  atoms : Finset Atom
+  contexts : Finset (Finset Atom)
+  context_subset : forall C, C \ensuremath{\in} contexts -> C \ensuremath{\subseteq} atoms
+
+/--
+An admissible weight on an event structure: nonnegative on atoms and
+normalized to one on every context.
+-/
+structure IsWeight {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (p : Atom -> Real) : Prop where
+  nonneg : forall a, a \ensuremath{\in} L.atoms -> 0 <= p a
+  normalized : forall C, C \ensuremath{\in} L.contexts -> Finset.sum C p = 1
+
+/-- Strict positivity on all atoms of the event structure. -/
+def StrictlyPositive {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (p : Atom -> Real) : Prop :=
+  forall a, a \ensuremath{\in} L.atoms -> 0 < p a
+
+theorem strictlyPositive_nonneg {Atom : Type*} [DecidableEq Atom]
+    {L : EventStructure Atom} {p : Atom -> Real}
+    (hpos : StrictlyPositive L p) :
+    forall a, a \ensuremath{\in} L.atoms -> 0 <= p a := by
+  intro a ha
+  exact le_of_lt (hpos a ha)
+
+/-- The normalizing denominator for positive coordinates on a context. -/
+def denom {Atom : Type*} (q : Atom -> Real) (C : Finset Atom) : Real :=
+  Finset.sum C q
+
+/-- Context-wise normalization of coordinates. -/
+noncomputable def normalizedCoordinate {Atom : Type*}
+    (q : Atom -> Real) (C : Finset Atom) (a : Atom) : Real :=
+  q a / denom q C
+
+/--
+`q` represents the admissible weight `p` by normalized coordinates if the
+coordinates are positive on atoms and context-wise normalization recovers `p`.
+-/
+def Represents {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (p q : Atom -> Real) : Prop :=
+  (forall a, a \ensuremath{\in} L.atoms -> 0 < q a) \ensuremath{\wedge}
+    forall C, C \ensuremath{\in} L.contexts -> forall a, a \ensuremath{\in} C ->
+      normalizedCoordinate q C a = p a
+
+/--
+Coordinate form of the paper's representation theorem.
+
+Every strictly positive admissible weight represents itself: take the
+unnormalized coordinate of an atom to be its weight.
+-/
+theorem positive_weight_represents_itself {Atom : Type*} [DecidableEq Atom]
+    {L : EventStructure Atom} {p : Atom -> Real}
+    (hp : IsWeight L p) (hpos : StrictlyPositive L p) :
+    Represents L p p := by
+  constructor
+  \ensuremath{\cdot} exact hpos
+  \ensuremath{\cdot} intro C hC a ha
+    unfold normalizedCoordinate denom
+    rw [hp.normalized C hC]
+    simp
+
+/--
+The same representation after multiplying all coordinates by a positive
+constant.  This is the basic gauge freedom of normalized coordinates.
+-/
+theorem positive_weight_scaled_coordinates {Atom : Type*} [DecidableEq Atom]
+    {L : EventStructure Atom} {p : Atom -> Real}
+    (hp : IsWeight L p) (hpos : StrictlyPositive L p)
+    {alpha : Real} (halpha : 0 < alpha) :
+    Represents L p (fun a => alpha * p a) := by
+  constructor
+  \ensuremath{\cdot} intro a ha
+    exact mul_pos halpha (hpos a ha)
+  \ensuremath{\cdot} intro C hC a ha
+    unfold normalizedCoordinate denom
+    have hsum : Finset.sum C (fun b => alpha * p b) = alpha := by
+      calc
+        Finset.sum C (fun b => alpha * p b) = alpha * Finset.sum C p := by
+          rw [Finset.mul_sum]
+        _ = alpha * 1 := by
+          rw [hp.normalized C hC]
+        _ = alpha := by
+          ring
+    rw [hsum]
+    field_simp [ne_of_gt halpha]
+
+/--
+Link-function version of the representation theorem.
+
+Instead of formalizing an inverse function immediately, this theorem states the
+exact range condition used in the paper: if every scaled value `alpha * p a`
+has a preimage under the link `g`, then choosing those preimages as scores
+gives the desired generalized-softmax representation.
+-/
+theorem link_representation_of_scaled_range
+    {Atom Score : Type*} [DecidableEq Atom] [Nonempty Score]
+    {L : EventStructure Atom} {p : Atom -> Real}
+    (g : Score -> Real)
+    (hp : IsWeight L p)
+    {alpha : Real} (halpha : 0 < alpha)
+    (hpre : forall a, a \ensuremath{\in} L.atoms -> exists u : Score, g u = alpha * p a) :
+    exists u : Atom -> Score,
+      forall C, C \ensuremath{\in} L.contexts -> forall a, a \ensuremath{\in} C ->
+        normalizedCoordinate (fun b => g (u b)) C a = p a := by
+  classical
+  let u : Atom -> Score := fun a =>
+    if ha : a \ensuremath{\in} L.atoms then
+      Classical.choose (hpre a ha)
+    else
+      Classical.choice (inferInstance : Nonempty Score)
+  refine \ensuremath{\langle}u, ?_\ensuremath{\rangle}
+  intro C hC a ha
+  have hCsub : C \ensuremath{\subseteq} L.atoms := L.context_subset C hC
+  have hu : forall b, b \ensuremath{\in} C -> g (u b) = alpha * p b := by
+    intro b hb
+    have hb_atoms : b \ensuremath{\in} L.atoms := hCsub hb
+    dsimp [u]
+    rw [dif_pos hb_atoms]
+    exact Classical.choose_spec (hpre b hb_atoms)
+  unfold normalizedCoordinate denom
+  have hsum : Finset.sum C (fun b => g (u b)) = alpha := by
+    calc
+      Finset.sum C (fun b => g (u b)) = Finset.sum C (fun b => alpha * p b) := by
+        apply Finset.sum_congr rfl
+        intro b hb
+        exact hu b hb
+      _ = alpha * Finset.sum C p := by
+        rw [Finset.mul_sum]
+      _ = alpha * 1 := by
+        rw [hp.normalized C hC]
+      _ = alpha := by
+        ring
+  change g (u a) / Finset.sum C (fun b => g (u b)) = p a
+  rw [hu a ha, hsum]
+  field_simp [ne_of_gt halpha]
+
+end SoftmaxVerification
+\end{LeanCode}
+
+\subsection{Gluing of local distributions}
+\label{app:lean-gluing}
+
+\paragraph{\texttt{SoftmaxVerification/Gluing.lean}.} Single-valued local distributions and their glued admissible weight.
+\begin{LeanCode}
+import SoftmaxVerification.Core
+
+open scoped BigOperators
+
+namespace SoftmaxVerification
+
+/-- A context-indexed family of local probabilities is nonnegative on
+the atoms of each context. -/
+def LocalNonnegative {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (P : Finset Atom -> Atom -> Real) : Prop :=
+  forall C, C \ensuremath{\in} L.contexts -> forall a, a \ensuremath{\in} C -> 0 <= P C a
+
+/-- A context-indexed family of local probabilities is normalized in
+each context. -/
+def LocalNormalized {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (P : Finset Atom -> Atom -> Real) : Prop :=
+  forall C, C \ensuremath{\in} L.contexts -> Finset.sum C (P C) = 1
+
+/-- Single-valuedness/no-disturbance for context-indexed local
+probabilities.  Shared atoms receive the same value in all contexts in
+which they occur. -/
+def SingleValuedOn {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (P : Finset Atom -> Atom -> Real) : Prop :=
+  forall C, C \ensuremath{\in} L.contexts -> forall D, D \ensuremath{\in} L.contexts -> forall a,
+    a \ensuremath{\in} C -> a \ensuremath{\in} D -> P C a = P D a
+
+/-- Local normalizing denominator for freely context-dependent
+positive coordinates. -/
+def localDenom {Atom : Type*}
+    (q : Finset Atom -> Atom -> Real) (C : Finset Atom) : Real :=
+  Finset.sum C (q C)
+
+/-- Local softmax normalization for freely context-dependent positive
+coordinates. -/
+noncomputable def localCoordinate {Atom : Type*}
+    (q : Finset Atom -> Atom -> Real) (C : Finset Atom) (a : Atom) : Real :=
+  q C a / localDenom q C
+
+/-- The paper's gluing condition, stated as single-valuedness of the
+locally normalized coordinates. -/
+theorem gluing_condition_for_free_scores {Atom : Type*} [DecidableEq Atom]
+    {L : EventStructure Atom} {q : Finset Atom -> Atom -> Real} :
+    SingleValuedOn L (localCoordinate q) <->
+      forall C, C \ensuremath{\in} L.contexts -> forall D, D \ensuremath{\in} L.contexts -> forall a,
+        a \ensuremath{\in} C -> a \ensuremath{\in} D ->
+          localCoordinate q C a = localCoordinate q D a := by
+  rfl
+
+/-- Algebraic form of the normalizer-ratio condition for one shared
+atom.  This is the scalar calculation behind Eq. (4.3) in the paper. -/
+theorem normalized_eq_iff_ratio
+    {qC qD ZC ZD : Real}
+    (hqD : qD \ensuremath{\ne} 0) (hZC : ZC \ensuremath{\ne} 0) (hZD : ZD \ensuremath{\ne} 0) :
+    qC / ZC = qD / ZD <-> ZC / ZD = qC / qD := by
+  constructor
+  \ensuremath{\cdot} intro h
+    field_simp [hZC, hZD] at h
+    field_simp [hZD, hqD]
+    nlinarith
+  \ensuremath{\cdot} intro h
+    field_simp [hZD, hqD] at h
+    field_simp [hZC, hZD]
+    nlinarith
+
+/-- A noncomputable glued global weight: choose one context containing
+the atom, if such a context exists, and otherwise use zero.  The choice
+is harmless under `SingleValuedOn`. -/
+noncomputable def gluedWeight {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (P : Finset Atom -> Atom -> Real) :
+    Atom -> Real :=
+  fun a =>
+    if h : exists C, C \ensuremath{\in} L.contexts \ensuremath{\wedge} a \ensuremath{\in} C then
+      P (Classical.choose h) a
+    else
+      0
+
+theorem gluedWeight_eq_of_mem {Atom : Type*} [DecidableEq Atom]
+    {L : EventStructure Atom} {P : Finset Atom -> Atom -> Real}
+    (hsingle : SingleValuedOn L P)
+    {C : Finset Atom} (hC : C \ensuremath{\in} L.contexts) {a : Atom} (ha : a \ensuremath{\in} C) :
+    gluedWeight L P a = P C a := by
+  classical
+  unfold gluedWeight
+  have hex : exists D, D \ensuremath{\in} L.contexts \ensuremath{\wedge} a \ensuremath{\in} D := \ensuremath{\langle}C, hC, ha\ensuremath{\rangle}
+  rw [dif_pos hex]
+  have hchoose := Classical.choose_spec hex
+  exact hsingle (Classical.choose hex) hchoose.1 C hC a hchoose.2 ha
+
+/-- Proposition 5.1 in finite form: every single-valued family of
+locally normalized distributions defines an admissible global weight. -/
+theorem local_distributions_glue_to_weight {Atom : Type*} [DecidableEq Atom]
+    {L : EventStructure Atom} {P : Finset Atom -> Atom -> Real}
+    (hnonneg : LocalNonnegative L P)
+    (hnorm : LocalNormalized L P)
+    (hsingle : SingleValuedOn L P) :
+    exists p : Atom -> Real,
+      IsWeight L p \ensuremath{\wedge}
+        forall C, C \ensuremath{\in} L.contexts -> forall a, a \ensuremath{\in} C -> p a = P C a := by
+  classical
+  refine \ensuremath{\langle}gluedWeight L P, ?_, ?_\ensuremath{\rangle}
+  \ensuremath{\cdot} constructor
+    \ensuremath{\cdot} intro a ha
+      unfold gluedWeight
+      by_cases hex : exists C, C \ensuremath{\in} L.contexts \ensuremath{\wedge} a \ensuremath{\in} C
+      \ensuremath{\cdot} rw [dif_pos hex]
+        have hchoose := Classical.choose_spec hex
+        exact hnonneg (Classical.choose hex) hchoose.1 a hchoose.2
+      \ensuremath{\cdot} rw [dif_neg hex]
+    \ensuremath{\cdot} intro C hC
+      calc
+        Finset.sum C (gluedWeight L P) = Finset.sum C (P C) := by
+          apply Finset.sum_congr rfl
+          intro a ha
+          exact gluedWeight_eq_of_mem hsingle hC ha
+        _ = 1 := hnorm C hC
+  \ensuremath{\cdot} intro C hC a ha
+    exact gluedWeight_eq_of_mem hsingle hC ha
+
+end SoftmaxVerification
+\end{LeanCode}
+
+\subsection{Pentagon half-weight}
+\label{app:lean-pentagon}
+
+\paragraph{\texttt{SoftmaxVerification/Pentagon.lean}.} Pentagon logic, classical cyclic bound, KCBS numerical comparison, and the positive softmax path.
+\begin{LeanCode}
+import SoftmaxVerification.Gluing
+
+open scoped BigOperators
+
+namespace SoftmaxVerification
+
+/-- The ten atoms of the pentagon logic. -/
+inductive PentagonAtom where
+  | a0 | a1 | a2 | a3 | a4
+  | x0 | x1 | x2 | x3 | x4
+  deriving DecidableEq, Fintype
+
+open PentagonAtom
+
+def pentagonC0 : Finset PentagonAtom := {a0, a1, x0}
+def pentagonC1 : Finset PentagonAtom := {a1, a2, x1}
+def pentagonC2 : Finset PentagonAtom := {a2, a3, x2}
+def pentagonC3 : Finset PentagonAtom := {a3, a4, x3}
+def pentagonC4 : Finset PentagonAtom := {a4, a0, x4}
+
+def pentagonContexts : Finset (Finset PentagonAtom) :=
+  {pentagonC0, pentagonC1, pentagonC2, pentagonC3, pentagonC4}
+
+/-- The pentagon/pentagram event structure from the paper. -/
+def pentagon : EventStructure PentagonAtom where
+  atoms := Finset.univ
+  contexts := pentagonContexts
+  context_subset := by
+    intro C hC a ha
+    simp
+
+/-- The cyclic atoms `a_i`. -/
+def pentagonCyclicAtoms : Finset PentagonAtom := {a0, a1, a2, a3, a4}
+
+def pentagonCyclicSum (p : PentagonAtom -> Real) : Real :=
+  Finset.sum pentagonCyclicAtoms p
+
+/-- The pentagon half-weight: cyclic atoms have weight `1/2`, midpoint
+atoms have weight `0`. -/
+noncomputable def pentagonHalfWeight : PentagonAtom -> Real
+  | a0 | a1 | a2 | a3 | a4 => 1 / 2
+  | x0 | x1 | x2 | x3 | x4 => 0
+
+theorem pentagon_halfWeight_isWeight : IsWeight pentagon pentagonHalfWeight := by
+  constructor
+  \ensuremath{\cdot} intro a ha
+    cases a <;> norm_num [pentagonHalfWeight]
+  \ensuremath{\cdot} intro C hC
+    simp [pentagon, pentagonContexts] at hC
+    rcases hC with hC | hC | hC | hC | hC
+    \ensuremath{\cdot} subst C
+      simp [pentagonC0, pentagonHalfWeight]
+      norm_num
+    \ensuremath{\cdot} subst C
+      simp [pentagonC1, pentagonHalfWeight]
+      norm_num
+    \ensuremath{\cdot} subst C
+      simp [pentagonC2, pentagonHalfWeight]
+      norm_num
+    \ensuremath{\cdot} subst C
+      simp [pentagonC3, pentagonHalfWeight]
+      norm_num
+    \ensuremath{\cdot} subst C
+      simp [pentagonC4, pentagonHalfWeight]
+      norm_num
+
+theorem pentagon_halfWeight_cyclicSum :
+    pentagonCyclicSum pentagonHalfWeight = 5 / 2 := by
+  simp [pentagonCyclicSum, pentagonCyclicAtoms, pentagonHalfWeight]
+  norm_num
+
+/-- A two-valued admissible weight. -/
+def IsTwoValued {Atom : Type*} [DecidableEq Atom]
+    (L : EventStructure Atom) (v : Atom -> Real) : Prop :=
+  IsWeight L v \ensuremath{\wedge} forall a, a \ensuremath{\in} L.atoms -> v a = 0 \ensuremath{\vee} v a = 1
+
+private theorem pentagon_adjacent_sum_le_one
+    {v : PentagonAtom -> Real} (hv : IsTwoValued pentagon v) :
+    v a0 + v a1 <= 1 \ensuremath{\wedge}
+    v a1 + v a2 <= 1 \ensuremath{\wedge}
+    v a2 + v a3 <= 1 \ensuremath{\wedge}
+    v a3 + v a4 <= 1 \ensuremath{\wedge}
+    v a4 + v a0 <= 1 := by
+  have hx0 : 0 <= v x0 := hv.1.nonneg x0 (by simp [pentagon])
+  have hx1 : 0 <= v x1 := hv.1.nonneg x1 (by simp [pentagon])
+  have hx2 : 0 <= v x2 := hv.1.nonneg x2 (by simp [pentagon])
+  have hx3 : 0 <= v x3 := hv.1.nonneg x3 (by simp [pentagon])
+  have hx4 : 0 <= v x4 := hv.1.nonneg x4 (by simp [pentagon])
+  have h0 := hv.1.normalized pentagonC0 (by simp [pentagon, pentagonContexts])
+  have h1 := hv.1.normalized pentagonC1 (by simp [pentagon, pentagonContexts])
+  have h2 := hv.1.normalized pentagonC2 (by simp [pentagon, pentagonContexts])
+  have h3 := hv.1.normalized pentagonC3 (by simp [pentagon, pentagonContexts])
+  have h4 := hv.1.normalized pentagonC4 (by simp [pentagon, pentagonContexts])
+  simp [pentagonC0] at h0
+  simp [pentagonC1] at h1
+  simp [pentagonC2] at h2
+  simp [pentagonC3] at h3
+  simp [pentagonC4] at h4
+  constructor
+  \ensuremath{\cdot} nlinarith
+  constructor
+  \ensuremath{\cdot} nlinarith
+  constructor
+  \ensuremath{\cdot} nlinarith
+  constructor
+  \ensuremath{\cdot} nlinarith
+  \ensuremath{\cdot} nlinarith
+
+/-- Every two-valued pentagon weight assigns value one to at most two
+cyclic atoms. -/
+theorem pentagon_twoValued_cyclicSum_le_two
+    {v : PentagonAtom -> Real} (hv : IsTwoValued pentagon v) :
+    pentagonCyclicSum v <= 2 := by
+  have hadj := pentagon_adjacent_sum_le_one hv
+  rcases hadj with \ensuremath{\langle}h01, h12, h23, h34, h40\ensuremath{\rangle}
+  have ha0 := hv.2 a0 (by simp [pentagon])
+  have ha1 := hv.2 a1 (by simp [pentagon])
+  have ha2 := hv.2 a2 (by simp [pentagon])
+  have ha3 := hv.2 a3 (by simp [pentagon])
+  have ha4 := hv.2 a4 (by simp [pentagon])
+  rcases ha0 with ha0 | ha0 <;>
+  rcases ha1 with ha1 | ha1 <;>
+  rcases ha2 with ha2 | ha2 <;>
+  rcases ha3 with ha3 | ha3 <;>
+  rcases ha4 with ha4 | ha4 <;>
+    simp [pentagonCyclicSum, pentagonCyclicAtoms, ha0, ha1, ha2, ha3, ha4] <;>
+    nlinarith
+
+/-- A finite classical mixture of two-valued pentagon weights obeys the
+same cyclic inequality. -/
+theorem pentagon_classical_mixture_cyclicSum_le_two
+    {\ensuremath{\iota} : Type*} [Fintype \ensuremath{\iota}]
+    {lambda : \ensuremath{\iota} -> Real} {v : \ensuremath{\iota} -> PentagonAtom -> Real}
+    {p : PentagonAtom -> Real}
+    (hlambda_nonneg : forall i, 0 <= lambda i)
+    (hlambda_sum : Finset.sum Finset.univ lambda = 1)
+    (hv : forall i, IsTwoValued pentagon (v i))
+    (hp : forall a, p a = Finset.sum Finset.univ (fun i => lambda i * v i a)) :
+    pentagonCyclicSum p <= 2 := by
+  have hsum :
+      pentagonCyclicSum p =
+        Finset.sum Finset.univ (fun i => lambda i * pentagonCyclicSum (v i)) := by
+    unfold pentagonCyclicSum
+    calc
+      Finset.sum pentagonCyclicAtoms p =
+          Finset.sum pentagonCyclicAtoms
+            (fun a => Finset.sum Finset.univ (fun i => lambda i * v i a)) := by
+        apply Finset.sum_congr rfl
+        intro a ha
+        exact hp a
+      _ = Finset.sum Finset.univ
+            (fun i => Finset.sum pentagonCyclicAtoms (fun a => lambda i * v i a)) := by
+        rw [Finset.sum_comm]
+      _ = Finset.sum Finset.univ (fun i => lambda i * Finset.sum pentagonCyclicAtoms (v i)) := by
+        apply Finset.sum_congr rfl
+        intro i hi
+        rw [Finset.mul_sum]
+  rw [hsum]
+  calc
+    Finset.sum Finset.univ (fun i => lambda i * pentagonCyclicSum (v i))
+        <= Finset.sum Finset.univ (fun i => lambda i * 2) := by
+      apply Finset.sum_le_sum
+      intro i hi
+      exact mul_le_mul_of_nonneg_left (pentagon_twoValued_cyclicSum_le_two (hv i))
+        (hlambda_nonneg i)
+    _ = 2 := by
+      rw [\ensuremath{\leftarrow} Finset.sum_mul]
+      rw [hlambda_sum]
+      ring
+
+theorem pentagon_halfWeight_exceeds_classical_bound :
+    2 < pentagonCyclicSum pentagonHalfWeight := by
+  rw [pentagon_halfWeight_cyclicSum]
+  norm_num
+
+theorem pentagon_halfWeight_exceeds_kcbs_value :
+    Real.sqrt 5 < pentagonCyclicSum pentagonHalfWeight := by
+  rw [pentagon_halfWeight_cyclicSum]
+  rw [Real.sqrt_lt' (by norm_num : 0 < (5 : Real) / 2)]
+  norm_num
+
+/-- The positive generalized-softmax path used in the paper, written in
+terms of the coordinate ratio `r`. -/
+noncomputable def pentagonPathWeight (r : Real) : PentagonAtom -> Real
+  | a0 | a1 | a2 | a3 | a4 => 1 / (2 + r)
+  | x0 | x1 | x2 | x3 | x4 => r / (2 + r)
+
+theorem pentagon_pathWeight_isWeight {r : Real} (hr : 0 <= r) :
+    IsWeight pentagon (pentagonPathWeight r) := by
+  have hden_pos : 0 < 2 + r := by linarith
+  constructor
+  \ensuremath{\cdot} intro a ha
+    cases a <;> dsimp [pentagonPathWeight]
+    \ensuremath{\cdot} exact div_nonneg zero_le_one hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg zero_le_one hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg zero_le_one hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg zero_le_one hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg zero_le_one hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg hr hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg hr hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg hr hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg hr hden_pos.le
+    \ensuremath{\cdot} exact div_nonneg hr hden_pos.le
+  \ensuremath{\cdot} intro C hC
+    simp [pentagon, pentagonContexts] at hC
+    rcases hC with hC | hC | hC | hC | hC
+    \ensuremath{\cdot} subst C
+      simp [pentagonC0, pentagonPathWeight]
+      field_simp [ne_of_gt hden_pos]
+      ring_nf
+    \ensuremath{\cdot} subst C
+      simp [pentagonC1, pentagonPathWeight]
+      field_simp [ne_of_gt hden_pos]
+      ring_nf
+    \ensuremath{\cdot} subst C
+      simp [pentagonC2, pentagonPathWeight]
+      field_simp [ne_of_gt hden_pos]
+      ring_nf
+    \ensuremath{\cdot} subst C
+      simp [pentagonC3, pentagonPathWeight]
+      field_simp [ne_of_gt hden_pos]
+      ring_nf
+    \ensuremath{\cdot} subst C
+      simp [pentagonC4, pentagonPathWeight]
+      field_simp [ne_of_gt hden_pos]
+      ring_nf
+
+theorem pentagon_pathWeight_cyclicSum (r : Real) :
+    pentagonCyclicSum (pentagonPathWeight r) = 5 / (2 + r) := by
+  simp [pentagonCyclicSum, pentagonCyclicAtoms, pentagonPathWeight]
+  ring_nf
+
+theorem pentagon_path_exceeds_classical_iff {r : Real} (hr : 0 <= r) :
+    2 < pentagonCyclicSum (pentagonPathWeight r) <-> r < 1 / 2 := by
+  have hden_pos : 0 < 2 + r := by linarith
+  rw [pentagon_pathWeight_cyclicSum]
+  constructor
+  \ensuremath{\cdot} intro h
+    field_simp [ne_of_gt hden_pos] at h
+    linarith
+  \ensuremath{\cdot} intro h
+    field_simp [ne_of_gt hden_pos]
+    linarith
+
+theorem pentagon_path_exceeds_kcbs_of_small {r : Real}
+    (hr : 0 <= r) (hsmall : r < Real.sqrt 5 - 2) :
+    Real.sqrt 5 < pentagonCyclicSum (pentagonPathWeight r) := by
+  have hden_pos : 0 < 2 + r := by linarith
+  have hsqrt_pos : 0 < Real.sqrt 5 := Real.sqrt_pos.2 (by norm_num)
+  have hlt : 2 + r < Real.sqrt 5 := by linarith
+  have hmul : Real.sqrt 5 * (2 + r) < Real.sqrt 5 * Real.sqrt 5 :=
+    mul_lt_mul_of_pos_left hlt hsqrt_pos
+  have hsq : Real.sqrt 5 * Real.sqrt 5 = 5 := by
+    rw [\ensuremath{\leftarrow} pow_two, Real.sq_sqrt]
+    norm_num
+  rw [pentagon_pathWeight_cyclicSum]
+  field_simp [ne_of_gt hden_pos]
+  nlinarith
+
+theorem pentagon_pathWeight_strictlyPositive {r : Real} (hr : 0 < r) :
+    StrictlyPositive pentagon (pentagonPathWeight r) := by
+  intro a ha
+  have hden_pos : 0 < 2 + r := by linarith
+  cases a <;> dsimp [pentagonPathWeight]
+  \ensuremath{\cdot} exact div_pos zero_lt_one hden_pos
+  \ensuremath{\cdot} exact div_pos zero_lt_one hden_pos
+  \ensuremath{\cdot} exact div_pos zero_lt_one hden_pos
+  \ensuremath{\cdot} exact div_pos zero_lt_one hden_pos
+  \ensuremath{\cdot} exact div_pos zero_lt_one hden_pos
+  \ensuremath{\cdot} exact div_pos hr hden_pos
+  \ensuremath{\cdot} exact div_pos hr hden_pos
+  \ensuremath{\cdot} exact div_pos hr hden_pos
+  \ensuremath{\cdot} exact div_pos hr hden_pos
+  \ensuremath{\cdot} exact div_pos hr hden_pos
+
+theorem pentagon_halfWeight_not_strictlyPositive :
+    \ensuremath{\neg} StrictlyPositive pentagon pentagonHalfWeight := by
+  intro hpos
+  have hx := hpos x0 (by simp [pentagon])
+  norm_num [pentagonHalfWeight] at hx
+
+theorem pentagon_pathWeight_zero_eq_halfWeight :
+    pentagonPathWeight 0 = pentagonHalfWeight := by
+  funext a
+  cases a <;> norm_num [pentagonPathWeight, pentagonHalfWeight]
+
+end SoftmaxVerification
+\end{LeanCode}
+
+\clearpage
+\twocolumngrid
 
 \bibliography{svozil}
 
