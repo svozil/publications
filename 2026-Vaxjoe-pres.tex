@@ -1,0 +1,419 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Fonts/encoding/typography
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{csquotes}
+
+% Links
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=gray,
+  linkcolor=.,
+  citecolor=.
+}
+
+% Theme (fallback to default if Metropolis not installed)
+\makeatletter
+\@ifundefined{IfFileExists}{%
+}{}
+\makeatother
+\IfFileExists{beamerthememetropolis.sty}{%
+  \usetheme[numbering=fraction]{metropolis}
+}{%
+  \usetheme{default}
+}
+
+% Beamer settings
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[circle]
+
+
+% -------------------------------------------------------------------
+% Packages
+% -------------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathbbol}
+\usepackage{booktabs}
+\usepackage{array,tabularx}
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes.geometric}
+
+% Compact, consistent list environments
+\newenvironment{slideitems}{%
+  \begin{itemize}\setlength{\itemsep}{0.55em}\setlength{\parskip}{0pt}%
+}{\end{itemize}}
+\newenvironment{subslideitems}{%
+  \begin{itemize}\setlength{\itemsep}{0.35em}\setlength{\parskip}{0pt}%
+}{\end{itemize}}
+\newenvironment{slidenums}{%
+  \begin{enumerate}\setlength{\itemsep}{0.55em}\setlength{\parskip}{0pt}%
+}{\end{enumerate}}
+
+% Simple quantum notation without relying on braket package syntax
+\newcommand{\ket}[1]{\lvert #1\rangle}
+\newcommand{\bra}[1]{\langle #1\rvert}
+\newcommand{\inner}[2]{\langle #1\mid #2\rangle}
+\newcommand{\C}{\mathbb{C}}
+
+% Consistent part/section slide
+\newcommand{\partslide}[2]{%
+  \begin{frame}[plain]
+    \centering
+    \vfill
+    {\Large\bfseries #1}\par\vspace{2mm}
+%    {\color{Accent}\Large\bfseries #1}\par\vspace{2mm}
+    {\Large\bfseries #2}
+    \vfill
+  \end{frame}
+}
+
+% -------------------------------------------------------------------
+% Document information
+% -------------------------------------------------------------------
+\title{The Big Beautiful Quantum Box (BBQB):\\CSM, Quantum Logic, and Some Related Snippets}
+\author{Karl Svozil\\ITP, TU Wien, Vienna, Austria}
+\date{QIP26, V\"axj\"o, Sweden\\2026-06-11}
+
+\begin{document}
+
+% -------------------------------------------------------------------
+% Title page
+% -------------------------------------------------------------------
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% ===================================================================
+% PART 1 — CSM Framework vs. Quantum Logic
+% ===================================================================
+%\section{CSM Framework vs. Quantum Logic}
+\partslide{Part I}{CSM Framework vs. Quantum Logic}
+
+% --- SLIDE 1.1 ---
+\begin{frame}{CSM vs. Quantum Logic}
+\footnotesize
+\renewcommand{\arraystretch}{1.23}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.22\textwidth}XX}
+%\toprule
+ & \textbf{Quantum Logic}\newline\normalfont Birkhoff--von Neumann
+ & \textbf{CSM}\newline\normalfont Contexts--Systems--Modalities \\
+\midrule
+Primitive notion
+  & Propositions: yes/no tests, orthogonal projection operators
+  & Modalities: certain, repeatable phenomena \\
+Structure
+  & Orthomodular lattice of projectors
+  & Contexts: complete sets of $N$ mutually exclusive modalities \\
+Role of context
+  & Boolean subalgebras or blocks
+  & Explicit and primary; a modality exists \emph{within} a context \\
+Ontology
+  & Properties of the system
+  & Properties of system and context jointly \\
+Probabilities
+  & Via Gleason
+  & Via Gleason/Uhlhorn \\
+Goal
+  & Algebraic logic of qm
+  & Derive Hilbert space from desiterata \\
+Common elements
+  & Gleason's ``intertwining'' of observables across bases
+  & Extravalence: one modality appearing in many contexts  \\
+\bottomrule
+\end{tabularx}
+
+\end{frame}
+
+
+% --- SLIDE 1.3 ---
+\begin{frame}{Desiderata}
+\begin{slideitems}
+  \item In any context there are exactly $N$
+        mutually exclusive modalities ($N$ fixed by the system).
+  \item  The certainty of a modality can
+        carry over between contexts (extravalence)---but in general
+        only \emph{probabilistically}, since $N$ cannot increase.
+  \item Contexts and modalities change
+        continuously (connected groups of context transformations).
+\end{slideitems}
+
+
+
+\vspace{1mm}
+\normalsize
+\textit{Hilbert space is a formalism compatible with desiderata.}
+\end{frame}
+
+% ===================================================================
+% PART 2 — Matrix Pencils, Peres–Mermin, GHZ
+% ===================================================================
+%\section{Matrix Pencils, Peres--Mermin Square, and GHZ Arguments}
+\partslide{Part II}{Matrix Pencils, Peres--Mermin Square, and GHZ Arguments}
+
+% --- SLIDE 2.1 ---
+\begin{frame}{Matrix Pencils: Motivation}
+\begin{slideitems}
+  \item Operator-valued arguments can hide the underlying measurement contexts:
+        orthonormal bases or projection operators.
+  \item Non-degenerate operators reveal their eigensystems directly.
+  \item Degenerate commuting operators require a systematic way to extract the
+        common maximal-resolution context.
+\end{slideitems}
+
+\vspace{4mm}
+\centering
+\textit{Aim: expose the context behind a commuting family of observables.}
+\end{frame}
+
+% --- SLIDE 2.2 ---
+\begin{frame}{Matrix Pencils: Construction}
+Let $A_1,\dots,A_l$ be mutually commuting degenerate operators.  Form
+\[
+  P=\sum_{i=1}^{l} a_i A_i,
+\]
+where the $a_i$ are generic real scalars.
+
+\vspace{2mm}
+\begin{slideitems}
+  \item $P$ commutes with every $A_i$.
+  \item For generic coefficients, $P$ removes accidental degeneracies.
+  \item Diagonalizing $P$ gives the simultaneous eigensystem shared by the
+        commuting observables.
+\end{slideitems}
+\end{frame}
+
+% --- SLIDE 2.3 ---
+\begin{frame}{Peres--Mermin Square}
+\begin{slideitems}
+  \item The Peres--Mermin square contains nine dichotomic Pauli observables in a
+        $3\times3$ grid.
+  \item Each row and each column is a commuting set, giving six measurement
+        contexts.
+  \item Applying matrix pencils to these commuting sets reveals their common
+        quantum-logical structure.
+\end{slideitems}
+
+\vspace{4mm}
+\centering
+\textit{The square is a compact operator form of contextuality; the pencil
+extracts the underlying contexts.}
+\centering
+\href{https://doi.org/10.1103/PhysRevA.110.012215}{doi: 10.1103/PhysRevA.110.012215}
+\end{frame}
+
+% --- SLIDE 2.4 ---
+\begin{frame}{From PM Square to KS Configurations}
+\begin{slideitems}
+  \item The extracted eigensystems yield a \textbf{24--24 configuration}:
+        24 propositions arranged into 24 contexts.
+  \item This completes the well-known \textbf{18--9 configuration} of Cabello,
+        Estebaranz, and Garc\'{i}a-Alcaine.
+  \item No classical two-valued truth assignment exists.
+\end{slideitems}
+
+\vspace{4mm}
+\centering
+\Large
+\textbf{Conclusion: strong quantum contextuality.}
+\end{frame}
+
+% --- SLIDE 2.5 ---
+\begin{frame}{Tripartite GHZM Argument}
+\begin{slideitems}
+  \item Mermin's GHZM version uses four commuting three-partite operators.
+  \item A matrix pencil reveals one context of eight (entangled) states.
+\href{https://doi.org/10.1007/s10701-021-00515-z}{doi: 10.1007/s10701-021-00515-z} \\
+  \item A parity argument gives a state-dependent contradiction.
+\end{slideitems}
+
+\centering
+\Large
+\textbf{Quantum prediction: $-1$}\\[1mm]
+\textbf{Classical prediction: $+1$}
+\end{frame}
+
+% --- SLIDE 2.6 ---
+\begin{frame}{Bipartite GHZM from the PM Square}
+\begin{slideitems}
+  \item A complete GHZ-type contradiction can be obtained with two particles.
+  \item Use non-local observables from the last row and column of the
+        Peres--Mermin square.
+  \item Representative products include
+        \[
+          (\sigma_z\!\otimes\!\sigma_x)(\sigma_x\!\otimes\!\sigma_z),
+          \qquad
+          (\sigma_x\!\otimes\!\sigma_x)(\sigma_z\!\otimes\!\sigma_z).
+        \]
+  \item The associated matrix pencil yields the Bell basis as a single
+        four-dimensional context.
+\end{slideitems}
+\centering
+\href{https://doi.org/10.1103/PhysRevA.110.012215}{doi: 10.1103/PhysRevA.110.012215}
+\end{frame}
+
+% --- SLIDE 2.7 ---
+\begin{frame}{Bipartite GHZM: Parity Contradiction}
+\begin{slideitems}
+  \item Classical ``elements of reality'' occur an even number of times.
+  \item Therefore any classical product assignment predicts $+1$.
+  \item Quantum mechanically, the product equals
+$
+\langle
+\mathbb{1}_2 \otimes (-\mathbb{1}_2)
+\rangle  =
+-\langle
+\mathbb{1}_4
+ \rangle =
+-1
+ $.
+\end{slideitems}
+
+\vspace{5mm}
+\centering
+\Large
+\textbf{Classical: $+1$}\qquad\textbf{Quantum: $-1$}
+\end{frame}
+
+% ===================================================================
+% PART 3 — Geometric Mechanism of Decoherence
+% ===================================================================
+%\section{Geometric Mechanism of Decoherence}
+\partslide{Part III}{The Geometric Mechanism of Decoherence}
+
+% --- SLIDE 3.1 ---
+\begin{frame}{Geometry Behind Decoherence}
+\begin{slideitems}
+  \item Decoherence requires dynamics to correlate system and environment.
+  \item Its effectiveness is also kinematically supported by high-dimensional
+        geometry.
+  \item In a high-dimensional Hilbert space, almost all random pure states are
+        nearly orthogonal.
+\end{slideitems}
+
+\vspace{4mm}
+\centering
+\href{https://doi.org/10.48550/arXiv.2605.03807}{doi:10.48550/arXiv.2605.03807}
+\end{frame}
+
+% --- SLIDE 3.2 ---
+\begin{frame}{Typical Overlap in Dimension $d$}
+Let $\ket{\psi}=(\psi_1,\dots,\psi_d)$ be a random unit vector, and let $\mathbb{E}$ denote the mathematical expectation and $\mathbb{P}$ denote probability:
+\[
+  \sum_{i=1}^{d}|\psi_i|^2=1.
+\]
+
+\begin{slideitems}
+  \item By symmetry,
+        $\mathbb{E}|\psi_1|^2=\cdots=\mathbb{E}|\psi_d|^2$.
+  \item Hence
+        \[
+          d\,\mathbb{E}|\psi_1|^2=1,
+          \qquad
+          \mathbb{E}|\psi_1|^2=\frac{1}{d}.
+        \]
+  \item Aligning a fixed state $\ket{\phi}$ with the first vector of the Cartesian standard basis $\ket{e_1}$ gives
+        \[
+          \mathbb{E}\,\bigl|\inner{\phi}{\psi}\bigr|^2=\frac{1}{d}.
+        \]
+\end{slideitems}
+\end{frame}
+
+% --- SLIDE 3.3 ---
+\begin{frame}{Exponential Tail}
+L\'evy's lemma, Johnson--Lindenstrauss lemma:
+For a fixed $\ket{\phi}$ and random $\ket{\psi}\in\C^d$,
+\[
+  \mathbb{P}\!\left\{\bigl|\inner{\phi}{\psi}\bigr|^2\ge\varepsilon\right\}
+  =(1-\varepsilon)^{d-1}
+  \le e^{-(d-1)\varepsilon}.
+\]
+
+\vspace{3mm}
+\begin{slideitems}
+  \item Large dimension makes sizeable overlaps exponentially rare.
+  \item This is the geometric reservoir behind quasi-orthogonality.
+\end{slideitems}
+\end{frame}
+
+
+
+% --- SLIDE 3.5 ---
+\begin{frame}{Division of Labor}
+\begin{slideitems}
+  \item Geometry supplies a vast quasi-orthogonal reservoir.
+  \item The Hamiltonian selects and populates the pointer basis.
+  \item Overlap amplitudes scale exponentially, so macroscopic alternatives
+        remain distinct for all practical purposes.
+\end{slideitems}
+
+\vspace{5mm}
+\centering
+\Large
+\textit{No Schr\"odinger ``quantum jelly'': high-dimensional Hilbert space separates orthogonal states FAPP.}
+\end{frame}
+
+
+\begin{frame}
+
+
+\vspace{5mm}
+\centering
+\Large
+\textit{Thank you for your attention!}
+\end{frame}
+\end{document}
+
+
+\documentclass[aspectratio=169,11pt]{beamer}
+
+\usepackage{mathbbol}
+
+
+% -------------------------------------------------------------------
+% Clean, consistent, white-background beamer style
+% -------------------------------------------------------------------
+%\usetheme{default}
+\usetheme[numbering=fraction]{metropolis}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+
+\definecolor{Accent}{RGB}{0,72,128}
+\definecolor{AccentDark}{RGB}{0,45,80}
+\definecolor{Alert}{RGB}{165,40,35}
+
+\setbeamercolor{background canvas}{bg=white}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=Accent}
+\setbeamercolor{title}{fg=AccentDark,bg=white}
+\setbeamercolor{subtitle}{fg=Accent,bg=white}
+\setbeamercolor{author}{fg=black,bg=white}
+\setbeamercolor{date}{fg=black,bg=white}
+\setbeamercolor{frametitle}{fg=white,bg=AccentDark}
+\setbeamercolor{alerted text}{fg=Alert}
+\setbeamercolor{block title}{fg=white,bg=Accent}
+\setbeamercolor{block body}{fg=black,bg=white}
+\hypersetup{colorlinks=true,linkcolor=Accent,urlcolor=Accent}
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamerfont{footline}{size=\scriptsize}
+
+\setbeamertemplate{frametitle}{%
+  \vspace{1.5mm}%
+  \insertframetitle\par%
+  \vspace{0.5mm}%
+  {\color{Accent}\rule{\textwidth}{0.45pt}}%
+  \vspace{-1mm}%
+}
+
+\setbeamertemplate{itemize item}{\color{Accent}$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\color{Accent}$\circ$}
+\setbeamertemplate{enumerate item}{\color{Accent}\insertenumlabel.}
+\setbeamertemplate{footline}{%
+  \hfill\usebeamerfont{footline}\insertframenumber/\inserttotalframenumber\hspace{3mm}\vspace{2mm}%
+}
