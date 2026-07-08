@@ -1,0 +1,1214 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\geometry{margin=1in}
+
+% Macros for notation
+\newcommand{\betw}[3]{#1 - #2 - #3}
+\newcommand{\ortho}[3]{#1 \perp_{#2} #3}
+\newcommand{\lineab}[1]{\overline{#1}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom}{Axiom}
+
+\title{Addendum to the Lecture Notes \textit{Mathematics for Physics/Nawitec}\footnote{Nawitec (\textit{Naturwissenschaft und Technik}) is a programmatic abbreviation for natural sciences and technology.}\\
+\vspace{0.5cm}
+\textbf{Axiomatization of Euclidean Spaces of Finite Dimension $\ge 3$}}
+\author{Thomas Vetterlein\\
+\small Institute for Mathematical Methods in Medicine and Data Based Modeling,\\
+\small Johannes Kepler University Linz\\
+\small Altenberger Stra{\ss}e 69, 4040 Linz, Austria\\
+\small \texttt{Thomas.Vetterlein@jku.at}}
+\date{April 22, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent We characterize the Euclidean space of finite dimension $\ge 3$ based on a ternary betweenness relation and a ternary orthogonality relation.
+\end{abstract}
+
+\section{Introduction}
+
+The commonly used model of space is $\mathbb{R}^3$: by means of a suitably chosen coordinate system, we describe the points in space as triples of real numbers. The distance between two points $(x_1, y_1, z_1), (x_2, y_2, z_2) \in \mathbb{R}^3$ is then determined using Pythagoras' theorem; we set
+\[ d((x_1, y_1, z_1), (x_2, y_2, z_2)) = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2 + (z_1 - z_2)^2}. \]
+The fundamental spatial model is thus the three-dimensional Euclidean space. But why is this the case? Why does this particular structure fit so well? This question cannot be truly answered in this form, of course. However, as always in mathematics, we can ponder whether the Euclidean space can be derived from elementary, immediately intuitive postulates.
+
+Research on this problem reaches far back into the past; we are dealing with a truly classical topic in mathematics. Hilbert's work, the \textit{Foundations of Geometry} [Hil], has had a lasting influence extending into the present. We lack a complete overview of the numerous modifications, alternative approaches, and countless ideas on the subject. Those who wish to read more are referred to the comprehensive survey by Victor Pambuccian [Pam].
+
+In this essay, we present a possible approach to axiomatically founding the Euclidean space in an elementary way. We have reviewed a portion of the available material and compiled it in a manner that appeals to us. The language upon which our theory is built uses exclusively two ternary relations as primitive notions: the \textit{betweenness} and the \textit{orthogonality} relation. With the former, we express that a point is located on the line segment between two other points; with the latter, we express that the lines from a certain point to two other points form a right angle. Assuming a minimum dimension of 3, the affine structure of $\mathbb{R}^n$ can be derived from the betweenness relation using suitable axioms. Together with the orthogonality relation, the Euclidean space, in which distances and angles can be measured, can then be constructed.
+
+\section{Preparations}
+
+Basic knowledge of linear algebra is necessary for understanding the present text. Additional requirements are compiled in this preparatory section.
+
+\subsection{Ordered Skew Fields}
+
+The path to deriving the standard structure leads through more general ones. $\mathbb{R}$ is a field; we also encounter non-commutative generalizations of this type of algebra, defined as follows.
+
+\begin{definition} \label{def:skew_field}
+A \textbf{skew field} (or division ring) is an algebra $(F; +, 0, \cdot, 1)$ for which the following holds:
+\begin{itemize}
+    \item[(SK1)] $(F; +, 0)$ is an abelian group;
+    \item[(SK2)] $(F \setminus \{0\}; \cdot, 1)$ is a group;
+    \item[(SK3)] for all $\alpha, \beta, \gamma \in F$, it holds that
+    \begin{align*}
+        \gamma \cdot (\alpha + \beta) &= \gamma \cdot \alpha + \gamma \cdot \beta, \\
+        (\alpha + \beta) \cdot \gamma &= \alpha \cdot \gamma + \beta \cdot \gamma;
+    \end{align*}
+    \item[(SK4)] $0 \neq 1$.
+\end{itemize}
+We call the skew field $F$ a \textbf{field} if the multiplication $\cdot$ is commutative, i.e., if $(F \setminus \{0\}; \cdot, 1)$ is also an abelian group.
+\end{definition}
+
+We note that linear spaces can be defined over arbitrary skew fields in exactly the same way we define linear spaces over fields like $\mathbb{R}$ or $\mathbb{C}$.
+
+\begin{definition} \label{def:ordered_skew_field}
+An \textbf{ordered skew field} is a skew field $F$ together with a linear order $\le$ on $F$ such that for all $\alpha, \beta, \gamma \in F$, the following holds:
+\begin{itemize}
+    \item[(GSK1)] From $\alpha \le \beta$ it follows that $\alpha + \gamma \le \beta + \gamma$.
+    \item[(GSK2)] From $\alpha, \beta \ge 0$ it follows that $\alpha \beta \ge 0$.
+\end{itemize}
+In this case, $F$ is called \textbf{Archimedean ordered} if for every $\alpha \in F$ there is a natural number $n$ such that $\alpha < n \cdot 1_F$. Furthermore, $F$ is called \textbf{Dedekind-complete} if every non-empty subset of $F$ that is bounded above has a supremum.
+\end{definition}
+
+Note for the following that every ordered skew field has characteristic zero and thus contains an isomorphic copy of the subfield $\mathbb{Q}$.
+
+\begin{lemma} \label{lem:ordered_skew_field_props}
+Let $F$ be an ordered skew field.
+\begin{itemize}
+    \item[(i)] For every $\alpha \in F$, $\alpha \ge 0$ or $-\alpha \ge 0$.
+    \item[(ii)] From $\alpha \le \beta$ and $\gamma \ge 0$, it follows that $\gamma \alpha \le \gamma \beta$ and $\alpha \gamma \le \beta \gamma$.
+    \item[(iii)] From $\alpha \le \beta$, it follows that $\gamma \alpha \gamma \le \gamma \beta \gamma$.
+    \item[(iv)] From $0 < \alpha \le \beta$, it follows that $\beta^{-1} \le \alpha^{-1}$.
+    \item[(v)] $\mathbb{Q}$ (embedded in $F$) is ordered exactly as the rational numbers are.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): If $\alpha \ge 0$ does not hold, then $\alpha \le 0$ and thus $0 = \alpha - \alpha \le -\alpha$. \\
+Ad (ii): Let $\alpha \le \beta$ and $\gamma \ge 0$. Then $\beta - \alpha \ge 0$ and consequently $\gamma \beta - \gamma \alpha = \gamma(\beta - \alpha) \ge 0$, so $\gamma \alpha \le \gamma \beta$. This shows the first part; the second follows similarly. \\
+Ad (iii): By (i), either $\gamma \ge 0$ or $-\gamma \ge 0$. Thus, the claim follows from (ii) applied to $\gamma$ or $-\gamma$. \\
+Ad (iv): Let $0 < \alpha \le \beta$. Then $0 < ((\beta - \alpha)^{-1} + \alpha^{-1})^{-1} = (\alpha(\beta - \alpha)^{-1} + 1)^{-1} \alpha = (\beta - \alpha)(\alpha + \beta - \alpha)^{-1} \alpha = \alpha - \alpha \beta^{-1} \alpha$, and thus $\alpha \beta^{-1} \alpha \le \alpha$. With (iii) it follows that $\beta^{-1} < \alpha^{-1} \alpha \alpha^{-1} = \alpha^{-1}$. \\
+Ad (v): By (i), $1 \ge 0$ or $-1 \ge 0$, and thus $1 = 1 \cdot 1 = (-1) \cdot (-1) \ge 0$. It follows that $n \cdot 1_F \ge 0$ for all $n \in \mathbb{N}$. By (iv), $\frac{1}{n} \ge 0$ for all $n \in \mathbb{N} \setminus \{0\}$. Thus, $r \ge 0$ for all positive rational numbers $r$.
+\end{proof}
+
+\begin{lemma} \label{lem:archimedean_skew_field}
+Let $F$ be an Archimedean ordered skew field.
+\begin{itemize}
+    \item[(i)] If $0 \le \alpha \le \frac{1}{n}$ for all $n \ge 1$, then $\alpha = 0$.
+    \item[(ii)] If $\alpha < \beta$, there exists an $r \in \mathbb{Q}$ with $\alpha < r < \beta$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): Let $\alpha \neq 0$. Then there is an $n \in \mathbb{N}$ with $\alpha^{-1} < n$. By Lemma \ref{lem:ordered_skew_field_props}(iv), it follows that $\alpha > \frac{1}{n}$. \\
+Ad (ii): Let $\alpha < \beta$. Then $\beta - \alpha > 0$. By (i) there is an integer $n \ge 1$ such that $n(\beta - \alpha) > 1$. Let $m$ be the smallest integer such that $m > n\alpha$. Then $m - 1 \le n\alpha$, meaning $m \le n\alpha + 1 < n\beta$. Dividing by $n$ yields $\alpha < \frac{m}{n} < \beta$.
+\end{proof}
+
+\begin{lemma} \label{lem:complete_archimedean}
+Let $F$ be a Dedekind-complete ordered skew field.
+\begin{itemize}
+    \item[(i)] $F$ is Archimedean ordered.
+    \item[(ii)] For every $\alpha \in F$, $\alpha = \sup \{r \in \mathbb{Q} : r < \alpha\}$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): Suppose $\mathbb{N} \cdot 1_F$ is bounded above in $F$. Let $p = \sup \{n \cdot 1_F \mid n \in \mathbb{N}\}$. Then $0, 1, 2, \dots \le p$ and consequently $1, 2, \dots \le p - 1$, i.e., $p$ is not the least upper bound. We conclude that $\mathbb{N} \cdot 1_F$ is not bounded above. \\
+Ad (ii): By assumption, $\beta = \sup \{r \in \mathbb{Q} : r < \alpha\}$ exists, and $\beta < \alpha$ would contradict Lemma \ref{lem:archimedean_skew_field}(ii).
+\end{proof}
+
+\begin{theorem} \label{thm:complete_skew_field_is_reals}
+Every Dedekind-complete ordered skew field is isomorphic to $\mathbb{R}$ as an ordered field.
+\end{theorem}
+
+\begin{proof}
+Let $F$ be a completely ordered skew field. Define
+\[ h: \mathbb{R} \to F, \quad \alpha \mapsto \sup \{r \in \mathbb{Q} : r < \alpha\}. \]
+(Note that the supremum is evaluated in $F$.) By Lemma \ref{lem:complete_archimedean}(ii), $h(r) = r$ for all $r \in \mathbb{Q}$.
+It is obvious that $h$ preserves order. Let $\alpha, \beta \in \mathbb{R}$; we claim that $\alpha < \beta$ is equivalent to $h(\alpha) < h(\beta)$. If $\alpha < \beta$, we choose an $r \in \mathbb{Q}$ with $\alpha < r < \beta$. Then $h(\alpha) \le r < h(\beta)$, where the strict inequality holds because there is a $t \in \mathbb{Q}$ with $r < t < \beta$. Conversely, if $h(\alpha) < h(\beta)$, by Lemma \ref{lem:complete_archimedean}(ii) there exists an $r \in \mathbb{Q}$ such that $h(\alpha) < r < h(\beta)$, which implies $\alpha < \beta$.
+
+Let $\beta \in F$. By Lemma \ref{lem:complete_archimedean}(ii), $\beta = \sup \{r \in \mathbb{Q} : r < \beta\}$. The set $\{r \in \mathbb{Q} : r < \beta\} \subseteq \mathbb{R}$ is bounded and thus has a supremum $\alpha$ in $\mathbb{R}$. Consequently, $h(\alpha) = \beta$. Hence $h$ is surjective. We have thus shown that $h$ is bijective and for $\alpha, \beta \in \mathbb{R}$, $\alpha \le \beta$ if and only if $h(\alpha) \le h(\beta)$.
+
+Let $\alpha, \beta \in \mathbb{R}$ again. Then
+\begin{align*}
+    h(\alpha) + h(\beta) &= \sup \{r \in \mathbb{Q} : r < \alpha\} + \sup \{r \in \mathbb{Q} : r < \beta\} \\
+    &= \sup \{r + s : r, s \in \mathbb{Q}, r < \alpha, s < \beta\} \\
+    &= \sup \{t \in \mathbb{Q} : t < \alpha + \beta\} = h(\alpha + \beta),
+\end{align*}
+where the penultimate equality is justified by the fact that for every $t \in \mathbb{Q}$ with $t < \alpha + \beta$, two numbers $r, s \in \mathbb{Q}$ can be found such that $t \le r + s < \alpha + \beta$ and $r < \alpha$, $s < \beta$.
+By arguing similarly, for $\alpha, \beta \in \mathbb{R}$ with $\alpha, \beta > 0$, we also have $h(\alpha\beta) = h(\alpha)h(\beta)$. Finally, $h(\alpha) + h(-\alpha) = h(\alpha + (-\alpha)) = h(0) = 0$ for all $\alpha \in \mathbb{R}$, meaning $h(-\alpha) = -h(\alpha)$. It follows that $h(\alpha\beta) = h(\alpha)h(\beta)$ holds for all $\alpha, \beta \in \mathbb{R}$.
+\end{proof}
+
+\begin{lemma} \label{lem:unique_order_R}
+The field $\mathbb{R}$ of real numbers can be ordered in exactly one way.
+\end{lemma}
+
+\begin{proof}
+Let $\preceq$ be a linear order on $\mathbb{R}$ that makes $\mathbb{R}$ an ordered field. For $\alpha, \beta \in \mathbb{R}$, by (GSK1), $\alpha \preceq \beta$ if and only if $\beta - \alpha \succeq 0$. On the other hand, for every $\gamma \in \mathbb{R}$, there is a $\delta \in \mathbb{R}$ such that either $\gamma = \delta^2$ or $\gamma = -\delta^2$. In the first case, by (GSK2), $\gamma \succeq 0$; in the latter, $\gamma \preceq 0$. Consequently, $\gamma \succeq 0$ exactly when there is a $\delta$ with $\gamma = \delta^2$.
+We conclude: $\alpha \preceq \beta$ holds exactly when there is a $\delta$ with $\beta - \alpha = \delta^2$. This means that $\preceq$ is equal to $\le$, the usual order on $\mathbb{R}$.
+\end{proof}
+
+\subsection{Projective Geometry}
+
+Projective geometry deals with the internal structure of the subspaces, specifically the 1-dimensional subspaces of linear spaces. Let $a_1, \dots, a_k$ be vectors of a linear space; we denote their linear hull by $\langle a_1, \dots, a_k \rangle$.
+
+\begin{definition} \label{def:projective_space}
+Let $V$ be a linear space. Let
+\[ P(V) = \{ \langle a \rangle : a \in V \setminus \{0\} \}, \]
+i.e., the set of 1-dimensional subspaces of $V$. For $\langle a \rangle, \langle b \rangle \in P(V)$, we define
+\[ \langle a \rangle \star \langle b \rangle = \{ \langle x \rangle : x \in \langle a, b \rangle \} = P(\langle a \rangle + \langle b \rangle). \]
+Then we call $P(V)$, equipped with the operation $\star: P(V) \times P(V) \to \mathcal{P}(P(V))$, the \textbf{projective space} associated with $V$.
+
+Let $W$ be another linear space. A bijective mapping $\kappa: P(V) \to P(W)$ is called a \textbf{homomorphism} (of projective spaces) if for all $a, b \in V \setminus \{0\}$,
+\begin{equation} \label{eq:proj_homo}
+    \kappa(\langle a \rangle \star \langle b \rangle) = \kappa(\langle a \rangle) \star \kappa(\langle b \rangle)
+\end{equation}
+holds (where applying $\kappa$ to a set means taking the image of that set).
+\end{definition}
+
+We cite the fundamental theorem of projective geometry.
+
+\begin{theorem} \label{thm:fundamental_projective}
+Let $V$ and $W$ be real linear spaces of finite dimension $n \ge 3$, and let $\kappa: P(V) \to P(W)$ be a homomorphism. Then there is a linear isomorphism $k: V \to W$ such that
+\[ \kappa(\langle a \rangle) = \langle k(a) \rangle. \]
+\end{theorem}
+\begin{proof}
+See [Fau].
+\end{proof}
+
+In the following, we need this definition. Let $V$ be a finite-dimensional linear space and $V^*$ the dual space of $V$. For a subspace $U$ of $V$, we set
+\[ U^0 = \{ \lambda \in V^* : \lambda(a) = 0 \text{ for all } a \in U \}, \]
+and for a subspace $\Lambda$ of $V^*$:
+\[ \Lambda^0 = \{ a \in V : \lambda(a) = 0 \text{ for all } \lambda \in \Lambda \}. \]
+
+\begin{lemma} \label{lem:annihilator}
+Let $V$ be a linear space of finite dimension $n$.
+\begin{itemize}
+    \item[(i)] If $U$ is a $k$-dimensional subspace of $V$, then $U^0$ is an $(n-k)$-dimensional subspace of $V^*$. If $\Lambda$ is a $k$-dimensional subspace of $V^*$, then $\Lambda^0$ is an $(n-k)$-dimensional subspace of $V$.
+    \item[(ii)] For every subspace $U$ of $V$, $(U^0)^0 = U$. For every subspace $\Lambda$ of $V^*$, $(\Lambda^0)^0 = \Lambda$.
+    \item[(iii)] For subspaces $U_1, U_2$ of $V$, $U_1^0 + U_2^0 = (U_1 \cap U_2)^0$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+We prove the first part of each claim; the second follows similarly. \\
+Ad (i): Let $\{e_1, \dots, e_k\}$ be a basis of $U$ and $\{e_1, \dots, e_k, e_{k+1}, \dots, e_n\}$ be a basis of $V$. Let $\{\varepsilon_1, \dots, \varepsilon_n\}$ be the corresponding dual basis of $V^*$. Then evidently $U^0 = \langle \varepsilon_{k+1}, \dots, \varepsilon_n \rangle$, thus an $(n-k)$-dimensional subspace of $V^*$. \\
+Ad (ii): We adopt the notation from the proof of (i). From $U^0 = \langle \varepsilon_{k+1}, \dots, \varepsilon_n \rangle$, it follows that $(U^0)^0 = \langle e_1, \dots, e_k \rangle = U$. \\
+Ad (iii): From $U_1^0, U_2^0 \subseteq U_1^0 + U_2^0$, it follows that $(U_1^0 + U_2^0)^0 \subseteq (U_1^0)^0, (U_2^0)^0$, which by (ii) means $(U_1^0 + U_2^0)^0 \subseteq U_1 \cap U_2$, which in turn implies $(U_1 \cap U_2)^0 \subseteq U_1^0 + U_2^0$. Conversely, $U_1^0, U_2^0 \subseteq (U_1 \cap U_2)^0$ and thus $U_1^0 + U_2^0 \subseteq (U_1 \cap U_2)^0$. The claim follows.
+\end{proof}
+
+\subsection{Orthogonality in Linear Spaces}
+
+A Euclidean linear space is a finite-dimensional linear space over $\mathbb{R}$ together with a symmetric, positive definite bilinear form. The following theorem states that the bilinear form in this case can be constructed purely from the orthogonality relation.
+
+\begin{theorem} \label{thm:ortho_to_inner_product}
+Let $V$ be a real linear space of finite dimension $n \ge 3$, and let $\perp$ be a binary relation on $V$ with the following properties:
+\begin{itemize}
+    \item[(S1)] From $a \perp b$, it follows that $b \perp a$.
+    \item[(S2)] From $c \perp a$ and $c \perp b$, it follows that $c \perp \alpha a + \beta b$ for all $\alpha, \beta \in \mathbb{R}$.
+    \item[(S3)] $a \perp a$ holds if and only if $a = 0$.
+    \item[(S4)] For every two-dimensional subspace $U$ and every non-zero vector $a \in U \setminus \{0\}$, there is a non-zero $b \in U \setminus \{0\}$ with $b \perp a$.
+\end{itemize}
+Then there exists a symmetric, positive definite bilinear form $(\cdot, \cdot)$ on $V$ such that $a \perp b$ is equivalent to $(a, b) = 0$.
+\end{theorem}
+
+\begin{proof}
+(See [Cam]). We proceed step by step. \\
+(a) Let $a_1, \dots, a_k \in V \setminus \{0\}$ be pairwise orthogonal and $b \notin \langle a_1, \dots, a_k \rangle$. Then there is a $c \perp a_1, \dots, a_k$ with $\langle a_1, \dots, a_k, c \rangle = \langle a_1, \dots, a_k, b \rangle$. \\
+Proof of (a): We argue by induction on $k$. For $k = 0$, the statement is trivial. Suppose $k \ge 1$ and the statement holds for $k-1$. Let $a_1, \dots, a_k, b$ be as stated. By assumption, there is a $b' \perp a_1, \dots, a_{k-1}$ with $\langle a_1, \dots, a_{k-1}, b \rangle = \langle a_1, \dots, a_{k-1}, b' \rangle$. Then $a_k$ and $b'$ are linearly independent, and according to (S4) there is a non-zero $c \in \langle a_k, b' \rangle$ with $c \perp a_k$. Thus $\langle a_k, b' \rangle = \langle a_k, c \rangle$, and we conclude $c \perp a_1, \dots, a_k$ and $\langle a_1, \dots, a_k, c \rangle = \langle a_1, \dots, a_k, b \rangle$. \\
+(b) Every subspace $U$ of $V$ has an orthogonal basis. Any such basis can be extended to an orthogonal basis of $V$. \\
+Proof of (b): This follows from (a) by induction on the dimension of $U$ or $V$. \\
+(c) For every subspace $U$ of $V$, $V = U \oplus U^\perp$. \\
+Proof of (c): According to (b), let $\{e_1, \dots, e_k\}$ be an orthogonal basis of $U$ and $\{e_1, \dots, e_k, e_{k+1}, \dots, e_n\}$ be one for $V$. Clearly $U^\perp = \langle e_{k+1}, \dots, e_n \rangle$, and the claim follows. \\
+(d) For every subspace $U$ of $V$, $U^{\perp\perp} = U$. \\
+Proof of (d): Clearly $U \subseteq U^{\perp\perp}$. Let $x \in U^{\perp\perp}$. Because of (c), $x = a + b$ for an $a \in U$ and $b \in U^\perp$. From $x, a \perp U^\perp$ it follows by (S2) that $b \perp U^\perp$, thus by (S3) $b = 0$, i.e., $x \in U$. Therefore, $U^{\perp\perp} \subseteq U$ holds as well. \\
+(e) For subspaces $U_1, U_2$ of $V$, $U_1 \subseteq U_2$ holds if and only if $U_2^\perp \subseteq U_1^\perp$. \\
+Proof of (e): From $U_1 \subseteq U_2$ it follows that $U_2^\perp \subseteq U_1^\perp$. From the latter, it similarly follows that $U_2^{\perp\perp} \subseteq U_1^{\perp\perp}$, which by (d) is equivalent to $U_1 \subseteq U_2$. \\
+(f) The map
+\[ \kappa: P(V) \to P(V^*), \quad \langle a \rangle \mapsto (\{a\}^\perp)^0 \]
+is a homomorphism of projective spaces. \\
+Proof of (f): Because of (c), $\{a\}^\perp$ has dimension $n - 1$. By Lemma \ref{lem:annihilator}(i), $(\{a\}^\perp)^0$ is therefore a 1-dimensional subspace of $V^*$ for every $a \in V \setminus \{0\}$. This confirms that we can define $\kappa$ as given. \\
+Let $\lambda \in V^* \setminus \{0\}$. Then $U = \{\lambda\}^0$ is a subspace of dimension $n-1$ according to Lemma \ref{lem:annihilator}(i). By (b), there is an $a \in V$ with $U = \{a\}^\perp$. With Lemma \ref{lem:annihilator}(ii), $\kappa(a) = U^0 = (\langle\lambda\rangle^0)^0 = \langle \lambda \rangle$. Thus $\kappa$ is surjective. \\
+Let $a, b \in V \setminus \{0\}$ with $\kappa(a) = \kappa(b)$. Then $(\{a\}^\perp)^0 = (\{b\}^\perp)^0$ and thus $\{a\}^\perp = ((\{a\}^\perp)^0)^0 = ((\{b\}^\perp)^0)^0 = \{b\}^\perp$. From this, using (d), it follows that $\langle a \rangle = \langle a \rangle^{\perp\perp} = \langle b \rangle^{\perp\perp} = \langle b \rangle$. This shows that $\kappa$ is also injective. \\
+It remains to prove Equation (\ref{eq:proj_homo}). Let $a, b \in V \setminus \{0\}$. With Lemma \ref{lem:annihilator}(iii),
+\begin{align*}
+    \kappa(\langle a \rangle) \star \kappa(\langle b \rangle) &= P((\{a\}^\perp)^0 + (\{b\}^\perp)^0) \\
+    &= P((\{a\}^\perp \cap \{b\}^\perp)^0) \\
+    &= P((\{a, b\}^\perp)^0) \\
+    &= P((\langle a, b \rangle^\perp)^0) \\
+    &= \{\langle \lambda \rangle : \langle a, b \rangle^\perp \subseteq \{\lambda\}^0 \}
+\end{align*}
+and because of (d) and (e)
+\begin{align*}
+    \kappa(\langle a \rangle \star \langle b \rangle) &= \kappa(P(\langle a, b \rangle)) \\
+    &= \{(\{c\}^\perp)^0 : c \in \langle a, b \rangle\} \\
+    &= \{\langle \lambda \rangle : (\{\lambda\}^0)^\perp \subseteq \langle a, b \rangle\} = \{\langle \lambda \rangle : \langle a, b \rangle^\perp \subseteq \{\lambda\}^0 \},
+\end{align*}
+which proves (\ref{eq:proj_homo}). \\
+Because of (f), it follows with Theorem \ref{thm:fundamental_projective} that there is a linear mapping $s: V \to V^*$ with
+\[ \kappa(\langle a \rangle) = \langle s(a) \rangle \]
+for all $a \in V$. We set for $a, b \in V$
+\[ (a, b) = s(b)(a). \]
+(g) $(\cdot, \cdot)$ is a symmetric bilinear form, and for all $a, b \in V$, $a \perp b$ is equivalent to $(a, b) = 0$. \\
+Proof of (g): Bilinearity is obvious. Furthermore, $(a, b) = 0$ if and only if $a \in \kappa(\langle b \rangle)^0$. Since $\kappa(\langle b \rangle)^0 = ((\langle b \rangle^\perp)^0)^0 = \langle b \rangle^\perp$, this is synonymous with $a \perp b$. \\
+Further, let $a, b \in V \setminus \{0\}$. Clearly, $a \perp (a, b)a - (a, a)b$, and thus by (S1) also $(a, b)a - (a, a)b \perp a$. This in turn means $(a, b)(a, a) - (a, a)(b, a) = 0$. By (S3), $a \not\perp a$, so $(a, a) \neq 0$, and it follows that $(a, b) = (b, a)$. Thus, the symmetry of $(\cdot, \cdot)$ is also shown. \\
+To complete the proof of the theorem, we only need to verify positive definiteness. The bilinear form $(\cdot, \cdot)$ is not necessarily positive definite. Note, however, that the properties listed under (g) for $(\cdot, \cdot)$ also apply to $-(\cdot, \cdot)$. Thus, the following final step implies that either $(\cdot, \cdot)$ or $-(\cdot, \cdot)$ fulfills all desired conditions. \\
+(h) Either $(\cdot, \cdot)$ or $-(\cdot, \cdot)$ is positive definite. \\
+Proof of (h): Suppose there are orthogonal non-zero vectors $a, b \in V \setminus \{0\}$ with $(a, a) > 0$ and $(b, b) < 0$. Setting $\beta = \sqrt{-\frac{(a,a)}{(b,b)}}$ yields $(a + \beta b, a + \beta b) = 0$, i.e., the non-zero vector $a + \beta b$ is orthogonal to itself, a contradiction. We conclude that if $B$ is an orthogonal basis, $(e, e)$ has the same sign for all $e \in B$. Thus $(a, a)$ always has the same sign for all $a \in V \setminus \{0\}$, and the claim follows.
+\end{proof}
+
+With reference to Theorem \ref{thm:ortho_to_inner_product}, it should be additionally noted that the bilinear form is uniquely determined up to a positive factor by the orthogonality relation.
+
+\section{Geometries with Betweenness Relation}
+
+In this section, we present an axiomatization of the affine real space $\mathbb{R}^n$. We define subspaces, lines, and independence.
+
+\subsection{The Betweenness Relation}
+
+We want to equip the set of points in space with a ternary relation: $\betw{a}{b}{c}$ shall mean that point $b$ lies on the line segment between points $a$ and $c$.
+
+\begin{definition} \label{def:betweenness_space}
+A \textbf{betweenness space} consists of a non-empty set $P$, whose elements we will call \textit{points}, and a ternary relation on $P$, the \textit{betweenness relation}. The statement that the betweenness relation holds for a point triple $(a, b, c)$ is expressed by the notation $\betw{a}{b}{c}$, and we say that $b$ lies between $a$ and $c$. Furthermore, we call three points $a, b, c \in P$ \textbf{independent} (non-collinear) if they are pairwise distinct and the betweenness relation holds for no triple formed from these points. We require the following for $a, b, c, x, y \in P$:
+\begin{itemize}
+    \item[(Z1)] From $\betw{a}{b}{c}$, it follows that $a, b, c$ are pairwise distinct.
+    \item[(Z2)] $\betw{a}{b}{c}$ is equivalent to $\betw{c}{b}{a}$.
+    \item[(Z3)] If $\betw{a}{b}{c}$ holds, then $\betw{b}{a}{c}$ does not hold.
+    \item[(Z4)] From $\betw{x}{a}{b}$ and $\betw{a}{b}{y}$, it follows that $\betw{x}{a}{y}$.
+    \item[(Z5)] From $\betw{x}{a}{b}$ and $\betw{a}{y}{b}$, it follows that $\betw{x}{a}{y}$.
+    \item[(Z6)] From $\betw{a}{x}{b}$ and $\betw{a}{y}{b}$, it follows that $\betw{a}{x}{y}$ or $\betw{a}{y}{x}$.
+    \item[(Z7)] From $\betw{x}{a}{b}$ and $\betw{y}{a}{b}$, it follows that $\betw{x}{y}{a}$ or $\betw{y}{x}{a}$.
+    \item[(Z8)] Let $a, b, c$ be independent, and let $\betw{a}{x}{c}$ and $\betw{a}{b}{y}$. Then there exists a $z$ with $\betw{b}{z}{c}$ and $\betw{x}{z}{y}$.
+    \item[(Z9)] Let $a, b, c$ be independent, and let $\betw{a}{x}{c}$ and $\betw{y}{a}{b}$. Then there exists a $z$ with $\betw{b}{z}{c}$ and $\betw{y}{x}{z}$.
+    \item[(Z10)] Let $a, b, c$ be independent, and let $\betw{a}{x}{c}$. Then there exists exactly one $y$ with $\betw{b}{y}{c}$ and the following property: From $\betw{z}{x}{y}$ or $\betw{x}{y}{z}$, it always follows that neither $\betw{z}{a}{b}$ nor $\betw{a}{b}{z}$ holds.
+    \item[(Z11)] For any two distinct points $a, b \in P$, there exists a $d \in P$ with $\betw{a}{d}{b}$.
+\end{itemize}
+We call $P$ \textbf{complete} if the following also holds:
+\begin{itemize}
+    \item[(Z12)] Let $A$ and $B$ be sets of points and $c$ be another point. For all $a \in A$ and $b \in B$, let $\betw{a}{b}{c}$ hold. Then there is a $z \in P$ with $\betw{a}{z}{b}$ for all $a \in A \setminus \{z\}$ and $b \in B \setminus \{z\}$.
+\end{itemize}
+\end{definition}
+
+Informally, we can refer to the axiom groups as follows: (Z1)-(Z7) are the betweenness axioms; (Z8) and (Z9) are the Pasch axioms; (Z10) is the parallel axiom; (Z11) is the density axiom; and (Z12) is the completeness axiom (Dedekind cuts).
+
+The leading example, which is paradigmatic for the choice of our axioms, is the following.
+
+\begin{example} \label{ex:R_n_betweenness}
+Let $n \ge 1$. For $a, b, c \in \mathbb{R}^n$, we set $\betw{a}{b}{c}$ if there is a $\lambda \in (0, 1)$ with $b = (1 - \lambda)a + \lambda c$. This turns $\mathbb{R}^n$ into a complete betweenness space.
+\end{example}
+
+As is common in geometry, the substructures generated by finitely many points are of special relevance.
+
+\begin{definition} \label{def:subspace}
+Let $P$ be a betweenness space and $S \subseteq P$. We call $S$, together with the restricted betweenness relation, a \textbf{subspace} if, with $a, b \in S$, all points $x$ for which $\betw{x}{a}{b}$ or $\betw{a}{x}{b}$ or $\betw{a}{b}{x}$ holds also belong to $S$.
+\end{definition}
+
+If $c_1, \dots, c_k$ are points, let $U(c_1, \dots, c_k)$ be the intersection of all subspaces containing $c_1, \dots, c_k$. We also speak of the subspace \textit{spanned} by $c_1, \dots, c_k$. If there is a smallest integer $n \in \mathbb{N}$ such that $U$ is spanned by $n$ points, we call $n - 1$ the \textbf{dimension} of $U$; otherwise, we say that $U$ is of infinite dimension. The following conventions apply:
+\begin{itemize}
+    \item[(i)] A subspace $l$ of dimension 1 is called a \textbf{line}. If $l$ is spanned by the distinct points $a$ and $b$, we write $l = \lineab{ab}$ instead of $l = U(a, b)$.
+    If $a \in l$, we say that $a$ \textit{lies on} $l$ or $l$ \textit{goes through} $a$. A set of points is called \textbf{collinear} if there is a line that goes through all these points.
+    \item[(ii)] A subspace $e$ of dimension 2 is called a \textbf{plane}.
+    If $a \in e$, we say that $a$ \textit{lies in} $e$. A set of points is called \textbf{coplanar} if there is a plane in which all these points lie.
+\end{itemize}
+
+For the rest of this section, let $P$ be a betweenness space. Our goal is to show that Example \ref{ex:R_n_betweenness} is paradigmatic.
+We begin by drawing some simple conclusions from the axioms.
+
+\begin{lemma} \label{lem:between_consequences}
+For all $a, b, c \in P$, the following holds:
+\begin{itemize}
+    \item[(Z3')] $\betw{b}{a}{c}$, $\betw{a}{b}{c}$ and $\betw{a}{c}{b}$ are mutually exclusive.
+    \item[(Z4')] From $\betw{x}{a}{b}$ and $\betw{a}{b}{y}$ follows $\betw{x}{b}{y}$.
+    \item[(Z5')] From $\betw{a}{b}{x}$ and $\betw{a}{y}{b}$ follows $\betw{y}{b}{x}$.
+    \item[(Z7')] From $\betw{a}{b}{x}$ and $\betw{a}{b}{y}$ follows $\betw{b}{x}{y}$ or $\betw{b}{y}{x}$.
+    \item[(Z7'')] From $\betw{a}{b}{x}$ and $\betw{a}{b}{y}$ follows $\betw{a}{x}{y}$ or $\betw{a}{y}{x}$.
+    \item[(Z7''')] From $\betw{x}{a}{b}$ and $\betw{y}{a}{b}$ follows $\betw{x}{y}{b}$ or $\betw{y}{x}{b}$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+(Z3') follows from (Z2) and (Z3). (Z4'), (Z5'), (Z7') follow together with (Z2) from (Z4), (Z5) and (Z7), respectively. (Z7'') follows from (Z7') and (Z4'); (Z7''') follows from (Z7) and (Z4).
+\end{proof}
+
+A subspace of dimension 0 is a 1-element set: Because of (Z1), $U(a) = \{a\}$ holds for every $a \in P$. Consequently, the subspaces of dimension 1, i.e., the lines, are exactly the subspaces of the form $\lineab{ab}$ for two distinct points $a$ and $b$.
+
+\begin{lemma} \label{lem:line_properties}
+\begin{itemize}
+    \item[(i)] For any two distinct points $a$ and $b$, it holds that
+    \begin{equation} \label{eq:line_def}
+    \lineab{ab} = \{x \in P : x = a \text{ or } x = b \text{ or } \betw{x}{a}{b} \text{ or } \betw{a}{x}{b} \text{ or } \betw{a}{b}{x}\}.
+    \end{equation}
+    \item[(ii)] If $a$ and $b$ are two distinct points on a line $l$, then $l = \lineab{ab}$.
+    \item[(iii)] Any two distinct points lie on exactly one line.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+For $a, b \in P$, let $G(a, b)$ denote the expression on the right-hand side of (\ref{eq:line_def}) in this proof. We first show the following: \\
+($\star$): Let $a, b \in P$ with $a \neq b$, and let $x \in G(a, b) \setminus \{a\}$. Then $G(a, b) = G(a, x)$. \\
+Proof of ($\star$): We first show $G(a, b) \subseteq G(a, x)$. Let $y \in G(a, b)$. If $x = b$ or $y = a$, clearly $y \in G(a, x)$ holds. If $x \neq b$ and $y = b$, $y \in G(a, x)$ also follows immediately. We assume in the following $x, y \neq a, b$. According to (Z3'), one of the following three cases occurs: \\
+\textit{Case 1:} $\betw{x}{a}{b}$ holds. If $\betw{y}{a}{b}$ also holds, then $\betw{x}{y}{a}$ or $\betw{y}{x}{a}$ by (Z7). If $\betw{a}{y}{b}$, then $\betw{x}{a}{y}$ by (Z5). If $\betw{a}{b}{y}$, then $\betw{x}{a}{y}$ by (Z4). In every case, $y \in G(a, x)$ results. \\
+\textit{Case 2:} $\betw{a}{x}{b}$ holds. If then $\betw{y}{a}{b}$, then $\betw{y}{a}{x}$ by (Z5). If $\betw{a}{y}{b}$, then $\betw{a}{x}{y}$ or $\betw{a}{y}{x}$ by (Z6). If $\betw{a}{b}{y}$, then $\betw{x}{b}{y}$ by (Z5') and $\betw{a}{x}{y}$ by (Z4). Again, $y \in G(a, x)$ always results. \\
+\textit{Case 3:} $\betw{a}{b}{x}$ holds. If $\betw{y}{a}{b}$, then $\betw{y}{a}{x}$ by (Z4). If $\betw{a}{y}{b}$, then $\betw{y}{b}{x}$ by (Z5') and $\betw{a}{y}{x}$ by (Z4). If $\betw{a}{b}{y}$, then $\betw{a}{x}{y}$ or $\betw{a}{y}{x}$ by (Z7''). Thus, $y \in G(a, x)$ follows once more. \\
+This proves $G(a, b) \subseteq G(a, x)$. Because $b \in G(a, x) \setminus \{a\}$, the reverse subset relation also follows from this. \\
+We then assert: \\
+($\star\star$): Let $a, b \in P$ with $a \neq b$ as well as $x, y \in G(a, b)$ with $x \neq y$. Then $G(a, b) = G(x, y)$. \\
+Proof of ($\star\star$): If $x = a$, then $G(a, b) = G(x, y)$ by ($\star$). If $x \neq a$, it first follows from ($\star$) that $G(a, b) = G(a, x)$ and from this further $G(a, x) = G(x, y)$.
+
+Ad (i): Let $a, b \in P$ with $a \neq b$. Clearly $G(a, b) \subseteq \lineab{ab}$. According to ($\star\star$), $G(x, y) = G(a, b)$ for any two distinct points $x, y \in G(a, b)$. This means that $G(a, b)$ is a subspace of $P$ containing $a$ and $b$. Consequently, $\lineab{ab} \subseteq G(a, b)$ also holds. \\
+Ad (ii): Let $a, b \in l$ be as stated. By definition of a line, $l$ is of the form $l = \lineab{a'b'}$ for some distinct points $a', b' \in l$. According to part (i), thus $a, b \in l = \lineab{a'b'} = G(a', b')$, and because of ($\star\star$) further $\lineab{ab} = G(a, b) = G(a', b') = l$. \\
+Ad (iii): Any two distinct points $a$ and $b$ lie on the line $\lineab{ab}$. If $l$ is another line with $a, b \in l$, it follows from (ii) that $l = \lineab{ab}$.
+\end{proof}
+
+From Lemma \ref{lem:line_properties}, we can see that the concepts of independence and collinearity are opposing: Three distinct points $a, b, c$ are independent if and only if they are not collinear.
+
+\begin{lemma} \label{lem:line_intersection}
+The intersection of two distinct lines is empty or consists of a single point.
+\end{lemma}
+\begin{proof}
+This is clear from Lemma \ref{lem:line_properties}(iii).
+\end{proof}
+
+The use of the Pasch axioms (Z8) and (Z9) is indicated in the following proofs by the abbreviation "[$\lineab{xy} \nearrow \Delta a b c$]", where we refer to the symbols used in the axioms. The notation is intended to suggest that the line $\lineab{xy}$ intersects the triangle $\Delta a b c$.
+
+\begin{lemma} \label{lem:pasch_consequences}
+Let $a, b, c$ be independent, and let $\betw{a}{x}{c}$. Then there exists exactly one $y \in \lineab{bc}$ with $\lineab{xy} \cap \lineab{ab} = \emptyset$.
+
+Furthermore, let $y'$ be a point distinct from $y$ with $\betw{b}{y'}{c}$, and let $z$ be the intersection point of $\lineab{ab}$ and $\lineab{xy'}$. Then exactly one of the two possibilities holds: (a) $\betw{a}{b}{z}$, $\betw{x}{y'}{z}$ and $\betw{b}{y'}{y}$; or (b) $\betw{z}{a}{b}$, $\betw{z}{x}{y'}$ and $\betw{y}{y'}{c}$.
+\end{lemma}
+
+\begin{proof}
+Let $y$ be the uniquely determined point with the properties specified under (Z10). Let $y'$ be an arbitrary point with $\betw{b}{y'}{c}$. We assert: \\
+($\star$) Suppose there is an intersection point $z$ of $\lineab{xy'}$ and $\lineab{ab}$. Then $\betw{x}{y'}{z}$ is equivalent to $\betw{a}{b}{z}$, and $\betw{z}{x}{y'}$ is equivalent to $\betw{z}{a}{b}$. \\
+Proof of ($\star$): From $\betw{x}{y'}{z}$ follows $\betw{a}{b}{z}$ [$\lineab{bc} \nearrow \Delta a x z$], and from $\betw{a}{b}{z}$ follows $\betw{x}{y'}{z}$ [$\lineab{xy'} \nearrow \Delta a b c$]. This shows the first equivalence, and the second follows similarly. \\
+We further assert: \\
+($\star\star$) From $\betw{x}{z}{y'}$ follows $z \notin \lineab{ab}$. \\
+Proof of ($\star\star$): Suppose $\betw{x}{z}{y'}$ and $z \in \lineab{ab}$. Then by ($\star$), neither $\betw{z}{a}{b}$ nor $\betw{a}{b}{z}$ holds. Additionally, $z \neq a, b$. Only the possibility $\betw{a}{z}{b}$ remains. Then there is a $b'$ with $\betw{a}{z}{b'}$ and $\betw{y'}{b'}{c}$ [$\lineab{ab} \nearrow \Delta c x y'$]. Because $b' \in \lineab{ab} \cap \lineab{bc}$, it follows that $b' = b$. This contradicts $\betw{b}{y'}{c}$.
+
+From ($\star$) and ($\star\star$), we conclude that $y$ is the uniquely determined point with $\betw{b}{y}{c}$ and $\lineab{xy} \cap \lineab{ab} = \emptyset$. For all $\tilde{y}$ with $\betw{\tilde{y}}{b}{c}$ or $\betw{b}{c}{\tilde{y}}$, it follows that $\lineab{x\tilde{y}} \cap \lineab{ab} \neq \emptyset$, so $y$ is the uniquely determined point on $\lineab{bc}$ with $\lineab{xy} \cap \lineab{ab} = \emptyset$.
+
+Furthermore, suppose the point $y'$ is distinct from $y$. Let $z$ be the intersection point of $\lineab{xy'}$ and $\lineab{ab}$. According to ($\star$) and ($\star\star$), exactly one of the following two cases holds: \\
+\textit{Case 1:} $\betw{a}{b}{z}$ and $\betw{x}{y'}{z}$. Then for every $y''$ between $b$ and $y'$, the lines $\lineab{xy''}$ and $\lineab{ab}$ intersect [$\lineab{xy''} \nearrow \Delta b y' z$]. Thus, $\betw{b}{y}{y'}$ cannot hold, and it follows that $\betw{b}{y'}{y}$. \\
+\textit{Case 2:} $\betw{z}{a}{b}$ and $\betw{z}{x}{y'}$. Then for every $y''$ between $y'$ and $c$, the lines $\lineab{xy''}$ and $\lineab{ab}$ intersect [$\lineab{xy''} \nearrow \Delta b y' z$]. Thus, $\betw{y'}{y}{c}$ cannot hold, and it follows that $\betw{y}{y'}{c}$.
+\end{proof}
+
+According to Lemma \ref{lem:pasch_consequences}, condition (Z10) can be formulated more simply:
+\begin{itemize}
+    \item[(Z10')] Let $a, b, c$ be non-collinear. Then for every $x$ with $\betw{a}{x}{c}$, there is exactly one $y$ with $\betw{b}{y}{c}$ and $\lineab{xy} \cap \lineab{ab} = \emptyset$.
+\end{itemize}
+
+According to Lemma \ref{lem:line_properties}, there is always a betweenness relation among any three points $a, b$, and $c$ on a line: Exactly one of the relationships $\betw{b}{a}{c}$ or $\betw{a}{b}{c}$ or $\betw{a}{c}{b}$ holds, meaning exactly one of the three points lies between the other two. The following theorem states that the points of a line can be linearly ordered such that the betweenness relation can be expressed in terms of the linear order.
+
+\begin{theorem} \label{thm:line_linear_order}
+Let $l$ be a line. Then there is a (strict) linear order $<$ on $l$ such that for $a, b, c \in l$, the following holds:
+\begin{equation} \label{eq:line_order}
+    \betw{a}{b}{c} \text{ holds if and only if } a < b < c \text{ or } c < b < a.
+\end{equation}
+If $<'$ is another linear order on $l$ with this property, then $<'$ either agrees with $<$ or $<'$ is the dual order to $<$.
+\end{theorem}
+
+\begin{proof}
+We draw from Lemma \ref{lem:line_properties}: For any three distinct points $a, b, c \in l$, either $\betw{b}{a}{c}$ or $\betw{a}{b}{c}$ or $\betw{a}{c}{b}$ holds. Because of (Z3'), these possibilities are mutually exclusive.
+
+We assert: \\
+($\star$) Let $S$ be an at least three-element finite subset of $l$. Then there is a linear order $<$ on $S$ that fulfills (\ref{eq:line_order}), and only $<$ and $>$, the order dual to $<$, have this property. \\
+Proof of ($\star$): We begin with the uniqueness statement. Suppose the linear orders $<$ and $<'$ both fulfill (\ref{eq:line_order}) and $<'$ agrees with neither $<$ nor $>$. Let $a_1 < a_2 < \dots < a_n$ be the elements of $S$. Then there is either a $1 < i < n$ with $a_1 <' a_2 <' \dots <' a_i >' a_{i+1}$ or one with $a_1 >' a_2 >' \dots >' a_i <' a_{i+1}$. Thus, there is a triple in $S$ with $a < b < c$ and either $a <' b >' c$ or $a >' b <' c$. In the first case, both $\betw{a}{b}{c}$ and either $\betw{a}{c}{b}$ or $\betw{c}{a}{b}$ hold, each a contradiction. In the latter case, $\betw{a}{b}{c}$ and either $\betw{b}{a}{c}$ or $\betw{b}{c}{a}$ hold, also contradictions.
+
+Let $a, b, c \in l$ with $\betw{a}{b}{c}$. We show by induction that for every finite subset of $l$ containing $a, b,$ and $c$, there exists a linear order fulfilling (\ref{eq:line_order}). Between the points $a, b, c$, the betweenness relations $\betw{a}{b}{c}$ and $\betw{c}{b}{a}$ exist, and no others. Consequently, for $\{a, b, c\}$, the linear order $a < b < c$ fulfills the requirement, as does its dual.
+
+Let $n \ge 3$, and suppose the claim holds for sets of at most $n$ elements. Let $\{a, b, c\} \subseteq S \subseteq l$ consist of $n+1$ elements. We set $S_l = \{x \in S : \betw{x}{b}{c} \text{ or } x = b\}$ and $S_r = \{x \in S : \betw{a}{b}{x} \text{ or } x = b\}$. Obviously, $S_l \cap S_r = \{b\}$, and one can see that $S = S_l \cup S_r$ holds.
+
+$S_l$ contains $a$ and $b$, but not $c$; consequently, $S_l$ has at most $n$ elements, and there is a uniquely determined linear order $<$ on $S_l$ such that (\ref{eq:line_order}) is fulfilled and $a < b$ holds. From $\betw{x}{b}{c}$ and $\betw{a}{b}{c}$, it follows that $\betw{x}{a}{b}$ or $\betw{a}{x}{b}$, and thus $x < b$. The points of $S_l$ are thus ordered according to $x_1 < x_2 < \dots < b$, where $a$ is one of the $x_i$. Similarly, $S_r$ can be ordered according to $b < y_1 < \dots < y_l$, where $c$ is one of the $y_j$.
+
+Thus, a linear order on all of $S$ is defined, and we assert that it fulfills (\ref{eq:line_order}). Let's call a point triple $(x, y, z)$ a chain if $x < y < z$ holds. Assuming $(x, y, z)$ is such a chain; we assert that $\betw{x}{y}{z}$ then follows. \\
+\textit{Case 1:} $x, y, z \in S_l$ or $x, y, z \in S_r$. Then $\betw{x}{y}{z}$ holds by construction. \\
+\textit{Case 2:} It is a triple of the form $(x_i, b, y_j)$. If $x_i = a$ or $y_j = c$, $\betw{x_i}{b}{y_j}$ is clearly true. Otherwise, the same can be deduced from the fact that $\betw{a}{x_i}{b}$ or $\betw{x_i}{a}{b}$ as well as $\betw{b}{y_j}{c}$ or $\betw{b}{c}{y_j}$ hold. \\
+\textit{Case 3:} It is a triple of the form $(x_i, x_j, y_k)$. $\betw{x_i}{x_j}{b}$ holds by Case 1 and $\betw{x_j}{b}{y_j}$ by Case 2: Thus $\betw{x_i}{x_j}{y_k}$. \\
+\textit{Case 4:} It is a triple of the form $(x_i, y_j, y_k)$. We argue similarly as in Case 3.
+
+The claim follows. If $(z, y, x)$ is a chain, $\betw{x}{y}{z}$ follows equally. Now assume that neither $(x, y, z)$ nor $(z, y, x)$ is a chain. Then $\betw{y}{x}{z}$ or $\betw{x}{z}{y}$ holds, meaning $\betw{x}{y}{z}$ does not hold. Thus (\ref{eq:line_order}) is confirmed. The proof of ($\star$) is complete.
+
+We come to the proof of the theorem. Let $a, b, c \in l$ with $\betw{a}{b}{c}$. We set $a < b < c$. Because of ($\star$), we can uniquely extend the linear order to every finite subset of $l$ containing $\{a, b, c\}$ such that (\ref{eq:line_order}) holds. The union of the linear orders determined in this way is thus a linear order on $l$ for which (\ref{eq:line_order}) holds.
+\end{proof}
+
+We say that a linear order on a line $l$ fulfilling (\ref{eq:line_order}) \textit{induces} the betweenness relation. We expand our notation: $\betw{a_1}{a_2}{\dots - a_k}$ means that the betweenness relations between the points $a_1, \dots, a_k$ exist in accordance with the linear order $a_1 < \dots < a_k$.
+
+\begin{lemma} \label{lem:dense_line}
+Let $P$ have dimension $\ge 2$, and let $l$ be a line.
+\begin{itemize}
+    \item[(i)] Let $<$ be a linear order inducing the betweenness relation. Then $<$ is a dense linear order without endpoints.
+    \item[(ii)] $l$ consists of infinitely many points.
+\end{itemize}
+Additionally:
+\begin{itemize}
+    \item[(Z11')] For any two distinct points $a$ and $b$, there are $d, e, f$ with $\betw{d}{a}{b}$, $\betw{a}{e}{b}$, and $\betw{a}{b}{f}$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Note first that because of Theorem \ref{thm:line_linear_order}, there is always a linear order on $l$ inducing the betweenness relation. According to (Z11), there is also a third point between any two distinct points on $l$. We conclude that there are infinitely many points $x$ with $\betw{a}{x}{b}$. (ii) follows.
+
+We prove (Z11'); (i) will also follow from this. Let $a \neq b$. By assumption (since dimension $\ge 2$), there is a $c \in P \setminus \lineab{ab}$. Then $a, b, c$ are independent. Let $x$ be such that $\betw{a}{x}{c}$. Because of (Z10'), there is exactly one $y$ with $\betw{b}{y}{c}$ and $\lineab{xy} \cap \lineab{ab} = \emptyset$. Further, let $y'$ be a point with $\betw{y}{y'}{b}$. Then $\lineab{xy'}$ and $\lineab{ab}$ intersect in a point $z$. By Lemma \ref{lem:pasch_consequences}, then $\betw{a}{b}{z}$ and $\betw{x}{y'}{z}$.
+\end{proof}
+
+\begin{lemma} \label{lem:pasch_variant}
+Let $a, b, c$ be non-collinear points, $x \in \lineab{ab} \setminus \{a\}$, $y \in \lineab{ac} \setminus \{a\}$ and $\lineab{xy} \cap \lineab{bc} = \emptyset$. If $\betw{a}{b}{x}$, then $\betw{a}{c}{y}$; if $\betw{a}{x}{b}$, then $\betw{a}{y}{c}$; and if $\betw{x}{a}{b}$, then $\betw{y}{a}{c}$.
+\end{lemma}
+
+\begin{proof}
+Note first that $a, b, c, x, y$ are pairwise distinct.
+
+Suppose $\betw{a}{b}{x}$. If $\betw{a}{y}{c}$, $\lineab{xy}$ and $\lineab{bc}$ would intersect [$\lineab{xy} \nearrow \Delta a b c$]. If $\betw{y}{a}{c}$, the same would hold [$\lineab{bc} \nearrow \Delta a x y$]. Thus, only the possibility $\betw{a}{c}{y}$ remains.
+
+Suppose $\betw{a}{x}{b}$. If $\betw{a}{c}{y}$, then again $\lineab{xy}$ and $\lineab{bc}$ would intersect [$\lineab{xy} \nearrow \Delta a b c$]. In the case $\betw{y}{a}{c}$, the same would follow [$\lineab{xy} \nearrow \Delta a b c$]. Thus, $\betw{a}{y}{c}$ holds.
+
+Suppose finally $\betw{x}{a}{b}$. If $\betw{a}{y}{c}$, it would once again follow that $\lineab{xy}$ and $\lineab{bc}$ intersect [$\lineab{xy} \nearrow \Delta a b c$]. If $\betw{a}{c}{y}$, the same would result [$\lineab{bc} \nearrow \Delta a x y$]. It follows that $\betw{y}{a}{c}$.
+\end{proof}
+
+\begin{lemma} \label{lem:line_intersections_configurations}
+Let $l$ and $m$ be lines that intersect in point $a$. Furthermore, let $x \in \lineab{pq}$ for distinct points $p \in l$ and $q \in m$.
+\begin{itemize}
+    \item[(i)] Let $\betw{p}{x}{q}$. Then there exist $p' \in l \setminus m$ and $q' \in m \setminus l$ with $\betw{p'}{q'}{x}$.
+    \item[(ii)] Let $\betw{p}{q}{x}$. Then for every $q'$ with $\betw{q}{a}{q'}$, there is a $p'$ with $\betw{p}{a}{p'}$ and $\betw{q'}{p'}{x}$.
+    \item[(iii)] Let $\betw{p}{q}{x}$. Then for every $p'$ with $\betw{p}{p'}{a}$, there is a $q'$ with $\betw{q}{q'}{a}$ and $\betw{p'}{q'}{x}$.
+    \item[(iv)] Let $\betw{p}{q}{x}$. Then for every $q'$ with $\betw{q}{q'}{a}$, there is a $p'$ with $\betw{p}{p'}{a}$ and $\betw{p'}{q'}{x}$.
+    \item[(v)] Let $\betw{p}{q}{x}$. Then for every $p'$ with $\betw{p'}{p}{a}$, there is a $q'$ with $\betw{q'}{q}{a}$ and $\betw{p'}{q'}{x}$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+This can be seen in each case using one of the Pasch axioms (Z8) or (Z9).
+\end{proof}
+
+\begin{lemma} \label{lem:plane_properties}
+\begin{itemize}
+    \item[(i)] For non-collinear points $a, b, c$, it holds that
+    \[ U(a, b, c) = \bigcup \{\lineab{xy} : x \in \lineab{ab}, y \in \lineab{ac}, x \neq y\}. \]
+    \item[(ii)] Let $a, b, c$ be non-collinear points on a plane $e$. Then $e = U(a, b, c)$.
+    \item[(iii)] Any three non-collinear points lie in exactly one plane.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+In this proof, for two lines $l_1$ and $l_2$ intersecting in a point, we denote the set on the right side of (i) analogously by
+\[ G(l_1, l_2) = \{x \in P : x \in \lineab{y_1 y_2} \text{ for distinct points } y_1 \in l_1 \text{ and } y_2 \in l_2\}. \]
+We assert: \\
+($\star$) Let $l_1, l_2, l_3$ be lines with three non-collinear intersection points. Then $G(l_1, l_2) = G(l_1, l_3)$. \\
+Proof of ($\star$): We will only show $G(l_1, l_2) \subseteq G(l_1, l_3)$; the reverse set inclusion follows from symmetry. \\
+Let $z \in G(l_1, l_2)$. In the case $z \in l_1 \cup l_2$, it is clearly $z \in G(l_1, l_3)$. Suppose this is not the case. Then by Lemma \ref{lem:line_intersections_configurations}(i), there are points $x \in l_1 \setminus l_2$ and $y \in l_2 \setminus l_1$ with $\betw{x}{y}{z}$. We denote the intersection points by $a = l_1 \cap l_2$, $b = l_1 \cap l_3$, and $c = l_2 \cap l_3$. \\
+\textit{Case 1:} $\betw{a}{b}{x}$. By Lemma \ref{lem:line_intersections_configurations}(iv), we can assume $x \neq b$ and $y \neq c$. If $\lineab{xy}$ and $l_3$ intersect, it follows that $z \in G(l_1, l_3) \cap G(l_2, l_3)$. Assume in the following $\lineab{xy} \cap l_3 = \emptyset$. \\
+By Lemma \ref{lem:pasch_variant}, $\betw{a}{c}{y}$. According to (Z10'), let $d$ be the uniquely determined point with $\betw{a}{d}{z}$ and $\lineab{bd} \cap \lineab{xz} = \emptyset$. Further, let $t \in l_2$ with $\betw{x}{t}{d}$ [$l_2 \nearrow \Delta x d z$], and let $c' \in l_2$ with $\betw{b}{c'}{d}$ [$l_2 \nearrow \Delta b d x$]. Thus $\lineab{bc} \cap \lineab{xy} = \lineab{bc'} \cap \lineab{xy} = \emptyset$, and due to the uniqueness statement in (Z10'), it follows that $c' = c$. Thus $d \in l_3$, and it follows that $z \in G(l_1, l_3) \cap G(l_2, l_3)$. \\
+\textit{Case 2:} $\betw{a}{x}{b}$. By Lemma \ref{lem:line_intersections_configurations}(v), there is an $x'$ with $\betw{a}{b}{x'}$ and a $y' \in l_2 \setminus \{a, c\}$ with $\betw{x'}{y'}{z}$. The desired result thus follows from Case 1. \\
+\textit{Case 3:} $\betw{x}{a}{b}$. By Lemma \ref{lem:line_intersections_configurations}(ii), there is a $y'$ with $\betw{a}{c}{y'}$ and an $x' \in l_1 \setminus \{a, b\}$ with $\betw{y'}{x'}{z}$. We now argue as in Case 1, only with the roles of $l_1$ and $l_2$ swapped. \\
+This completes the proof of ($\star$). We further assert:
+
+($\star\star$) Let $l_1, l_2$ be lines intersecting in a point, and $p, q \in G(l_1, l_2)$, $p \neq q$. Then $\lineab{pq} \subseteq G(l_1, l_2)$. \\
+Proof of ($\star\star$): We first consider the case $p \in l_1 \cup l_2$. If $q \in l_1 \cup l_2$ as well, the claim is clear. Otherwise, let $x \in l_1 \setminus l_2$ and $y \in l_2 \setminus l_1$ with $q \in \lineab{xy}$. According to ($\star$), $G(l_1, l_2) = G(l_1, \lineab{xy}) = G(l_2, \lineab{xy})$, and the claim follows. \\
+Now assume $p \notin l_1 \cup l_2$. Then let $x \in l_1 \setminus l_2$ and $y \in l_2 \setminus l_1$ with $p \in \lineab{xy}$. According to ($\star$), $G(l_1, l_2) = G(l_1, \lineab{xy})$. If $q \in l_1 \cup \lineab{xy}$, the claim follows. Otherwise, let $x' \in l_1 \setminus \lineab{xy}$ and $y' \in \lineab{xy} \setminus l_1$ with $q \in \lineab{x'y'}$. According to ($\star$), $G(l_1, \lineab{xy}) = G(\lineab{xy}, \lineab{x'y'})$, and the claim follows once again.
+
+Ad (i): It is claimed that $U(a, b, c) = G(\lineab{ab}, \lineab{ac})$. Obviously, $G(\lineab{ab}, \lineab{ac}) \subseteq U(a, b, c)$. On the other hand, because of ($\star\star$), $G(\lineab{ab}, \lineab{ac})$ is a subspace containing $a, b, c$, so $U(a, b, c) \subseteq G(\lineab{ab}, \lineab{ac})$ also holds. \\
+We next show: \\
+($\star\star\star$): Let $a, b, c$ and $a, b, c'$ each be non-collinear, and let $c' \in U(a, b, c)$. Then $U(a, b, c) = U(a, b, c')$. \\
+Proof of ($\star\star\star$): From $a, b, c' \in U(a, b, c)$ follows $U(a, b, c') \subseteq U(a, b, c)$. Furthermore, either $c' \in \lineab{ac}$. In that case, $c \in \lineab{ac'}$ and especially $c \in U(a, b, c')$. Otherwise, by (i), there are points $x \in \lineab{ab} \setminus \{a\}$ and $y \in \lineab{ac} \setminus \{a\}$ with $c' \in \lineab{xy} \setminus \{x, y\}$. From $x \in \lineab{ab}$ and $y \in \lineab{c'x}$, it then also follows that $c \in U(a, b, c')$. Thus, $U(a, b, c) \subseteq U(a, b, c')$.
+
+Ad (ii): Let $e = U(a', b', c')$, and let $a, b, c \in e$ be non-collinear. Then there is a point among $a, b, c$ - say $a$ - that does not lie on $\lineab{b'c'}$. Then $a, b', c'$ are non-collinear, and by ($\star\star\star$) it follows that $U(a', b', c') = U(a, b', c')$. Furthermore, it is not possible for both $a, b, c'$ and $a, b, b'$ to be collinear - let's say $a, b, c'$ are non-collinear. Then by ($\star\star\star$) again, $U(a, b', c') = U(a, b, c')$. In a third step, we conclude $U(a, b, c') = U(a, b, c)$. Thus, $e = U(a, b, c)$ is shown. \\
+Ad (iii): Three non-collinear points $a, b, c$ lie in the plane $U(a, b, c)$. If $e$ is another plane with $a, b, c \in e$, it follows from (ii) that $e = U(a, b, c)$.
+\end{proof}
+
+\begin{lemma} \label{lem:plane_intersection}
+The intersection of two distinct planes is empty, consists of a single point, or is a line.
+\end{lemma}
+\begin{proof}
+This is clear from Lemma \ref{lem:plane_properties}.
+\end{proof}
+
+\begin{definition} \label{def:parallel_lines}
+We call two lines $l$ and $m$ \textbf{parallel} if both lie in one plane and are either equal or disjoint. We write in this case $l \parallel m$.
+\end{definition}
+
+\begin{lemma} \label{lem:parallel_postulate}
+Let $l$ be a line and $p$ be a point. Then there is exactly one line parallel to $l$ passing through $p$.
+\end{lemma}
+
+\begin{proof}
+In the case $p \in l$, the claim is clear. We assume $p \notin l$. Let $e$ be the plane spanned by $l$ and $p$.
+
+We first show existence. We choose distinct points $a, b \in l$ and a $c$ with $\betw{a}{p}{c}$. According to (Z10'), there is exactly one point $d$ with $\betw{b}{d}{c}$ and $\lineab{ab} \cap \lineab{pd} = \emptyset$. We set $m = \lineab{pd}$. Since $m \subseteq e$, this means $m \parallel l$.
+
+Let $m'$ be another line in $e$ through $p$ with $m' \cap l = \emptyset$. By Lemma \ref{lem:plane_properties}, $b$ is on a line through points on $\lineab{ac}$ and $m'$. According to Lemma \ref{lem:line_intersections_configurations}, the point on $\lineab{ac}$ can either be chosen arbitrarily from $\{y : \betw{p}{y}{a} \text{ or } y = a \text{ or } \betw{p}{a}{y}\}$ or from $\{y : \betw{p}{y}{c} \text{ or } y = c \text{ or } \betw{p}{c}{y}\}$. Since $\lineab{ab} \cap m' = \emptyset$, the first alternative is eliminated. Consequently, $\lineab{bc}$ and $m'$ intersect in a point $d'$. Since according to Lemma \ref{lem:pasch_consequences}, $d$ is the only point on $\lineab{bc}$ with $\lineab{ab} \cap \lineab{pd} = \emptyset$, it follows that $d' = d \in m$ and $m = m'$.
+\end{proof}
+
+\begin{lemma} \label{lem:parallel_equivalence}
+Parallelism on the set of lines is an equivalence relation.
+\end{lemma}
+
+\begin{proof}
+(following [S\"or]). That $\parallel$ is reflexive and symmetric is clear. Let $l_1, l_2$, and $l_3$ be pairwise distinct lines, $l_1 \parallel l_2$ and $l_2 \parallel l_3$. We must show $l_1 \parallel l_3$. (Assume $\dim P \ge 3$ for this synthetic geometry proof).
+
+Let $e$ be the plane in which $l_1$ and $l_2$ lie. Suppose $l_3$ also lies in $e$. If $l_1$ and $l_3$ shared a point, this would mean by Lemma \ref{lem:parallel_postulate} that $l_1 = l_3$, a contradiction. Thus, $l_3 \parallel l_1$ follows in that case.
+
+Assume now that there is a point $u \in l_3$ that does not lie in $e$. Then $l_2 \cap U(l_1 \cup \{u\}) = \emptyset$, because otherwise all of $l_2$ would lie in $U(l_1 \cup \{u\})$ and thus $u$ in $e$. Likewise, $l_1 \cap U(l_2 \cup \{u\}) = \emptyset$.
+
+We show: \\
+($\star$) $l = U(l_1 \cup \{u\}) \cap U(l_2 \cup \{u\})$ is a line. \\
+From ($\star$), the claim can be deduced as follows. It is $u \in l \subseteq U(l_2 \cup \{u\})$ and $l \cap l_2 \subseteq U(l_1 \cup \{u\}) \cap l_2 = \emptyset$, so $l = l_3$. Moreover, $l \subseteq U(l_1 \cup \{u\})$ and $l \cap l_1 = \emptyset$ and consequently $l = l_3$ is parallel to $l_1$.
+
+Proof of ($\star$): It is $u \in U(l_1 \cup \{u\}) \cap U(l_2 \cup \{u\})$; in view of Lemma \ref{lem:plane_intersection}, we must therefore determine a point $x \in U(l_1 \cup \{u\}) \cap U(l_2 \cup \{u\})$ distinct from $u$.
+
+We choose two distinct points $a_1, b_1 \in l_1$, a point $a_2 \in l_2$, and $z \in \lineab{a_1 a_2} \setminus \{a_1, a_2\}$. Then let $b_2$ be the intersection point of $l_2$ and $\lineab{zb_1}$. Note that all these points lie in $e$.
+
+We construct further points, this time in the plane $U(b_1, b_2, u)$. This also contains $z \in \lineab{b_1 b_2}$. Let $v$ be the intersection point of $\lineab{b_1 u}$ and the line running parallel to $\lineab{b_2 u}$ through $z$. We choose $c_1 \in \lineab{b_1 u} \setminus \{b_1, u, v\}$ and name $c_2$ the intersection point of $\lineab{b_2 u}$ and $\lineab{c_1 z}$.
+
+We finally turn to the plane $U(l_1 \cup \{u\})$, in which $a_1, b_1, c_1$, and $v$ also lie. Let $w$ be the intersection point of line $\lineab{a_1 c_1}$ and the line running parallel to $\lineab{a_1 b_1}$ through $v$. We further choose a point $d_1 \in \lineab{a_1 c_1} \setminus \{a_1, c_1, w\}$ and name $e_1$ the intersection point of the lines $\lineab{a_1 b_1}$ and $\lineab{v d_1}$. The intersection point $e_2$ of $\lineab{z e_1}$ and $\lineab{a_2 b_2}$ then belongs to the plane $e$.
+
+We distinguish two cases concerning the plane $U(a_1, a_2, c_1)$, in which $z, c_2$, and $d_1$ also lie. \\
+\textit{Case 1:} $\lineab{z d_1} \parallel \lineab{a_2 c_2}$. Since the line $\lineab{a_1 c_1}$ is distinct from $\lineab{z d_1}$ and also contains $d_1$, it intersects $\lineab{a_2 c_2}$ in a point $x$. Then $x \in U(l_1 \cup \{u\}) \cap U(l_2 \cup \{u\})$. Furthermore, $u \in \lineab{b_1 c_1}$ and therefore $u \notin \lineab{a_1 c_1}$. Thus $x \neq u$. \\
+\textit{Case 2:} $\lineab{z d_1}$ and $\lineab{a_2 c_2}$ intersect in a point $d_2$. \\
+Since $b_2$ and $u$, but not $b_1$, lie in the plane $U(b_1, b_2, u)$, $U(l_2 \cup \{u\}) \cap U(b_1, b_2, u) = \lineab{b_2 u}$. Since $\lineab{b_2 u}$ and $\lineab{v z}$ are parallel lines in $U(b_1, b_2, u)$, it follows that $U(l_2 \cup \{u\}) \cap \lineab{v z} = \emptyset$. \\
+We consider the plane $U(v, z, d_1)$, in which $d_2, e_1$, and $e_2$ also lie. Due to $d_2, e_2 \in U(l_2 \cup \{u\})$, $\lineab{d_2 e_2}$ and $\lineab{v z}$ are parallel lines in $U(v, z, d_1)$. Furthermore, $z \notin \lineab{d_1 e_1}$, because $z \notin U(l_1 \cup \{u\})$, and we conclude $\lineab{d_1 e_1} \cap \lineab{v z} = \{v\}$. Consequently, $\lineab{d_1 e_1}$ and $\lineab{d_2 e_2}$ have an intersection point $x$. It is $x \in U(l_1 \cup \{u\}) \cap U(l_2 \cup \{u\})$. Furthermore, $u \notin \lineab{d_1 v} = \lineab{d_1 e_1}$ and thus $x \neq u$.
+\end{proof}
+
+\begin{lemma} \label{lem:parallel_intersection_transfer}
+Let $l, l', m$ be lines lying in a plane. If $l$ and $m$ intersect in one point, and if $l$ and $l'$ are parallel, then $l'$ and $m$ also intersect.
+\end{lemma}
+\begin{proof}
+Assume $l \parallel l'$. If $l'$ and $m$ do not intersect, this means $l' \parallel m$ and, by Lemma \ref{lem:parallel_equivalence}, $l \parallel m$, i.e., that $l$ and $m$ also do not intersect. Contradiction.
+\end{proof}
+
+We next show Desargues' theorem. Note that this no longer holds in general, but rather it must be assumed that $P$ does not consist of only a single plane.
+
+\begin{theorem} \label{thm:desargues}
+Let $P$ have dimension $\ge 3$. Let $l_1, l_2$, and $l_3$ be lines that are either pairwise parallel or possess a common intersection point. Furthermore, let $a, a' \in l_1$, $b, b' \in l_2$, and $c, c' \in l_3$, if applicable each distinct from the intersection point. Then from $\lineab{ab} \parallel \lineab{a'b'}$ and $\lineab{ac} \parallel \lineab{a'c'}$, it follows that $\lineab{bc} \parallel \lineab{b'c'}$ also holds.
+\end{theorem}
+
+\begin{proof}
+Let $\lineab{ab} \parallel \lineab{a'b'}$ and $\lineab{ac} \parallel \lineab{a'c'}$. We distinguish the following two cases: \\
+\textit{Case 1:} $U(a, b, c)$ and $U(a', b', c')$ are distinct planes. Then the points $b, c, b', c'$ lie in one plane, but $a$ does not. Thus, $\lineab{bc}$ and $\lineab{b'c'}$ are either parallel or intersect. We must show that the latter does not hold. Suppose $\lineab{bc}$ and $\lineab{b'c'}$ possess the intersection point $q$. Then let $k$ be the line parallel to $\lineab{ab}$ through $q$, and $m$ be the line parallel to $\lineab{ac}$ through $q$. Note that this means $k$ and $m$ are two distinct lines in $U(a, b, c)$. According to Lemma \ref{lem:parallel_equivalence}, $k \parallel \lineab{a'b'}$ and $m \parallel \lineab{a'c'}$. But this means that the two distinct lines $k$ and $m$ also lie in $U(a', b', c')$. Thus $U(a', b', c') = U(k, m) = U(a, b, c)$, in contradiction to the assumption. \\
+\textit{Case 2:} $U(a, b, c) = U(a', b', c')$. Choose $d \notin U(a, b, c)$. Let $m$ be the line that we specify depending on the assumptions as follows: If $l_1 \parallel l_2 \parallel l_3$, let $m$ be the line parallel to $\lineab{aa'}$ through $d$; if $l_1, l_2, l_3$ intersect in a point $p$, let $m = \lineab{dp}$. Finally, let $d' \in m$ such that $\lineab{ad} \parallel \lineab{a'd'}$.
+
+According to Case 1, applied to the triangles $a, b, d$ and $a', b', d'$, it is $\lineab{bd} \parallel \lineab{b'd'}$. Once more according to Case 1, this time applied to the triangles $a, c, d$ and $a', c', d'$, it is $\lineab{cd} \parallel \lineab{c'd'}$. A third time according to Case 1, applied to the triangles $b, c, d$ and $b', c', d'$, yields $\lineab{bc} \parallel \lineab{b'c'}$.
+\end{proof}
+
+\subsection{Symmetries}
+
+For the coordinatization of our betweenness space, we use suitable symmetries, following Emil Artin's monograph "Geometric Algebra" [Art, Chapter II].
+
+\begin{definition} \label{def:automorphism}
+A bijective mapping $\varphi: P \to P$ is called a \textbf{betweenness automorphism} if for all $a, b, c \in P$, $\betw{a}{b}{c}$ is equivalent to $\betw{\varphi(a)}{\varphi(b)}{\varphi(c)}$.
+\end{definition}
+
+\begin{lemma} \label{lem:automorphism_group}
+The betweenness automorphisms of $P$ form a group.
+\end{lemma}
+\begin{proof}
+It follows immediately from the definition that the identity, the inverse mapping of every betweenness automorphism, and the composition of two betweenness automorphisms are again such automorphisms.
+\end{proof}
+
+Of interest to us is the following type of mapping. These are special betweenness automorphisms of $P$; seeing this, however, requires some effort (see Lemma \ref{lem:dilatation_is_automorphism}).
+
+\begin{definition} \label{def:dilatation}
+A mapping $\varphi: P \to P$ is called a \textbf{dilatation} if for any two distinct points $a$ and $b$: $\varphi(a)$ and $\varphi(b)$ are also distinct, and the lines $\lineab{ab}$ and $\lineab{\varphi(a)\varphi(b)}$ are parallel.
+
+A dilatation $\varphi$ is called a \textbf{translation} if $\varphi$ is the identity or has no fixed point. We call $\varphi$ a \textbf{homothety} if $\varphi$ is the identity or has exactly one fixed point.
+\end{definition}
+
+\begin{lemma} \label{lem:dilatation_properties}
+\begin{itemize}
+    \item[(i)] Every dilatation $\varphi$ is bijective. The set $D$ of all dilatations forms a group.
+    \item[(ii)] A dilatation $\varphi$ establishes a bijection between the lines $\lineab{ab}$ and $\lineab{\varphi(a)\varphi(b)}$ for any two distinct points $a$ and $b$.
+    \item[(iii)] Let $a, a' \in P$ and $b, b' \in P$ each be distinct. Then there is at most one dilatation $\varphi$ with $\varphi(a) = a'$ and $\varphi(b) = b'$.
+    \item[(iv)] Every dilatation distinct from the identity has zero or exactly one fixed point. In other words: A dilatation is either a translation or a homothety.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): By definition, $\varphi$ is injective. Let $c' \in P$; we must determine a $c \in P$ with $c' = \varphi(c)$. We choose points $a$ and $b$ such that $a, b, c'$ are pairwise distinct and $a, b, c'$ as well as $a' = \varphi(a)$ lie in a plane $e$. Then $a'$ and $b' = \varphi(b)$ are also distinct points, and because $\lineab{ab} \parallel \lineab{a'b'}$, $b'$ also lies in $e$.
+
+\textit{Case 1:} $c' \notin \lineab{a'b'}$. Let $l_1$ be the line through $a$ parallel to $\lineab{a'c'}$, and $l_2$ be the line through $b$ parallel to $\lineab{b'c'}$. Then $l_1$ and $l_2$ are distinct from $\lineab{ab}$ and not parallel; let $c$ be the intersection point of $l_1$ and $l_2$. Note that $c \neq a, b$. Furthermore, $\varphi(c)$ is on the line through $a'$ parallel to $l_1 = \lineab{ac}$, i.e., on $\lineab{a'c'}$, as well as on the line through $b'$ parallel to $l_2 = \lineab{bc}$, i.e., on $\lineab{b'c'}$. We conclude $c' = \varphi(c)$.
+
+\textit{Case 2:} $c' \in \lineab{a'b'} \setminus \{a', b'\}$. Choose a point $d' \in e$ that does not lie on $\lineab{a'b'}$. According to Case 1, there is a $d \in e$ with $d' = \varphi(d)$. Then $c' \notin \lineab{a'd'}$, and again according to Case 1, there is a point $c$ with $c' = \varphi(c)$.
+
+This shows that $\varphi$ is bijective. It is further obvious that along with $\varphi$, $\varphi^{-1}$ is also a dilatation. $D$ contains the identity, and by Lemma \ref{lem:parallel_equivalence} it is clear that $D$ is closed under composition. Thus $D$ is a group.
+
+Ad (ii): Let $c \in \lineab{ab} \setminus \{a, b\}$. By definition, $\lineab{\varphi(a)\varphi(b)} \parallel \lineab{ab}$, and it holds that $\lineab{\varphi(a)\varphi(c)} \parallel \lineab{ac} = \lineab{ab}$, from which $\varphi(c) \in \lineab{\varphi(a)\varphi(c)} = \lineab{\varphi(a)\varphi(b)}$ follows. Thus $\varphi(\lineab{ab}) \subseteq \lineab{\varphi(a)\varphi(b)}$. Since by (i) $\varphi^{-1}$ is also a dilatation, for $d \in \lineab{\varphi(a)\varphi(b)}$ it follows similarly that $\varphi^{-1}(d) \in \lineab{ab}$, i.e., $d \in \varphi(\lineab{ab})$. We conclude $\varphi(\lineab{ab}) = \lineab{\varphi(a)\varphi(b)}$, which implies the claim.
+
+Ad (iii): We assume that there is at least one dilatation $\varphi$ as specified. Let $c$ be a point distinct from $a$ and $b$. We have to show that $\varphi(c)$ is uniquely determined by $a, b, \varphi(a)$, and $\varphi(b)$. \\
+\textit{Case 1:} $c \notin \lineab{ab}$. From $\lineab{ac} \parallel \lineab{\varphi(a)\varphi(c)}$ and $\lineab{bc} \parallel \lineab{\varphi(b)\varphi(c)}$ it follows that $\varphi(c)$ is on the line through $\varphi(a)$ parallel to $\lineab{ac}$ as well as on the line through $\varphi(b)$ parallel to $\lineab{bc}$. The two lines are not parallel and thus possess the unique intersection point $\varphi(c)$. \\
+\textit{Case 2:} $c \in \lineab{ab} \setminus \{a, b\}$. We choose a $d \notin \lineab{ab}$. Then $\varphi(d)$ is uniquely determined according to Case 1. In addition, $c$ does not lie on $\lineab{ad}$, so by Case 1, $\varphi(c)$ is also uniquely determined.
+
+Ad (iv): If a dilatation has two fixed points, it is the identity according to (iii).
+\end{proof}
+
+\begin{lemma} \label{lem:unique_fixed_point_dilatation}
+Let a mapping $\varphi: P \to P$ have the following property: For any two distinct points $a$ and $b$, $\varphi(b)$ is on the line through $\varphi(a)$ parallel to $\lineab{ab}$. Furthermore, let there be distinct points $a$ and $b$ with $\varphi(a) = \varphi(b)$. Then $\varphi(c) = \varphi(a)$ for all $c \in P$.
+\end{lemma}
+
+\begin{proof}
+We set $p = \varphi(a) = \varphi(b)$; we must show $\varphi(c) = p$ for all $c \in P$. \\
+\textit{Case 1.} $c \notin \lineab{ab}$. Then by assumption, $\varphi(c)$ lies on the line through $p$ parallel to $\lineab{ac}$ as well as on the line through $p$ parallel to $\lineab{bc}$. These two lines are not parallel, so $\varphi(c) = p$. \\
+\textit{Case 2.} $c \in \lineab{ab} \setminus \{a, b\}$. According to Case 1, $\varphi(d) = p$ for every point $d \notin \lineab{ab}$. With $c \notin \lineab{ad}$, it follows once more by Case 1 that $\varphi(c) = p$.
+\end{proof}
+
+Let $\varphi$ be a dilatation. According to Lemma \ref{lem:dilatation_properties}(ii), $\varphi$ maps lines to lines. Any line that is mapped onto itself by $\varphi$ is called a \textbf{trace} of $\varphi$.
+
+\begin{lemma} \label{lem:trace_properties}
+Let $\varphi$ be a dilatation distinct from the identity.
+\begin{itemize}
+    \item[(i)] The traces of $\varphi$ are exactly the lines $\lineab{a\varphi(a)}$, where $a \in P$ is not a fixed point of $\varphi$.
+    \item[(ii)] Let $\varphi$ be a translation and $a \in P$. Then the traces of $\varphi$ are exactly the lines parallel to $\lineab{a\varphi(a)}$. In particular, the traces form a partition of $P$ into pairwise parallel lines.
+    \item[(iii)] Let $\varphi$ be a homothety with the fixed point $p$. Then the traces of $\varphi$ are exactly the lines through $p$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): Let $l$ be a trace, i.e., $\varphi(l) = l$. Then $l = \lineab{a\varphi(a)}$ for every $a \in l$ that is not a fixed point of $\varphi$. Conversely, let $a$ not be a fixed point and $l = \lineab{a\varphi(a)}$. Let $b \in l \setminus \{a\}$. Then $l = \lineab{ab}$ and $\lineab{\varphi(a)\varphi(b)}$ are parallel and therefore equal. Consequently, $\varphi(b) \in l$, and we conclude that $l$ is a trace of $\varphi$.
+
+Ad (ii): Let $l = \lineab{a\varphi(a)}$, and let $m = \lineab{b\varphi(b)}$ be another trace of $\varphi$. Because $\lineab{ab} \parallel \lineab{\varphi(a)\varphi(b)}$, $a, b, \varphi(a), \varphi(b)$ all lie in one plane, so $l$ and $m$ are either parallel or intersect in a point $p$. According to (i), the latter would mean that $p$ would be a fixed point, so $m \parallel l$.
+
+Ad (iii): Let $p$ be the fixed point of $\varphi$, and $a \neq p$. Then $\lineab{ap}$ is mapped onto the line $\lineab{\varphi(a)p}$ parallel to itself, i.e., onto itself. By (i), $\lineab{ap}$ is therefore a trace. In particular, $\lineab{ap} = \lineab{a\varphi(a)}$, i.e., all traces are of this form.
+\end{proof}
+
+If $\tau$ is a translation distinct from the identity, we call the set of all its traces the \textbf{direction} of $\tau$. By Lemma \ref{lem:trace_properties}(ii), the direction of $\tau$ is uniquely determined by a single trace, and thus by the pair of a single point and its image.
+
+The next lemma shows that the translation $\tau$ itself is uniquely determined by the pair of a single point and its image. For a given fixed point, this also applies to homotheties.
+
+\begin{lemma} \label{lem:translation_uniqueness}
+\begin{itemize}
+    \item[(i)] Let $a, a' \in P$. Then there is exactly one translation with $\varphi(a) = a'$.
+    \item[(ii)] Let $p, a, a'$ be collinear points and $a, a' \neq p$. Then there is exactly one homothety $\sigma$ with $\sigma(p) = p$ and $\sigma(a) = a'$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): The only translation possessing a fixed point is the identity. We assume $a \neq a'$ in the following.
+
+Let $\varphi$ be a translation with $\varphi(a) = a'$, and $b \notin \lineab{aa'}$. Then $\varphi(b)$ is on the line parallel to $\lineab{ab}$ through $a'$. Additionally, due to Lemma \ref{lem:trace_properties}(ii), $\varphi(b)$ is on the line parallel to $\lineab{a\varphi(a)}$ through $b$. Thus $\varphi(b)$ is uniquely determined by $a, a'$, and $b$. From Lemma \ref{lem:dilatation_properties}(iii) we conclude that there is at most one translation with the required property.
+
+It remains to show existence. We define the mapping $\tau^{a,a'}: P \setminus \lineab{aa'} \to P \setminus \lineab{aa'}$ as follows. If $x \in P \setminus \lineab{aa'}$, let $\tau^{a,a'}(x)$ be the intersection point of the line parallel to $\lineab{aa'}$ through $x$ and the line parallel to $\lineab{ax}$ through $a'$. Let further $b \in P \setminus \lineab{aa'}$ and $b' = \tau^{a,a'}(b)$. We then define $\tau^{b,b'}: P \setminus \lineab{bb'} \to P \setminus \lineab{bb'}$ in the same way.
+
+We assert that $\tau^{a,a'}$ and $\tau^{b,b'}$ agree on the intersection of their domains. Let $c$ be a point neither on $\lineab{aa'}$ nor on $\lineab{bb'}$ and $c' = \tau^{a,a'}(c)$. Then $\lineab{ab} \parallel \lineab{a'b'}$ and $\lineab{ac} \parallel \lineab{a'c'}$. According to Desargues' theorem (Theorem \ref{thm:desargues}), it follows that $\lineab{bc} \parallel \lineab{b'c'}$ and thus $c' = \tau^{b,b'}(c)$.
+
+Let $\tau$ be the joint continuation of $\tau^{a,a'}$ and $\tau^{b,b'}$ to all of $P$. Then clearly $\tau(a) = a'$. We assert that $\tau$ is a translation. For this, we draw the mapping $\tau^{c,c'}: P \setminus \lineab{cc'} \to P \setminus \lineab{cc'}$ into consideration, defined again as described above. According to the argument above, $\tau^{c,c'}$ also agrees with $\tau$ on its domain. Now let $x$ and $y$ be distinct points. These lie on one of the lines $\lineab{aa'}, \lineab{bb'}, \lineab{cc'}$ not containing them, let's say the last one. Again, as a consequence of Desargues' theorem, $\lineab{\tau^{c,c'}(x)\tau^{c,c'}(y)}$ is parallel to $\lineab{xy}$. I.e., $\lineab{\tau(x)\tau(y)}$ is parallel to $\lineab{xy}$ and $\tau$ is consequently a dilatation. By construction, the traces of $\tau$ are pairwise parallel, so $\tau$ is also a translation.
+
+Ad (ii): In the case $a = a'$, by Lemma \ref{lem:dilatation_properties}(iv), the identity is the only mapping with the required properties. We assume $a \neq a'$ in the following.
+
+The uniqueness statement again holds according to Lemma \ref{lem:dilatation_properties}(iii).
+
+To show existence, we modify the proof of (i). The mapping $\tau^{a,a'}: P \setminus \lineab{aa'} \to P \setminus \lineab{aa'}$ is defined in this case as follows. If $x \in P \setminus \lineab{aa'}$, let $\tau^{a,a'}(x)$ be the intersection point of the line $\lineab{px}$ and the line parallel to $\lineab{ax}$ through $a'$. We otherwise proceed with the argumentation as in (i).
+\end{proof}
+
+For a pair $a, a'$ of points, we denote in the following by $\tau^{a,a'}$ the uniquely determined translation according to Lemma \ref{lem:translation_uniqueness} that maps $a$ to $a'$.
+
+\begin{lemma} \label{lem:translation_group}
+\begin{itemize}
+    \item[(i)] If $\tau$ is a translation and $\sigma$ a dilatation, then $\sigma \circ \tau \circ \sigma^{-1}$ is also a translation. Provided $\tau \neq \text{id}$, $\sigma \circ \tau \circ \sigma^{-1}$ has the same direction as $\tau$.
+    \item[(ii)] The translations of a specific direction, together with the identity, form a group.
+    \item[(iii)] Let $P$ have dimension $\ge 3$. The set $T$ of all translations forms an invariant abelian subgroup of the group $D$ of all dilatations.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): Let $\tau \in T$ and $\sigma \in D$. Assume that $\sigma \circ \tau \circ \sigma^{-1}$ has the fixed point $p$. Due to $\tau(\sigma^{-1}(p)) = \sigma^{-1}(p)$, $\sigma^{-1}(p)$ is then a fixed point of the translation $\tau$, and consequently $\tau = \text{id}$. We conclude that $\sigma \circ \tau \circ \sigma^{-1}$ is a translation.
+
+Further, let $\tau \neq \text{id}$, and let $l$ be a trace of $\tau$. Since $\sigma^{-1}(l)$ is parallel to $l$ and thus a trace of $\tau$, it holds that $\sigma(\tau(\sigma^{-1}(l))) = l$. Thus $l$ is also a trace of $\sigma \circ \tau \circ \sigma^{-1}$, i.e., the direction of $\tau$ is equal to that of $\sigma \circ \tau \circ \sigma^{-1}$.
+
+Ad (ii): Let $\tau_1, \tau_2 \in T$ be translations of the same direction. By Lemma \ref{lem:dilatation_properties}, $\tau_2 \circ \tau_1$ is a dilatation. Furthermore, every trace $l$ of the two translations is also a trace of $\tau_2 \circ \tau_1$ because $\tau_2(\tau_1(l)) = l$. Consequently, $\tau_2 \circ \tau_1$ is also a translation with the same direction.
+
+Further, let $\tau \in T$. Then every trace of $\tau$ is also a trace of $\tau^{-1}$. Thus $\tau^{-1}$ is a translation with the same direction as $\tau$.
+
+Ad (iii): For every translation $\tau$, according to (ii), $\tau^{-1}$ is also one. Further, let $\tau_1$ and $\tau_2$ be translations. If $\tau_2 \circ \tau_1$ has a fixed point $p$, this means $\tau_2(\tau_1(p)) = p$, so $\tau_1(p) = \tau_2^{-1}(p)$, and by Lemma \ref{lem:translation_uniqueness}(i) it follows that $\tau_1 = \tau_2^{-1}$ and thus $\tau_2 \circ \tau_1 = \text{id} \in T$. We conclude that $\tau_2 \circ \tau_1$ is a translation. Thus $T$ is a group, and due to (i), $T$ is an invariant subgroup of $D$.
+
+It remains to show $\tau_2 \circ \tau_1 = \tau_1 \circ \tau_2$ for all $\tau_1, \tau_2 \in T$. This holds trivially if $\tau_1$ or $\tau_2$ or $\tau_2 \circ \tau_1$ is the identity. We exclude these cases and distinguish the following two.
+
+\textit{Case 1:} $\tau_1$ does not have the same direction as $\tau_2$. Suppose $\tau_2 \circ \tau_1 \circ \tau_2^{-1} \circ \tau_1^{-1} \neq \text{id}$. According to (i), $\tau_2^{-1} \tau_1 \tau_2$ has the same direction as $\tau_1$; according to (ii), $\tau_2 \circ \tau_1 \circ \tau_2^{-1} \circ \tau_1^{-1}$ thus has the same direction as $\tau_1$. Similarly, we see that $\tau_2 \circ \tau_1 \circ \tau_2^{-1} \circ \tau_1^{-1}$ also has the same direction as $\tau_2$, contradicting our assumption. Thus $\tau_2 \circ \tau_1 \circ \tau_2^{-1} \circ \tau_1^{-1} = \text{id}$ and thereby $\tau_2 \circ \tau_1 = \tau_1 \circ \tau_2$.
+
+\textit{Case 2:} $\tau_1$ has the same direction as $\tau_2$. Since by assumption $P$ does not consist of only one line, there is another translation $\tau_3$ with a different direction. Then the directions of $\tau_1$ and $\tau_2 \circ \tau_3$ are also distinct, since otherwise by (ii) $\tau_1$ and $\tau_3 = \tau_2^{-1} \circ \tau_2 \circ \tau_3$ would have the same direction. From (ii), it follows that $(\tau_1 \circ \tau_2) \circ \tau_3 = \tau_1 \circ (\tau_2 \circ \tau_3) = (\tau_2 \circ \tau_3) \circ \tau_1 = \tau_2 \circ (\tau_3 \circ \tau_1) = \tau_2 \circ (\tau_1 \circ \tau_3) = (\tau_2 \circ \tau_1) \circ \tau_3$ and thus $\tau_1 \circ \tau_2 = \tau_2 \circ \tau_1$.
+\end{proof}
+
+\begin{lemma} \label{lem:between_parallel_transport1}
+Let $l$ and $l'$ be distinct lines that lie in a plane. Let $a, b, c \in l \setminus l'$ as well as $a', b', c' \in l' \setminus l$, and let $\lineab{aa'}, \lineab{bb'}$ and $\lineab{cc'}$ be pairwise parallel. If $\betw{a}{b}{c}$ holds, then $\betw{a'}{b'}{c'}$ also holds.
+\end{lemma}
+
+\begin{proof}
+Assume $\betw{a}{b}{c}$. We first assume that $l$ and $l'$ intersect at point $p$. \\
+\textit{Case 1:} $\betw{p}{a}{b} - c$. By Lemma \ref{lem:pasch_variant}, $\betw{p}{a'}{b'}$ and $\betw{p}{b'}{c'}$. Thus $\betw{a'}{b'}{c'}$. \\
+\textit{Case 2:} $\betw{a}{p}{b} - c$. By Lemma \ref{lem:pasch_variant}, $\betw{a'}{p}{b'}$ and $\betw{p}{b'}{c'}$. Thus again $\betw{a'}{b'}{c'}$. \\
+\textit{Case 3:} $\betw{a}{b}{p} - c$. We argue similarly as in Case 2. \\
+\textit{Case 4:} $\betw{a}{b}{c} - p$. We argue similarly as in Case 1.
+
+We now assume that $l$ and $l'$ are parallel. We choose $x \in l \setminus \{a, b, c\}$ and $x' \in l' \setminus \{a', b', c'\}$ such that $\lineab{xx'}$ and $\lineab{aa'}$ are not parallel. $\lineab{aa'}, \lineab{bb'}, \lineab{cc'}$ are pairwise distinct and intersect $\lineab{xx'}$ in points $a'', b''$ and $c''$ respectively. Then $\betw{a}{b}{c}$ implies by what was shown above $\betw{a''}{b''}{c''}$, and this in turn $\betw{a'}{b'}{c'}$.
+\end{proof}
+
+\begin{lemma} \label{lem:between_parallel_transport2}
+Let $l$ and $l'$ be distinct parallel lines. Let $a, b, c \in l$ and $a', b', c' \in l'$ each be pairwise distinct and such that $\lineab{aa'}, \lineab{bb'}$ and $\lineab{cc'}$ intersect in a point. If $\betw{a}{b}{c}$ holds, then $\betw{a'}{b'}{c'}$ also holds.
+\end{lemma}
+
+\begin{proof}
+Assume $\betw{a}{b}{c}$. Let $p$ be the common intersection point of $\lineab{aa'}, \lineab{bb'}, \lineab{cc'}$. Note that $p \notin l, l'$. Let $m$ be the line parallel to $l$ and $l'$ through $p$, and the following four lines be parallel to $\lineab{bb'}$: $l_{a'}$ the one through $a'$, $l_a$ the one through $a$, $l_c$ the one through $c$, and $l_{c'}$ the one through $c'$. Let $w, x, y, z$ be the following points on $m$: $w$ the intersection point with $l_{a'}$, $x$ the one with $l_a$, $y$ the one with $l_c$, and $z$ the one with $l_{c'}$. From $\betw{a}{b}{c}$, with Lemma \ref{lem:between_parallel_transport1}, $\betw{x}{p}{y}$ follows. We must show $\betw{a'}{b'}{c'}$, which by Lemma \ref{lem:between_parallel_transport1} is equivalent to $\betw{w}{p}{z}$.
+
+The points $a, a', p$ are arranged in one of the following ways: \\
+\textit{Case 1:} $\betw{a'}{a}{p}$. Then by Lemma \ref{lem:pasch_variant}, $\betw{w}{x}{p}$ as well as $\betw{c'}{c}{p}$, and thus $\betw{z}{y}{p}$. From $\betw{w}{x}{p}$ and $\betw{x}{p}{y}$, it follows that $\betw{w}{p}{y}$, and further with $\betw{p}{y}{z}$ as desired $\betw{w}{p}{z}$. \\
+\textit{Case 2:} $\betw{a}{a'}{p}$. Then by Lemma \ref{lem:pasch_variant}, $\betw{x}{w}{p}$ as well as $\betw{c}{c'}{p}$, and thus $\betw{y}{z}{p}$. From $\betw{y}{p}{x}$ and $\betw{p}{w}{x}$, it follows that $\betw{y}{p}{w}$, and from $\betw{w}{p}{y}$ and $\betw{p}{z}{y}$ it again follows $\betw{w}{p}{z}$. \\
+\textit{Case 3:} $\betw{a}{p}{a'}$. Then by Lemma \ref{lem:pasch_variant}, $\betw{x}{p}{w}$ as well as $\betw{c}{p}{c'}$, and thus $\betw{y}{p}{z}$. From $\betw{w}{p}{x}$ and $\betw{y}{p}{x}$, it follows that either $\betw{w}{y}{p}$ or $\betw{y}{w}{p}$ holds. In both cases, together with $\betw{y}{p}{z}$, it follows as desired that $\betw{w}{p}{z}$.
+\end{proof}
+
+We are now in a position to show that dilatations are indeed symmetries of $P$.
+
+\begin{lemma} \label{lem:dilatation_is_automorphism}
+Every dilatation of $P$ is a betweenness automorphism. Consequently, the dilatations form a subgroup of the group of betweenness automorphisms.
+\end{lemma}
+
+\begin{proof}
+Let $\varphi: P \to P$ be a dilatation. We must show that $\varphi$ is a betweenness automorphism. The final sentence then follows from Lemma \ref{lem:dilatation_properties}(i).
+
+The identity is obviously an automorphism. We assume in the following that $\varphi$ is not the identity. We will show that $\varphi$ preserves the betweenness relation. Since according to Lemma \ref{lem:dilatation_properties}(i), $\varphi$ is bijective and $\varphi^{-1}$ is also a dilatation, the lemma will already follow from this.
+
+Let $a, b, c \in P$ with $\betw{a}{b}{c}$ and $a' = \varphi(a), b' = \varphi(b), c' = \varphi(c)$. Then $a, b, c$ lie on a line $l$ and $a', b', c'$ on a line $l'$ parallel to $l$. Note in particular that $a, b, c, a', b', c'$ all lie in a plane. We have to show $\betw{a'}{b'}{c'}$.
+
+We first assume that $\varphi$ is a translation. Then $\lineab{aa'}, \lineab{bb'}, \lineab{cc'}$ are also pairwise parallel. \\
+\textit{Case 1:} $l \neq l'$. Then $\betw{a'}{b'}{c'}$ follows according to Lemma \ref{lem:between_parallel_transport1}. \\
+\textit{Case 2:} $l = l'$. Then $l$ is a trace of $\varphi$. Choose a line $m$ distinct from $l$ intersecting $l$ in a point distinct from $a, b, c$, and points $x, y, z \in m$, such that $\lineab{ax}, \lineab{by}, \lineab{cz}$ are pairwise parallel. Further let $x' = \varphi(x), y' = \varphi(y)$ and $z' = \varphi(z)$, so that the traces $\lineab{xx'}, \lineab{yy'}, \lineab{zz'}$ are all parallel to $l$. Finally, $\lineab{a'x'}, \lineab{b'y'}, \lineab{c'z'}$ are also pairwise parallel, and $x', y', z'$ lie on a line parallel to $m$. From Lemma \ref{lem:between_parallel_transport1}, $\betw{x}{y}{z}$ now follows, then $\betw{x'}{y'}{z'}$ and finally $\betw{a'}{b'}{c'}$.
+
+We now assume that $\varphi$ has a fixed point $p$. \\
+\textit{Case 1:} $l \neq l'$. Then $p$ is the common intersection point of $\lineab{aa'}, \lineab{bb'}, \lineab{cc'}$. According to Lemma \ref{lem:between_parallel_transport2}, $\betw{a'}{b'}{c'}$ also holds then. \\
+\textit{Case 2:} $l = l'$. Again, $l$ is then a trace of $\varphi$ and consequently $p \in l$. Choose a line $m$ distinct from $l$ and parallel to $l$, and a point $q$ in the same plane, but not on $l$ or $m$. Let $x$ be the intersection point of $m$ and $\lineab{qa}$, $y$ the one of $m$ and $\lineab{qb}$, and $z$ the one of $m$ and $\lineab{qc}$. By Lemma \ref{lem:between_parallel_transport2}, from $\betw{a}{b}{c}$ then $\betw{x}{y}{z}$ follows. Furthermore, $x' = \varphi(x), y' = \varphi(y)$ and $z' = \varphi(z)$ lie on a line $m'$ distinct from $l$ and $m$ and parallel to $l$ and $m$. From $\betw{x}{y}{z}$, $\betw{x'}{y'}{z'}$ follows again by Lemma \ref{lem:between_parallel_transport2}. Further, from Lemma \ref{lem:dilatation_properties}(ii), it follows that $\lineab{a'x'}, \lineab{b'y'}$ and $\lineab{c'z'}$ intersect in point $\varphi(q)$. From $\betw{x'}{y'}{z'}$, it thus follows from Lemma \ref{lem:between_parallel_transport2} that $\betw{a'}{b'}{c'}$.
+\end{proof}
+
+\subsection{The Representation Theorem}
+
+\begin{definition} \label{def:trace_preserving}
+Let $\alpha: T \to T$ be an endomorphism of the abelian group $T$. Let the image of $\tau \in T$ under $\alpha$ be denoted by $\alpha \cdot \tau$. We call $\alpha$ \textbf{trace-preserving} if every trace of a translation $\tau$ is also a trace of $\alpha \cdot \tau$.
+
+Let $F$ be the set of all trace-preserving endomorphisms. For $\alpha, \beta \in F$, we set
+\begin{align*}
+    \alpha + \beta: T \to T, \quad &\tau \mapsto \alpha \cdot \tau \circ \beta \cdot \tau, \\
+    0: T \to T, \quad &\tau \mapsto \text{id}, \\
+    \alpha \cdot \beta: T \to T, \quad &\tau \mapsto \alpha \cdot (\beta \cdot \tau), \\
+    1: T \to T, \quad &\tau \mapsto \tau.
+\end{align*}
+\end{definition}
+
+\begin{lemma} \label{lem:endomorphism_ring}
+If $\alpha, \beta \in F$, then $\alpha + \beta, \alpha \cdot \beta \in F$, and $0, 1 \in F$. $(F; +, 0, \cdot, 1)$ is a unital ring.
+\end{lemma}
+
+\begin{proof}
+Let $\alpha, \beta \in F$. We confirm by calculation that $\alpha + \beta$ is an endomorphism of $T$. Furthermore, every trace of $\tau$ is mapped to itself by $\beta \cdot \tau$ as well as by $\alpha \cdot \tau$ and is thus also a trace of $(\alpha + \beta) \cdot \tau$.
+
+Clearly $\alpha \cdot \beta = \alpha \circ \beta$ is an endomorphism of $T$. Every trace of $\tau$ is one of $\beta \cdot \tau$, and every one of $\beta \cdot \tau$ is one of $(\alpha \cdot \beta) \cdot \tau = \alpha \cdot (\beta \cdot \tau)$. Thus $\alpha \cdot \beta$ is trace-preserving.
+
+Finally, $0$ and $1$ are obviously trace-preserving endomorphisms of $T$.
+
+For $\alpha, \beta, \gamma \in F$ and $\tau \in T$, we have
+\begin{align*}
+    ((\alpha + \beta) + \gamma) \cdot \tau &= \alpha \cdot \tau \circ \beta \cdot \tau \circ \gamma \cdot \tau = (\alpha + (\beta + \gamma)) \cdot \tau, \\
+    (\alpha + \beta) \cdot \tau &= \alpha \cdot \tau \circ \beta \cdot \tau = \beta \cdot \tau \circ \alpha \cdot \tau = (\beta + \alpha) \cdot \tau, \\
+    (\alpha + 0) \cdot \tau &= \alpha \cdot \tau \circ \text{id} = \alpha \cdot \tau,
+\end{align*}
+so addition on $F$ is associative, commutative, and has the identity $0$. We further define
+\[ -1: T \to T, \quad \tau \mapsto \tau^{-1}. \]
+Then $-1$ is an endomorphism of $T$, which is also trace-preserving, and we have
+\[ (\alpha + (-1) \cdot \alpha) \cdot \tau = \alpha \cdot \tau \circ (\alpha \circ \tau)^{-1} = \text{id}, \]
+thus $\alpha + (-1) \cdot \alpha = 0$. This proves that $(F; +, 0)$ is a group. Since $\cdot$ on $F$ means composition and $1$ stands for the identity, $\cdot$ is associative and has the identity $1$, i.e., $(F; \cdot, 1)$ is a monoid. Finally,
+\begin{align*}
+    (\alpha \cdot (\beta + \gamma)) \cdot \tau &= \alpha \cdot (\beta \cdot \tau \circ \gamma \cdot \tau) = \alpha \cdot \beta \cdot \tau \circ \alpha \cdot \gamma \cdot \tau \\
+    &= (\alpha \cdot \beta + \alpha \cdot \gamma) \cdot \tau, \\
+    ((\beta + \gamma) \cdot \alpha) \cdot \tau &= \beta \cdot \alpha \cdot \tau \circ \gamma \cdot \alpha \cdot \tau = (\beta \cdot \alpha + \gamma \cdot \alpha) \cdot \tau.
+\end{align*}
+This shows that $(F; +, 0, \cdot, 1)$ is a unital ring.
+\end{proof}
+
+\begin{lemma} \label{lem:dilatation_from_endomorphism}
+Let $p$ be a point and $\alpha \in F \setminus \{0\}$. Then there is a uniquely determined dilatation $\sigma$ whose fixed point is $p$ and for which
+\begin{equation} \label{eq:dilatation_conjugation}
+    \alpha \cdot \tau = \sigma \circ \tau \circ \sigma^{-1}, \quad \tau \in T,
+\end{equation}
+holds.
+\end{lemma}
+
+\begin{proof}
+We first assume there is a dilatation $\sigma$ fulfilling (\ref{eq:dilatation_conjugation}). Then for every $a \in P$
+\begin{equation} \label{eq:sigma_def}
+    \sigma(a) = \sigma(\tau^{p,a}(p)) = (\sigma \circ \tau^{p,a} \circ \sigma^{-1})(p) = (\alpha \cdot \tau^{p,a})(p).
+\end{equation}
+Thus the uniqueness statement is clear. We define $\sigma$ by (\ref{eq:sigma_def}) and claim that $\sigma$ is a dilatation.
+
+Let $a$ and $b$ be distinct points. Let $l$ be the line parallel to $\lineab{ab}$ through $\sigma(a)$. Then $l$ is a trace of $\tau^{a,b}$, which contains $\sigma(a)$ and, because
+\begin{align*}
+    \sigma(b) &= (\alpha \cdot \tau^{p,b})(p) = (\alpha \cdot (\tau^{a,b} \circ \tau^{p,a}))(p) = (\alpha \cdot \tau^{a,b} \circ \alpha \cdot \tau^{p,a})(p) \\
+    &= (\alpha \cdot \tau^{a,b})(\sigma(a)),
+\end{align*}
+also $\sigma(b)$. Suppose $\sigma(a) = \sigma(b)$. By Lemma \ref{lem:unique_fixed_point_dilatation}, $\sigma$ is then a constant function, and because $\sigma(p) = (\alpha \cdot \tau^{p,p})(p) = p$, this means $\sigma(a) = p$ for all $a \in P$. Thus $(\alpha \cdot \tau^{p,a})(p) = p$ and therefore $\alpha \cdot \tau^{p,a} = \text{id}$ for all $a \in P$. For every translation $\tau$, $\tau = \tau^{p,\tau(p)}$ holds, meaning $\alpha \cdot \tau = \text{id}$ for all translations $\tau$. But this means $\alpha = 0$, contradicting the assumption. This shows that $\sigma$ is indeed a dilatation.
+
+It remains to show that $\sigma$ fulfills (\ref{eq:dilatation_conjugation}). For $a \in P$, $(\sigma^{-1} \circ (\alpha \cdot \tau^{p,a}) \circ \sigma)(p) = \sigma^{-1}((\alpha \cdot \tau^{p,a})(p)) = \sigma^{-1}(\sigma(a)) = a$, and we conclude $\sigma^{-1} \circ (\alpha \cdot \tau^{p,a}) \circ \sigma = \tau^{p,a}$, i.e., $\alpha \cdot \tau^{p,a} = \sigma \circ \tau^{p,a} \circ \sigma^{-1}$. As mentioned, this implies $\alpha \cdot \tau = \sigma \circ \tau \circ \sigma^{-1}$ for all translations $\tau$.
+\end{proof}
+
+\begin{lemma} \label{lem:skew_field}
+$(F; +, 0, \cdot, 1)$ is a skew field.
+\end{lemma}
+
+\begin{proof}
+By Lemma \ref{lem:endomorphism_ring}, only the existence of multiplicative inverses remains to be shown.
+
+Let $\alpha \in F \setminus \{0\}$. According to Lemma \ref{lem:dilatation_from_endomorphism}, there is a dilatation $\sigma$ with $\alpha \cdot \tau = \sigma \circ \tau \circ \sigma^{-1}$. Let $\alpha^{-1}: T \to T$, $\tau \mapsto \sigma^{-1} \circ \tau \circ \sigma$. Then $(\alpha \cdot \alpha^{-1}) \cdot \tau = \tau$, i.e., $\alpha \cdot \alpha^{-1} = \text{id} = 1$, and similarly we see $\alpha^{-1} \cdot \alpha = 1$.
+\end{proof}
+
+\begin{theorem} \label{thm:vector_space}
+The group $T$ of translations, together with the multiplication $F \times T \to T$, $(\alpha, \tau) \mapsto \alpha \cdot \tau$, is a linear space over $F$.
+\end{theorem}
+
+\begin{proof}
+$T$ is an abelian group by Lemma \ref{lem:translation_group}(iii), and $F$ is a skew field by Lemma \ref{lem:skew_field}. Furthermore, $F$ is a subring of the endomorphism ring of the abelian group $T$, so the given multiplication defines a linear structure.
+\end{proof}
+
+\begin{lemma} \label{lem:translation_direction}
+Let $\tau_1$ and $\tau_2$ be translations distinct from the identity. Then $\tau_1$ and $\tau_2$ have the same direction if and only if there is an $\alpha \in F$ with $\tau_2 = \alpha \cdot \tau_1$.
+\end{lemma}
+
+\begin{proof}
+($\Rightarrow$): Assume that $\tau_1$ and $\tau_2$ have the same direction. Let $p \in P$, $a = \tau_1(p)$, and $b = \tau_2(p)$. Then $p, a, b$ are collinear and $a, b \neq p$. Thus, by Lemma \ref{lem:translation_uniqueness}(ii), there is a homothety $\sigma$ with $\sigma(p) = p$ and $\sigma(a) = b$. We set $\alpha: T \to T$, $\tau \mapsto \sigma \circ \tau \circ \sigma^{-1}$. Then $(\alpha \cdot \tau_1)(p) = \sigma(\tau_1(\sigma^{-1}(p))) = b$ and consequently $\alpha \cdot \tau_1 = \tau_2$.
+
+($\Leftarrow$): Let $\tau_2 = \alpha \cdot \tau_1$ for an $\alpha \in F$. Then $\alpha \neq 0$, since otherwise $\tau_2 = \text{id}$. So by Lemma \ref{lem:dilatation_from_endomorphism}, there is a dilatation $\sigma$ with $\tau_2 = \alpha \cdot \tau_1 = \sigma \circ \tau_1 \circ \sigma^{-1}$. According to Lemma \ref{lem:translation_group}(i), $\tau_2$ has the same direction as $\tau_1$.
+\end{proof}
+
+\begin{lemma} \label{lem:order_on_F}
+Let $l$ be a line, $p, q$ distinct points on $l$, and $\tau = \tau^{p,q}$. Then
+\begin{equation} \label{eq:bijection_g}
+    g: F \to l, \quad \alpha \mapsto (\alpha \cdot \tau)(p)
+\end{equation}
+is a bijection with $g(0) = p$ and $g(1) = q$. Furthermore, the skew field $F$ can be ordered in exactly one way such that for all $\alpha, \beta, \gamma \in F$, the following holds:
+\begin{equation} \label{eq:F_order_equiv}
+    \betw{g(\alpha)}{g(\beta)}{g(\gamma)} \text{ if and only if } \alpha < \beta < \gamma \text{ or } \gamma < \beta < \alpha.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+$l$ is a trace of $\tau$, and $\alpha$ is trace-preserving, so $g(\alpha) \in l$ for all $\alpha \in F$. Furthermore, $g(0) = \text{id}(p) = p$ and $g(1) = \tau(p) = q$. For every $a \in l \setminus \{p\}$, $\tau^{p,a}$ has the same direction as $\tau$, and by Lemma \ref{lem:translation_direction} there is an $\alpha \in F$ with $\tau^{p,a} = \alpha \cdot \tau$. Thus $g(\alpha) = a$. Surjectivity is thus shown. Injectivity follows from Theorem \ref{thm:vector_space}.
+
+By means of the bijection $g$, we can transfer the betweenness relation from $l$ to $F$: For $\alpha, \beta, \gamma \in F$, we set $\betw{\alpha}{\beta}{\gamma}$ if $\betw{g(\alpha)}{g(\beta)}{g(\gamma)}$ holds.
+
+We first want to show that the betweenness relation defined on $F$ in this way is translation-invariant, i.e., that for $\alpha, \beta, \gamma, \delta \in F$, $\betw{\alpha}{\beta}{\gamma}$ is equivalent to $\betw{(\delta + \alpha)}{(\delta + \beta)}{(\delta + \gamma)}$. Let $\tau' = \delta \cdot \tau$. According to Lemma \ref{lem:dilatation_is_automorphism}, $\tau'$ is a betweenness automorphism, so $\betw{g(\alpha)}{g(\beta)}{g(\gamma)}$ is equivalent to $\betw{\tau'(g(\alpha))}{\tau'(g(\beta))}{\tau'(g(\gamma))}$. Furthermore, $\tau'(g(\alpha)) = (\delta \cdot \tau \circ \alpha \cdot \tau)(p) = ((\delta + \alpha) \cdot \tau)(p) = g(\delta + \alpha)$, and similarly for the other two terms. I.e., $\betw{g(\alpha)}{g(\beta)}{g(\gamma)}$ is equivalent to $\betw{g(\delta + \alpha)}{g(\delta + \beta)}{g(\delta + \gamma)}$, and the claim follows.
+
+We further show that the betweenness relation on $F$ is invariant under multiplication by $\delta \neq 0$: $\betw{\alpha}{\beta}{\gamma}$ is equivalent to $\betw{\delta \cdot \alpha}{\delta \cdot \beta}{\delta \cdot \gamma}$. Let $\sigma$ be the dilatation existing according to Lemma \ref{lem:dilatation_from_endomorphism} with fixed point $p$ and $\delta \cdot \tau = \sigma \circ \tau \circ \sigma^{-1}$. Because of Lemma \ref{lem:dilatation_is_automorphism}, $\betw{g(\alpha)}{g(\beta)}{g(\gamma)}$ is equivalent to $\betw{\sigma(g(\alpha))}{\sigma(g(\beta))}{\sigma(g(\gamma))}$. Furthermore, $\sigma(g(\alpha)) = (\sigma \circ \alpha \cdot \tau)(p) = (\sigma \circ \alpha \cdot \tau \circ \sigma^{-1})(p) = (\delta \cdot \alpha \cdot \tau)(p) = g(\delta \cdot \alpha)$, and similarly for the other two terms. I.e., $\betw{g(\alpha)}{g(\beta)}{g(\gamma)}$ is equivalent to $\betw{g(\delta \cdot \alpha)}{g(\delta \cdot \beta)}{g(\delta \cdot \gamma)}$. The claim follows.
+
+Let $F$ be equipped with a linear order $<$ according to Theorem \ref{thm:line_linear_order}. By switching to the dual order if necessary, we can assume $0 < 1$. From $\alpha, \beta, \gamma \in F$ and $\delta \in F \setminus \{0\}$, it then follows that either $\alpha + \delta < \beta + \delta < \gamma + \delta$ or $\alpha + \delta > \beta + \delta > \gamma + \delta$. Likewise, either $\delta \cdot \alpha < \delta \cdot \beta < \delta \cdot \gamma$ or $\delta \cdot \alpha > \delta \cdot \beta > \delta \cdot \gamma$ follows.
+
+We conclude that the addition of an element $\delta \in F$ is either order-preserving or order-reversing. Since $F$ is an ordered skew field, its characteristic is zero, so division by 2 is well-defined. The twice-repeated addition of $\delta/2$ is thus order-preserving, so the former possibility must hold: $\alpha < \beta$ implies $\alpha + \delta < \beta + \delta$.
+
+Similarly, we see that multiplication by a non-zero element is either order-preserving or order-reversing. Let $\alpha > 0$. If multiplication by $\alpha$ were order-reversing, it would follow that $\alpha = \alpha \cdot 1 < \alpha \cdot 0 = 0$, a contradiction. Thus, from $\alpha, \beta > 0$ it always follows that $\alpha \cdot \beta > 0$. This completes the proof that $F$ becomes an ordered skew field by means of $<$.
+\end{proof}
+
+We call a subset $A$ of $P$ \textbf{convex} if from $a, b \in A$ and $\betw{a}{x}{b}$, it always follows that $x \in A$.
+
+\begin{lemma} \label{lem:F_is_R}
+Let $P$ be complete. Then $F$ is the ordered field $\mathbb{R}$.
+\end{lemma}
+
+\begin{proof}
+Let $l$ be a line and $g: F \to l$ be the bijection (\ref{eq:bijection_g}). According to Lemma \ref{lem:order_on_F}, let $F$ be ordered. Then $\betw{a}{b}{c}$ holds for $a, b, c \in l$ if and only if $g^{-1}(b)$ lies between $g^{-1}(a)$ and $g^{-1}(c)$ with respect to the order of $F$.
+
+Let $A$ be a non-empty, bounded-above subset of $F$. Further let $c \in A$ not be the largest element of $A$, and let $A^\uparrow = \{\alpha \in F : \alpha \ge \beta \text{ for all } \beta \in A\}$. Because of (Z12), there is a $\gamma \in F$ with $\alpha \le \gamma \le \beta$ for all $\alpha \in \{x \in A : x \ge c\}$ and $\beta \in A^\uparrow$. But then $\gamma$ is the least upper bound of $A$, i.e., $\gamma = \sup A$. We conclude that $F$ is a Dedekind-complete ordered skew field, and according to Theorem \ref{thm:complete_skew_field_is_reals}, $F = \mathbb{R}$.
+\end{proof}
+
+We can thus conclude that the betweenness space $P$ is of the form given in the example: It is $\mathbb{R}^n$ with the usual affine structure.
+
+\begin{theorem} \label{thm:affine_coord}
+Let $P$ be a complete betweenness space of finite dimension $n \ge 3$. Then there is an $n$-dimensional real linear space $V$ and a bijection $\varrho: P \to V$ such that for three points $a, b, c \in P$, $\betw{a}{c}{b}$ holds if and only if there is a $0 < \lambda < 1$ with $\varrho(c) = \lambda \varrho(a) + (1 - \lambda)\varrho(b)$.
+\end{theorem}
+
+\begin{proof}
+Let $V$ be the real linear space constructed from $P$ according to Theorem \ref{thm:vector_space}. Let $o \in P$ be chosen arbitrarily. For $p \in P$, let $\varrho(p) = \tau^{o,p}$. Then $\varrho: P \to V$ is bijective.
+
+Let $a, b \in P$ be distinct points and $l$ be the line through $a$ and $b$. According to Lemma \ref{lem:order_on_F}, $g: \mathbb{R} \to l$, $\alpha \mapsto ((\alpha \cdot \tau^{a,b}) \circ \tau^{o,a})(o)$ is a bijection between $F = \mathbb{R}$ and $l$. Because of Lemma \ref{lem:unique_order_R}, $\mathbb{R}$ can be ordered in only one way. Consequently, $\betw{a}{c}{b}$ holds if and only if the real number $g^{-1}(c)$ lies between the numbers $g^{-1}(a) = 0$ and $g^{-1}(b) = 1$, i.e., when $\varrho(c) = \varrho(a) + \lambda(\varrho(b) - \varrho(a))$ for some $0 < \lambda < 1$.
+\end{proof}
+
+\section{Geometries with Betweenness and Orthogonality}
+
+The goal of this section is an axiomatization of the Euclidean space $\mathbb{R}^n$. To this end, we extend the structure of our geometry by an orthogonality relation.
+
+\subsection{The Orthogonality Relation}
+
+Recall that $\betw{a}{b}{c}$ means that $b$ is located on the straight line segment between $a$ and $c$. The new relation $\ortho{a}{b}{c}$ is to be interpreted to mean that the two segments leading from $b$ to $a$ and to $c$ form a right angle.
+
+\begin{definition} \label{def:euclidean_space}
+A \textbf{Euclidean space} is a complete betweenness space of finite dimension $n \ge 3$, equipped with a ternary relation on $P$, the \textit{orthogonality relation}. The statement that the orthogonality relation holds for a point triple $(a, b, c)$ is expressed by the notation $\ortho{a}{b}{c}$. We require the following for $a, b, c, x \in P$:
+\begin{itemize}
+    \item[(O1)] From $\ortho{a}{b}{c}$, it follows that $a, b, c$ are pairwise distinct.
+    \item[(O2)] $\ortho{a}{b}{c}$ is equivalent to $\ortho{c}{b}{a}$.
+    \item[(O3)] From $\ortho{a}{b}{c}$ follows $\ortho{a}{b}{x}$ for all $x \in \lineab{bc} \setminus \{b\}$.
+    \item[(O4)] From $\ortho{a}{b}{c}$, $\ortho{a}{b}{d}$ and $c \neq d$ follows $\ortho{a}{b}{x}$ for all $x \in \lineab{cd} \setminus \{b\}$.
+    \item[(O5)] Let $a \neq b$ and $c \notin \lineab{ab}$. Then either $\ortho{c}{a}{b}$ holds, or there is a $d \in \lineab{ac}$ with $\ortho{a}{b}{d}$.
+    \item[(O6)] From $\ortho{a}{b}{c}$, $\ortho{a}{c}{x}$ and $\ortho{b}{c}{x}$ follows $\ortho{a}{b}{x}$.
+\end{itemize}
+\end{definition}
+
+Our leading example is the following.
+
+\begin{example} \label{ex:euclidean_model}
+Let $V$ be a real $n$-dimensional linear space, equipped with a positive definite symmetric bilinear form $(\cdot, \cdot)$. For any three distinct points $a, b, c$, let $\betw{a}{c}{b}$ mean, as before, that $c = \lambda a + (1 - \lambda)b$ for some $0 < \lambda < 1$. Furthermore, we set $\ortho{a}{c}{b}$ if $(c - a, c - b) = 0$.
+
+We assert that $V$ is then a Euclidean space. This should be largely evident; an exception might possibly be Axiom (O6). So let $a, b, c, x \in V$, and let $\ortho{a}{b}{c}$, $\ortho{a}{c}{x}$, and $\ortho{b}{c}{x}$ hold. This means $(a - c, x - c) = (b - c, x - c) = 0$ and consequently $(a - b, x - c) = 0$. With $(a - b, c - b) = 0$, it further follows from this that $(a - b, x - b) = 0$, i.e., $\ortho{a}{b}{x}$.
+\end{example}
+
+Let $P$ be a Euclidean space from now on and for the rest of the section.
+
+We first note that we can also define orthogonality as a relation between pairs of lines.
+
+\begin{definition} \label{def:line_orthogonality}
+We call two lines $l$ and $m$ \textbf{orthogonal} if $l$ and $m$ intersect in a single point $p$ and $\ortho{x}{p}{y}$ holds for all $x \in l \setminus \{p\}$ and $y \in m \setminus \{p\}$. We write $l \perp m$ to express this.
+\end{definition}
+
+\begin{lemma} \label{lem:point_line_ortho_equiv}
+For three points $a, b, c$, $\ortho{a}{b}{c}$ holds if and only if $\lineab{ab} \perp \lineab{bc}$.
+\end{lemma}
+
+\begin{proof}
+($\Rightarrow$): Let $\ortho{a}{b}{c}$. Then $a, b, c$ are pairwise distinct by (O1). In addition, $a, b, c$ are non-collinear. For if $a, b, c$ were collinear, $a \in \lineab{bc}$ and consequently by (O3) $\ortho{a}{b}{a}$, contradicting (O1). Thus $b$ is the only intersection point of $\lineab{ab}$ and $\lineab{bc}$. Furthermore, $\ortho{x}{b}{y}$ holds for all $x \in \lineab{ab} \setminus \{b\}$ and $y \in \lineab{bc} \setminus \{b\}$ according to (O3) and (O2). Thus $\lineab{ab} \perp \lineab{bc}$.
+
+($\Leftarrow$): From $\lineab{ab} \perp \lineab{bc}$ immediately follows $\ortho{a}{b}{c}$.
+\end{proof}
+
+\begin{lemma} \label{lem:plane_orthogonality}
+\begin{itemize}
+    \item[(i)] Let $l, m, m'$ be lines lying in a plane $e$, and let $l \perp m$. Then $l \perp m'$ holds if and only if $m \parallel m'$.
+    \item[(ii)] Let $a, b, c$ be points. If $\ortho{a}{b}{c}$ holds, then $\ortho{b}{a}{c}$ does not hold.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+We first show: \\
+($\star$) For a line $l$ lying in a plane $e$ and a point $p \in l$, there is at most one line orthogonal to $l$ through $p$ in $e$. \\
+Proof of ($\star$): Let $m$ and $m'$ be distinct lines in $e$ through $p$ orthogonal to $l$. Let $x \in l \setminus \{p\}$ and let $k$ be a line in $e$ through $x$ that is distinct from $l$ and parallel to neither $m$ nor $m'$. Then $k$ intersects the line $m$ in a point $y$ and $m'$ in a point $y'$. Thus $\ortho{x}{p}{y'}$ and $\ortho{x}{p}{y}$, and since $y \neq y'$, it follows by (O4) that $\ortho{x}{p}{x}$, in contradiction to (O1).
+
+We show the backward direction of (i). As stated, let $l$ and $m$ be orthogonal lines in a plane $e$, and let $m'$ be another line in $e$ parallel to $m$. We must show that $l$ and $m'$ are also orthogonal.
+
+Let $a$ be the intersection point of $l$ and $m$, and let $b$ be the intersection point of $l$ and $m'$ (by Lemma \ref{lem:parallel_intersection_transfer}). Further let $c \in m' \setminus \{b\}$. Suppose $l$ and $m'$ are not orthogonal. This means $\ortho{c}{b}{a}$ does not hold, and by (O5) there is a $d \in \lineab{m'}$ (since $\lineab{ac} = m'$) with $\ortho{b}{a}{d}$. But then $\lineab{ad} \perp l$, and by ($\star$), $\lineab{ad} = m$, in contradiction to $m \parallel m'$.
+
+We continue with the proof of (ii). Suppose $\ortho{a}{b}{c}$ and $\ortho{b}{a}{c}$. Let $l$ be the line parallel to $\lineab{bc}$ through $a$. Then both $\lineab{ac}$ and, because of what was just shown, $l$ are orthogonal to $\lineab{ab}$, and from ($\star$) it follows that $l = \lineab{ac}$, a contradiction.
+
+It remains to show the forward direction of (i). Let lines $l$ and $m$ be orthogonal, and let $a$ be their intersection point. Furthermore, let the line $m'$, situated in the same plane, not be parallel to $m$. Then $m$ and $m'$ possess exactly one intersection point $c$. In the case $m' \parallel l$, $m' \not\perp l$ by Lemma \ref{lem:point_line_ortho_equiv}. Otherwise, let $b$ be the intersection point of $l$ and $m'$. If $a = b$, then $m'$ is not orthogonal to $l$ by ($\star$). If $a \neq b$, it follows from $\ortho{b}{a}{c}$ by (ii) that $\ortho{a}{b}{c}$ does not hold, i.e., $m' \not\perp l$.
+\end{proof}
+
+\begin{lemma} \label{lem:ortho_projection}
+Let $l$ be a line and $p$ a point.
+\begin{itemize}
+    \item[(i)] Let $p \notin l$. Then there is exactly one $a \in l$ with $\lineab{pa} \perp l$. I.e., there is exactly one line orthogonal to $l$ passing through $p$.
+    \item[(ii)] Let $p \in l$, and let $l$ lie in the plane $e$. Then there is exactly one line in $e$ passing through $p$ and orthogonal to $l$.
+\end{itemize}
+\end{lemma}
+
+\begin{proof}
+Ad (i): Let $e$ be the plane spanned by $l$ and $p$. Let $x, y$ be distinct points on $l$. In the case $\ortho{p}{x}{y}$, we choose $a = x$. Otherwise, by (O5), there is a $w \in \lineab{px}$ with $\ortho{x}{y}{w}$. Let $m$ be the line parallel to $\lineab{wy}$ through $p$. By Lemma \ref{lem:plane_orthogonality}(i), from $l \perp \lineab{wy}$ and $\lineab{wy} \parallel \lineab{ap}$, it follows as desired that $l \perp \lineab{ap}$.
+
+It remains to show uniqueness. Let $a'$ be a point on $l$ distinct from $a$ with $\lineab{a'p} \perp l$. By Lemma \ref{lem:plane_orthogonality}(i), the lines $\lineab{ap}$ and $\lineab{a'p}$, which are both orthogonal to $l$ in the plane spanned by $l$ and $p$, must be parallel. Since they intersect at $p$, they must coincide, which implies $a = a'$.
+
+Ad (ii): We already saw in the proof of Lemma \ref{lem:plane_orthogonality} that there cannot be more than one line with the given property. It remains to show existence.
+Let $x \in l \setminus \{p\}$. Then there is a $y \in e$ such that $\ortho{y}{x}{p}$ does not hold. For otherwise there would be three distinct collinear points $p, y, y' \in e$ with $\ortho{y}{x}{p}$ and $\ortho{y'}{x}{p}$, which by (O4) would mean $\ortho{p}{x}{p}$, contradicting (O1). By (O5) there is a $z \in \lineab{xy}$ with $\ortho{x}{p}{z}$. Thus $\lineab{pz} \perp l$.
+\end{proof}
+
+If a point $a$ lies on a line $l$, we set $\pi_l(a) = a$. If $a$ does not lie on $l$, the uniquely determined point $b \in l$ with $\lineab{ab} \perp l$ according to Lemma \ref{lem:ortho_projection}(i) is called the \textbf{orthogonal projection} of $a$ onto $l$, and we write $b = \pi_l(a)$.
+
+\begin{lemma} \label{lem:parallel_ortho_transport}
+Let $l$ and $m$ be orthogonal lines, and let $l'$ and $m'$ be intersecting lines. From $l \parallel l'$ and $m \parallel m'$ it follows that $l'$ and $m'$ are also orthogonal.
+\end{lemma}
+
+\begin{proof}
+Let $a$ be the intersection point of $l$ and $m$, and let $e$ be the plane spanned by $l$ and $m$. Likewise, let $a'$ be the intersection point of $l'$ and $m'$, and let $e'$ be the plane spanned by $l'$ and $m'$. Let $x = \pi_{m'}(a)$, and let $l''$ be the line parallel to $l'$ through $x$. Let $a'' = \pi_{l''}(a)$, and let $m''$ be the line parallel to $m'$ through $a''$.
+
+We assert that $\lineab{aa''}$ is perpendicular to $e'$, i.e., that $\ortho{a}{a''}{z}$ for all $z \in e' \setminus \{a''\}$. Indeed, $\ortho{a}{a''}{l''}$. If additionally $a'' = x$, then $\ortho{a}{a''}{m''}$, and the claim follows from (O4). If $a'' \neq x$ and $y \in m' \setminus \{x\}$, then from $\ortho{a}{a''}{x}$, $\ortho{a}{x}{y}$ and $\ortho{a''}{x}{y}$ (which holds because $l'' \perp m'$, following from the coplanar case applied to $l$ and $m$ since $l'' \parallel l$ and $m' \parallel m$), it follows by (O6) that $\ortho{a}{a''}{y}$. Together with $\ortho{a}{a''}{l''}$, the claim again follows by (O4).
+
+We also assert that $\lineab{aa''}$ is perpendicular to $e$. Indeed, $\ortho{a}{a''}{l''}$ and $l'' \parallel l$, so $\ortho{a}{a''}{l}$. Similarly, $\ortho{a}{a''}{m}$ can be seen, and the claim follows again with (O4).
+
+Let $b \in l \setminus \{a\}$, $c \in m \setminus \{a\}$, and $z \in m'' \setminus \{a''\}$. From $\ortho{b}{a}{a''}$ and $\ortho{b}{a}{c}$, it follows with (O4) that $\ortho{b}{a}{z}$. Thus $\ortho{z}{a}{a''}$, $\ortho{z}{a}{b}$ and $\ortho{a''}{a}{b}$, which implies by (O6) that $\ortho{z}{a''}{b}$. Together with $\ortho{z}{a''}{a}$, it follows with (O4) finally $\ortho{z}{a''}{x}$, i.e., $l'' \perp m''$. By Lemma \ref{lem:plane_orthogonality}(i), $l' \perp m'$ follows.
+\end{proof}
+
+\begin{definition} \label{def:euclidean_automorphism}
+A bijective mapping $\varphi: P \to P$ is called a \textbf{Euclidean automorphism} if $\varphi$ is a betweenness automorphism and for all $a, b, c \in P$, $\ortho{a}{b}{c}$ is equivalent to $\ortho{\varphi(a)}{\varphi(b)}{\varphi(c)}$.
+\end{definition}
+
+\begin{lemma} \label{lem:dilatation_euclidean_auto}
+Every dilatation of $P$ is a Euclidean automorphism.
+\end{lemma}
+
+\begin{proof}
+Let $\varphi$ be a dilatation. By Lemma \ref{lem:dilatation_is_automorphism}, $\varphi$ is a betweenness automorphism. Let $\ortho{a}{b}{c}$. Then $\lineab{a'b'} \parallel \lineab{ab}$ and $\lineab{b'c'} \parallel \lineab{bc}$, and due to Lemma \ref{lem:parallel_ortho_transport}, also $\lineab{a'b'} \perp \lineab{b'c'}$, i.e., $\ortho{a'}{b'}{c'}$.
+
+By Lemma \ref{lem:dilatation_properties}(i), $\varphi^{-1}$ is also a dilatation. Thus it is shown that $\varphi$ preserves the orthogonality relation in both directions.
+\end{proof}
+
+\begin{theorem} \label{thm:euclidean_coord}
+Let $P$ have finite dimension $n \ge 3$. There is an $n$-dimensional Euclidean linear space $V$ and a bijection $\varrho: P \to V$ such that (i) $\betw{a}{c}{b}$ holds for three points $a, b, c \in P$ if and only if there is a $0 < \lambda < 1$ with $\varrho(c) = \lambda \varrho(a) + (1 - \lambda)\varrho(b)$, and (ii) $\ortho{a}{c}{b}$ holds for three points $a, b, c \in P$ exactly in the case $\varrho(a) - \varrho(c) \perp \varrho(b) - \varrho(c)$.
+\end{theorem}
+
+\begin{proof}
+According to Theorem \ref{thm:affine_coord}, there is an $n$-dimensional linear space $V$ and a bijection $\varrho: P \to V$ such that condition (i) holds. Let the "coordinate origin" be designated by $0_V$, corresponding to some chosen point $o \in P$.
+
+We further set $a \perp b$ for vectors $a, b \in V$ if $\ortho{\varrho^{-1}(a)}{\varrho^{-1}(0_V)}{\varrho^{-1}(b)}$ holds, or if $a = 0_V$ or $b = 0_V$. Then (S1) holds because of (O2), (S2) because of (O3) and (O4), (S3) because of (O1), and (S4) because of Lemma \ref{lem:ortho_projection}(ii) (noting that we require nonzero vectors for the definition). According to Theorem \ref{thm:ortho_to_inner_product}, there is thus a symmetric, positive definite bilinear form $(\cdot, \cdot)$ such that $a \perp b$ is equivalent to $(a, b) = 0$. Condition (ii) now follows from Lemma \ref{lem:parallel_ortho_transport} and translation invariance.
+\end{proof}
+
+\subsection{Alternative Approach: Orthogonality Relation between Lines}
+
+We add that, instead of a ternary orthogonality relation between points, we could have also worked with a binary relation between lines. That the following properties hold in $P$ has been proven above. The subsequent theorem states that, conversely, their validity determines the orthogonality relation between points.
+
+\begin{theorem} \label{thm:alternative_ortho}
+Let $P$ be a betweenness space. Let the following hold for all lines $l, m$:
+\begin{itemize}
+    \item[(OG1)] From $l \perp m$, it follows that $l$ and $m$ are distinct.
+    \item[(OG2)] From $l \perp m$, it follows that $m \perp l$.
+    \item[(OG3)] Let $l, m_1, m_2$ be pairwise distinct lines with the common intersection point $p$, and let $l \perp m_1, m_2$. Then $l \perp m$ holds for every line in the plane spanned by $m_1, m_2$ through $p$.
+    \item[(OG4)] The line $l$ lies in the plane $e$ and contains the point $p$. Then there is exactly one line orthogonal to $l$ in $e$ passing through $p$.
+    \item[(OG5)] Let $l$ and $m$ be orthogonal lines, and let $l'$ and $m'$ be distinct lines with intersection point $q$. From $l' \parallel l$ and $m' \parallel m$, it follows that $l' \perp m'$.
+\end{itemize}
+For $a, b, c \in P$, define $\ortho{a}{b}{c}$ if $a, b, c$ are pairwise distinct and $\lineab{ab} \perp \lineab{bc}$ holds. Assuming $P$ is complete, this makes $P$ a Euclidean space.
+\end{theorem}
+
+\begin{proof}
+(O1) holds by definition. (O2) holds because of (OG2). (O3) holds again by construction. (O4) holds because of (OG3).
+
+Let $a \neq b$ and $c \notin \lineab{ab}$, and suppose $\lineab{ac} \not\perp \lineab{ab}$. Let $e = U(a, b, c)$. Furthermore, according to (OG4), let $m$ be the uniquely determined line in $e$ through $b$ with $m \perp \lineab{ab}$. If $\lineab{ac} \parallel m$, then by (OG5), $\lineab{ac} \perp \lineab{ab}$ would follow, in contradiction to the assumption. Thus, $\lineab{ac}$ and $m$ have an intersection point $d$. (O5) follows.
+
+Suppose $\ortho{a}{b}{c}$, $\ortho{a}{c}{x}$ and $\ortho{b}{c}{x}$. Let $e = U(a, b, c)$ and $l_c = \lineab{cx}$. Then $l_c \perp \lineab{ac}, \lineab{bc}$. Further, let $l_a$ be the line parallel to $l_c$ through $a$, and $l_b$ the line parallel to $l_c$ through $b$. Then by (OG5), $l_a \perp \lineab{ac}$ and $l_b \perp \lineab{bc}$. Let $m$ be the line parallel to $\lineab{ac}$ through $b$ in $e$. Then by (OG5), $l_b \perp m$, and by (OG3) further $l_b \perp \lineab{ab}$. From $\lineab{ab} \perp l_b, \lineab{bc}$, it finally follows by (OG3) that $\lineab{ab} \perp \lineab{bx}$, i.e., $\ortho{a}{b}{x}$.
+\end{proof}
+
+
+\section{The Metric of Euclidean Geometries}
+
+A Euclidean space is equipped with a natural metric $d$: $d$ is additive on lines; $d$ is invariant under translations; and $d$ is also invariant under Euclidean automorphisms, provided they fix a line pointwise. On the side of the representing Euclidean linear space, this naturally involves the universally known Euclidean metric.
+
+To show this, a few preparations are necessary. We begin with the fundamental theorem of affine geometry.
+
+\begin{theorem} \label{thm:fundamental_affine}
+Let $n \ge 3$ and $\varphi: \mathbb{R}^n \to \mathbb{R}^n$ be a bijective mapping with the property that for every line $l$ in $\mathbb{R}^n$, $\varphi(l)$ is also a line. Then there is a $p \in \mathbb{R}^n$ and a linear automorphism $T$ of $\mathbb{R}^n$ such that
+\[ \varphi(a) = T(a) + p \]
+holds for all $a \in \mathbb{R}^n$.
+\end{theorem}
+
+\begin{proof}
+(following [FaFr, Theorem 12.5.4]). We assert: \\
+($\star$) If $l$ and $m$ are parallel lines in $\mathbb{R}^n$, then $\varphi(l)$ and $\varphi(m)$ are also parallel. \\
+Proof of ($\star$): Let $l \parallel m$. From $l \cap m = \emptyset$ and the bijectivity of $\varphi$, it follows that $\varphi(l) \cap \varphi(m) = \emptyset$. Furthermore, by assumption, $\varphi$ preserves the relationship between three distinct points $a, b, c$ that $a$ lies on the line through $b$ and $c$. Consequently, the image of the plane in which $l$ and $m$ lie is again situated in a plane. We conclude $\varphi(l) \parallel \varphi(m)$.
+
+We set $p = \varphi(0)$ and $T: \mathbb{R}^n \to \mathbb{R}^n, a \mapsto \varphi(a) - p$. Obviously, $T$ is then also a bijective mapping that maps lines to lines and preserves the parallelism of lines according to ($\star$). In addition, $T(0) = 0$. We must show the linearity of $T$.
+
+We show that $T$ is additive. Let $a, b \in \mathbb{R}^n \setminus \{0\}$. \\
+\textit{Case 1.} $a$ and $b$ are linearly independent. $a + b$ is on the line through $a$ parallel to $\lineab{0b}$ as well as on the one through $b$ parallel to $\lineab{0a}$. By ($\star$), the same holds for the images: $T(a + b)$ is on the line through $T(a)$ parallel to $\lineab{0T(b)}$ as well as on the one through $T(b)$ parallel to $\lineab{0T(a)}$. These two lines are not parallel and intersect in the point $T(a) + T(b)$. Thus $T(a + b) = T(a) + T(b)$. \\
+\textit{Case 2.} $a$ and $b$ are linearly dependent. Since $n \ge 3$, there is a $c$ such that $c$ is linearly independent of $a$ and $b$. Then $a + b$ is also linearly independent of $c$ as well as $a$ of $b + c$, and we conclude by Case 1:
+\[ T(a + b) + T(c) = T(a + b + c) = T(a) + T(b + c) = T(a) + T(b) + T(c) \]
+and thus $T(a + b) = T(a) + T(b)$.
+
+We also verify that $T(-a) = -T(a)$. By additivity, $T(a) + T(-a) = T(a - a) = T(0) = 0$, so $T(-a) = -T(a)$. If $b = -a$, then $T(a+b) = T(0) = 0 = T(a) + T(-a) = T(a) + T(b)$. This completely resolves Case 2.
+
+Further, let $\alpha \in \mathbb{R}$ and $a \in \mathbb{R}^n \setminus \{0\}$. Then $\alpha a \in \lineab{0a}$ and thus $T(\alpha a) \in \lineab{0T(a)}$ holds, i.e., for a certain $\sigma_a(\alpha) \in \mathbb{R}$, $T(\alpha a) = \sigma_a(\alpha)T(a)$.
+
+We assert that the mapping $\sigma: \mathbb{R} \to \mathbb{R}$ depends only on $\alpha$ and not on the vector $a$. Let $a$ and $b$ be linearly independent. On one hand, $T(\alpha(a+b)) = \sigma_{a+b}(\alpha)T(a+b) = \sigma_{a+b}(\alpha)T(a) + \sigma_{a+b}(\alpha)T(b)$. On the other hand, $T(\alpha a + \alpha b) = T(\alpha a) + T(\alpha b) = \sigma_a(\alpha)T(a) + \sigma_b(\alpha)T(b)$. Since $T(a)$ and $T(b)$ are linearly independent, comparing coefficients yields $\sigma_a(\alpha) = \sigma_{a+b}(\alpha) = \sigma_b(\alpha)$. Thus $\sigma(\alpha)$ is well-defined independent of the vector.
+
+We now assert that $\sigma$ is a field homomorphism and therefore the identity. We have $\sigma(1)T(a) = T(1 \cdot a) = T(a)$, so $\sigma(1) = 1$. For $\alpha, \beta \in \mathbb{R}$, we obtain $T((\alpha + \beta)a) = T(\alpha a + \beta a) = T(\alpha a) + T(\beta a) = \sigma(\alpha)T(a) + \sigma(\beta)T(a) = (\sigma(\alpha) + \sigma(\beta))T(a)$. Since we also defined $T((\alpha + \beta)a) = \sigma(\alpha + \beta)T(a)$, it follows that $\sigma(\alpha + \beta) = \sigma(\alpha) + \sigma(\beta)$. Finally, $\sigma(\alpha\beta)T(a) = T(\alpha\beta a) = \sigma(\alpha)T(\beta a) = \sigma(\alpha)\sigma(\beta)T(a)$, so $\sigma(\alpha\beta) = \sigma(\alpha)\sigma(\beta)$.
+
+Since the identity is the only field endomorphism of $\mathbb{R}$, $\sigma(\alpha) = \alpha$. This completes the proof that $T$ is a linear mapping.
+\end{proof}
+
+\begin{theorem} \label{thm:betweenness_auto_linear}
+Let $n \ge 3$ and $\varphi: \mathbb{R}^n \to \mathbb{R}^n$ be a betweenness automorphism. Then there is a $p \in \mathbb{R}^n$ and a linear automorphism $T$ of $\mathbb{R}^n$, such that $\varphi(a) = T(a) + p$ holds for all $a \in \mathbb{R}^n$.
+\end{theorem}
+
+\begin{proof}
+$\varphi$ fulfills the conditions of Theorem \ref{thm:fundamental_affine}.
+\end{proof}
+
+For the following, we need the \textit{theorem of Piziak} [Piz].
+
+\begin{theorem} \label{thm:piziak}
+Let $\varphi: V \to W$ be an injective linear mapping between Euclidean linear spaces of dimension at least two with the property that for $a, b \in V$, $a \perp b$ always implies $\varphi(a) \perp \varphi(b)$. Then there is a uniquely determined $\lambda \in \mathbb{R} \setminus \{0\}$ with
+\begin{equation} \label{eq:piziak}
+    (\varphi(u), \varphi(v)) = \lambda(u, v)
+\end{equation}
+for all $u, v \in V$.
+\end{theorem}
+
+\begin{proof}
+Let $v \in V \setminus \{0\}$. Choose a $w \in V$ with $(w, v) = 1$ and set $\lambda_v = (\varphi(w), \varphi(v))$. Then
+\[ (\varphi(u), \varphi(v)) = \lambda_v (u, v) \]
+for all $u \in V$. This holds because $(u - (u, v)w, v) = (u, v) - (u, v)(w, v) = 0$, so $u - (u, v)w \perp v$ and therefore $\varphi(u - (u, v)w) \perp \varphi(v)$, which implies
+\begin{align*}
+    0 &= (\varphi(u - (u, v)w), \varphi(v)) = (\varphi(u), \varphi(v)) - (u, v)(\varphi(w), \varphi(v)) \\
+    &= (\varphi(u), \varphi(v)) - \lambda_v(u, v),
+\end{align*}
+as claimed.
+
+If $\lambda_v = 0$, then $(\varphi(u), \varphi(v)) = 0$ for all $u \in V$. Since $\varphi$ is injective and the bilinear form is positive definite, this implies $\varphi(v) = 0$, so $v = 0$, contradicting $v \in V \setminus \{0\}$. Thus $\lambda_v \neq 0$.
+
+We must verify that the factor $\lambda_v$ is independent of $v$. Let $v' \in V$ be linearly independent of $v$. Then for $u \in V$:
+\begin{align*}
+    (u, v)\lambda_v + (u, v')\lambda_{v'} &= (\varphi(u), \varphi(v)) + (\varphi(u), \varphi(v')) = (\varphi(u), \varphi(v + v')) \\
+    &= \lambda_{v+v'}(u, v + v') = \lambda_{v+v'}(u, v) + \lambda_{v+v'}(u, v')
+\end{align*}
+and therefore $(\lambda_{v+v'} - \lambda_v)(u, v) = (\lambda_{v'} - \lambda_{v+v'})(u, v')$. Suppose now $\lambda_{v+v'} \neq \lambda_v$. We choose a $\tilde{u} \in V$ with $(\tilde{u}, v') = 1$ and set $\beta = (\tilde{u}, v)$. Then $\beta = (\lambda_{v'} - \lambda_{v+v'})(\lambda_{v+v'} - \lambda_v)^{-1}$ and thus
+\[ 0 = (u, v) - \beta(u, v') = (u, v - \beta v') \]
+for all $u \in V$. It follows that $v = \beta v'$, i.e., $v$ and $v'$ are linearly dependent, contradicting the assumption. We conclude $\lambda_{v+v'} = \lambda_v$, and similarly we see $\lambda_{v+v'} = \lambda_{v'}$ and thus $\lambda_v = \lambda_{v'}$. Since for any two vectors in $V \setminus \{0\}$, there is a third one linearly independent from both, (\ref{eq:piziak}) follows for all $u, v \in V$.
+
+The uniqueness of the factor $\lambda$ is clear since there are vectors $u, v \in V$ with $(u, v) = 1$.
+\end{proof}
+
+We are now in a position to specify the Euclidean automorphisms of Euclidean spaces.
+
+\begin{theorem} \label{thm:euclidean_auto_representation}
+Let $V$ be a Euclidean linear space of dimension $n \ge 3$, and let $\varphi: V \to V$ be a Euclidean automorphism. Then there is a $p \in V$, a $\gamma > 0$, and an orthogonal mapping $T$ of $V$ such that
+\begin{equation} \label{eq:euclidean_auto}
+    \varphi(a) = \gamma T(a) + p
+\end{equation}
+holds for all $a \in V$.
+Conversely, every mapping of the form (\ref{eq:euclidean_auto}) is a Euclidean automorphism.
+\end{theorem}
+
+\begin{proof}
+By Theorem \ref{thm:betweenness_auto_linear}, there is a $p \in V$ and a linear automorphism $\tilde{T}$ with $\varphi(a) = \tilde{T}(a) + p$ for all $a \in V$. Furthermore, from $a \perp b$, it follows by assumption that $\varphi(a) - \varphi(0_V) \perp \varphi(b) - \varphi(0_V)$, thus $\tilde{T}(a) \perp \tilde{T}(b)$.
+
+By Theorem \ref{thm:piziak}, there is a $\lambda \in \mathbb{R}$ such that $(\tilde{T}(a), \tilde{T}(b)) = \lambda(a, b)$ holds for all $a, b \in V$. Since $(\cdot, \cdot)$ is positive definite, $\lambda > 0$. If we set $T = \frac{1}{\sqrt{\lambda}}\tilde{T}$, then $(T(a), T(b)) = (a, b)$ for all $a, b \in V$, meaning $T$ is an orthogonal mapping. With $\gamma = \sqrt{\lambda}$, we obtain the stated representation of $\varphi$.
+
+The converse statement is easily verifiable.
+\end{proof}
+
+We thus achieve our goal of showing that a Euclidean space can be equipped with a canonical metric.
+
+\begin{theorem} \label{thm:metric}
+Let $V$ be a Euclidean linear space of dimension $n \ge 3$. There is a metric $d$ on $V$, uniquely determined up to a positive factor, with the following properties:
+\begin{itemize}
+    \item[(M1)] For all points $a, b, c \in V$ with $\betw{a}{b}{c}$, $d(a, c) = d(a, b) + d(b, c)$.
+    \item[(M2)] If $\varphi$ is a Euclidean automorphism that either has two fixed points or is a translation, then $d(\varphi(a), \varphi(b)) = d(a, b)$ for all $a, b \in V$.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+By choosing an orthonormal basis, we can identify $V$ with $\mathbb{R}^n$ equipped with the standard scalar product.
+
+Let $d_e$ be the Euclidean metric on $\mathbb{R}^n$. We first observe that $\alpha d_e$ is a metric with the required properties for every $\alpha > 0$. Let $d$ be another such metric.
+
+Let $a \in \mathbb{R}^n \setminus \{0\}$. The mapping $\mathbb{R} \to \langle a \rangle$, $\alpha \mapsto \alpha a$ preserves the betweenness relation. From (M1) and (M2) it follows that the mapping $\mathbb{R}^+ \to \mathbb{R}^+$, $\alpha \mapsto d(0_V, \alpha a)$ is additive. Since any additive function on $\mathbb{R}$ that is non-negative on $\mathbb{R}^+$ is linear, we conclude $d(0_V, \alpha a) = \alpha d(0_V, a)$ for $\alpha > 0$.
+
+Let $T$ be an orthogonal mapping with two fixed points. By Theorem \ref{thm:euclidean_auto_representation}, $T$ is a Euclidean automorphism (with $\gamma=1$). Thus, by (M2), $d(0_V, a) = d(0_V, T(a))$.
+
+We set $\alpha = d(0_V, e_1)$, where $e_1$ is the first unit vector. Now for every vector $a \in \mathbb{R}^n$ with $\|a\|_2 = 1$, there is an orthogonal mapping that fixes an at least one-dimensional subspace and maps $e_1$ to $a$. Thus $d(0_V, a) = \alpha$ holds for all $a \in \mathbb{R}^n$ with $\|a\|_2 = 1$. With the linearity property shown above, it follows as desired that $d(0_V, a) = \alpha\|a\|_2$ for all $a \in \mathbb{R}^n$. Finally, $d$ is translation-invariant due to (M2), and we conclude $d(a, b) = d(0_V, b - a) = \alpha\|b - a\|_2$.
+\end{proof}
+
+\begin{thebibliography}{99}
+\bibitem[Art]{Art} E. Artin, \textit{Geometric algebra}, Interscience Publishers, New York 1957; reprint: Dover Publications, New York 2016.
+\bibitem[Cam]{Cam} P. J. Cameron, \textit{Projective and Polar Spaces}, QMW Mathematics Notes, 1992 (first ed.); \url{https://cameroncounts.wordpress.com/wp-content/uploads/2015/04/pps1.pdf}, 2015 (third ed.).
+\bibitem[Fau]{Fau} C.-A. Faure, An elementary proof of the fundamental theorem of projective geometry, \textit{Geom. Dedicata} \textbf{90} (2002), 145-151.
+\bibitem[FaFr]{FaFr} C.-A. Faure, A. Fr\"olicher, \textit{Modern projective geometry}, Kluwer Academic Publishers, Dordrecht 2000.
+\bibitem[Hil]{Hil} D. Hilbert, \textit{Grundlagen der Geometrie}, 9th ed., revised and expanded by P. Bernays, B.-G.-Teubner-Verlagsgesellschaft, Stuttgart 1962.
+\bibitem[Pam]{Pam} V. Pambuccian, The axiomatics of ordered geometry: I. Ordered incidence spaces, \textit{Expo. Math.} \textbf{29} (2011), 24--66.
+\bibitem[Piz]{Piz} R. Piziak, Orthogonality-preserving transformations on quadratic spaces, \textit{Port. Math.} \textbf{43} (1986), 201--212.
+\bibitem[S\"or]{Sor} K. S\"orensen, Ein Beweis von H. Karzel und I. Pieper, \textit{J. Geom.} \textbf{32} (1988), 131--132.
+\end{thebibliography}
+
+\end{document}
+
