@@ -9,731 +9,828 @@
 \usepackage{orcidlink}
 
 \newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
 
 \newcommand{\bra}[1]{\langle #1 |}
 \newcommand{\ket}[1]{| #1 \rangle}
 \newcommand{\braket}[2]{\langle #1 | #2 \rangle}
-\newcommand{\Tr}{\mathrm{Tr}}
+\newcommand{\Tr}{\operatorname{Tr}}
 \newcommand{\eps}{\varepsilon}
 \newcommand{\HH}{\mathcal{H}}
 \newcommand{\EE}{\mathcal{E}}
 \newcommand{\SSys}{\mathcal{S}}
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\PP}{\mathbb{P}}
-\newcommand{\AAlg}{\mathcal{A}}
-\newcommand{\MM}{\mathcal{M}}
 
 \begin{document}
 
-\title{The Geometric Part of Decoherence: \\ Quasi-Orthogonality in High-Dimensional Hilbert Spaces}
+\title{Typical Environmental Overlaps in High-Dimensional Hilbert Space:
+Kinematic Bounds for Decoherence}
 
 \author{Karl Svozil\,\orcidlink{0000-0001-6554-2802}}
 \affiliation{Institute for Theoretical Physics, TU Wien,
-Wiedner Hauptstrasse 8-10/136, A-1040 Vienna, Austria}
+Wiedner Hauptstrasse 8--10/136, A-1040 Vienna, Austria}
 \email{karl.svozil@tuwien.ac.at}
 
 \date{\today}
 
 \begin{abstract}
-We isolate a geometric mechanism that complements the dynamical suppression of macroscopic interference: In a high-dimensional Hilbert space, almost all state vectors are nearly orthogonal, accommodating an exponentially large reservoir of mutually quasi-orthogonal environmental branch states. This geometry explains why macroscopic alternatives fail to exhibit visible interference once such branch states are populated. The argument is conditional and finite-dimensional, and it leaves the interpretive core of quantum mechanics untouched: geometry alone does not select a pointer basis, does not guarantee that a given Hamiltonian drives the system into typical regions of the accessible subspace, and does not turn an improper mixture into a proper one. It merely supplies the vast Hilbert-space capacity that makes decoherence so overwhelmingly effective for all practical purposes.
+We quantify a conditional kinematic contribution to environmental
+decoherence.  For independent Haar-random pure states in a
+$D$-dimensional complex Hilbert space, the squared overlap has distribution
+$\operatorname{Beta}(1,D-1)$, and therefore
+$\mathbb{P}(|\langle\phi|\psi\rangle|^2\geq\eps)=(1-\eps)^{D-1}$.
+We combine this identity with a union bound to control the trace distance
+between the reduced state of a finite family of pointer alternatives and its
+completely dephased counterpart; a complementary Hilbert--Schmidt estimate
+controls the collective contribution of many weak coherences.  For a mixed
+initial environment and a Haar-random relative conditional unitary $W$, we
+obtain
+$\mathbb{E}|\operatorname{Tr}(\rho_EW)|^2=\operatorname{Tr}(\rho_E^2)/D$
+and convert this identity into simultaneous high-probability bounds for a
+finite branch family.
+These statements are conditional on suitable typicality of the relative
+environmental dynamics.  High dimension alone neither establishes such
+typicality nor selects a pointer basis.  Moreover, suppression of system
+coherence must be distinguished from the formation of distinguishable or
+redundantly accessible environmental records.  The analysis thus isolates
+the geometric capacity used by decoherence while making explicit the
+dynamical and information-theoretic assumptions required for its physical
+application.
 \end{abstract}
 
 \maketitle
 
 \section{Introduction}
 
-The quantum measurement problem asks how the continuous and reversible Schr\"odinger evolution gives rise to the discrete, irreversible classical world we observe~\cite{schlosshauer-2007,schlosshauer-2019}. Operationally, the question reduces to why the off-diagonal interference terms of a system's reduced density matrix are unobservable on macroscopic scales.
+The quantum measurement problem includes several logically distinct
+questions: which observables acquire a preferred status, why individual
+measurements have definite outcomes, and why their statistics follow the
+Born rule~\cite{schlosshauer-2007,schlosshauer-2019}.  Environmental
+decoherence addresses an important operational part of this problem.  It
+explains why interference between certain alternatives becomes inaccessible
+to measurements on a system once information about those alternatives has
+dispersed into its environment.  Decoherence does not, by itself, select one
+member of the resulting global superposition as the unique outcome.
 
-The urgency of this question was forcefully articulated by Schr\"odinger in a 1952 colloquium~\cite{schroedinger-interpretation}. He noted that if the wave equation is universally valid, then alternative macroscopic outcomes must all ``really happen simultaneously.'' Schr\"odinger argued that if nature actually took this form, we should find our surroundings rapidly blurring together into a ``quagmire, or sort of a featureless jelly''---a variant of his cat metaphor. For example, a watch left unobserved in a drawer overnight should dissolve into a smeared probability distribution. This ``jellification'' argument poses a sharp, physical question: if unitary quantum mechanics holds at all scales, what fundamental mechanism prevents the simultaneous alternatives of the macroscopic world from blurring into an unobservable, featureless smear?
+Beyond his famous cat thought experiment introduced seventeen years prior~\cite{schrodinger-gwsidqm1},
+Schr\"odinger dramatized the tension in a 1952 Dublin colloquium.  If the wave
+equation applies universally, he observed, a naive reading appears to turn
+macroscopic surroundings into a ``quagmire'' or ``featureless jelly'' and
+even seems to threaten the stability of an unobserved wristwatch in a
+drawer~\cite{schroedinger-interpretation}.
 
-Bell coined ``FAPP'' (\emph{for all practical purposes}) to express skepticism toward explanations that rest on the practical impossibility of observing macroscopic interference rather than on a fundamental physical mechanism~\cite{bell-a}. Modern decoherence theory~\cite{joos1985emergence,RevModPhys.75.715,joos2003decoherence,schlosshauer-2007} answers this by showing that interaction with a macroscopic environment dynamically drives the off-diagonal terms toward zero in a preferred (pointer) basis selected by the system--environment coupling.
+The modern operational response is not that the global superposition
+disappears.  Rather, environmental
+correlations make its relative phases inaccessible to the restricted
+observables by which macroscopic systems are ordinarily interrogated.
 
-We shall examine a complementary, purely \emph{geometric}
-contribution to the same suppression.  The relevant tools are the
-exponential packing of approximately orthogonal unit vectors and the
-concentration of measure on high-dimensional spheres
-\cite{kainen1993quasiorthogonal,tao2012topics,vershynin2018high,ledoux2001concentration,milman1986asymptotic}.  These results are
-standard in high-dimensional geometry, but their direct application to
-the environmental records appearing in decoherence is, to our knowledge,
-underemphasized.
+Standard decoherence theory supplies the dynamical framework: the
+system--environment interaction selects stable pointer observables and
+correlates their alternatives with conditional environmental
+states~\cite{joos1985emergence,RevModPhys.75.715,joos2003decoherence,schlosshauer-2007}.
+High dimension alone does not guarantee decoherence: a relative conditional
+unitary may, for example, remain the identity on the entire environmental
+space.  The question addressed here is narrower: once an explicit typicality
+assumption for the conditional environmental states or relative unitaries has
+been specified, what suppression follows from high-dimensional geometry
+alone?  Unit vectors sampled independently from a high-dimensional complex
+Hilbert space normally have very small overlaps.  This is an elementary
+instance of concentration of
+measure~\cite{tao2012topics,vershynin2018high,ledoux2001concentration,milman1986asymptotic}.
 
-Our central claim is modest. High-dimensional Hilbert-space geometry guarantees an enormous reservoir of nearly non-interfering pure states. This is a kinematic fact independent of any Hamiltonian. Whether actual environmental branches occupy this reservoir is a separate dynamical question. In ordinary decoherence theory, the system--environment interaction selects a pointer basis and correlates different pointer values with different environmental records. The geometric estimates below apply once those records are sufficiently typical in the accessible environmental subspace.
+The word \emph{independently} is essential.  Actual environmental branch
+states arise from the same initial state under correlated conditional
+dynamics.  Their relative unitary need not be Haar distributed, and a large
+energy shell does not make it so.  We therefore formulate the geometric
+results as conditional bounds, identify the precise dynamical object to which
+they would apply, and distinguish three notions that are easily conflated:
+small reduced-system coherences, distinguishable conditional environmental
+states, and redundant classical records.
 
-We therefore separate two ingredients that are often bundled together. The dynamical ingredient is the production of environmental records by the Hamiltonian. The kinematic ingredient is the concentration of measure on high-dimensional spheres, which makes generic records almost mutually orthogonal. The latter sharply quantifies the FAPP suppression of macroscopic interference, while leaving untouched the deeper interpretive question of whether an improper mixture has become a proper one.
+The individual geometric identities used below are standard.  The purpose of
+this paper is to combine them into operational trace-distance estimates for
+finite families of conditional environmental states, to extend the
+mean-square analysis to mixed environments, and to delineate the dynamical
+and information-theoretic assumptions needed before these kinematic estimates
+can be interpreted as physical decoherence claims.
 
+\section{Decoherence factors and an operational bound}
+\label{sec:operational}
 
-\section{Random Quantum States, Typical Overlaps, and Exponential Packing}
-\label{sec:random-overlaps-packing}
-
-\subsection*{Heuristic argument}
-
-The main geometric point can be understood before any probability formalism is
-introduced.  A normalized quantum state
+Let $\{\ket{s_i}\}_{i=1}^{m}$ be orthonormal pointer alternatives spanning
+the support of the system state, selected by a measurement-like interaction,
+and let $\sum_i|c_i|^2=1$.  For a pure initial environment $\ket{E_0}$,
+the joint evolution has the form $\ket{E_i(t)}=U_i(t)\ket{E_0}$, with
 \begin{equation}
-    \ket{\psi}
-    =
-    (\psi_1,\ldots,\psi_d)
-    \in \mathbb C^d
+ \left(\sum_{i=1}^{m}c_i\ket{s_i}\right)\ket{E_0}
+ \longmapsto
+ \ket{\Psi(t)}=
+ \sum_{i=1}^{m}c_i\ket{s_i}\ket{E_i(t)}
+.
+ \label{eq:branching}
 \end{equation}
-satisfies
+Tracing out the environment gives
 \begin{equation}
-    |\psi_1|^2+\cdots+|\psi_d|^2=1 .
+ \rho_S(t)=
+ \sum_{i,j=1}^{m}c_ic_j^*\gamma_{ji}(t)
+ \ket{s_i}\bra{s_j},
+ \qquad
+ \gamma_{ji}(t)=\braket{E_j(t)}{E_i(t)}.
+ \label{eq:reduced}
 \end{equation}
-If the state is chosen without any preferred direction, this unit probability
-weight is spread over $d$ complex coordinates.  Thus a typical coordinate
-weight should be of order $1/d$.  Now fix a pure state $\ket{\phi}$.  By
-unitary invariance one may choose coordinates so that $\ket{\phi}=\ket{e_1}$.
-The Born probability for a system prepared in $\ket{\psi}$ to pass the yes--no
-test associated with $\ket{\phi}$ is then
+Let $\Delta$ denote complete dephasing in the pointer basis,
 \begin{equation}
-    |\langle\phi|\psi\rangle|^2=|\psi_1|^2 .
+ \Delta(\rho_S)=\sum_i\ket{s_i}\bra{s_i}\rho_S
+ \ket{s_i}\bra{s_i}.
 \end{equation}
-Hence the transition probability from a random pure state to a fixed pure state
-is expected to be of order $1/d$.  A transition probability larger than some
-fixed threshold $0<\eps<1$ would require one coordinate to carry an anomalously
-large fraction of the total norm.  In high dimension this is exponentially
-unlikely.  The exact calculation below makes this heuristic precise:
-\begin{equation}
-    \PP\{ |\langle\phi|\psi\rangle|^2\geq\eps\}
-    =
-    (1-\eps)^{d-1}
-    \leq
-    \exp[-(d-1)\eps].
-    \label{eq:heuristic-tail}
-\end{equation}
-This exact overlap tail is the source of both typical quasi-orthogonality and
-the exponential packing estimate used below.
+Thus $\Delta$ is trace preserving on the relevant support.  All coherence
+statements below are relative to this dynamically selected pointer basis;
+they do not define a basis-independent quantity called coherence.
+The trace distance
+$D_{\rm tr}(\rho,\sigma)=\frac12\|\rho-\sigma\|_1$ has a direct operational
+meaning: it controls the maximum change of outcome probabilities over all
+measurements.  The environmental overlaps give the following elementary
+bound.
 
-\subsection*{Notation and elementary distributions}
+\begin{proposition}[Reduced-state coherence bound]
+\label{prop:trace-bound}
+For the state in Eq.~\eqref{eq:reduced},
+\begin{align}
+ D_{\rm tr}\!\left(\rho_S,\Delta(\rho_S)\right)
+ &\leq
+ \min\!\left\{1,
+ \frac12\sum_{i\neq j}|c_i c_j|\,|\gamma_{ji}|\right\}.
+ \label{eq:trace-bound-general}
+\end{align}
+It also obeys the Hilbert--Schmidt bound
+\begin{equation}
+ D_{\rm tr}\!\left(\rho_S,\Delta(\rho_S)\right)
+ \leq \min\!\left\{1,\frac12\sqrt{mZ}\right\},
+ \label{eq:trace-bound-hs}
+\end{equation}
+where
+\begin{equation}
+ Z=\sum_{i\neq j}|c_i|^2|c_j|^2|\gamma_{ji}|^2.
+ \label{eq:collective-coherence}
+\end{equation}
+If $|\gamma_{ji}|\leq\delta$ for all $i\neq j$, then
+\begin{equation}
+\begin{aligned}
+ D_{\rm tr}\!\left(\rho_S,\Delta(\rho_S)\right)
+ \leq
+ \min\!\left\{1,\frac{\delta}{2}
+ \left[\left(\sum_i|c_i|\right)^2-1\right]
+ \right\} \\
+ &\leq \min\!\left\{1,\frac{m-1}{2}\delta\right\}.
+ \label{eq:trace-bound-uniform}
+\end{aligned}
+\end{equation}
+For two alternatives the first inequality is an equality:
+$D_{\rm tr}=|c_1c_2|\,|\gamma_{12}|$.
+\end{proposition}
 
-The symbol $\PP$ denotes the probability of an event, and $\E$ denotes
-expectation with respect to the random choice of state vectors.  A Haar-random
-unit vector in $\mathbb C^d$ means a unit vector distributed according to the
-unique unitarily invariant probability measure on the unit sphere: applying
-any unitary $U\in U(d)$ leaves its distribution unchanged.  In the real
-comparison below, Haar-random means uniformly distributed with respect to the
-orthogonally invariant probability measure on the real sphere
-$S^{d-1}\subset\mathbb R^d$.
+\begin{proof}
+Subtracting the dephased state leaves
+$\sum_{i\neq j}c_ic_j^*\gamma_{ji}\ket{s_i}\bra{s_j}$.
+The triangle inequality, the trivial bound $D_{\rm tr}\leq1$, and
+$\|\ket{s_i}\bra{s_j}\|_1=1$ give
+Eq.~\eqref{eq:trace-bound-general}.  Since the difference has rank at most
+$m$, $\|X\|_1\leq\sqrt{m}\|X\|_2$ and direct evaluation of
+$\|X\|_2^2=\Tr(X^\dagger X)$ give
+Eq.~\eqref{eq:trace-bound-hs}.  The first bound in
+Eq.~\eqref{eq:trace-bound-uniform} follows by taking the maximum overlap out
+of the sum.  The second follows from
+$\sum_i|c_i|\leq\sqrt{m}$ and $\sum_i|c_i|^2=1$.
+For $m=2$, the two nonzero singular values of the off-diagonal difference are
+both $|c_1c_2\gamma_{12}|$.
+\end{proof}
 
-The notation $N(0,1)$ denotes the real normal distribution with mean zero and
-variance one, with density
-\begin{equation}
-    (2\pi)^{-1/2}\exp(-x^2/2),
-    \qquad x\in\mathbb R .
-\end{equation}
-Thus $X,Y\sim N(0,1)$ means that $X$ and $Y$ are independent standard real
-Gaussian random variables.  A standard complex Gaussian variable is
-\begin{equation}
-    Z=\frac{X+iY}{\sqrt2}.
-    \label{eq:standard-complex-gaussian}
-\end{equation}
-The factor $1/\sqrt2$ normalizes the second moment:
-\begin{equation}
-    \E |Z|^2
-    =
-    \frac{\E X^2+\E Y^2}{2}
-    =1 .
-\end{equation}
-Equivalently, $Z$ has density $\pi^{-1}e^{-|z|^2}$ on the complex plane.  A
-standard complex Gaussian vector $Z=(Z_1,\ldots,Z_d)\in\mathbb C^d$ has
-independent standard complex Gaussian components.
+Pairwise quasi-orthogonality is therefore useful only together with control
+of the number and amplitudes of the alternatives.  A tiny entrywise bound can
+fail to control a large Gram matrix if sufficiently many off-diagonal entries
+accumulate.
 
-We shall use a few elementary distributional facts.  A chi-square random
-variable with $k$ degrees of freedom, denoted $\chi^2_k$, is the sum of the
-squares of $k$ independent $N(0,1)$ variables.  Hence, if
-$Z=(X+iY)/\sqrt2$ is a standard complex Gaussian, then
-\begin{equation}
-    |Z|^2
-    =
-    \frac{X^2+Y^2}{2},
-    \qquad
-    X^2+Y^2\sim\chi^2_2 .
-\end{equation}
-Geometrically, $X^2+Y^2$ is the squared radius of a two-dimensional isotropic
-Gaussian point.  Its density is
-\begin{equation}
-    \frac12 e^{-s/2},
-    \qquad s\geq0,
-\end{equation}
-so $(X^2+Y^2)/2$ has density $e^{-t}$ on $t\geq0$, i.e. the exponential
-distribution of mean one.  We write this as
-\begin{equation}
-    |Z|^2\sim\operatorname{Exp}(1)
-    =
-    \operatorname{Gamma}(1,1).
-\end{equation}
-For different coordinates $j$, the variables $|Z_j|^2$ are independent because
-the Gaussian components $Z_j$ are independent and $|Z_j|^2$ depends only on the
-$j$th component.
+\section{Haar geometry and simultaneous branch bounds}
+\label{sec:haar}
 
-We use the shape--scale convention for gamma distributions:
-$\operatorname{Gamma}(\alpha,\theta)$ has density proportional to
-$x^{\alpha-1}e^{-x/\theta}$ on $x>0$, with shape $\alpha$ and scale
-$\theta$.  Thus $\operatorname{Gamma}(\alpha,1)$ has unit scale.  The beta
-distribution $\operatorname{Beta}(a,b)$ has density
-\begin{equation}
-    \frac{1}{B(a,b)}t^{a-1}(1-t)^{b-1},
-    \qquad 0<t<1,
-\end{equation}
-where $B(a,b)$ is the beta function, i.e. the normalizing integral.  We use the
-standard beta-ratio fact: if $U\sim\operatorname{Gamma}(a,\theta)$ and
-$V\sim\operatorname{Gamma}(b,\theta)$ are independent with the same scale
-$\theta$, then
-\begin{equation}
-    \frac{U}{U+V}\sim\operatorname{Beta}(a,b).
-\end{equation}
-The scale parameter cancels in the ratio.
+\subsection{Exact overlap distribution}
 
-\subsection*{Exact complex overlap distribution}
-
-The point is directly quantum-mechanical.  If a system is prepared in
-$\ket{\psi}$ and tested against the pure state $\ket{\phi}$, the Born
-probability of the corresponding yes-outcome is
+\begin{lemma}[Complex Haar overlap]
+\label{lem:haar-overlap}
+Let $\ket{\psi},\ket{\phi}\in\mathbb C^D$, $D\geq2$, be independent
+Haar-random unit vectors.  Then
 \begin{equation}
-    \bra{\psi}\bigl(\ket{\phi}\bra{\phi}\bigr)\ket{\psi}
-    =
-    |\langle\phi|\psi\rangle|^2 .
-    \label{eq:born-transition-probability}
+ T=|\langle\phi|\psi\rangle|^2
+ \sim\operatorname{Beta}(1,D-1),
+ \label{eq:beta}
 \end{equation}
-Thus quasi-orthogonality of random pure states is equivalently a statement
-about the typical smallness of transition probabilities.
-
-\begin{lemma}[Complex random transition probabilities]
-\label{lem:complex-transition-probability}
-Let $\ket{\psi},\ket{\phi}\in\mathbb C^d$ be independently chosen
-Haar-random unit vectors, with $d\geq2$. Then, for $0\leq \eps\leq1$,
+and, for $0\leq\eps\leq1$,
 \begin{equation}
-    \PP\{ |\langle\phi|\psi\rangle|^2\geq \eps\}
-    =
-    (1-\eps)^{d-1} .
-    \label{eq:overlapExact}
+ \PP(T\geq\eps)=(1-\eps)^{D-1}
+ \leq e^{-(D-1)\eps}.
+ \label{eq:tail}
 \end{equation}
-Equivalently, for $0\leq\delta\leq1$,
+In particular, $\E T=1/D$.
+\end{lemma}
+
+\begin{proof}
+By unitary invariance fix $\ket{\phi}=\ket{e_1}$.  A Haar-random unit
+vector can be written as $Z/\|Z\|$, where the $Z_k$ are independent standard
+complex Gaussian variables.  The variables $X_k=|Z_k|^2$ are independent
+exponentials of mean one.  Hence
 \begin{equation}
-    \PP\{ |\langle\phi|\psi\rangle|\geq \delta\}
-    =
-    (1-\delta^2)^{d-1}
-    \leq
-    \exp[-(d-1)\delta^2] .
-    \label{eq:complex-overlap-tail-delta}
+ T=\frac{X_1}{X_1+\cdots+X_D}
+ \sim\operatorname{Beta}(1,D-1).
+\end{equation}
+Integration of its density $(D-1)(1-t)^{D-2}$ gives
+Eq.~\eqref{eq:tail}; its mean is $1/D$.
+\end{proof}
+
+Thus the typical squared overlap is of order $D^{-1}$ and the typical
+amplitude is of order $D^{-1/2}$.  The exact distribution is more informative
+than a generic application of L\'evy's lemma because it retains the precise
+dependence on the overlap threshold.
+
+\subsection{A finite-family theorem}
+
+The quantity relevant for a measurement with several alternatives is the
+largest pairwise overlap, rather than the overlap of one pair.
+
+\begin{proposition}[Simultaneous overlap and trace-distance bound]
+\label{prop:simultaneous}
+Let $m\geq2$, let $\ket{E_1},\ldots,\ket{E_m}$ be independent Haar-random
+unit vectors in $\mathbb C^D$, and let $0<\eta<1$.  Define
+\begin{equation}
+ K=\binom{m}{2},\qquad
+ x_\eta=\frac{\log(K/\eta)}{D-1},\qquad
+ \eps_\eta=1-e^{-x_\eta}.
+ \label{eq:epsiloneta}
+\end{equation}
+With probability at least $1-\eta$,
+\begin{equation}
+ \max_{i\neq j}|\langle E_j|E_i\rangle|
+ \leq\sqrt{\eps_\eta}
+ \leq
+ \sqrt{\frac{\log[\binom{m}{2}/\eta]}{D-1}}.
+ \label{eq:max-overlap}
+\end{equation}
+Consequently, the branched state in Eq.~\eqref{eq:branching} obeys, with the
+same probability,
+\begin{align}
+ D_{\rm tr}\!\left(\rho_S,\Delta(\rho_S)\right)
+ &\leq
+ \min\!\left\{1,
+ \frac12\left[\left(\sum_i|c_i|\right)^2-1\right]
+ \sqrt{\eps_\eta}\right\}
+ \nonumber\\
+ &\leq
+ \min\!\left\{1,
+ \frac{m-1}{2}
+ \sqrt{\frac{\log[\binom{m}{2}/\eta]}{D-1}}\right\}.
+ \label{eq:prob-trace-bound}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+Lemma~\ref{lem:haar-overlap} and a union bound give
+\begin{equation}
+ \PP\!\left(\max_{i<j}|\langle E_j|E_i\rangle|^2>\eps\right)
+ \leq\binom{m}{2}(1-\eps)^{D-1}.
+\end{equation}
+Equation~\eqref{eq:epsiloneta} makes the right-hand side equal to $\eta$.
+The second inequality in Eq.~\eqref{eq:max-overlap} follows from
+$1-e^{-x}\leq x$.  Proposition~\ref{prop:trace-bound} completes the proof.
+\end{proof}
+
+For fixed $m$ and fixed confidence, the operational error in this bound is
+$O(D^{-1/2})$.  If $m$ grows with $D$, the accumulation factor in
+Eq.~\eqref{eq:prob-trace-bound} must be retained.  This qualification is
+important in discussions of very large branch families.  For comparable
+amplitudes the displayed bound scales as
+$m\sqrt{\log(m)/D}$ and therefore becomes nontrivial in a considerably more
+restricted regime than the pairwise packing bound below.  The union bound
+does not require mutual independence of the pair-overlap events.  The same
+conclusion holds for any joint ensemble whose pairwise marginals have the
+Haar overlap distribution of Lemma~\ref{lem:haar-overlap}.
+
+The tradeoff can also be read directly from Eq.~\eqref{eq:epsiloneta}.  At
+fixed $D$ and failure probability $\eta$, increasing the number of branches
+$m$ increases the overlap threshold $\eps_\eta$ that can be guaranteed.
+Equivalently, keeping both $\eta$ and the allowed overlap fixed while
+increasing $m$ requires a larger effective dimension $D$.
+
+\subsection{Packing is not classical memory capacity}
+
+The same union-bound calculation gives a random-coding statement.  For
+$0\leq\eps<1$, let
+$M_\eps(D)$ denote the largest cardinality of a family of unit vectors in
+$\mathbb C^D$ satisfying
+$|\langle\psi_i|\psi_j\rangle|^2\leq\eps$ for every $i\neq j$.  Then
+\begin{equation}
+ M_\eps(D)\geq
+ \left\lfloor
+ \exp\!\left[\frac{D-1}{2}\bigl(-\log(1-\eps)\bigr)\right]
+ \right\rfloor.
+ \label{eq:packing}
+\end{equation}
+Indeed, for this number of independent Haar samples the union-bound
+probability of a violating pair is strictly below one.  For fixed small
+$\eps$, Eq.~\eqref{eq:packing} is exponential in $\eps D$.
+
+This spherical-code packing bound is not a capacity for reliably readable
+classical records.  When $M>D$, the states are linearly dependent and cannot
+be perfectly discriminated by a single-copy measurement.  The Welch bound
+further gives
+\begin{equation}
+ \max_{i\neq j}|\langle\psi_i|\psi_j\rangle|^2
+ \geq \frac{M-D}{D(M-1)}
+ \qquad (M>D),
+ \label{eq:welch}
+\end{equation}
+Equation~\eqref{eq:welch} is a geometric restriction, not by itself a bound
+on a specified decoder~\cite{welch1974coherence}.  Approximate discrimination
+requires a prior distribution, a measurement, and an error criterion.  For a
+uniform ensemble of $M$ pure states in dimension $D$, the Holevo bound
+$\chi\leq\log D$, combined with Fano's inequality, gives a nonzero lower bound
+on the average decoding error when $\log M-\log D$ is sufficiently large
+\cite{Holevo1973,nielsen-book10}.  Equation~\eqref{eq:packing} is therefore
+best viewed as a statement about projective Hilbert-space geometry.  The
+operationally relevant decoherence statement is instead
+Proposition~\ref{prop:simultaneous} for a specified family of alternatives.
+
+\section{Mixed environments: coherence is not a record}
+\label{sec:mixed}
+
+This section isolates a counterintuitive but important distinction.  Greater
+initial mixedness can reduce the Haar-averaged decoherence factor while
+simultaneously reducing, or even eliminating, the environment's capacity to
+encode a readable record.  These are different operational quantities, not a
+paradox.
+
+For an initially mixed environmental state $\rho_E$, a controlled unitary
+produces reduced-system coherence factors
+\begin{equation}
+ \gamma_{ji}(t)
+ =\Tr\!\left[U_i(t)\rho_EU_j(t)^\dagger\right]
+ =\Tr\!\left[\rho_E W_{ji}(t)\right],
+ \,
+ W_{ji}(t)=U_j(t)^\dagger U_i(t).
+ \label{eq:mixedgamma}
+\end{equation}
+The relevant random object is the \emph{relative} conditional unitary
+$W_{ji}(t)$, not two independently postulated purifications.
+
+\begin{lemma}[Haar relative unitary]
+\label{lem:mixed}
+Let $W$ be Haar-random on a $D$-dimensional Hilbert space and let $\rho$ be a
+fixed density operator, chosen independently of $W$, on that space.  Then
+\begin{equation}
+ \E_W|\Tr(\rho W)|^2=\frac{\Tr(\rho^2)}{D}.
+ \label{eq:mixedhaar}
 \end{equation}
 \end{lemma}
 
 \begin{proof}
-By unitary invariance of Haar measure, we may fix
-$\ket{\phi}=\ket{e_1}$, the first vector of an orthonormal basis.  Indeed,
-conditioning on any value of $\ket{\phi}$, a unitary sending that vector to
-$\ket{e_1}$ leaves the distribution of the independently chosen $\ket{\psi}$
-Haar-random.  Thus averaging over two independent random vectors has the same
-overlap distribution as fixing one vector and averaging over the other.  It
-remains to determine the distribution of $|\psi_1|^2$, where
-$\ket{\psi}=(\psi_1,\ldots,\psi_d)$ is Haar-random on the unit sphere of
-$\mathbb C^d$.
-
-A Haar-random unit vector can be generated by normalizing a complex Gaussian
-vector.  Let
+In a fixed basis, Haar invariance gives the second-moment identity
 \begin{equation}
-    Z=(Z_1,\ldots,Z_d),
+ \E_W[W_{ab}W_{cd}^*]=\frac{1}{D}\delta_{ac}\delta_{bd}.
 \end{equation}
-where the $Z_j$ are independent standard complex Gaussian variables, and set
-\begin{equation}
-    \ket{\psi}=\frac{Z}{\|Z\|} .
-\end{equation}
-This construction gives the Haar distribution because the joint density of
-$Z$ is proportional to
-\begin{equation}
-    \exp(-\|Z\|^2),
-\end{equation}
-and therefore depends only on the norm $\|Z\|$.  It is invariant under every
-unitary transformation $U\in U(d)$: the random vectors $Z$ and $UZ$ have the
-same distribution. Consequently $Z/\|Z\|$ and $UZ/\|Z\|$ have the same
-distribution on the unit sphere.  By uniqueness of the unitarily invariant
-probability measure on that sphere, this distribution is precisely Haar
-measure.  Then
-\begin{equation}
-    |\psi_1|^2
-    =
-    \frac{|Z_1|^2}{|Z_1|^2+\cdots+|Z_d|^2} .
-\end{equation}
-By Eq.~\eqref{eq:standard-complex-gaussian}, each component can be written as
-$Z_j=(X_j+iY_j)/\sqrt2$, with $X_j,Y_j$ independent $N(0,1)$ variables.
-Therefore
-\begin{equation}
-    |Z_j|^2
-    =
-    \frac{X_j^2+Y_j^2}{2}.
-\end{equation}
-Since $X_j^2+Y_j^2\sim\chi^2_2$, and $\chi^2_2/2$ has the exponential
-distribution of mean one, $|Z_j|^2\sim\operatorname{Exp}(1)$, equivalently
-$|Z_j|^2\sim\operatorname{Gamma}(1,1)$.  The independence of the $|Z_j|^2$
-follows from the independence of the pairs $(X_j,Y_j)$.  To avoid overloading
-notation, write
-\begin{equation}
-    E_j=|Z_j|^2,
-\end{equation}
-with the $E_j$ independent exponential random variables of mean one.  Let
-\begin{equation}
-    W=E_2+\cdots+E_d .
-\end{equation}
-Then $E_1$ and $W$ are independent, with
-$E_1\sim\operatorname{Gamma}(1,1)$ and
-$W\sim\operatorname{Gamma}(d-1,1)$. Therefore
-\begin{equation}
-    |\psi_1|^2
-    =
-    \frac{E_1}{E_1+W}
-    \sim
-    \operatorname{Beta}(1,d-1).
-    \label{eq:complex-beta-distribution}
-\end{equation}
-This gives a useful symmetry with the real case below: the complex transition
-probability is beta distributed with parameters $(1,d-1)$, whereas the real
-case has parameters $(1/2,(d-1)/2)$.
-
-For completeness, and also to make the tail explicit, we compute the same
-probability directly. For $0\leq\eps<1$,
-\begin{align}
- \PP\{|\psi_1|^2\geq\eps\}
- &=
- \PP\left\{\frac{E_1}{E_1+W}\geq\eps\right\}
- \nonumber\\
- &=
- \PP\left\{E_1\geq \frac{\eps}{1-\eps}W\right\}
- \nonumber\\
- &=
- \E\left[
-        \exp\left(-\frac{\eps}{1-\eps}W\right)
-      \right].
-\end{align}
-The last equality is just conditioning on $W$: since $E_1$ is independent of
-$W$ and has exponential tail $\PP\{E_1\geq t\}=e^{-t}$, one has
-\begin{equation}
-    \PP\{E_1\geq sW\mid W=w\}=e^{-sw},
-\end{equation}
-and averaging over $W$ gives $\E(e^{-sW})$.  Since $W$ is the sum of $d-1$
-independent exponential variables, $W\sim\operatorname{Gamma}(d-1,1)$, and
-its Laplace transform is
-\begin{equation}
-    \E(e^{-sW})=(1+s)^{-(d-1)} .
-\end{equation}
-With $s=\eps/(1-\eps)$, this gives
-\begin{equation}
-    \PP\{|\psi_1|^2\geq\eps\}
-    =
-    (1-\eps)^{d-1} .
-\end{equation}
-At the endpoint $\eps=1$, the same formula gives zero; equivalently, a
-Haar-random vector is parallel to the fixed vector with probability zero for
-$d\geq2$.  The same formula also follows immediately from the cumulative
-distribution function of $\operatorname{Beta}(1,d-1)$, since
-\begin{equation}
-    \PP\{T\geq\eps\}=(1-\eps)^{d-1},
-    \qquad T\sim\operatorname{Beta}(1,d-1).
-\end{equation}
-Since $|\langle\phi|\psi\rangle|^2=|\psi_1|^2$,
-Eq.~\eqref{eq:overlapExact} follows.  Eq.~\eqref{eq:complex-overlap-tail-delta}
-follows by putting $\eps=\delta^2$, because $\delta$ is the amplitude-overlap
-threshold whereas $\eps$ is the corresponding Born-probability threshold, and
-then using $1-x\leq e^{-x}$.
+Expanding $|\Tr(\rho W)|^2$ and applying this identity yields
+$D^{-1}\sum_{a,b}|\rho_{ab}|^2=D^{-1}\Tr(\rho^2)$.
 \end{proof}
 
-Several consequences are immediate.  The mean transition probability is
-\begin{equation}
-    \E |\langle\phi|\psi\rangle|^2
-    =
-    \frac{1}{d},
-    \label{eq:mean-transition-probability}
-\end{equation}
-which also follows from symmetry, since $\sum_{j=1}^d|\psi_j|^2=1$. Moreover,
-for every fixed threshold $0<\eps<1$,
-\begin{equation}
-    \PP\{ |\langle\phi|\psi\rangle|^2\geq\eps\}
-    \leq
-    \exp[-(d-1)\eps] .
-    \label{eq:large-transition-probability-suppressed}
-\end{equation}
-Thus large transition probabilities between independently chosen random pure
-states are exponentially suppressed in the Hilbert-space dimension. In this
-precise sense, two random pure states are quasi-orthogonal with probability
-tending to one exponentially fast with $d$.
+The identity requires only the first unitary-design moment, equivalently the
+matrix-entry correlation $\E[W_{ab}W_{cd}^*]$.  It immediately yields a
+simultaneous mixed-state statement.
 
-It is useful to separate two scales.  The typical Born probability
-$|\langle\phi|\psi\rangle|^2$ is of order $d^{-1}$, while the typical amplitude
-$|\langle\phi|\psi\rangle|$ is of order $d^{-1/2}$. Thus random pure states are
-not exactly orthogonal, but their mutual transition probabilities are normally
-microscopic in large Hilbert spaces.
+\begin{proposition}[Mixed-environment simultaneous bounds]
+\label{prop:mixed-simultaneous}
+Let $\rho_E$ and the normalized coefficient vector $(c_i)$ be fixed
+independently of a specified ensemble of relative unitaries.  Suppose that
+for every $i<j$ the marginal ensemble of $W_{ji}$ reproduces the matrix-entry
+correlation $\E[W_{ab}W_{cd}^*]=D^{-1}\delta_{ac}\delta_{bd}$ on a
+$D$-dimensional sector.  The probability refers to the specified ensemble,
+such as Hamiltonian disorder, circuit randomness, conditional-perturbation
+randomness, or a prescribed random-time sampling procedure.  No mutual
+independence of the different $W_{ji}$ is required.  Put
+$K=\binom{m}{2}$ and let $0<\eta<1$.  Then
+\begin{equation}
+ \PP\!\left\{\max_{i<j}|\gamma_{ji}|\geq\delta\right\}
+ \leq K\frac{\Tr(\rho_E^2)}{D\delta^2},
+ \label{eq:mixed-union-tail}
+\end{equation}
+and hence, with probability at least $1-\eta$,
+\begin{equation}
+ \max_{i<j}|\gamma_{ji}|
+ \leq
+ \min\!\left\{1,
+ \sqrt{\frac{K\Tr(\rho_E^2)}{D\eta}}\right\}.
+ \label{eq:mixed-max-bound}
+\end{equation}
+Moreover, with probability at least $1-\eta$,
+\begin{equation}
+\begin{split}
+ D_{\rm tr}\!\left(\rho_S,\Delta(\rho_S)\right)
+ \leq \min\!\left\{1,
+ \frac12\sqrt{
+ \frac{m\Tr(\rho_E^2)}{D\eta}
+ \left(1-\sum_i|c_i|^4\right)}\right\}.
+ \label{eq:mixed-trace-tail}
+\end{split}
+\end{equation}
+\end{proposition}
 
-\subsection*{Exponential packing consequence}
+\begin{proof}
+Markov's inequality and Lemma~\ref{lem:mixed} give
+$\PP\{|\gamma_{ji}|\geq\delta\}\leq
+\Tr(\rho_E^2)/(D\delta^2)$.  A union bound over the $K$ pairs proves
+Eqs.~\eqref{eq:mixed-union-tail} and \eqref{eq:mixed-max-bound}.
+For the stronger trace-distance estimate, define
+\begin{equation}
+ Y=\sum_{i\neq j}|c_i|^2|c_j|^2|\gamma_{ji}|^2.
+\end{equation}
+The assumed marginal second moments imply
+\begin{equation}
+ \E Y=\frac{\Tr(\rho_E^2)}{D}
+ \left(1-\sum_i|c_i|^4\right).
+\end{equation}
+Markov's inequality gives $Y\leq\E Y/\eta$ with probability at least
+$1-\eta$.  Substitution into Eq.~\eqref{eq:trace-bound-hs} proves
+Eq.~\eqref{eq:mixed-trace-tail}.
+\end{proof}
 
-In a $d$-dimensional Hilbert space $\HH_d$, the maximum number of exactly
-mutually orthogonal unit vectors is $d$.  We relax exact orthogonality as
-follows. Two unit vectors $\ket{\psi_i},\ket{\psi_j}\in\HH_d$ are called
-$\eps$-quasi-orthogonal if
+Writing $d_{\rm purity}=1/\Tr(\rho_E^2)$ makes the mean-square scale
 \begin{equation}
-    |\langle\psi_i|\psi_j\rangle|^2 \le \eps .
+ \frac{\Tr(\rho_E^2)}{D}=\frac{1}{D d_{\rm purity}}.
 \end{equation}
-A family $\{\ket{\psi_i}\}_{i=1}^{M}$ is $\eps$-quasi-orthogonal if this
-inequality holds for every pair $i\ne j$.
+Thus $D$ characterizes the relative-unitary ensemble, whereas
+$d_{\rm purity}$ characterizes the initial environmental mixedness.
 
-Let $M_\eps(d)$ denote the largest possible cardinality of such a family.  For fixed $0<\eps<1$, the exact overlap tail above gives the following random-coding lower bound:
+For a pure environment, Eq.~\eqref{eq:mixedhaar} reduces to $1/D$.  For the
+maximally mixed state it gives $1/D^2$.  This stronger suppression does
+\emph{not} mean that a maximally mixed environment stores a better record.
+The conditional environmental states are
 \begin{equation}
-    M_\eps(d)
-    \;\ge\;
-    \left\lfloor
-    \exp\!\left[
-        \frac{d-1}{2}\bigl(-\log(1-\eps)\bigr)
-    \right]
-    \right\rfloor .
-    \label{eq:packing-lower}
+ \rho_E^{(i)}=U_i\rho_EU_i^\dagger.
+ \label{eq:conditional-density}
 \end{equation}
-Indeed, sample $M$ unit vectors $\ket{\psi_1},\dots,\ket{\psi_M}\in\HH_d$
-independently from Haar measure.  For any pair $i\ne j$, Eq.~\eqref{eq:overlapExact}
-gives
-\begin{equation}
-\PP\bigl(|\braket{\psi_i}{\psi_j}|^2 \ge \eps\bigr)
-= (1-\eps)^{d-1}.
-\end{equation}
-By a union bound over the $\binom{M}{2}<M^2/2$ pairs,
-\begin{equation}
-\PP\bigl(\exists\, i\ne j:
- |\braket{\psi_i}{\psi_j}|^2 \ge \eps\bigr)
-<
-\frac12 M^2(1-\eps)^{d-1}.
-\end{equation}
-Choosing
-\begin{equation}
-M=
-\left\lfloor
-\exp\!\left[
-        \frac{d-1}{2}\bigl(-\log(1-\eps)\bigr)
-    \right]
-\right\rfloor
-\end{equation}
-gives
-\begin{equation}
-\frac12 M^2(1-\eps)^{d-1}\leq \frac12<1,
-\end{equation}
-so the bad event cannot have probability one. Hence there exists at least
-one $\eps$-quasi-orthogonal family of cardinality $M$, proving
-Eq.~\eqref{eq:packing-lower}.
+If $\rho_E=I/D$, all of them are identical, so no measurement on the
+environment can reveal $i$, even though $\Tr(W_{ji})/D$ may be small.
 
-For small fixed $0<\eps<1$, since $-\log(1-\eps)=\eps+O(\eps^2)$, this implies
+For pure conditional states, the connection between overlap and record
+distinguishability is direct.  With equal priors, the minimum error probability
+for discriminating two pure states is
 \begin{equation}
-    M_\eps(d)\ge \exp(c\,\eps d)
+ p_{\rm err}
+ =\frac12\left(1-\sqrt{1-|\langle E_j|E_i\rangle|^2}\right).
 \end{equation}
-for some constant $c>0$, fixed $0<\eps<1$, and sufficiently large $d$.  The
-statement should be understood in the fixed-$\eps$, large-$d$ regime; no bound
-of the form $M_\eps(d)\le \exp(C\eps d)$ can hold uniformly down to
-$\eps=O(1/d)$, because an orthonormal basis already gives
-$M_\eps(d)\ge d$ for every $\eps\ge0$.  Standard spherical-code bounds also
-give exponential-in-$d$ upper bounds for fixed $0<\eps<1$~\cite{kabatiansky1978bounds,conway1999sphere}, but the precise optimal exponent is not needed here. We therefore use only the random-coding lower bound.
-
-For a system of $n$ qubits, $d=2^n$. Hence, for fixed $0<\eps<1$,
+Equivalently,
 \begin{equation}
-    M_\eps(2^n)
-    \;\ge\;
-    \exp\!\bigl(c\,\eps\,2^n\bigr),
+ D_{\rm tr}\!\left(\ket{E_i}\bra{E_i},\ket{E_j}\bra{E_j}\right)
+ =\sqrt{1-|\langle E_j|E_i\rangle|^2}.
+ \label{eq:pure-record-distance}
 \end{equation}
-which is doubly exponential in the number $n$ of qubits. Thus the Hilbert
-space of a macroscopic environment has vastly more than enough kinematic room
-to accommodate an enormous number of mutually quasi-orthogonal environmental
-records.
-
-It is important not to overinterpret this packing statement.  The bound concerns
-pairwise transition probabilities between pure states. It does not imply that a
-$d$-dimensional environment can store exponentially many reliably distinguishable
-classical records. If $M\gg d$, the packed states are necessarily linearly
-dependent, and pairwise small overlaps alone do not guarantee a measurement that
-recovers the corresponding labels with high average success probability. The
-relevance for decoherence is more modest and more appropriate: for a fixed,
-moderate, or dynamically selected set of macroscopic alternatives, the
-suppression of pairwise overlaps is the quantity that controls the off-diagonal
-terms of the reduced state. In that setting, high-dimensional Hilbert space
-provides ample kinematic room for environmental branch states to become
-effectively orthogonal.
-
-This statement is closely related in spirit to the concentration phenomenon
-underlying the Johnson--Lindenstrauss lemma, but the emphasis is different.
-Johnson--Lindenstrauss is a finite-set embedding result: $N$ vectors can be
-randomly projected to $O(\eps^{-2}\log N)$ dimensions while preserving pairwise
-distances up to relative error $\eps$.  The present argument uses the
-complementary viewpoint.  In a fixed high-dimensional Hilbert space,
-independently chosen pure states already have Born transition probabilities of
-order $1/d$, and large overlaps are exponentially suppressed.  Thus
-Johnson--Lindenstrauss concerns the preservation of geometry under random
-dimensional reduction, whereas the present use concerns the generic
-near-orthogonality already available in high dimension.
-
-\subsection*{Real comparison}
-\label{subsec:real-case}
-
-The complex case is the natural one for quantum mechanics.  For comparison,
-the real case has the same concentration behaviour, but a slightly less
-elementary closed form.  Let $u,v\in\mathbb R^d$ be independent Haar-random
-unit vectors on the real sphere $S^{d-1}$.  By orthogonal invariance, fix
-$v=e_1$.  A Haar-random real unit vector is generated analogously by
-normalizing a standard real Gaussian vector: if $G=(G_1,\ldots,G_d)$, where
-the $G_j$ are independent $N(0,1)$ variables, then $G/\|G\|$ is invariant
-under all orthogonal transformations and hence is uniform on $S^{d-1}$. Thus,
-for $u=G/\|G\|$,
+For mixed states, however, distinguishability is governed by trace distance
+or fidelity between the density operators in
+Eq.~\eqref{eq:conditional-density}, not by a chosen purification overlap
+alone.  In
+particular, unitary invariance gives
 \begin{equation}
-    |\langle v,u\rangle|^2
-    =
-    \frac{G_1^2}{G_1^2+\cdots+G_d^2} .
+ D_{\rm tr}\!\left(\rho_E^{(i)},\rho_E^{(j)}\right)
+ =\frac12\left\|W_{ji}\rho_EW_{ji}^\dagger-\rho_E\right\|_1,
+ \label{eq:mixed-record-distance}
 \end{equation}
-Here $G_1^2\sim\operatorname{Gamma}(1/2,2)$, and
-$G_2^2+\cdots+G_d^2\sim\operatorname{Gamma}((d-1)/2,2)$, in the same
-shape--scale convention.  The scale is now $2$ rather than $1$, but it is
-common to numerator and denominator and therefore cancels in the ratio.  The
-beta-ratio rule gives
-\begin{equation}
-    |\langle v,u\rangle|^2
-    \sim
-    \operatorname{Beta}\left(\frac12,\frac{d-1}{2}\right).
-    \label{eq:real-beta-distribution}
-\end{equation}
-Equivalently, its density on $(0,1)$ is
-\begin{equation}
-    f_d(t)
-    =
-    \frac{t^{-1/2}(1-t)^{(d-3)/2}}
-         {B\left(\frac12,\frac{d-1}{2}\right)} .
-    \label{eq:real-beta-density}
-\end{equation}
-Thus
-\begin{equation}
-    \PP\{|\langle v,u\rangle|^2\geq\eps\}
-    =
-    \int_\eps^1
-    \frac{t^{-1/2}(1-t)^{(d-3)/2}}
-         {B\left(\frac12,\frac{d-1}{2}\right)}\,dt .
-    \label{eq:real-tail-integral}
-\end{equation}
-For fixed $0<\eps<1$, this again decays exponentially in $d$, because the factor
-$(1-t)^{(d-3)/2}$ is exponentially small throughout the integration range
-$t\geq\eps$. More explicitly,
-\begin{align}
- \int_\eps^1 t^{-1/2}(1-t)^{(d-3)/2}\,dt
- &\leq
- \eps^{-1/2}
- \int_\eps^1 (1-t)^{(d-3)/2}\,dt
- \nonumber\\
- &=
- \frac{2\eps^{-1/2}}{d-1}
- (1-\eps)^{(d-1)/2} .
-\end{align}
-Furthermore, $B(1/2,(d-1)/2)^{-1}=O(\sqrt d)$ by Stirling's formula. Hence,
-for each fixed $\eps\in(0,1)$,
-\begin{align}
-    \PP\{|\langle v,u\rangle|^2\geq\eps\}
-    &\leq
-    C_\eps d^{-1/2}(1-\eps)^{(d-1)/2}
-    \nonumber\\
-    &\leq
-    C_\eps d^{-1/2}
-    \exp\left[-\frac{(d-1)\eps}{2}\right]
-\end{align}
-for a constant $C_\eps$ independent of $d$.  The exponent is roughly half the
-complex exponent, reflecting the fact that $\mathbb C^d$ has twice as many
-real degrees of freedom as $\mathbb R^d$.  The qualitative high-dimensional
-conclusion is nevertheless the same: a random real unit vector is almost
-orthogonal to an independently chosen one with probability tending to one
-exponentially fast in the dimension.
+which is generally unrelated to the magnitude of $\Tr(\rho_EW_{ji})$.
+Decoherence, locally accessible records, and redundant records are therefore
+different properties.  The latter requires information about the pointer
+variable to be recoverable from many disjoint environmental
+fragments~\cite{blumekohout2006darwinism,zwolak2010nonideal,riedel2016objective}.
+Indeed, generic global random states need not have the branching structure
+needed for redundant storage~\cite{blumekohout2006darwinism}.  For initially
+mixed environments or more general mixed global states, system decoherence
+can occur without system--environment entanglement or objective
+records~\cite{garciaperez2020decoherence}.  By contrast, for an initially
+pure global state, nontrivial reduced-state mixedness entails
+system--environment entanglement.
 
-\subsection*{Relation to L\'evy's lemma}
-\label{subsec:relation-to-levy}
+\section{The dynamical bridge}
+\label{sec:dynamics}
 
-The preceding argument is self-contained and uses no spherical isoperimetric
-black box.  It exploits the special observable relevant to pure-state quantum
-transition probabilities, namely
+The preceding propositions are kinematic.  In a microscopic pure-dephasing
+model with time-independent conditional environmental Hamiltonians $H_i$,
 \begin{equation}
-    \ket{\psi}\longmapsto |\langle\phi|\psi\rangle|^2 .
+ \gamma_{ji}(t)
+ =\bra{E_0}e^{iH_jt}e^{-iH_it}\ket{E_0}.
+ \label{eq:echo}
 \end{equation}
-L\'evy's lemma is the corresponding general concentration theorem: it replaces
-this particular transition probability by an arbitrary Lipschitz observable on
-the high-dimensional unit sphere.  In that broader setting one obtains bounds
-of the schematic form
+Its modulus squared is a Loschmidt echo.  Decoherence can consequently be
+studied using fidelity decay, spectral correlations, perturbation theory, and
+many-body orthogonality effects~\cite{cucchietti2003echo,gorin2004echo}.
+Equation~\eqref{eq:echo} also exposes why a large Hilbert space is insufficient:
+$e^{iH_jt}e^{-iH_it}$ may remain close to the identity, preserve large
+invariant subspaces, or display revivals long before any Poincar\'e recurrence.
+
+Several dimensions should be distinguished.  For an energy window
+$[E,E+\Delta E]$, let
 \begin{equation}
-    \PP\{|f-\text{typical value}|\geq\eta\}
-    \lesssim
-    \exp\left[-c\,\frac{d\eta^2}{L^2}\right],
+ D_{\rm shell}=\Tr\,\mathbf 1_{[E,E+\Delta E]}(H_E).
 \end{equation}
-where $L$ is the Lipschitz constant of $f$.  Proving this general statement
-requires the usual concentration-of-measure machinery, for example spherical
-isoperimetry.
-
-The transition-probability observable itself is Lipschitz. If
-$P_\phi=\ket{\phi}\bra{\phi}$ and
-$f(\psi)=\bra{\psi}P_\phi\ket{\psi}=|\langle\phi|\psi\rangle|^2$, then for
-two unit vectors $\psi,\psi'$,
+The Boltzmann entropy associated with that convention is
 \begin{equation}
-    |f(\psi)-f(\psi')|
-    \leq
-    2\,\|\psi-\psi'\| .
+ S_B(E,\Delta E)=k_B\log D_{\rm shell}.
+ \label{eq:boltzmann}
 \end{equation}
-Thus $f$ has Lipschitz constant at most $2$ with respect to Euclidean chordal
-distance, and hence also with respect to geodesic distance up to the usual
-constant convention. Applying L\'evy's lemma to this particular observable
-would therefore prove concentration, but with a generic Gaussian tail in the
-deviation parameter.  The exact beta-distribution calculation above is sharper
-for transition probabilities: for fixed $0<\eps<1$, it gives an exponent linear in
-$\eps$, namely $\exp[-(d-1)\eps]$, rather than the weaker generic
-Lipschitz-type behaviour quadratic in the deviation. For the quantum
-quasi-orthogonality claim above, no black-box input is needed: the exact
-distribution of the Born transition probability already gives the desired
-exponential suppression.
-
-\section{Application to the Measurement Process}
-
-Consider a system $\SSys$ coupled to an apparatus--environment $\EE$ initialised in $\ket{E_0}$:
+By contrast, let $H_E=\sum_\lambda E_\lambda P_\lambda$ be the spectral
+decomposition into distinct energy eigenspaces and put
 \begin{equation}
-    \ket{\Psi(0)} = \Bigl(\sum_i c_i \ket{s_i}\Bigr)\otimes\ket{E_0}.
+ p_\lambda=\bra{E_0}P_\lambda\ket{E_0},
+ \qquad
+ d_{\rm spec}=\frac{1}{\sum_\lambda p_\lambda^2}.
+ \label{eq:participation}
 \end{equation}
-A measurement-like unitary correlates pointer outcomes with environmental records:
+This spectral participation ratio measures how broadly the initial state is
+distributed over distinct energy eigenspaces and is widely used in
+equilibration bounds
+\cite{reimann2008foundation,linden2009quantum,short2011equilibration}.
+For a nondegenerate Hamiltonian and
+$\ket{E_0}=\sum_\alpha a_\alpha\ket{E_\alpha}$, it reduces to
+$d_{\rm spec}=1/\sum_\alpha|a_\alpha|^4$.  The projector formulation avoids
+dependence on an arbitrary basis chosen inside a degenerate eigenspace.
+Neither $D_{\rm shell}$ nor $d_{\rm spec}$ is automatically the dimension
+$D$ appearing in a Haar model for $W_{ji}(t)$.
+
+For chaotic many-body systems, eigenstate thermalization and spectral
+statistics offer reasons to expect equilibration of appropriate observables,
+but they do not imply that a single finite-time orbit is Haar-random over an
+entire shell~\cite{rigol2008thermalization,dalessio2016quantum}.  Conserved
+charges, locality, finite propagation speed, integrability, many-body
+localization, and weak conditional perturbations may all obstruct the Haar
+model.  A defensible application therefore requires a statement about the
+ensemble or time distribution of the relative unitaries $W_{ji}(t)$.
+At a fixed time, fixed Hamiltonians and a fixed initial state determine
+$W_{ji}(t)$ deterministically.  Every probability statement must therefore
+identify its probability source, such as Hamiltonian disorder, a random
+circuit ensemble, random initial states, a distribution of conditional
+perturbations, or a random time sampled from a specified window.  A temporal
+distribution along one orbit agrees with an ensemble distribution only under
+an additional ergodicity or sampling assumption and generally contains
+correlated samples.  For time-dependent $H_i(t)$, the exponentials in
+Eq.~\eqref{eq:echo} must be replaced by the appropriate time-ordered
+propagators.
+
+Approximate unitary designs provide one possible intermediate assumption.
+The mean-square identity in Lemma~\ref{lem:mixed} requires only the relevant
+second moment, whereas a tail comparable to Eq.~\eqref{eq:tail} requires
+stronger moment or concentration control.  Local random circuits are known to
+approach approximate designs only after a depth that depends on locality,
+system size, design order, and accuracy~\cite{brandao2016local}.  This makes
+circuit depth or physical evolution time a meaningful replacement for an
+unqualified appeal to Haar typicality.
+
+\section{A local product mechanism}
+\label{sec:local-product}
+
+Many decoherence models have a more physical route to small overlaps than
+global Haar randomness.  As an idealized mechanism, suppose that the
+environment is initially factorized, residual interactions between fragments
+can be neglected on the timescale of interest, and the conditional dynamics
+preserves the product form
 \begin{equation}
-    \ket{\Psi(t)} = \sum_i c_i \ket{s_i}\otimes\ket{E_i(t)}.
+ \ket{E_i}=\bigotimes_{k=1}^{N}\ket{e_i^{(k)}}.
 \end{equation}
-The reduced density matrix on $\SSys$ is
+Consequently,
 \begin{equation}
-    \rho_{\SSys}(t) = \sum_{i,j} c_i c_j^{*}\,\braket{E_j(t)}{E_i(t)}\,\ket{s_i} \bra{s_j}.
+\begin{split}
+ \langle E_j|E_i\rangle
+ =\prod_{k=1}^{N}\langle e_j^{(k)}|e_i^{(k)}\rangle,
+ \\
+ -\log|\langle E_j|E_i\rangle|
+ =\sum_{k=1}^{N}-\log|\langle e_j^{(k)}|e_i^{(k)}\rangle|.
+ \label{eq:product-overlap}
+\end{split}
 \end{equation}
-Off-diagonal coherences are weighted by the environmental overlaps
-$\braket{E_j(t)}{E_i(t)}$, and are suppressed in modulus by at most
-$\sqrt{\varepsilon}$ whenever the branch states are $\varepsilon$-quasi-orthogonal.
-
-\subsection*{The kinematic claim.}
-Throughout this section we adopt natural units $k_B=\hbar=1$, so that entropies are dimensionless and inverse temperatures have units of time. \emph{If} the branch states $\{\ket{E_i(t)}\}_{i\ne j}$ are well-modeled as a typical pair on the relevant high-dimensional subspace of $\HH_{\EE}$, then
+The logarithmic identity assumes nonzero local overlaps; if one local overlap
+vanishes, the global overlap vanishes already.
+If a positive density of fragments has local overlaps bounded above by a
+fixed $q<1$, or more generally if
 \begin{equation}
-    \E\bigl[\,|\braket{E_j(t)}{E_i(t)}|^2\,\bigr] \;=\; \frac{1}{d_{\rm eff}},
+ \liminf_{N\to\infty}\frac1N\sum_{k=1}^N
+ \left[-\log|\langle e_j^{(k)}|e_i^{(k)}\rangle|\right]>0,
+ \label{eq:positive-overlap-rate}
 \end{equation}
-with $d_{\rm eff}$ the dimension of the subspace explored by the dynamics. For a generic chaotic many-body environment the accessible subspace is the microcanonical shell, so
+Eq.~\eqref{eq:product-overlap} gives exponential suppression in $N$ without
+requiring the global state to be Haar-random.  At the same time, the fragment
+structure makes the question of redundant records well posed.
+This local mechanism and the global geometric estimate are complementary,
+not interchangeable.  Approximate rather than exact conditional
+factorization produces model-dependent correction terms.
+
+\section{Thermodynamic-limit comparison: infinite tensor products and sectorization}
+\label{sec:infinite-tensor-products}
+
+The finite-dimensional estimates above concern generic Haar-distributed
+pairs, whose overlaps are nonzero almost surely but typically very small.
+Finite-dimensional Hilbert spaces can of course contain exactly orthogonal
+states, and a finite product overlap is exactly zero if even one corresponding
+pair of local factors is orthogonal.  A related but conceptually distinct
+phenomenon occurs when macroscopically different reference sequences define
+disjoint representation sectors in an infinite tensor-product limit.
+
+Here $N$ denotes the number of tensor factors, whereas $D$ in the preceding
+sections denotes the dimension of the sector on which the random-state or
+relative-unitary model is imposed; in many-body applications $D$ may itself
+grow exponentially with $N$.  Consider two sequences of normalized local
+states,
 \begin{equation}
-    d_{\rm eff} \;\sim\; e^{S},
-    \qquad S \sim n,
-    \label{eq:dEntropy}
-\end{equation}
-with $S$ the (dimensionless) microcanonical entropy of the relevant environmental sector and $n$ the number of constituent degrees of freedom; in conventional units the right-hand sides of~\eqref{eq:dEntropy} read $e^{S/k_B}$ and $nk_B$, respectively. Equation~\eqref{eq:dEntropy} ties the geometric parameter $d_{\rm eff}$ directly to standard thermodynamics: the mean-square overlap is exponential in the entropy of the environment, so the typical overlap amplitude is of order $e^{-S/2}$.
-
-The relevant dimension is not necessarily the full Hilbert-space dimension of
-$\HH_{\EE}$, but the dimension of the subspace $\HH_{\rm acc}$ accessible to
-the dynamics from the initial state on the timescale considered. Energy
-conservation, conserved charges, and finite-time evolution can all restrict the
-accessible subspace. For a many-body environment with Hamiltonian $H_{\EE}$ and
-an initial state localized within an energy window $[E,E+\Delta E]$, the
-accessible subspace is often well approximated by the microcanonical shell,
-with
-\begin{equation}
-    d_{\rm eff}=\dim\HH_{\rm acc}\sim e^{S(E)/k_B}.
-    \label{eq:microcanonical-deff}
-\end{equation}
-In the natural units used here, this is simply $d_{\rm eff}\sim e^{S(E)}$.
-For chaotic many-body dynamics with bounded local interactions, $S(E)$ is
-extensive in the number of constituents, so $d_{\rm eff}$ remains exponential
-in system size. For integrable or many-body-localized environments, additional
-conserved quantities can drastically reduce $d_{\rm eff}$; the geometric
-reservoir is then correspondingly smaller.
-
-This is vastly stronger than needed to render coherences operationally invisible on any timescale shorter than the Poincar\'e recurrence time. For generic chaotic many-body systems, heuristic arguments often suggest astronomically large, sometimes doubly exponential, recurrence scales such as $\exp(d_{\rm eff})\sim\exp(e^{S})$, but the precise value is model- and tolerance-dependent and irrelevant to our argument~\cite{peres1982recurrence,wallace2015recurrence}.
-
-
-\subsection*{Minimal dynamical input.}
-
-The argument is kinematic rather than dynamical. It assumes that the interaction
-Hamiltonian has already selected the relevant pointer alternatives and that the
-associated environmental branch states explore a sufficiently large accessible
-subspace in a typical manner. It does not by itself derive the pointer basis,
-nor does it prove thermalization or equilibration. Rather, it explains why, once
-distinct branches are driven into a large environmental Hilbert space, their
-mutual overlaps are generically expected to be extremely small.
-
-In a measurement-like interaction, after a pointer basis has been selected, one may write schematically
-\begin{equation}
-    \ket{E_i(t)}
-    =
-    U_i(t)\ket{E_0},
-\end{equation}
-where the conditional unitary $U_i(t)$ depends on the pointer value $i$. For a mixed initial environment $\rho_E$, the corresponding coherence factor is $\Tr\bigl(U_i(t)\rho_E U_j(t)^\dagger\bigr)$. Equivalently, one may purify $\rho_E$; the same overlap language then applies to the purified branch states, although the relevant effective dimension is determined by the dynamically accessible purified orbit rather than by the full enlarged Hilbert space. The geometric argument does not prove that the vectors $U_i(t)\ket{E_0}$ are Haar-random. The required dynamical assumption is only the weaker pair-typicality condition that, for $i\ne j$, their overlap statistics are close to those of two typical vectors in the accessible subspace $\mathcal H_{\rm acc}$:
-\begin{equation}
-    |\langle E_j(t)|E_i(t)\rangle|^2
-    \sim
-    d_{\rm eff}^{-1},
+    \ket{E_i^{(N)}}=
+    \bigotimes_{k=1}^{N}\ket{e_i^{(k)}},
     \qquad
-    d_{\rm eff}=\dim\mathcal H_{\rm acc}.
+    \ket{E_j^{(N)}}=
+    \bigotimes_{k=1}^{N}\ket{e_j^{(k)}} .
 \end{equation}
+Their overlap factorizes as
+\begin{equation}
+    \braket{E_j^{(N)}}{E_i^{(N)}}
+    =
+    \prod_{k=1}^{N}
+    \braket{e_j^{(k)}}{e_i^{(k)}} .
+    \label{eq:finite-product-overlap}
+\end{equation}
+Let $n_N$ be the number of factors among the first $N$ for which
+\begin{equation}
+    \left|
+    \braket{e_j^{(k)}}{e_i^{(k)}}
+    \right|
+    \leq q<1 ,
+\end{equation}
+and suppose that $n_N/N\to\alpha>0$.  Then the overlap vanishes exponentially,
+\begin{align}
+ \left|\braket{E_j^{(N)}}{E_i^{(N)}}\right|
+ &\leq q^{n_N}=\exp[-n_N|\log q|]
+ \nonumber\\
+ &=\exp[-\alpha N|\log q|+o(N)]
+ \longrightarrow0,
+    \label{eq:thermodynamic-orthogonality}
+\end{align}
+Thus the sequence of finite-product overlaps tends to zero in the
+thermodynamic limit.  This limiting statement alone does not yet establish
+inequivalent representations: an infinite tensor-product representation and
+an algebra of quasi-local observables must also be specified.
 
-Chaotic, nonintegrable environments provide the usual physical reason to expect such typicality after a suitable relaxation or decoherence time. Integrable, many-body-localized, weakly coupled, or strongly constrained environments may fail to satisfy it. Thus the geometry supplies the available reservoir of nearly orthogonal records, while the Hamiltonian must still populate that reservoir. This assumption is in the same broad family as the typicality assumptions used in canonical typicality and quantum thermalization~\cite{popescu2006entanglement,goldstein2006canonical,reimann2008foundation,rigol2008thermalization,dalessio2016quantum}.
+Von Neumann's construction of infinite tensor products makes this limit more
+precise~\cite{vonNeumann1939}.  For two normalized reference sequences, a
+standard sufficient criterion for their failure to belong to the same weak
+equivalence class is
+\begin{equation}
+ \sum_{k=1}^{\infty}
+ \left(1-|\langle e_j^{(k)}|e_i^{(k)}\rangle|\right)=\infty.
+ \label{eq:sector-criterion}
+\end{equation}
+The positive-density condition above implies this divergence.  In the
+standard infinite-product construction, such reference sequences can define
+orthogonal incomplete tensor-product sectors and, under the corresponding
+quasi-local formulation, disjoint or unitarily inequivalent representations
+of the observable algebra.  Here ``unitarily inequivalent'' concerns
+representations of the physical observable algebra, not the absence of an
+abstract isomorphism between Hilbert spaces of the same dimension.
 
-\subsection*{Limitations.}
+This distinction is important.  At every finite $N$, all product states are
+vectors in the same finite-dimensional Hilbert space and can be related by
+finite-system unitaries.  Different thermodynamic-limit states may instead
+define disjoint representations of the quasi-local algebra.
+The latter conclusion is representation dependent and does not follow from
+finite-$N$ geometry alone.  It is one mathematical framework used in
+thermodynamic-limit approaches to measurement
+theory~\cite{hepp-1972,van-den-bossche-2023-a,svozil-2025-u}.
 
-Three limitations should be kept explicit. First, quasi-orthogonality
-does not select the pointer basis. The preferred basis is determined
-by the structure of the system--environment interaction, not by
-high-dimensional geometry alone.
+For infinitely many nontrivial finite-dimensional factors, the complete
+infinite tensor product is generally nonseparable and decomposes into
+mutually orthogonal sectors, while an individual incomplete tensor-product
+sector can remain separable.  The complete product may carry continuum many
+sector labels.  Writing this cardinal specifically as $\aleph_1$ assumes the
+continuum hypothesis.  The physically relevant distinction is the emergence
+of disjoint representations of the quasi-local observable algebra, not the
+cardinality label by itself.
 
- Second, small off-diagonal terms do
-not by themselves turn an improper mixture into a proper one. The
-geometric estimates therefore strengthen the FAPP suppression of
-interference, but they do not resolve the interpretive core of the
-measurement problem.
+This infinite-system mechanism may therefore be viewed as an idealized exact
+counterpart of the finite-dimensional geometry developed above: finite
+environments give exponentially small overlaps, whereas a specified
+infinite-product construction can yield disjoint sectors.  It does not, by
+itself, establish that a physical environment is literally infinite, select
+one sector as the unique realized outcome, or derive the Born probabilities.
+It does permit macroscopically distinct phases or outcomes to be represented
+in inequivalent sectors rather than forcing them into a single irreducible
+representation.
 
-Third, pairwise suppression should not be conflated with arbitrary classical
-readout capacity. If the number of alternatives is so large that the full Gram
-matrix is densely populated by small but numerous off-diagonal terms, pairwise
-bounds alone need not control all global decoding or distinguishability
-questions. The decoherence application therefore concerns fixed, moderate, or
-dynamically selected families of macroscopic alternatives, not an exponentially
-large alphabet of perfectly readable records.
+\section{Scope of the geometric statement}
+\label{sec:scope}
 
-A strict, rather than merely FAPP, breakdown
-of unitary equivalence between macroscopic outcomes can be obtained
-in the infinite tensor product limit through sectorization and
-factorization~\cite{vonNeumann1939,hepp-1972,van-den-bossche-2023-a,svozil-2025-u},
-of which the present finite-dimensional, geometric estimates may be
-viewed as a quantitative companion: exponentially small (rather than
-exactly vanishing) overlaps between macroscopically distinct
-environmental records.
+The geometric calculation establishes the following conditional implication:
+if a specified finite family of environmental branches is distributed like
+independent typical vectors in a $D$-dimensional sector, then its largest
+pairwise overlap and the operational distance of the reduced system from its
+dephased state are small with high probability.  It also shows that the
+projective Hilbert space contains exponentially large pairwise
+quasi-orthogonal codes.
 
+It does not establish any of the following claims.
+First, it does not select a pointer basis; this depends on the structure and
+timescales of the system--environment interaction.  Second, it does not prove
+that a physical Hamiltonian generates Haar-typical relative branches.  Third,
+it does not turn an improper mixture into a proper ensemble or select a unique
+outcome.  Fourth, it does not equate small system coherence with a readable,
+let alone redundant, environmental record.  Finally, exponential spherical
+packing does not provide exponentially many perfectly decodable classical
+labels.
 
-\subsection*{Schr\"odinger's ``jellification'' worry.}
-\label{sec:jelly}
+The operational content relevant to Schr\"odinger's ``jellification'' worry is
+therefore limited but precise.  For every POVM effect $0\leq M\leq I$,
+\begin{equation}
+ \left|\Tr\!\left[M\bigl(\rho_S-\Delta(\rho_S)\bigr)\right]\right|
+ \leq D_{\rm tr}\!\left(\rho_S,\Delta(\rho_S)\right).
+ \label{eq:povm-operational}
+\end{equation}
+The supremum of the left-hand side over all effects equals the trace distance.
+For a Hermitian observable $A$ with $\|A\|_\infty\leq1$, the corresponding
+expectation-value difference is bounded by $2D_{\rm tr}$.  Propositions
+\ref{prop:simultaneous} and \ref{prop:mixed-simultaneous} therefore directly
+bound changes in system measurement probabilities under their respective
+typicality assumptions.  They do not assert that the global coherent
+superposition has vanished.
 
-Schr\"odinger's worry was that, if unitary quantum mechanics applies universally, macroscopically distinct alternatives should blur into a single ``featureless jelly.'' In the present language, such blurring would require appreciable overlaps between the environmental records correlated with different macroscopic alternatives. Under the pair-typicality assumption above, however,
-\[
-    |\langle E_j(t)|E_i(t)\rangle|^2
-    \sim
-    d_{\rm eff}^{-1}
-    \sim
-    e^{-S},
-\]
-so the typical overlap amplitude is of order $e^{-S/2}$. For a macroscopic environment this is FAPP indistinguishable from zero. The branches do not blur because the accessible Hilbert space contains an enormous supply of nearly orthogonal directions. This answers the jellification worry operationally, while leaving the deeper interpretive questions untouched.
+\section{Further research}
 
-\section{Discussion}
+A first concrete test is to replace the Haar assumption by conditional local
+Hamiltonians $H_i=H_E+V_i$.  One can compare chaotic, integrable, and localized
+spin environments by measuring the decay, long-time plateau, temporal
+variance, and full distribution of Eq.~\eqref{eq:echo}.  Histograms of
+$|\gamma_{ij}(t)|^2$ can be compared directly with the beta law in
+Lemma~\ref{lem:haar-overlap}, but the sampling prescription must be stated.
+An ensemble histogram and a time histogram along one correlated orbit are not
+interchangeable without an ergodicity and sampling analysis.  Their deviation
+from the beta law is itself a measure of the failure of pair typicality.
 
-The geometric perspective separates two ingredients in decoherence. The first is dynamical: the interaction Hamiltonian selects a pointer basis and correlates distinct pointer values with distinct environmental records. The second is kinematic: once those records behave like typical vectors in a high-dimensional accessible subspace, their mutual overlaps are automatically tiny.
+A second problem is finite-time design formation.  For conditional random
+circuits or noisy Floquet systems, one can seek explicit bounds of the form
+\begin{equation}
+ \PP\{|\Tr(\rho_EW_{ji}(t))|^2\geq\eps\}
+ \leq f(D,t,\eps,\Tr\rho_E^2),
+\end{equation}
+interpolating between short-time perturbative behavior and a random-matrix
+plateau.  Here $\PP$ must refer to a specified circuit, disorder,
+initial-state, perturbation, or random-time ensemble.  Locality should appear
+explicitly through circuit depth or a Lieb--Robinson scale.
 
-For an accessible subspace of dimension $d_{\rm eff}\sim e^S$, the typical squared overlap is $d_{\rm eff}^{-1}\sim e^{-S}$, and the typical overlap amplitude is $e^{-S/2}$. This suppression is not a new dynamical mechanism; it is the high-dimensional geometry underlying the effectiveness of environmental decoherence. The geometry explains why there is ample Hilbert-space room for many macroscopic records to coexist without appreciable interference, but it does not explain why a particular Hamiltonian produces those records, nor does it select a preferred basis.
+A third direction is the many-branch problem.  Rather than controlling only
+the largest entry, one can study the spectrum of the Gram matrix
+$G_{ij}=\langle E_j|E_i\rangle$ and derive bounds tailored to the coefficient
+vector $(c_i)$.  This would sharpen Eq.~\eqref{eq:trace-bound-general} and
+identify when numerous weak coherences collectively remain observable.
 
-This distinction also clarifies where the framework can fail. If the environment is integrable, many-body localized, weakly coupled, or restricted by additional conserved quantities, the branch states may not be typical in the relevant subspace. In that case the geometric reservoir exists but is not dynamically populated.
-
-The argument is close in spirit to canonical typicality, where concentration of measure is used to show that most pure states of a large composite system have nearly thermal reduced states on small subsystems~\cite{popescu2006entanglement,goldstein2006canonical,reimann2008foundation}. Here the object of interest is different: the pairwise overlap between distinct environmental records. Infinite-tensor-product approaches to measurement obtain exact orthogonality between macroscopic sectors in the limit $n=\infty$; the present analysis can be read as the finite-$n$ version, where exact sectorization is replaced by exponentially small overlap.
+Finally, for mixed environments one should analyze two quantities in parallel:
+the decoherence factor $\Tr(\rho_EW_{ji})$ and the distinguishability or
+accessible information of the conditional fragment states
+$\rho_F^{(i)}$.  Their separation is necessary for determining when geometric
+decoherence is accompanied by objective, redundantly accessible records.
 
 \section{Conclusion}
 
-We have isolated a kinematic contribution to the suppression of macroscopic interference. In a $d$-dimensional Hilbert space, random pure states are almost orthogonal: for fixed $\ket{\phi}$ and Haar-random $\ket{\psi}$,
-\[
-    \mathbb E|\langle\phi|\psi\rangle|^2=\frac1d,
-    \qquad
-    \mathbb P\!\left(|\langle\phi|\psi\rangle|^2\ge\eps\right)
-    =(1-\eps)^{d-1}.
-\]
-Moreover, for fixed $0<\eps<1$, random coding produces $\eps$-quasi-orthogonal families of size at least $\exp(c\eps d)$. For an environmental subspace with $d_{\rm eff}\sim e^S$, this means that typical squared branch overlaps are of order $e^{-S}$.
+High-dimensional Hilbert-space geometry supplies a useful but conditional
+component of decoherence.  Independent Haar-random pure states have the exact
+overlap tail $(1-\eps)^{D-1}$.  For a finite family, this tail yields a
+high-probability bound on both the largest branch overlap and the trace
+distance between the reduced system and its pointer-basis dephasing.  For a
+mixed initial environment, Haar-random relative dynamics instead gives the
+mean-square coherence $\Tr(\rho_E^2)/D$ and the simultaneous bounds of
+Proposition~\ref{prop:mixed-simultaneous}.  The Hilbert--Schmidt estimate
+\eqref{eq:trace-bound-hs} additionally controls the collective contribution
+of many weak coherences.  It provides a complementary collective bound and
+can be substantially sharper than the entrywise estimate when many weak
+coherences are broadly distributed, although it is not uniformly sharper.
 
-These facts do not replace decoherence dynamics. The Hamiltonian must still select the pointer basis and drive environmental records into typical regions of the accessible subspace. Nor do the estimates convert an improper mixture into a proper one. What the geometry does provide is a quantitative explanation of why, once environmental records have formed, macroscopic alternatives can coexist without producing Schr\"odinger's ``featureless jelly'': high-dimensional Hilbert space supplies an enormous reservoir of nearly non-interfering directions. This reservoir bounds pairwise interference, not arbitrary classical readout capacity; the latter remains tied to the dimension and measurement structure actually accessible to dynamical decoding.
+These results quantify capacity, not dynamics.  The physical question is
+whether conditional relative unitaries generated by a particular local
+Hamiltonian acquire the necessary typicality on the relevant timescale.
+Moreover, loss of system coherence, environmental distinguishability, and
+redundant record formation remain separate notions.  With these distinctions
+made explicit, high-dimensional geometry provides a clean quantitative bound
+on locally accessible interference without being asked to solve the preferred
+basis, definite-outcome, or objectivity problems by itself.
 
 \begin{acknowledgments}
-This text was partially created and revised with assistance from large language models.
-This research was funded in whole or in part by the Austrian Science Fund (FWF) Grant DOI: 10.55776/PIN5424624.
-The author acknowledges TU Wien Bibliothek for financial support through its Open Access Funding Programme.
+This research was funded in whole or in part by the \textit{Austrian Science
+Fund (FWF)} [Grant
+\href{https://doi.org/10.55776/PIN5424624}{DOI: 10.55776/PIN5424624}].
+The author acknowledges TU Wien Bibliothek for financial support through its
+Open Access Funding Programme.
+
+OpenAI Codex (GPT-5.6) was used to assist with manuscript criticism, literature
+organization, checking derivations, and editorial revision.  The author
+directed its use, independently verified the mathematical arguments and cited
+sources, revised the resulting text, and assumes full responsibility for the
+manuscript.
 \end{acknowledgments}
 
 \bibliography{svozil}
