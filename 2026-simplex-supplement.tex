@@ -1,215 +1,315 @@
 \documentclass[11pt]{article}
 
-\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[a4paper,margin=22mm]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
-\usepackage{array}
-\usepackage{graphicx}
-\usepackage{hyperref}
 \usepackage{longtable}
+\usepackage{array}
+\usepackage{pdflscape}
+\usepackage{hyperref}
+\usepackage{xurl}
 
 \newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Id}{\operatorname{Id}}
 
 \title{Supplementary Material for\\
-Valuations, Simplex Embeddings, and Product Rules in Finite Quantum Logics}
+Which Classicality? Incidence, Simplex, and Product-Rule Tests in Finite Quantum Logics}
 \author{Karl Svozil}
-\date{\today}
+\date{July 12, 2026}
 
 \begin{document}
 \maketitle
 
-\section{Scope of This Supplement}
+\section{Scope and archive structure}
 
-This supplement records the computational artifacts used for the projector-cone
-and vector-generated closure tables in the paper.  It is designed to make clear
-which entries are exact-certified and which entries are numerical
-rationalizations.
+This supplement specifies the source coordinates, validation rules,
+factorization problem, numerical results, and certificate status for every row
+reported in the manuscript.  One program,
+\path{simplex_audit_rebuilt.py}, performs the complete calculation.  Its
+default action validates all sources, runs every projector-cone task, runs both
+operational closures, and evaluates the completed KCBS pentagon.  Per-task
+SHA-256 input fingerprints permit exact checkpoint reuse; \texttt{--force}
+requests a fresh evaluation.
 
-The accompanying archive contains:
-\begin{itemize}
-\item \texttt{simplex\_ultimate\_audit.py}, the driver that writes all result
-manifests and optionally reruns the numerical and exact audits;
-\item \texttt{simplex\_projector\_cone\_vector\_audit.py}, the projector-cone
-audit with rational primal and dual certificate checks;
-\item \texttt{simplex\_operational\_closure\_vector\_audit.py}, the
-vector-generated closure audit;
-\item \path{simplex_original_formalism_exact_cdd_v10_completed_audit.py}, the
-earlier exact-audit script retained for provenance;
-\item JSON manifests and logs produced by the ultimate driver, especially
-\begin{itemize}
-\item \path{projector_cone_audit_run.json},
-\item \path{operational_closure_audit_run.json},
-\item \path{exact_certificate_generation_status.json}.
-\end{itemize}
-\end{itemize}
+The executed program has SHA-256 digest
+\begin{quote}\small\ttfamily
+d2298aeaab2d47a42e94e9077ece208df8042ddf6603d6fd0252d8fc184e1596.
+\end{quote}
+The digest is recorded in \path{audit_v3/audit_report.json}.  The run used
+CPython 3.11.9 on 64-bit Windows, completed all requested tasks, and recorded no
+run errors.
 
-Exact regeneration of rational facets and exact certificates requires a
-fraction/GMP-enabled \texttt{pycddlib}/cddlib installation.  A float-only
-\texttt{pycddlib} installation can reproduce numerical LP summaries, but those
-runs are not exact certificates.
+The archive contains:
+\begin{description}
+\item[\texttt{simplex\_audit\_rebuilt.py}] Source-driven validation and audit
+program.
+\item[\texttt{audit\_v3/audit\_report.json}] Consolidated runtime, validation,
+projector, closure, pentagon, and cache report.
+\item[\texttt{audit\_v3/vectors.json}] Machine-readable representatives,
+labels, contexts, sources, and valuation checks.
+\item[\texttt{audit\_v3/projector/}] Per-configuration projector reports and
+all available exact certificates.
+\item[\texttt{audit\_v3/closures/}] Both closure reports for every rational or
+quadratic source configuration.
+\item[\texttt{audit\_v3/pentagon/}] Numerical completed-pentagon report.
+\item[\texttt{2026-simplex-vector-catalog.tex}] Complete explicit ray and
+context catalogue printed in Sec.~\ref{sec:complete-catalogue}.
+\item[\texttt{2026-simplex-supplement.tex/pdf}] This document in source and
+compiled form.
+\item[\texttt{README.md}] Commands, dependencies, file map, and status rules.
+\item[\texttt{SHA256SUMS.txt}] Digest and relative path for every payload
+file.
+\end{description}
 
-\section{Certificate Format}
+\section{Primary coordinate resources}
 
-Let
-\[
-        M_0=I_E^TGI_\Omega,\qquad
-        M_1=I_E^TG(D-\operatorname{Id})I_\Omega ,
-\]
-and let \(C_{\ell k}=(h^E_\ell)^T h^\Omega_k\).  The primal certificate for a
-candidate value \(r_*\) is a rational nonnegative matrix \(\sigma\) satisfying
-\[
-        \sum_{\ell,k}\sigma_{\ell k}C_{\ell k}-r_*M_1=M_0.
-\]
-The dual certificate is a rational matrix \(Y\) satisfying
-\[
-        \langle Y,C_{\ell k}\rangle\le 0\quad\text{for all }\ell,k,
-        \qquad
-        -\langle Y,M_1\rangle\le1,
-\]
-and
-\[
-        \langle Y,M_0\rangle=r_* .
-\]
-Together, these identities certify that \(r_*\) is the exact optimum for the
-lower-bounded LP.  Since all certified rows satisfy \(0\le r_*\le1\), the same
-certificate applies to the implemented LP with the additional bound \(r\le1\).
+The Specker bug and the Kochen--Specker $\Gamma_3$ configuration are sourced
+from the coordinate-labelled diagrams in Tkadlec's treatment and the
+Kochen--Specker construction itself.  Cabello gives an independent parametric
+coordinatization of the Bell/Specker TIFS family.  The remaining sources and
+construction rules are listed in Table~\ref{tab:sources}.  Full bibliographic
+data appear at the end of this supplement.
 
-The generated \texttt{supplement\_run/exact\_projector\_certificates/}
-directory contains one JSON certificate file per exact projector-cone row.
-Each file contains
-\[
-I_\Omega,\ I_E,\ D,\ H_\Omega,\ H_E,\ M_0,\ M_1,\ r_*,\ \sigma,\ Y,
-\]
-with rational entries serialized as strings.
-
-\section{Program Commands}
-
-The light manifest run is:
-\begin{verbatim}
-python simplex_ultimate_audit.py --outdir supplement_run
-\end{verbatim}
-This writes all table entries, certificate-status manifests, dependency
-reports, and program hashes.
-
-The full numerical regeneration run is:
-\begin{verbatim}
-python simplex_ultimate_audit.py --outdir supplement_run --run-full
-\end{verbatim}
-If the local \texttt{pycddlib} build is float-only, append
-\texttt{--allow-float-cdd}.  Those runs are numerical only.
-
-The exact-certificate run is:
-\begin{verbatim}
-python simplex_ultimate_audit.py --outdir supplement_run ^
-  --run-full --save-exact-certificates
-\end{verbatim}
-and requires exact fraction/GMP cddlib support.
-
-The overnight run of these three commands produced the files in
-\path{supplement_run/}.  The projector-cone audit confirms exact rational
-primal and dual certificates for all six rational projector-cone rows.  The
-closure audit reproduces the closure values with exact cddlib facets, but its
-JSON status fields record \texttt{--certify not requested} for the primal
-closure rows and ``dual numerical solve has no primal sigma certificate'' for
-the Tkadlec cutting-dual rows.  Hence the overnight run changes no table value
-and does not upgrade any closure row to exact-certified status.
-
-\section{Projector-Cone Results}
-
-\begin{center}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lccccccl}
+\begin{table}[ht]
+\centering
+\caption{Validated configurations.  The valuation column gives the number of
+two-valued states when that enumeration is part of the source-property check.}
+\label{tab:sources}
+\small
+\begin{tabular}{lrrrl}
 \toprule
-Configuration & \(d\) & projectors & acc. dim. & facets & \(r\) &
-exact? & status\\
+configuration & rays & contexts & valuations & validation property\\
 \midrule
-Firefly logic \(L_{12}\) & 3 & 5 & 4 & 5 & \(0\) & yes & exact optimum\\
-Completed pentagon \(C_5\) & 3 & 10 & 6 & 12 &
-\(\approx0.119140568134\) & no & numerical/algebraic\\
-Specker bug/TIFS, nonfull & 3 & 13 & 6 & 26 &
-\(\approx0.31645570\) & no & numerical\\
-\(\Gamma_3\), nonseparating & 3 & 25 & 6 & 230 &
-\(\approx0.50219773\) & no & numerical\\
-Tkadlec Fig. 2, nonunital & 3 & 37 & 6 & 276 & \(35/64\) & yes &
-exact optimum\\
-Yu--Oh 13-ray projector fragment & 3 & 13 & 6 & 24 & \(3/8\) & yes &
-exact optimum\\
-Yu--Oh 25-ray orthogonal completion & 3 & 25 & 6 & 96 & \(21/44\) &
-yes & exact optimum\\
-Cabello--Estebaranz--Garcia-Alcaine 18--9 & 4 & 18 & 10 & 146 &
-\(1/3\) & yes & exact optimum\\
-Peres--Mermin 24--24 completion & 4 & 24 & 10 & 120 & \(4/9\) & yes &
-exact optimum\\
+Firefly $L_{12}$ & 5 & 2 & -- & projective geometry\\
+Yu--Oh 13 & 13 & 4 & -- & published seed\\
+Yu--Oh 25 & 25 & 16 & -- & orthogonal completion\\
+Specker bug & 13 & 7 & 14 & distinguished nonfull pair\\
+Kochen--Specker $\Gamma_3$ & 27 & 17 & 24 & distinguished equal pair\\
+Tkadlec nonunital & 37 & 26 & 8 & eight never-true rays\\
+Cabello 18--9 & 18 & 9 & 0 & Kochen--Specker set\\
+Peres--Mermin 24 & 24 & 24 & 0 & operator-origin check\\
 \bottomrule
-\end{tabular}%
-}
-\end{center}
+\end{tabular}
+\end{table}
 
-\section{Vector-Generated Closure Results}
+For the Specker bug, the coordinates lie in $\mathbb Q(\sqrt2)$ but the
+complete Born table is rational.  The audit therefore constructs an exact
+rational rank factorization before facet enumeration.  For $\Gamma_3$, the
+coordinate-labelled displayed rays are orthogonally completed to 27 rays and
+17 triads, as required by the full suborthoposet.  Some Born overlaps remain in
+$\mathbb Q(\sqrt2)\setminus\mathbb Q$, so its facet and LP branch is numerical.
 
-No row in this table is claimed as an exact-certified optimum.  The fractions
-are rationalizations of floating-point optima from the closure audit.
+The Tkadlec nonunital construction begins with the 25 marked rays and adjoins
+every distinct cross-product ray completing an orthogonal pair.  Exact integer
+geometry gives 37 rays and 26 triads.  Direct enumeration yields eight
+two-valued states and eight never-true rays.
 
-\begin{center}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{llcccll}
-\toprule
-Configuration & closure & \(d\) & \((|\Omega|,|E|)\) &
-\((f_\Omega,f_E)\) & solver & \(r\)\\
-\midrule
-Firefly logic \(L_{12}\) & closed effects & 3 & \((6,11)\) & \((5,5)\) &
-primal & \(\approx0\)\\
-Firefly logic \(L_{12}\) & closed effects+preparations & 3 & \((11,11)\) &
-\((5,5)\) & primal & \(\approx0\)\\
-Yu--Oh 13 & closed effects & 3 & \((14,51)\) & \((24,96)\) & primal &
-\(\approx9/20\)\\
-Yu--Oh 13 & closed effects+preparations & 3 & \((51,51)\) & \((96,96)\) &
-primal & \(\approx21/44\)\\
-Yu--Oh 25 completion & closed effects & 3 & \((26,51)\) & \((96,96)\) &
-primal & \(\approx21/44\)\\
-Yu--Oh 25 completion & closed effects+preparations & 3 & \((51,51)\) &
-\((96,96)\) & primal & \(\approx21/44\)\\
-Tkadlec Fig. 2, nonunital & closed effects & 3 & \((38,123)\) &
-\((276,1140)\) & cutting dual & \(\approx445/792\)\\
-Tkadlec Fig. 2, nonunital & closed effects+preparations & 3 & \((123,123)\) &
-\((1140,1140)\) & cutting dual & \(\approx192/337\)\\
-Cabello 18--9 & closed effects & 4 & \((19,121)\) & \((146,120)\) &
-primal & \(\approx4/9\)\\
-Cabello 18--9 & closed effects+preparations & 4 & \((121,121)\) &
-\((120,120)\) & primal & \(\approx4/9\)\\
-Peres--Mermin/Peres 24 & closed effects & 4 & \((25,139)\) &
-\((120,120)\) & primal & \(\approx4/9\)\\
-Peres--Mermin/Peres 24 & closed effects+preparations & 4 & \((139,139)\) &
-\((120,120)\) & primal & \(\approx4/9\)\\
-\bottomrule
-\end{tabular}%
-}
-\end{center}
+\section{Implemented orthant-factorization problem}
 
-\section{Input Coordinates}
-
-The rational ray coordinates are stored directly in
-\path{simplex_projector_cone_vector_audit.py} under these names:
+Real symmetric operators are represented by coordinates whose trace metric is
 \[
-\texttt{fireflyL12},\quad
-\texttt{yuOh13},\quad
-\texttt{yuOh25},\quad
-\texttt{tkadlecFig2Nonunital},\quad
-\texttt{cabello18},\quad
-\texttt{peresMermin24}.
+G=\operatorname{diag}(\underbrace{1,\ldots,1}_{d},
+\underbrace{2,\ldots,2}_{d(d-1)/2}).
 \]
-The Yu--Oh 25 list is generated from the Yu--Oh 13 list by adding the primitive
-cross-product completion of every orthogonal pair.  The algebraic pentagon
-branch is generated by \path{kcbs_completed_pentagon_rays_float()}.
+Effects are stored in dual coordinates $\widetilde I_E=GI_E$.  After quotienting
+operational null directions and reducing to accessible coordinates, the
+program computes homogeneous facet matrices $H_\Omega,H_E$ and solves
+\[
+H_E^T\sigma H_\Omega=
+\widetilde I_E^T\bigl[(1-r)\Id+rD\bigr]I_\Omega,
+\qquad \sigma\ge0,\qquad 0\le r\le1,
+\]
+where $D$ maps every normalized preparation to the maximally mixed state.
+For a general operational rank factorization of a Born table, the same equation
+is written in the induced rational or numerical coordinates.
 
-\section{Numerical Status}
+The associated ontological normalization requirements are
+\[
+\sum_\lambda\mu_\omega(\lambda)=1,
+\qquad \xi_u(\lambda)=1,
+\qquad 0\le\xi_e(\lambda)\le1.
+\]
+Thus the implemented test is the general finite orthant-factorization test, not
+an assumption that an intermediate simplicial cone has the accessible-space
+dimension.
 
-The projector-cone rows marked ``exact optimum'' have both rational primal
-feasibility and rational dual optimality certificates.  These are serialized in
-the \texttt{exact\_projector\_certificates/} directory of the run output.  The completed pentagon,
-Specker bug, and \(\Gamma_3\) rows remain numerical evidence in the present
-archive.  All vector-closure rows remain numerical in the overnight run:
-the rational closure facets were exact, but exact primal--dual closure
-certificates were not produced.
+\subsection{Exact certificate convention}
+
+Put
+\[
+M_0=\widetilde I_E^TI_\Omega,
+\qquad M_1=\widetilde I_E^T(D-\Id)I_\Omega,
+\]
+and let $C_{\ell k}=(h^E_\ell)^Th^\Omega_k$.  An exact primal certificate is a
+rational nonnegative matrix $\sigma$ satisfying
+\[
+\sum_{\ell,k}\sigma_{\ell k}C_{\ell k}-rM_1=M_0.
+\]
+An exact dual certificate is a rational matrix $Y$ satisfying
+\[
+\langle Y,C_{\ell k}\rangle\le0,
+\qquad -\langle Y,M_1\rangle\le1,
+\qquad \langle Y,M_0\rangle=r.
+\]
+The label ``exact optimum'' is used only when both certificates pass exact
+rational verification.  A decimal approximation or a rationalization of a
+floating-point optimum is labelled numerical.
+
+\section{Projector-cone results}
+
+\begin{table}[ht]
+\centering
+\caption{Projector-cone audit.  Facets are listed as state/effect counts.}
+\label{tab:projector}
+\small
+\begin{tabular}{lrrl}
+\toprule
+configuration & facets & $r$ & status\\
+\midrule
+Firefly $L_{12}$ & $5/5$ & $0$ & exact optimum\\
+Completed pentagon & $12/12$ & $0.119140568134$ & numerical\\
+Specker bug & $26/26$ & $25/79$ & exact optimum\\
+Kochen--Specker $\Gamma_3$ & $230/230$ & $0.502197722972$ & numerical\\
+Tkadlec nonunital & $356/356$ & $0.547491649818$ & numerical\\
+Yu--Oh 13 & $24/24$ & $3/8$ & exact optimum\\
+Yu--Oh 25 & $96/96$ & $21/44$ & exact optimum\\
+Cabello 18--9 & $146/146$ & $1/3$ & exact optimum\\
+Peres--Mermin 24 & $120/120$ & $4/9$ & exact optimum\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Specker-bug certificate verifies $r=25/79$ exactly.  The $\Gamma_3$
+algebraic branch has maximum dual violation $1.6\times10^{-10}$.  The Tkadlec
+nonunital equality residual is $2.8\times10^{-13}$.  The completed-pentagon
+residual is $1.8\times10^{-13}$.  No exact value is assigned to these three
+numerical rows.
+
+\section{Vector-generated operational closures}
+
+The closed-effects variant starts from the ray preparations and the maximally
+mixed state and closes the effects under the unit, residual sharp outcomes,
+complements, coarse grainings, and operator equality.  The effects-and-preps
+variant also adds every normalized closed effect as a preparation.  This final
+step is an explicit modelling choice.
+
+\begin{landscape}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{p{38mm}p{27mm}rrrrl}
+\caption{Closure audit.  Generator and facet columns list state/effect pairs.
+Every threshold in this table is numerical.}
+\label{tab:closures}\\
+\toprule
+configuration & variant & generators & facets & $r_{\rm num}$ & solver & status\\
+\midrule
+\endfirsthead
+\toprule
+configuration & variant & generators & facets & $r_{\rm num}$ & solver & status\\
+\midrule
+\endhead
+Firefly $L_{12}$ & effects & $6/11$ & $5/5$ & $0$ & primal & numerical\\
+Firefly $L_{12}$ & effects+preps & $11/11$ & $5/5$ & $0$ & primal & numerical\\
+Yu--Oh 13 & effects & $14/51$ & $24/96$ & $0.450000000000$ & primal & numerical\\
+Yu--Oh 13 & effects+preps & $51/51$ & $96/96$ & $0.477272727273$ & primal & numerical\\
+Yu--Oh 25 & effects & $26/51$ & $96/96$ & $0.477272727273$ & primal & numerical\\
+Yu--Oh 25 & effects+preps & $51/51$ & $96/96$ & $0.477272727273$ & primal & numerical\\
+Specker bug & effects & $14/27$ & $26/26$ & $0.316455696203$ & primal & numerical\\
+Specker bug & effects+preps & $27/27$ & $26/26$ & $0.316455696203$ & primal & numerical\\
+Kochen--Specker $\Gamma_3$ & effects & $28/55$ & $230/230$ & $0.502197722951$ & cutting dual & numerical\\
+Kochen--Specker $\Gamma_3$ & effects+preps & $55/55$ & $230/230$ & $0.502197722951$ & cutting dual & numerical\\
+Tkadlec nonunital & effects & $38/75$ & $356/356$ & $0.547491649818$ & cutting dual & numerical\\
+Tkadlec nonunital & effects+preps & $75/75$ & $356/356$ & $0.547491649818$ & cutting dual & numerical\\
+Cabello 18--9 & effects & $19/121$ & $146/120$ & $0.444444444444$ & primal & numerical\\
+Cabello 18--9 & effects+preps & $121/121$ & $120/120$ & $0.444444444444$ & primal & numerical\\
+Peres--Mermin 24 & effects & $25/139$ & $120/120$ & $0.444444444444$ & primal & numerical\\
+Peres--Mermin 24 & effects+preps & $139/139$ & $120/120$ & $0.444444444444$ & primal & numerical\\
+\bottomrule
+\end{longtable}
+\end{landscape}
+
+The Specker-bug closures agree numerically with $25/79$.  The $\Gamma_3$
+closures agree with each other to the displayed precision and have maximum
+cutting-dual violations below $7\times10^{-15}$.  The two Tkadlec nonunital
+violations are $7.1\times10^{-11}$ and $5.9\times10^{-12}$.  Fractions suggested
+by numerical closure values are comparisons only and are not exact closure
+certificates.
+
+\section{Reproduction and checkpoint use}
+
+With NumPy, SciPy, SymPy, and a rational/GMP-enabled pycddlib installation,
+the complete command is
+\begin{verbatim}
+python simplex_audit_rebuilt.py --outdir audit_v3
+\end{verbatim}
+The same command may be issued after an interruption or on a populated output
+directory.  A task is reused only when its stored SHA-256 input fingerprint and
+audit-schema version match.  The run log prints \texttt{REUSE} for such a task.
+To request every calculation explicitly, use
+\begin{verbatim}
+python simplex_audit_rebuilt.py --outdir audit_v3 --force
+\end{verbatim}
+Validation-only and selected-configuration runs are available through
+\texttt{--validate} and repeatable \texttt{--only} arguments.
+
+\input{2026-simplex-vector-catalog.tex}
+
+\section{AI-assisted revision disclosure}
+
+OpenAI Codex with a GPT-5.6-based model was used in July 2026 to consolidate the
+audit program, compare its machine-readable outputs with the manuscript and
+supplement, and propose editorial revisions.  The author specified the
+mathematical constructions, executed the reported run, inspected the program
+and outputs, and remains responsible for the sources, claims, and
+interpretation.  Exact status is assigned only after rational primal and dual
+verification by the program.
+
+\begin{thebibliography}{9}
+\bibitem{cohen}
+D. W. Cohen, \emph{An Introduction to Hilbert Space and Quantum Logic}
+(Springer, 1989), DOI: \href{https://doi.org/10.1007/978-1-4613-8841-8}{10.1007/978-1-4613-8841-8}.
+
+\bibitem{ks67}
+S. Kochen and E. P. Specker, ``The problem of hidden variables in quantum
+mechanics,'' Indiana Univ. Math. J. \textbf{17}, 59--87 (1967), DOI:
+\href{https://doi.org/10.1512/iumj.1968.17.17004}{10.1512/iumj.1968.17.17004}.
+
+\bibitem{tkadlec}
+J. Tkadlec, ``Greechie diagrams of small quantum logics with small state
+spaces,'' Int. J. Theor. Phys. \textbf{37}, 203--209 (1998), DOI:
+\href{https://doi.org/10.1023/A:1026646229896}{10.1023/A:1026646229896}.
+
+\bibitem{cabello-thesis}
+A. Cabello, \emph{Pruebas algebraicas de imposibilidad de variables ocultas en
+mec\'anica cu\'antica}, Ph.D. thesis, Universidad Complutense de Madrid (1996),
+Fig.~2.5 and printed p.~44.
+
+\bibitem{yuoh}
+S. Yu and C. H. Oh, ``State-independent proof of Kochen--Specker theorem with
+13 rays,'' Phys. Rev. Lett. \textbf{108}, 030402 (2012), DOI:
+\href{https://doi.org/10.1103/PhysRevLett.108.030402}{10.1103/PhysRevLett.108.030402}.
+
+\bibitem{cabello18}
+A. Cabello, J. M. Estebaranz, and G. Garc\'ia-Alcaine, ``Bell--Kochen--Specker
+theorem: A proof with 18 vectors,'' Phys. Lett. A \textbf{212}, 183--187
+(1996), DOI:
+\href{https://doi.org/10.1016/0375-9601(96)00134-X}{10.1016/0375-9601(96)00134-X}.
+
+\bibitem{mermin}
+D. N. Mermin, ``Simple unified form for the major no-hidden-variable
+theorems,'' Phys. Rev. Lett. \textbf{65}, 3373--3377 (1990), DOI:
+\href{https://doi.org/10.1103/PhysRevLett.65.3373}{10.1103/PhysRevLett.65.3373}.
+
+\bibitem{peres}
+A. Peres, ``Two simple proofs of the Kochen--Specker theorem,'' J. Phys. A
+\textbf{24}, L175--L178 (1991), DOI:
+\href{https://doi.org/10.1088/0305-4470/24/4/003}{10.1088/0305-4470/24/4/003}.
+
+\bibitem{kcbs}
+A. A. Klyachko, M. A. Can, S. Binicio\u{g}lu, and A. S. Shumovsky, ``Simple
+test for hidden variables in spin-1 systems,'' Phys. Rev. Lett. \textbf{101},
+020403 (2008), DOI:
+\href{https://doi.org/10.1103/PhysRevLett.101.020403}{10.1103/PhysRevLett.101.020403}.
+\end{thebibliography}
 
 \end{document}
