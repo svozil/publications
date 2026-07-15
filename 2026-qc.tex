@@ -20,13 +20,13 @@
   linkcolor=blue,
   citecolor=blue,
   urlcolor=blue,
-  pdftitle={Partition-Resolved Interference and Oracle Leakage in Quantum Computation},
+  pdftitle={Partition-Resolved Coherence in Quantum Algorithms},
   pdfauthor={Karl Svozil}
 }
 
 \begin{document}
 
-\title{Partition-Resolved Interference and Oracle Leakage in Quantum Computation}
+\title{Partition-Resolved Coherence in Quantum Algorithms}
 
 \author{Karl Svozil \orcidlink{0000-0001-6554-2802}}
 \email{karl.svozil@tuwien.ac.at}
@@ -140,6 +140,13 @@ identification task is specified by a partition
         \qquad
         \Omega=\biguplus_{j=1}^m C_j .
 \end{equation}
+Here every \(C_j\) is nonempty, the cells are pairwise disjoint, and their
+union is \(\Omega\).  Equivalently, \(\Pi\) is the set of equivalence classes
+of the relation
+\(
+\omega\sim_\Pi\omega'
+\)
+if and only if \(\omega\) and \(\omega'\) belong to the same cell \(C_j\).
 For an unknown instance \(\omega\in\Omega\), the required answer is the cell
 \([\omega]_\Pi=C_j\) containing it.  The task need not identify
 \(\omega\) completely.  Conversely, a family of partitions
@@ -349,11 +356,69 @@ the value oracle
         =
         \ket{i}\ket{y\oplus b_i}.
 \]
-Its parity
+Its parity defines the two-cell partition
 \[
-b_1\oplus b_2\oplus\cdots\oplus b_N
+\begin{split}
+        \Pi_{\rm par}&=\{C_0,C_1\},\\
+        C_p&=\left\{b\in\{0,1\}^N:
+        \bigoplus_{i=1}^{N}b_i=p\right\}.
+\end{split}
 \]
-depends on every input bit. Exact quantum computation of parity requires exactly $\lceil N/2\rceil$ queries, giving at most a factor-of-two improvement over the deterministic classical query complexity~\cite{Farhi-98}. More generally, in the black-box query model, polynomial-method bounds show that for total Boolean functions the bounded-error quantum and classical query complexities are polynomially related, ruling out arbitrary exponential speedup for such functions~\cite{bbcmw-01}. Superposition alone is therefore not the resource. Structure-matched recombination is.
+Although \(\Pi_{\rm par}\) has only two cells, they are maximally interlaced
+on the Boolean cube: flipping any one bit moves an instance from one cell to
+the other.  Moreover, the projection of either cell onto any proper subset
+of the coordinates is the full cube on that subset.  Thus every assignment
+to fewer than \(N\) coordinates has completions in both cells; no such
+partial coordinate information favors either parity label.
+
+On the formal instance space spanned by the basis states \(\ket{b}\), the
+corresponding partition observable may be written as
+\[
+        A_{\rm par}
+        =
+        \sum_{b\in\{0,1\}^N}
+        (-1)^{\sum_i b_i}\ket{b}\!\bra{b}
+        =
+        Z_1Z_2\cdots Z_N.
+\]
+It is a weight-\(N\) observable: its eigenvalue is precisely the parity-cell
+label.  This expression does not make the black-box problem trivial.  If an
+accessible register already contained \(\ket{b}\), the observable could be
+measured directly.  Query complexity instead asks how many uses of \(O_b\)
+are required to encode this global label into distinguishable output
+subspaces.  The partition must therefore be considered together with its
+oracle representation, not merely by counting its cells.
+
+The polynomial method makes this obstruction precise.  After \(T\) oracle
+queries, every output amplitude is a multilinear polynomial in the input
+bits of degree at most \(T\), and every measurement probability has degree
+at most \(2T\).  Any probability that separates \(C_0\) from \(C_1\) with
+bounded error must approximate the parity character
+\[
+        (-1)^{\sum_i b_i}
+        =
+        \prod_{i=1}^{N}(-1)^{b_i},
+\]
+whose approximate degree is \(N\).  Hence \(2T\geq N\).  This bound is
+tight: pairing the input positions allows the parity of each pair to be
+resolved with one quantum query, so exact parity requires
+\(\lceil N/2\rceil\) queries.  The improvement over the deterministic
+classical query complexity is therefore at most a factor of
+two~\cite{Farhi-98,bbcmw-01}.
+
+The original Deutsch problem discussed above is precisely the \(N=2\)
+special case of this partition: \(\Pi_D=\Pi_{\rm par}\).  Its two truth-table
+classes are already interlaced on the Boolean square, yet the bound
+\(2T\geq N\) then requires only \(T\geq1\), which the one-query Deutsch
+algorithm attains.  Interlacing is therefore compatible with a factor-of-two
+quantum reduction; for unrestricted parity it obstructs any larger
+asymptotic improvement~\cite{deutsch,Farhi-98}.
+
+More generally, in the black-box query model, polynomial-method bounds show
+that for total Boolean functions the bounded-error quantum and classical
+query complexities are polynomially related, ruling out arbitrary
+exponential speedup for such functions~\cite{bbcmw-01}.  Superposition alone
+is therefore not the resource.  Structure-matched recombination is.
 
 Appendix~\ref{app:leaky-bv} gives a concrete interpolation for the
 Bernstein--Vazirani problem.  A globally unitary oracle couples a tunable part
@@ -538,7 +603,6 @@ hidden-variable models.
 
 For a single qubit, the standard Kochen--Specker obstruction for projective
 measurements is absent.
-% Cabello proposed a POVM-based single-qubit construction~\cite{cabello-2003-qubit-povm}, but its interpretation as Kochen--Specker contextuality was challenged and a hidden-variable representation was supplied~\cite{GrudkaKurzynski2008}.
 Broader operational
 notions extend contextuality to preparations, transformations, and unsharp
 measurements~\cite{Spekkens-04}.  The present partition formalism does not
@@ -640,7 +704,10 @@ implemented with the required resources, their labels identify the complete
 instance.  Alternatively, a single enlarged unitary may resolve the refined
 label directly.  Quantum algorithms need not be restricted to permanently
 coarse answers; the issue is whether the required partition or refinement
-admits an efficient physical realization.
+admits an efficient physical realization.  Parity makes this caveat vivid:
+even a two-cell partition can be hard to resolve when its cells are globally
+interlaced and the oracle exposes their label only through a high-degree
+dependence on all input coordinates.
 
 The Bernstein--Vazirani leakage model makes the distinction between
 evaluation and resolution explicit.  The answer function is evaluated by a
