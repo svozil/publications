@@ -40,8 +40,9 @@ Quantum computation does not provide branchwise readout of many classical
 evaluations.  Its operational resource is coherent processing that encodes
 problem structure into amplitudes and resolves a selected property by
 interference.  We formulate a decision problem as a partition of an instance
-set.  Exact resolution is possible if and only if the encoded states associated with
-different partition cells occupy orthogonal output subspaces; the readout may
+set.  Exact resolution is possible if and only if the supports of the encoded
+states associated with different partition cells lie in mutually orthogonal
+output subspaces; the readout may
 then be represented either by a Hermitian observable whose spectral
 projectors label the cells or by a unitary that writes the cell label into an
 output register.  A separating family of such partitions can support complete
@@ -98,6 +99,15 @@ post-processing recovers a complete answer, as in order finding and
 factoring.  Conversely, an arbitrary partition of black-box data need not
 admit an efficient quantum resolution.
 
+For instance sets represented by coordinate strings, we introduce a
+restriction-indistinguishability order that quantifies how many revealed
+coordinates can leave every target cell possible.  It yields a deterministic
+exact value-query lower bound and makes the global dependence of parity
+precise.  It is deliberately not presented as a measure of quantum
+advantage: parity has maximal restriction indistinguishability but only a
+factor-of-two quantum query gain.  Advantage additionally requires an
+efficient coherent resolution relative to the same oracle interface.
+
 The claim is not meant to settle interpretive questions about Everettian or
 many-worlds accounts of quantum computation.  Advocates of such accounts have
 argued that quantum algorithms can be understood in terms of computations
@@ -149,20 +159,37 @@ of the relation
 if and only if \(\omega\) and \(\omega'\) belong to the same cell \(C_j\).
 For an unknown instance \(\omega\in\Omega\), the required answer is the cell
 \([\omega]_\Pi=C_j\) containing it.  The task need not identify
-\(\omega\) completely.  Conversely, a family of partitions
-\(\Pi^{(1)},\ldots,\Pi^{(r)}\) is \emph{separating} when its common
-refinement is the partition whose cells are all nonempty intersections
-of one cell from each \(\Pi^{(\ell)}\).  We denote this common refinement
-by \(\bigwedge_{\ell=1}^r\Pi^{(\ell)}\); it is the discrete partition when
+\(\omega\) completely.  Conversely, the \emph{common refinement} of a
+family of partitions \(\Pi^{(1)},\ldots,\Pi^{(r)}\) is the partition whose
+cells are all nonempty intersections of one cell from each
+\(\Pi^{(\ell)}\); denote it by
+\(\bigwedge_{\ell=1}^r\Pi^{(\ell)}\).  The family is \emph{separating} when
+this refinement is the discrete partition, that is, when
 \begin{equation}
         \bigwedge_{\ell=1}^r\Pi^{(\ell)}
         =
         \bigl\{\{\omega\}:\omega\in\Omega\bigr\}.
 \end{equation}
+Equivalently, every pair of distinct instances is placed in different cells
+by at least one member of the family.
 Resolving all members of a separating family therefore gives complete
 instance identification.  Here ``complete identification'' refers to the
 classical instance label; it is not tomography of an arbitrary unknown
 quantum state.
+
+The use of partitions and filters for quantum state identification predates
+the present application to computational instances.  Binary systems of
+commuting propositions were constructed as state sieves: each proposition
+induces an equivalence relation and a balanced two-cell partition of an
+orthogonal state set, while the common refinement of all the filters is the
+singleton partition~\cite{DonSvo01}.  This construction was subsequently
+extended to \(n\)-valued quantum information, with multivalued commuting
+observables representing balanced or unbalanced state
+partitions~\cite{svozil-2002-statepart-prl}.  In those settings the states to
+be separated are already orthogonal.  Here \(\Omega\) is instead a set of
+computational instances, so the additional question is whether the specified
+oracle and an efficient physical process can encode the desired cells into
+distinguishable output states.
 
 Suppose that the preparation, oracle call, and coherent post-processing
 associate an output state \(\rho_\omega\) on a Hilbert space
@@ -197,13 +224,13 @@ formulation above isolates the ideal case in which the desired partition
 label is perfectly resolvable and is not intended as a characterization of
 all bounded-error or sampling-based quantum algorithms.
 
-Choose distinct real numbers \(\lambda_1,\ldots,\lambda_m\).  The Hermitian
+Choose distinct real numbers \(\mu_1,\ldots,\mu_m\).  The Hermitian
 operator
 \begin{equation}
-        A_\Pi=\sum_{j=1}^m\lambda_jP_j
+        A_\Pi=\sum_{j=1}^m\mu_jP_j
 \label{eq:partition-observable}
 \end{equation}
-then resolves the partition: its outcome \(\lambda_j\) identifies \(C_j\).
+then resolves the partition: its outcome \(\mu_j\) identifies \(C_j\).
 Conversely, the spectral projectors of any Hermitian operator that exactly
 separates the cells supply projectors satisfying
 Eq.~\eqref{eq:partition-projectors}.  A partition problem can therefore be
@@ -239,7 +266,19 @@ output space.  Partition separation is therefore a logical condition; the
 existence and efficiency of the required preparation, oracle, unitary, and
 measurement are the physical and computational conditions.
 
+Earlier work formulated quantum-computable decision problems in terms of
+state discrimination and resolving filters, including Deutsch and parity
+problems~\cite{svozil-2005-ko}.  The later orthogonal-vector formulation
+emphasized both the attraction and the limitation of this program: abstract
+dimensional lifting can represent nonorthogonal vectors as projections of
+orthogonal vectors in a larger space, but the lifting is not in general a
+unitary physical evolution~\cite{svozil-2016-vector}.  Thus neither the
+logical existence of a partition nor a formal orthogonalization establishes
+an efficient quantum procedure.  The oracle interface and the cost of
+preparation, transformation, and readout remain part of the problem.
+
 \section{The useful mechanism: structure-matched recombination}
+\label{sec:structure-recombination}
 
 Many oracle-based and Fourier-sampling quantum algorithms have the schematic form
 \begin{align*}
@@ -278,8 +317,8 @@ and oracle access, an efficiently implementable transformation that produces
 the orthogonal cell subspaces of Eq.~\eqref{eq:partition-projectors}, and an
 efficient readout of the corresponding observable.  In the examples below
 the match takes two main forms: character, period, or hidden-subgroup
-structure, as in Bernstein--Vazirani, Simon, and Shor, where a Fourier
-transform turns an invariant into spectral concentration; and geometric
+structure, as in Bernstein--Vazirani, Simon, and Shor~\cite{Simon1997,shor:94},
+where a Fourier transform turns an invariant into spectral concentration; and geometric
 concentration in a low-dimensional invariant subspace, as in Grover search
 and the Hein--Tanner lattice examples.
 
@@ -322,17 +361,24 @@ where the strings denote the ordered value pairs \(f(0)f(1)\).  Equivalently, th
 or, in the usual terminology, the distinction between constant and balanced functions.  The final interference pattern is therefore not a readout of \(f(0)\) and \(f(1)\) separately.  It is a readout of the partition cell containing \(f\).
 
 In the operator language of Sec.~\ref{sec:partition-operators}, the final
-Hadamard transform maps the two cells of \(\Pi_D\) to orthogonal output
-subspaces.  Measuring the associated two-eigenvalue Hermitian observable
+Hadamard transform maps the encoded states associated with the two cells of
+\(\Pi_D\) to orthogonal output subspaces.  Measuring the associated
+two-eigenvalue Hermitian observable
 resolves that partition, while a corresponding unitary may write the parity
 label to a separate register.  Other partitions of the four truth tables can
 be combined with \(\Pi_D\); if their common refinement is discrete, their
 labels support complete truth-table identification, subject to the required
-oracle calls and compatibility conditions.  Earlier work on quantum state
-identification used precisely this language for generalized Deutsch-type
-problems: trivalent functions of a trit were grouped into equipartitions, and
-the question was whether the corresponding functional classes could be
-separated by quantum state identifications~\cite{2007-tkadlec-svozil-springer}.
+oracle calls and compatibility conditions.  Earlier work applied this
+state-identification language to generalized Deutsch-type problems by
+grouping the \(27\) three-valued functions of one trit into equipartitions
+and asking whether the corresponding functional classes could be encoded
+into orthogonal subspaces~\cite{2007-tkadlec-svozil-springer}.  That analysis
+also exhibited a representation-dependent obstruction: under the specified
+one-qutrit encoding, the desired decision partition could not be folded into
+a single orthogonal triple.  Enlarging the Hilbert space can restore an
+orthogonal representation, but does not by itself guarantee an efficient
+implementation.  This is an early example of the distinction between a
+logically specified partition and its efficient oracle-relative resolution.
 
 This is not a strict opposition between partial and full answers.
 Coarse-graining is a common way for a task to align with interference, but it
@@ -342,7 +388,7 @@ map.  Arbitrary partitions of arbitrary black-box data need not have this
 property, and a partition-resolving intermediate statistic may sometimes be
 classically processed into a complete answer.
 
-Shor's algorithm is a more sophisticated example. Modular exponentiation is computed reversibly, but the algorithm does not read all values of
+Shor's algorithm is a more sophisticated example~\cite{shor:94}. Modular exponentiation is computed reversibly, but the algorithm does not read all values of
 \[
 f(x)=a^x\bmod N.
 \]
@@ -358,21 +404,66 @@ the value oracle
 \]
 Its parity defines the two-cell partition
 \[
-\begin{split}
+\begin{aligned}
         \Pi_{\rm par}&=\{C_0,C_1\},\\
         C_p&=\left\{b\in\{0,1\}^N:
         \bigoplus_{i=1}^{N}b_i=p\right\}.
-\end{split}
+\end{aligned}
 \]
+
+One aspect of the resulting coordinate-global dependence can be quantified
+without using the overloaded word ``nonlocal.''  For a nontrivial partition
+\(\Pi=\{C_1,\ldots,C_m\}\) of an instance set
+\(\Omega\subseteq\Sigma^N\), let
+\(\pi_S:\Sigma^N\rightarrow\Sigma^S\) denote restriction to the coordinates
+in \(S\subseteq[N]\), and define the \emph{restriction-indistinguishability
+order}
+\begin{equation}
+\label{eq:restriction-indistinguishability}
+\begin{aligned}
+ t_{\rm res}(\Pi)=\max\bigl\{t:\;&
+ \pi_S(C_j)=\pi_S(C_{j'})\\
+ &\text{for all }j,j'\text{ and all }S\subseteq[N],
+ \ |S|\leq t\bigr\}.
+\end{aligned}
+\end{equation}
+This is a support condition: after revealing any \(t_{\rm res}(\Pi)\) named
+coordinates, every target cell remains compatible with the observed values.
+Consequently, in the standard exact value-query model, even an adaptive
+deterministic algorithm obeys
+\begin{equation}
+        D_0^{\rm val}(\Pi)\geq t_{\rm res}(\Pi)+1 .
+\label{eq:restriction-classical-lower-bound}
+\end{equation}
+Indeed, every transcript of at most \(t_{\rm res}(\Pi)\) distinct coordinate
+queries is consistent with an instance in every cell and therefore cannot
+carry an exact cell label.  For probabilistic statements a stronger
+condition is needed: equality of the fiber cardinalities
+
+\[
+ \left|\{b\in C_j:\pi_S(b)=u\}\right|
+\]
+
+over \(j\) makes the induced coordinate marginals identical under the
+uniform distribution within each cell.
+
 Although \(\Pi_{\rm par}\) has only two cells, they are maximally interlaced
 on the Boolean cube: flipping any one bit moves an instance from one cell to
-the other.  Moreover, the projection of either cell onto any proper subset
-of the coordinates is the full cube on that subset.  Thus every assignment
-to fewer than \(N\) coordinates has completions in both cells; no such
-partial coordinate information favors either parity label.
+the other.  More precisely,
+\begin{equation}
+        \pi_S(C_0)=\pi_S(C_1)=\{0,1\}^S
+        \qquad (|S|<N),
+\end{equation}
+so \(t_{\rm res}(\Pi_{\rm par})=N-1\).  Moreover, every assignment
+\(u\in\{0,1\}^S\) has exactly \(2^{N-|S|-1}\) completions in each cell.
+Thus, under the uniform prior, no proper coordinate restriction contains
+any information about the parity label.  Equation
+\eqref{eq:restriction-classical-lower-bound} recovers the exact classical
+lower bound \(D_0^{\rm val}(\Pi_{\rm par})\geq N\).
 
-On the formal instance space spanned by the basis states \(\ket{b}\), the
-corresponding partition observable may be written as
+Identifying the formal instance space with the computational basis
+\(\{\ket{b}:b\in\{0,1\}^N\}\) of \(N\) qubits, the corresponding partition
+observable may be written as
 \[
         A_{\rm par}
         =
@@ -399,26 +490,38 @@ bounded error must approximate the parity character
         =
         \prod_{i=1}^{N}(-1)^{b_i},
 \]
-whose approximate degree is \(N\).  Hence \(2T\geq N\).  This bound is
+whose approximate degree is \(N\)~\cite{bbcmw-01}.  Hence \(2T\geq N\).
+This bound is
 tight: pairing the input positions allows the parity of each pair to be
 resolved with one quantum query, so exact parity requires
-\(\lceil N/2\rceil\) queries.  The improvement over the deterministic
-classical query complexity is therefore at most a factor of
-two~\cite{Farhi-98,bbcmw-01}.
+\(\lceil N/2\rceil\) queries.  In the standard worst-case query-count
+convention, \(R_\epsilon(\operatorname{PARITY}_N)=N\) for every fixed
+\(\epsilon<1/2\), so the optimal quantum query gain is at most
+two~\cite{Farhi-98}.
 
 The original Deutsch problem discussed above is precisely the \(N=2\)
 special case of this partition: \(\Pi_D=\Pi_{\rm par}\).  Its two truth-table
-classes are already interlaced on the Boolean square, yet the bound
+classes project onto the full one-bit cube on either individual coordinate,
+and hence \(t_{\rm res}(\Pi_D)=1\).  Nevertheless, the bound
 \(2T\geq N\) then requires only \(T\geq1\), which the one-query Deutsch
 algorithm attains.  Interlacing is therefore compatible with a factor-of-two
-quantum reduction; for unrestricted parity it obstructs any larger
-asymptotic improvement~\cite{deutsch,Farhi-98}.
+quantum reduction.  It supplies geometric intuition, but the approximate-
+degree bound, rather than interlacing by itself, is the formal obstruction
+to any larger asymptotic improvement for total, unpromised
+parity~\cite{deutsch,Farhi-98}.
 
-More generally, in the black-box query model, polynomial-method bounds show
-that for total Boolean functions the bounded-error quantum and classical
-query complexities are polynomially related, ruling out arbitrary
-exponential speedup for such functions~\cite{bbcmw-01}.  Superposition alone
-is therefore not the resource.  Structure-matched recombination is.
+The restriction-indistinguishability order is therefore a diagnostic of
+how well a target label is hidden from coordinate-local classical access,
+not a measure of quantum advantage.  Its maximal value \(N-1\) occurs for
+parity, whose quantum query gain is only a factor of two.  Conversely, a
+quantum advantage depends on whether the allowed coherent oracle can resolve
+the same partition with substantially fewer queries.  More generally, an
+adaptive classical query protocol induces a partition of \(\Omega\) by its
+possible transcripts; exact classical resolution occurs only when this
+transcript partition refines the target partition.  This transcript
+formulation extends the coordinate diagnostic to other oracle models, while
+the actual advantage remains the resource ratio
+\(R_\epsilon(\Pi)/Q_\epsilon(\Pi)\).
 
 Appendix~\ref{app:leaky-bv} gives a concrete interpolation for the
 Bernstein--Vazirani problem.  A globally unitary oracle couples a tunable part
@@ -441,6 +544,19 @@ hidden-subgroup promise; the useful structure is the two-dimensional geometry
 spanned by the uniform state and the marked subspace.  The corresponding
 black-box improvement is quadratic and asymptotically optimal~\cite{grover,
 benn:97}.
+
+With bounded error \(1/3\) in the standard bit-query model, the optimal
+advantage is therefore at most a factor of two for total parity,
+\(R_{1/3}(\operatorname{PARITY}_N)=N\) versus
+\(Q_{1/3}(\operatorname{PARITY}_N)=\lceil N/2\rceil\), and quadratic for
+unstructured search, \(R_{1/3}=\Theta(N)\) versus
+\(Q_{1/3}=\Theta(\sqrt N)\).  For every total Boolean function \(f\), Beals
+\emph{et al.} proved
+\(Q_{1/3}(f)\le R_{1/3}(f)\le D(f)=O(Q_{1/3}(f)^6)\), so an exponential
+query separation is impossible~\cite{bbcmw-01}.  Such separations must use a
+promise or partial domain, as in Simon's problem~\cite{Simon1997}, or leave
+this task/oracle class; in either case efficiently resolvable structure is
+still required.
 
 The same interference mechanism has classical coherent-wave analogues, but
 that fact is not an efficient classical simulation of the encoded quantum
@@ -605,8 +721,9 @@ For a single qubit, the standard Kochen--Specker obstruction for projective
 measurements is absent.
 Broader operational
 notions extend contextuality to preparations, transformations, and unsharp
-measurements~\cite{Spekkens-04}.  The present partition formalism does not
-depend on resolving that terminological dispute.
+measurements~\cite{Spekkens-04}.  These use definitions distinct from
+projective Kochen--Specker contextuality; the present partition formalism
+does not depend on choosing among them.
 
 Each partition observable \(A_\Pi\) in
 Eq.~\eqref{eq:partition-observable} is an ordinary Hermitian operator.
@@ -638,10 +755,11 @@ information and in the theory of computation.  A finite local gate set,
 together with the ability to apply its gates to specified qubits subject to
 the architecture, is approximately universal when, for every register size
 \(n\), every target unitary \(U\) on that register, and every accuracy
-\(\epsilon>0\), a finite circuit over the gate set approximates \(U\) up to
-the physically irrelevant global phase.  This quantifies over all \(n\);
-for a fixed \(n\), the resulting circuits densely generate the appropriate
-unitary group.  Density is an approximation statement.  Compilation cost
+\(\epsilon>0\), there are a finite circuit \(V\) over the gate set and a
+phase \(\varphi\) such that
+\(\lVert V-e^{i\varphi}U\rVert_{\rm op}<\epsilon\).  This quantifies over all \(n\);
+for a fixed \(n\), the resulting circuits densely generate the unitary group
+up to global phase.  Density is an approximation statement.  Compilation cost
 also depends on how the target is specified, and a generic \(n\)-qubit
 unitary has an exponentially large description~\cite{DawsonNielsen2006}.
 
@@ -708,6 +826,15 @@ admits an efficient physical realization.  Parity makes this caveat vivid:
 even a two-cell partition can be hard to resolve when its cells are globally
 interlaced and the oracle exposes their label only through a high-degree
 dependence on all input coordinates.
+
+The restriction-indistinguishability order isolates one part of this
+phenomenon.  It measures how long coordinate queries can leave all cells
+compatible with the observed transcript, and for parity it reaches the
+maximum \(N-1\).  It is not, however, a quantum-speedup measure: unrestricted
+parity still permits only a factor-of-two query reduction.  Advantage
+requires the conjunction of classical hiding with an efficient coherent
+resolution of the same oracle-relative partition; neither condition alone is
+sufficient.
 
 The Bernstein--Vazirani leakage model makes the distinction between
 evaluation and resolution explicit.  The answer function is evaluated by a
@@ -864,6 +991,17 @@ depolarizing noise: it preserves the within-block coherences that resolve
 the records are orthogonal, and leaves ordinary basis-state value queries
 intact.
 
+For the oracle-relative comparisons below, one quantum query means one use
+of the memoryless channel \(\Phi_a^S\).  Its classical restriction is a
+computational-basis value query \(x\mapsto f_a(x)\), whose answer remains
+exact despite the discarded witness.  For a task \(\mathcal T\), let
+\(Q_\epsilon^\Phi(\mathcal T)\) denote the optimal adaptive quantum
+channel-query complexity and let \(R_\epsilon^{\rm val}(\mathcal T)\)
+denote the optimal randomized value-query complexity, both measured by the
+maximum number of oracle calls and with worst-case error at most
+\(\epsilon<1/2\).  This is a nested comparison: a quantum
+protocol can always reproduce the classical basis-query strategy.
+
 For later query-complexity statements, the phase-kickback restriction of
 the accessible channel is useful to record explicitly:
 \begin{equation}
@@ -926,13 +1064,34 @@ exactly resolves the partition
 Indeed, after a fixed reordering of output coordinates, the Hermitian
 observable
 \begin{equation}
- A_{\Pi_S}=\sum_{u\in\mathbb F_2^{n-k}}\lambda_u
+ A_{\Pi_S}=\sum_{u\in\mathbb F_2^{n-k}}\mu_u
  \bigl(\ket{u}\!\bra{u}_{\bar S}\otimes I_S\bigr),
- \qquad \lambda_u\ne\lambda_v\ \text{for }u\ne v,
+ \qquad \mu_u\ne\mu_v\ \text{for }u\ne v,
 \end{equation}
 has spectral projectors labelled by the cells of \(\Pi_S\).  The remaining
 value queries refine this partition to the singleton partition and hence
 complete the identification of \(a\).
+
+For the partition task itself this gives an exact comparison.  If \(k<n\),
+\begin{equation}
+\label{eq:leaky-bv-partition-gain}
+\begin{aligned}
+ Q_\epsilon^\Phi(\Pi_S)&=1,&
+ R_\epsilon^{\rm val}(\Pi_S)&=n-k,\\
+ \mathcal G_\epsilon(\Pi_S;\Phi)
+ &:=\frac{R_\epsilon^{\rm val}(\Pi_S)}
+ {Q_\epsilon^\Phi(\Pi_S)}=n-k.
+\end{aligned}
+\end{equation}
+Equation~\eqref{eq:leaky-bv-distribution} supplies the quantum upper bound;
+with zero calls the output is independent of the nontrivial cell label,
+which supplies the lower bound.  For the classical lower bound,
+even impose the helpful promise \(a_S=0\): under the uniform distribution,
+fewer than \(n-k\) adaptive linear equations leave at least two equally
+likely values of \(a_{\bar S}\), so some input has success at most \(1/2\).
+The \(n-k\) basis queries outside \(S\) attain the bound.  For \(k=n\),
+\(\Pi_S\) has one cell, both costs vanish, and the gain ratio is undefined.
+Thus the partition advantage grows precisely when \(n-k\) grows.
 
 Operationally, after this first query one may recover the remaining
 coordinates by \(k\) ordinary value queries on the standard basis vectors
@@ -954,15 +1113,82 @@ interpolates as
         \end{cases}
 \end{equation}
 
-Equation~\eqref{eq:leaky-bv-query-cost} describes an explicit completion
-strategy, not a general optimality theorem for arbitrary adaptive use of
-the full leaked channel.  The structural fact proved below is narrower:
-the accessible phase-interference channel contains no dependence on
-\(a_S\).  Once \(a_{\bar S}\) is known, the \(k\) standard-basis value
-queries used here provide \(k\) independent linear equations and are
-necessary within this restricted second-stage strategy.  Optimal query
-complexity for arbitrary adaptive protocols using the full
-query--answer channel is a separate problem and is not claimed here.
+For complete identification, the classical value-query complexity remains
+\begin{equation}
+ R_\epsilon^{\rm val}({\rm id})=n .
+\end{equation}
+Indeed, under the uniform distribution on \(a\), fewer than \(n\) adaptive
+linear equations leave at least two equally likely strings, so no
+randomized algorithm using fewer queries has worst-case success greater
+than \(1/2\).  Equation~\eqref{eq:leaky-bv-query-cost} is an exact
+completion algorithm and therefore gives an upper bound on, rather than a
+formula for, the optimal quantum complexity.
+
+A channel-specific lower bound follows from the same dephasing mechanism.
+Give \(a_{\bar S}\) to the algorithm for free, fix it, and cancel its known
+contribution.  On the query register, answer register \(Y\), and a reference
+\(R\) containing the rest of the workspace, the residual channel has the
+Kraus representation
+\begin{equation}
+\label{eq:leaky-bv-residual-channel}
+\begin{aligned}
+(\widetilde\Phi_{a_S}^S\otimes I_R)(\rho)
+ &=\sum_{s\in\mathbb F_2^k}K_{a_S,s}\rho K_{a_S,s}^\dagger,\\
+K_{a_S,s}
+ &=P_s\otimes X_Y^{a_S\cdot s}\otimes I_R .
+\end{aligned}
+\end{equation}
+Thus one call can be simulated exactly, even on entangled inputs, by
+measuring \(\{P_s\}\), requesting the single classical parity
+\(b=a_S\cdot s\), applying \(X_Y^b\), and discarding the extra outcome record;
+the nonselective measurement is precisely the channel's dephasing.
+
+For \(q\) calls, retain only for the analysis the latent transcript
+\(\tau=(s_1,b_1,\ldots,s_q,b_q)\).  Induction through arbitrary
+\(a_S\)-independent interquery maps shows that, for every positive-probability
+\(\tau\), its likelihood and the final conditional state are the same for
+all \(a_S\) satisfying \(a_S\cdot s_t=b_t\).  Under a uniform prior the
+posterior is therefore uniform on this affine solution space, of dimension
+\(k-\operatorname{rank}(s_1,\ldots,s_q)\geq k-q\).  Even a decoder given \(\tau\)
+has average success at most \(2^{q-k}\).  If \(q<k\), this is at most
+\(1/2\), so some input has success at most \(1/2\).  When \(k=0\) and
+\(n>0\), zero calls still cannot identify the nontrivial input string.
+Consequently,
+\begin{align}
+\max\{1,k\}
+&\le Q_\epsilon^\Phi({\rm id})
+\le 1+k, &&0\le k<n, \label{eq:leaky-bv-optimal-bounds}\\
+Q_\epsilon^\Phi({\rm id})
+&=n, &&k=n .
+\end{align}
+For \(0<k<n\), the optimal oracle-relative gain therefore obeys
+\begin{equation}
+\label{eq:leaky-bv-full-gain}
+ \frac{n}{k+1}
+ \le
+ \mathcal G_\epsilon^{\rm full}(n,k)
+ :=
+ \frac{n}{Q_\epsilon^\Phi({\rm id})}
+ \le
+ \frac{n}{k}.
+\end{equation}
+The endpoints are
+\(\mathcal G_\epsilon^{\rm full}(n,0)=n\) and
+\(\mathcal G_\epsilon^{\rm full}(n,n)=1\).  Hence \(k=o(n)\) guarantees a
+gain tending to infinity; if \(k/n\to\alpha\in(0,1)\), the gain tends to
+\(1/\alpha\); and if \(k/n\to1\), it tends to one.  Leakage can thus remove
+the advantage of the stated interference strategy, but it cannot create an
+intrinsic disadvantage in optimal query count, since
+\(Q_\epsilon^\Phi({\rm id})\le R_\epsilon^{\rm val}({\rm id})=n\).
+For \(0<k<n\), the one-query gap in
+Eq.~\eqref{eq:leaky-bv-optimal-bounds} is not closed here.  The structural
+fact proved below is that the phase-interference
+restriction contains no dependence on \(a_S\); it does not by itself fix
+the optimal adaptive complexity of the full query--answer channel.  The
+standard general-adversary characterization for coordinate queries is not
+applied directly because \(\Phi_a^S\) is an input-dependent quantum channel
+with a fresh inaccessible environment, rather than a coherent standard
+query to a classical input.
 
 \medskip
 \noindent\emph{Proof.}
@@ -1046,7 +1272,8 @@ The same dephasing in the \(x_S\) basis occurs for any preparation of the answer
 \end{equation}
 Since $a_{\bar S}$ is then known, a standard value query supplies one linear equation over the unknown vector $a_S\in\mathbb F_2^k$. Querying the standard basis vectors $e_i$, $i\in S$, recovers these $k$ components directly. This proves the stated interpolation strategy in Eq.~\eqref{eq:leaky-bv-query-cost}. \(\square\)
 
-\subsection{Continuous witness overlap}
+\medskip
+\noindent\textbf{Continuous witness overlap.}\enspace
 
 The preceding construction has a literal continuous version.  For every
 \(i\in S\), choose normalized witness states
@@ -1091,13 +1318,44 @@ with probability \((1+\lambda_i)/2\).  In particular,
  \Pr\nolimits_{\boldsymbol\lambda}(z=a)
  =\prod_{i\in S}\frac{1+\lambda_i}{2}.
 \end{equation}
+For the stated one-query readout, full identification therefore meets a
+bounded-error requirement \(\epsilon\) exactly when
+\begin{equation}
+\label{eq:continuous-one-query-threshold}
+ \prod_{i\in S}\frac{1+\lambda_i}{2}\ge 1-\epsilon .
+\end{equation}
+When this condition holds, the readout realizes the full \(n\)-fold query
+gain relative to the classical value-query cost \(n\).  Failure of
+Eq.~\eqref{eq:continuous-one-query-threshold}, however, is not a quantum
+lower bound; it says only that this fixed one-query measurement misses the
+chosen success threshold.
+
+The memoryless model also gives a simple multishot upper bound.  Repeat the
+readout an odd number \(r\) of times and take a coordinatewise majority.
+The factorization in Eq.~\eqref{eq:continuous-leaky-bv-distribution} and a
+Hoeffding bound give, for \(k>0\) and
+\(\lambda_{\min}=\min_{i\in S}\lambda_i>0\),
+\begin{equation}
+\label{eq:continuous-repetition-bound}
+ \Pr(\widehat a\ne a)
+ \le
+ \sum_{i\in S}\exp\!\left(-\frac{r\lambda_i^2}{2}\right)
+ \le
+ k\exp\!\left(-\frac{r\lambda_{\min}^2}{2}\right).
+\end{equation}
+Thus any odd \(r\ge 2\lambda_{\min}^{-2}\ln(k/\epsilon)\) suffices.
+Together with the \(n\)-query basis-value fallback, this exhibits a gain
+tending to infinity whenever
+\(\lambda_{\min}^{-2}\ln(k/\epsilon)=o(n)\).  This is only a sufficient
+condition; zero-overlap coordinates can instead be queried in the
+computational basis.
+
 The endpoint \(\lambda_i=1\) leaves that coordinate fully coherent, whereas
 \(\lambda_i=0\) makes the two witness records orthogonal and yields the
 uniform factor in Eq.~\eqref{eq:leaky-bv-distribution}.  Intermediate
-overlaps thus continuously interpolate the visibility of the corresponding
-partition-resolving interference.  Establishing an optimal adaptive query
-complexity for every overlap vector is a separate problem; the formula
-above characterizes the stated one-query readout exactly.
+overlaps continuously interpolate the visibility of the corresponding
+partition-resolving interference.  These bounds concern the stated
+decoders; optimal adaptive channel-query complexity remains open.
 If \(\lambda_i=1\) for only some \(i\in S\), those coordinates are
 effectively not leaked and the corresponding factors reduce to
 \(\mathbf 1[z_i=a_i]\); the resolved partition is then finer than the
@@ -1123,10 +1381,10 @@ environment, then the reduced dynamics available to the algorithm is no
 longer reversible.  The witness register is precisely the residual
 garbage identified in the main text as an obstruction to free unitary
 reset, here promoted to a tunable knob.  The one-query Bernstein--Vazirani
-readout advantage is lost in this leakage model not because the Boolean
-function \(f_a\) has changed, nor because the global dynamics has ceased to
-be unitary, but because the inaccessible witness dephases the coherences
-needed for the later Fourier-basis recombination.
+readout of the full string is degraded at the orthogonal-record endpoint
+not because the Boolean function \(f_a\) has changed, nor because the global
+dynamics has ceased to be unitary, but because the inaccessible witness
+dephases the coherences needed for the later Fourier-basis recombination.
 
 Pointedly stated, this demonstrates that a quantum computer does not
 ``compute all branches at once and let us independently read them''---where the
@@ -1138,8 +1396,11 @@ appendix shows that the speedup relies on \emph{recombining amplitudes}
 by interference in the basis matched to the hidden linear character.
 When uncomputation is blocked by an inaccessible witness, the accessible
 dynamics is dephased in the computational basis, the interference is
-quenched, and the lost coordinates must be recovered, if at all, by
-ordinary value queries.
+quenched, and the lost coordinates must be recovered through the
+answer-register value information rather than through the reduced
+phase-interference channel.  Ordinary basis-value queries provide one such
+completion; for \(0<k<n\), the general adaptive complexity retains the
+one-query gap in Eq.~\eqref{eq:leaky-bv-optimal-bounds}.
 
 
 
