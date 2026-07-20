@@ -24,7 +24,7 @@
 
 \begin{document}
 
-\title{Decision Partitions Do Not Determine Quantum Speedup}
+\title{Answer Partitions and Oracle Access Determine Quantum Query Complexity}
 
 \author{Karl Svozil \orcidlink{0000-0001-6554-2802}}
 \email{karl.svozil@tuwien.ac.at}
@@ -34,39 +34,46 @@ Wiedner Hauptstra{\ss}e 8--10/136, 1040 Vienna, Austria}
 \date{\today}
 
 \begin{abstract}
-A decision problem specifies which oracle instances must receive the same
-answer, but this partition does not by itself fix the number of queries. We use
-the block form of unitary discrimination to characterize exact one-query
-resolution. For Deutsch's task, one query works for a controlled response
-unitary \(V\) exactly when \(-1\) is an eigenvalue of \(V\); odd-dimensional
-cyclic addition therefore removes the advantage. With the standard Boolean
-point oracle fixed, parity needs \(\lceil N/2\rceil\) queries, while an exhaustive
-symmetry-reduced census shows that balanced partitions of identical size can
-have different costs. All 35 three-bit tasks are certified exactly. Among 6435
-four-bit tasks, 395 are certified exactly; the other 6040 retain explicitly
-numerical status after two solver tolerances. Partitions define the required
-answers, whereas speedup is determined by how the oracle separates their
-classes.
+An answer partition specifies which oracle instances share an output, while
+query complexity also depends on how those instances are accessed. We formulate
+exact one-query answer-partition resolution as block discrimination of a unitary
+oracle family. Applied to Deutsch's problem with a controlled response unitary
+\(V\), the criterion shows that one query suffices if and only if \(-1\) is an
+eigenvalue of \(V\); cyclic addition in odd response dimension therefore raises
+the exact quantum cost to two queries, matching the classical cost while
+preserving the same computational-basis point values. Holding the standard
+Boolean point oracle fixed, we further show that balanced answer partitions
+with equal-sized cells can have different exact classical and quantum query
+complexities. A complete exact classification is given for all 35 balanced
+three-bit partitions, while the unresolved four-bit cases are reported
+explicitly as numerical candidates. These results separate the combinatorial
+specification of an answer from the oracle-dependent distinguishability that
+determines query complexity.
 \end{abstract}
 
 \maketitle
 
-\section{Oracle Access and Answer Partitions}
+An oracle problem pairs an answer partition with an access model for the hidden
+instance. The partition groups instances into cells whose members share the
+same required answer. The access model determines what information each query
+makes available, classically or quantum mechanically, and how that information
+can be processed. Quantum query speedup therefore belongs to the task--oracle
+pair. We make this viewpoint precise and then test it on standard point
+oracles, response-unitary variants, and small exhaustive families of balanced
+tasks.
 
-Two observations should be kept separate. First, query complexity is relative
-to an access model: a task is not intrinsically one-query quantum or classically
-hard. Second, even after a point-oracle model is fixed, the number and sizes of
-the answer classes do not determine their query cost. The first is a modeling
-principle; the second is the fixed-oracle claim tested below.
-
-This separation also corrects the informal picture that a quantum query simply
-evaluates many classical branches in parallel~\cite{Steane2003OneUniverse}. A
-query produces one state whose relative amplitudes may be recombined. Readout
-depends on the distinguishability of the states associated with possible
-oracles, not on a branchwise list of function values. A fixed basis change
-leaves discrimination unchanged, whereas a different response spectrum,
-aggregated data, or an inaccessible environment can change the separation
-produced by one call~\cite{WojcikChhajlany2006}.
+This viewpoint also sharpens the usual intuition about quantum parallelism. A
+quantum query prepares one coherent state, and the algorithm succeeds when
+interference makes the states associated with different answer cells
+distinguishable. The useful resource is consequently the structure of the
+oracle response---its phases, spectrum, accessible registers, and possible
+environment---rather than simply the formal number of branches in a
+superposition. Rewriting an oracle by fixed basis changes preserves this
+discrimination, whereas changing its response representation, aggregating
+information, or discarding a witness can alter it~\cite{WojcikChhajlany2006}.
+The examples that follow develop these ideas through exact one-query
+discrimination, parity, Bernstein--Vazirani, and a finite census of balanced
+partitions.
 
 Let \(\Omega\) be a finite instance set and let
 \(g:\Omega\rightarrow J\) specify the required answer. The task induces the
@@ -100,9 +107,8 @@ encoded them. The partition therefore specifies a required zero pattern in
 the output distinguishability matrix rather than a ready-made physical
 observable.
 
-\section{Block Discrimination with One Query}
-
-Consider a family of unitary oracles \(\{U_a:a\in\Omega\}\). An arbitrary
+We next characterize exact one-query resolution for a family of unitary
+oracles \(\{U_a:a\in\Omega\}\). An arbitrary
 one-query protocol may prepare a pure state \(\ket\Psi\) of the query system
 \(Q\) and a reference \(R\), apply \(U_a\otimes I_R\), and then use an
 instance-independent channel and measurement. Write
@@ -119,7 +125,7 @@ The output Gram matrix before the final processing is
 \end{equation}
 
 \paragraph{Proposition 1 (block discrimination).}
-The partition \(\Pi_g\) is exactly resolvable with one use of
+The partition \(\Pi_g\) is exactly resolvable with at most one use of
 \(\{U_a\}\), allowing an arbitrary reference, if and only if there is a
 density operator \(\sigma\) such that
 \begin{equation}
@@ -127,12 +133,12 @@ density operator \(\sigma\) such that
  \quad\text{whenever}\quad g(a)\ne g(a').
  \label{eq:criterion}
 \end{equation}
-Indeed, exact discrimination requires the spans of the output states from
-different cells to be orthogonal, which is equivalent to the indicated
-pairwise inner products vanishing. Conversely, orthogonal cell spans can be
-measured by their support projectors. Purification shows that optimizing
-over \(\sigma\) already includes mixed probes and arbitrary ancillary
-systems.
+Indeed, exact discrimination requires the spans of the output states
+associated with different cells to be orthogonal, which is equivalent to the
+indicated pairwise inner products vanishing. Conversely, orthogonal cell
+spans can be measured by their support projectors. Purification shows that
+optimizing over \(\sigma\) already includes mixed probes and arbitrary
+ancillary systems.
 
 Equation~\eqref{eq:criterion}, with \(\sigma\succeq0\) and
 \(\operatorname{Tr}\sigma=1\), is the direct block-discrimination form of
@@ -154,8 +160,12 @@ Write \(Q_\epsilon(\Pi;\mathcal U)\) and
 classical worst-case numbers of calls needed with worst-case error at most
 \(\epsilon\), under explicitly matched access conventions, and write
 \(Q_E\equiv Q_0\) for exact quantum complexity.
-Equation~\eqref{eq:criterion} characterizes \(Q_E=1\); it does not by itself
-establish an advantage. Speedup additionally requires a gap between
+Equation~\eqref{eq:criterion} characterizes exact resolvability with at most
+one oracle use, namely \(Q_E(\Pi_g;\mathcal U)\le1\). For every nontrivial
+partition, zero queries cannot resolve the task, so this is equivalent to
+\(Q_E(\Pi_g;\mathcal U)=1\); the trivial one-cell partition instead has
+\(Q_E(\Pi_g;\mathcal U)=0\). The criterion does not by itself establish an
+advantage. Speedup additionally requires a gap between
 \(Q_\epsilon\) and \(R_\epsilon\) for the same task and oracle interface.
 Classically, a deterministic query protocol partitions \(\Omega\) by its
 possible transcripts and succeeds exactly only when that transcript
@@ -192,8 +202,6 @@ global phase. Supplying a coherent control for \(P_b\) restores the missing
 relative phase, but coherent control is additional black-box access rather
 than an automatic operation on an unknown unitary
 \cite{AraujoFeixCostaBrukner2014}.
-
-\section{Deutsch's Problem and the Response Spectrum}
 
 Deutsch's problem illustrates both the block criterion and this dependence.
 Let \(b=(b_0,b_1)\) be the truth table of a Boolean function and use
@@ -278,10 +286,8 @@ constant-factor effect, not an asymptotic separation, but it demonstrates
 that reversibility and blank-register behavior do not determine coherent
 query power.
 
-\section{General Pointwise Parity}
-
-The obstruction persists more strongly for general parity under the
-standard point oracle. Let \(b\in\{0,1\}^N\) and
+Parity provides a broader illustration of the same principle under standard
+pointwise access. Let \(b\in\{0,1\}^N\) and
 \(O_b\ket{i,y}=\ket{i,y\oplus b_i}\). Every pure probe, including a
 reference system, can be written in the answer qubit's \(X\) basis as
 \begin{equation}
@@ -315,11 +321,9 @@ quantum mechanically. That does not defeat
 Eq.~\eqref{eq:parity-complexity}; it replaces point access by an oracle that
 already aggregates the desired answer.
 
-\section{Balanced-Partition Census}
-
-The preceding examples suggest that the partition is a task specification,
-while cost is controlled by its relation to the available queries. This can be
-tested exhaustively for small point oracles. Let the hidden instance be
+The preceding examples point to a common picture: the answer partition specifies
+the required outputs, whereas the query model determines the cost of separating
+its cells. We test this picture exhaustively for small point-oracle problems. Let the hidden instance be
 \(b\in\{0,1\}^N\), accessed through Eq.~\eqref{eq:xor-oracle} with the address
 range enlarged to \(N\), and consider every binary answer map having
 \(2^{N-1}\) instances in each cell. Exchanging the answer labels gives the same
@@ -333,7 +337,7 @@ exchange preserve the point-oracle query cost. They reduce the \(M_3=35\)
 partitions to six orbits and the \(M_4=6435\) partitions to 58. Orbit sizes are
 restored when reporting the counts below.
 
-For each partition we computed the optimal deterministic decision-tree depth
+For each partition we computed the optimal classic deterministic decision-tree depth
 \(D\) and sought matching bounds on the exact quantum query complexity
 \(Q_E\). One-query feasibility reduces, for the Boolean response, to rational
 Gram constraints and was solved over the rationals. Multiquery feasibility was
@@ -407,20 +411,12 @@ preserve point access, attach simple exact certificates where available, and
 keep numerical status explicit. The observed proportions are finite-model
 facts, not an asymptotic speedup criterion.
 
-\section{Bernstein--Vazirani and Inaccessible Records}
-
-Bernstein--Vazirani supplies the opposite extreme. For
-\(a,x\in\mathbb F_2^n\), let \(f_a(x)=a\cdot x \pmod2\). One phase query
-prepares the character state
-\begin{equation}
- \ket{\chi_a}=2^{-n/2}\sum_x(-1)^{a\cdot x}\ket x,
- \qquad \braket{\chi_a|\chi_{a'}}=\delta_{aa'}.
- \label{eq:bv-characters}
-\end{equation}
-The singleton partition is therefore resolved in one query; the final
-Hadamards merely map \(\ket{\chi_a}\) to \(\ket a\)~\cite{be-va}. This
-orthogonality can be degraded without changing any computational-basis
-value returned by the oracle.
+Bernstein--Vazirani provides a complementary access-model example. For
+\(a,x\in\mathbb F_2^n\), let \(f_a(x)=a\cdot x \pmod2\). With ordinary phase
+access, the corresponding character states are orthogonal, so the singleton
+partition is resolved in one query~\cite{be-va}. We now add an inaccessible
+address record while preserving every computational-basis value returned by
+the oracle.
 
 Choose \(S\subseteq\{1,\ldots,n\}\), \(|S|=k\), and let \(x_S\) denote
 the corresponding substring. Consider the unitary dilation
@@ -437,7 +433,7 @@ afterward. The accessible oracle is consequently the channel
  \right].
  \label{eq:witness-channel}
 \end{equation}
-Basis queries still return \(a\cdot x\) exactly, but the witness records
+Basis queries still return \(a\cdot x\) exactly, while the witness records
 selected address information and removes coherences between sectors with
 different \(x_S\), as in standard which-way
 interference~\cite{Englert1996}. Define the surviving answer partition
@@ -446,18 +442,21 @@ interference~\cite{Englert1996}. Define the surviving answer partition
  C_u=\{a:a_{\bar S}=u\}.
  \label{eq:surviving-partition}
 \end{equation}
-For \(k<n\) and worst-case error \(\epsilon<1/2\), the matched-interface
-result is
+The one-query statement below concerns this surviving partition \(\Pi_S\),
+whose cells are indexed by \(a_{\bar S}\); it is therefore an
+access-induced change of the task--oracle pair rather than a
+same-partition comparison for the original singleton task. For the classical
+comparison, let \(\mathcal O^{\mathrm{val}}=\{O_a^{\mathrm{val}}:a\in
+\mathbb F_2^n\}\) denote the value-oracle family induced by
+computational-basis preparation and readout of \(\Phi_a^S\): a query chooses
+\(x\) and returns \(a\cdot x\). For \(k<n\) and worst-case error
+\(\epsilon<1/2\), these explicitly specified quantum and classical interfaces
+give
 \begin{equation}
  Q_\epsilon^{\Phi}(\Pi_S)=1,\qquad
- R_\epsilon^{\rm val}(\Pi_S)=n-k.
+ R_\epsilon(\Pi_S;\mathcal O^{\mathrm{val}})=n-k.
  \label{eq:partition-speedup}
 \end{equation}
-Here \(R_\epsilon^{\rm val}\) is the randomized classical complexity when a
-caller uses the same channel \(\Phi_a^S\), but prepares and reads its query and
-response in the computational basis; each call then returns the point value
-\(a\cdot x\).
-
 For the quantum part, the usual Bernstein--Vazirani input and phase kickback,
 followed by tracing out the witness, leave
 \begin{equation}
@@ -479,22 +478,18 @@ Thus the one-query readout exactly resolves \(\Pi_S\). Zero queries cannot
 resolve this nontrivial
 partition \(\Pi_S\), because the output would be independent of its cell
 label. The classical upper bound uses the basis queries outside \(S\). For the
-lower bound, even impose the favorable promise \(a_S=0\). Under the uniform
+lower bound, impose the favorable promise \(a_S=0\). Under the uniform
 distribution on \(a_{\bar S}\), fewer than \(n-k\) returned linear equations
-leave an affine solution space of positive dimension, so even a decoder
-given the complete transcript succeeds with probability at most \(1/2\).
-The same average bound holds after including the protocol's internal
-randomness, and therefore some input has success at most \(1/2\). Equation
-\eqref{eq:partition-speedup} therefore concerns the same surviving
-partition and the same computational-basis value interface. It does not
-claim that the inaccessible witness is free: if the witness were coherently
-available, the fixed coupling
+leave an affine solution space of positive dimension, so even a decoder given
+the complete transcript succeeds with probability at most \(1/2\). The same
+average bound holds after including the protocol's internal randomness, and
+therefore some input has success at most \(1/2\). If the witness were
+coherently available, the fixed coupling
 \(\ket{x,e}\mapsto\ket{x,e\oplus x_S}\) could be undone without another
 oracle call, restoring the ordinary Bernstein--Vazirani output. The
-accessible oracle here is a channel, not the globally unitary dilation.
-Related distinctions between
-standard and garbage-bearing oracle access arise throughout quantum query
-complexity~\cite{Aaronson2021OpenProblems}.
+accessible oracle here is a channel rather than the globally unitary dilation,
+highlighting the distinction between standard and garbage-bearing oracle
+access in quantum query complexity~\cite{Aaronson2021OpenProblems}.
 
 At \(k=0\), no address coordinate is recorded and
 Eq.~\eqref{eq:leaky-distribution} is the ordinary Bernstein--Vazirani output
@@ -505,70 +500,25 @@ At \(k=n\), the stated interference readout is uniform and
 recover \(a\). The model separates loss of the phase-interference route from
 loss of the classical function values themselves.
 
-The loss also admits a continuous form. For each \(i\in S\), let the two
-witness records have real overlap
-\(\braket{\epsilon_0^{(i)}|\epsilon_1^{(i)}}=\lambda_i\in[0,1]\), and use
-the product record
-\(\ket{\epsilon_{x_S}}=\bigotimes_{i\in S}\ket{\epsilon_{x_i}^{(i)}}\).
-The map
-\(\ket{x,y,0}\mapsto\ket{x,y\oplus a\cdot x}
-\ket{\epsilon_{x_S}}\) is an isometry on the initialized subspace, and
-hence admits a unitary extension, because the address \(x\) is retained.
-The same calculation gives
-\begin{equation}
- \Pr_{\boldsymbol\lambda}(z|a)
- =\mathbf 1[z_{\bar S}=a_{\bar S}]
- \prod_{i\in S}\frac{1+(-1)^{z_i\oplus a_i}\lambda_i}{2}.
- \label{eq:continuous-distribution}
-\end{equation}
-The stated one-query readout recovers the full string with probability
-\(\prod_{i\in S}(1+\lambda_i)/2\). The endpoints \(\lambda_i=1\) and
-\(0\) represent, respectively, fully retained coherence and a perfectly
-distinguishable witness record; intermediate overlaps interpolate the
-visibility and success probability of the displayed Bernstein--Vazirani
-readout continuously. This probability characterizes that probe and
-Hadamard readout, not the optimal one-query strategy for the complete
-query--answer channel. Determining that optimum for the singleton partition
-of the partially coherent channel remains open.
+We conclude by returning to the role of the answer partition. Equation
+\eqref{eq:task-partition} specifies which hidden instances share an answer,
+while the oracle and protocol provide the physical ingredients---the probe
+state, oracle transformation, accessible output space, and measurement---that
+resolve the corresponding answer classes. Together, these ingredients
+determine how rapidly states from different cells separate. The
+response-spectrum theorem and the contrast between point and aggregate parity
+show how changing the access model can change this separation even when the
+abstract task remains fixed. Conversely, the finite census holds the point
+oracle fixed while varying the balanced target. Its exact three-bit
+certificates show how quantum advantages can arise from oracle-accessible,
+conditionally composed refinements, while the four-bit calculation clearly
+separates exact certificates from numerical candidates.
 
-\section{Conclusion}
-
-Equation~\eqref{eq:task-partition} specifies which hidden instances may share
-an answer, but it neither supplies an input state \(\ket a\) nor selects a
-physical output observable. The oracle and protocol determine how rapidly
-states from different cells separate. The response-spectrum theorem and the
-contrast between point and aggregate parity show that changing access changes
-this separation even when the abstract task is fixed. Conversely, the finite
-census holds the point oracle fixed while varying every balanced target. Its
-exact three-bit certificates reveal advantages built from oracle-accessible,
-conditionally composed refinements, while the four-bit calculation marks the
-boundary between proof and numerical evidence.
-
-Shor's and Grover's algorithms are relevant to the partition picture, but at
-different levels. In period finding, the answer partition groups oracle
-instances by their hidden period \(r\). For each fixed instance, the function
-values also partition the address domain into level sets
-\(C_t(r)=\{x:x\equiv t\pmod r\}\). After modular exponentiation, measuring the
-value register prepares a coset state, while discarding it gives the
-corresponding mixture. The quantum Fourier transform converts their
-translation symmetry into peaks near multiples of
-the reciprocal period. Repeated samples and continued fractions then infer
-\(r\)~\cite{shor:94}. Thus the level-set partition is an operational mechanism,
-whereas the partition of oracle instances by \(r\) specifies the answer. This
-structured pair is unlike an arbitrary balanced task in the finite census.
-
-Grover gives the complementary example. Under the promise of either no mark
-or exactly one mark, let \(\Omega=\{\varnothing\}\cup\{t:t\in[M]\}\).
-The decision partition has the two cells \(\{\varnothing\}\) and
-\(\{t:t\in[M]\}\), while the search task refines the latter into singleton
-cells. The marking oracle \(O_t\ket{x}=(-1)^{[x=t]}\ket{x}\) supplies only a
-small separation per call;
-amplitude amplification accumulates it in \(\Theta(\sqrt M)\) bounded-error
-queries rather than the classical \(\Theta(M)\), and this black-box scaling
-is optimal~\cite{grover,benn:97}. The speedup therefore does not come from a
-finer partition. It comes from the symmetry of the oracle family and the
-coherent rotation generated by alternating the marking and diffusion
-reflections.
+Shor's and Grover's algorithms fit the same task--oracle perspective: Shor
+exploits periodic structure in the oracle family, while Grover exploits
+symmetry and coherent amplitude amplification. These examples reinforce that
+quantum speedup depends on the structure of the oracle access, rather than on
+the coarseness or cardinality of the answer partition alone.
 
 Partitions are therefore indispensable as specifications but insufficient as
 complexity criteria. Quantum advantage is not caused by partition coarseness
@@ -594,9 +544,8 @@ Programme.
 
 \noindent\textit{Data availability.---}The source code, exact certificates,
 numerical witnesses, generated tables, and the NPN cross-validation underlying
-the finite census are available in the
-\href{https://svozil.github.io/publications/2026-qc-partition-census-supplement.zip}{public supplementary archive}
-and from the author upon reasonable request.
+the finite census are available at
+\href{https://svozil.github.io/publications/2026-qc-partition-census-supplement.zip}{https://svozil.github.io/publications/2026-qc-partition-census-supplement.zip}.
 
 \bibliography{svozil}
 
