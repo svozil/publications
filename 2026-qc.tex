@@ -212,12 +212,8 @@ Let \(b=(b_0,b_1)\) be the truth table of a Boolean function and use
 With the answer qubit in \(\ket-\), phase kickback gives, up to the common
 answer factor, the output states on the address register:
 \begin{equation}
- \begin{aligned}
- \ket{\psi_{00}}&= \ket{+},&
- \ket{\psi_{11}}&=-\ket{+},\\
- \ket{\psi_{01}}&= \ket{-},&
- \ket{\psi_{10}}&=-\ket{-}.
- \end{aligned}
+ \ket{\psi_{00}} = -\ket{\psi_{11}} = \ket{+},\,
+ \ket{\psi_{01}} = -\ket{\psi_{10}} = \ket{-}.
  \label{eq:deutsch-rays}
 \end{equation}
 Thus the constant and balanced cells occupy orthogonal rays, while the two
@@ -337,19 +333,21 @@ exchange preserve the point-oracle query cost. They reduce the \(M_3=35\)
 partitions to six orbits and the \(M_4=6435\) partitions to 58. Orbit sizes are
 restored when reporting the counts below.
 
-For each partition we computed the optimal classic deterministic decision-tree depth
-\(D\) and sought matching bounds on the exact quantum query complexity
-\(Q_E\). One-query feasibility reduces, for the Boolean response, to rational
-Gram constraints and was solved over the rationals. Multiquery feasibility was
-formulated with the Gram-matrix semidefinite program of
-Barnum, Saks, and Szegedy~\cite{BarnumSaksSzegedy2003}. Constructive upper
-bounds were retained as adaptive trees whose nodes read either one bit or the
-parity of two bits; the latter is one Deutsch query. Such trees are useful
-certificates, but they are not a general characterization of exact quantum
+For each partition we computed the optimal classical deterministic
+decision-tree depth \(D\) and sought matching bounds on the exact quantum query
+complexity \(Q_E\). For the Boolean response, one-query feasibility reduces to
+a finite linear system with rational coefficients, which was solved using exact
+rational arithmetic. Multiquery feasibility was formulated with the
+Gram-matrix semidefinite program of Barnum, Saks, and
+Szegedy~\cite{BarnumSaksSzegedy2003}. Constructive upper bounds were retained
+as adaptive trees whose nodes read either one bit or the parity of two bits;
+the latter is one Deutsch query. Such trees are exact upper certificates, but
+they are not a general characterization of exact quantum
 algorithms~\cite{MontanaroJozsaMitchison2015}.
 
-For \(N=3\) all lower and upper certificates meet exactly. Table~\ref{tab:n3}
-shows every orbit, rather than only aggregate counts. Here
+For \(N=3\), the exact one-query tests and explicit trees meet for every task;
+the degree-three representatives also have matching polynomial lower bounds.
+Table~\ref{tab:n3} shows every orbit, rather than only aggregate counts. Here
 \(\mathrm{Sel}(c,u,v)=u\) for \(c=0\) and \(v\) for \(c=1\).
 
 \begin{table}[t]
@@ -381,12 +379,12 @@ reads \(b_1\), and if it is one one reads \(b_3\). Likewise,
 polynomial method excludes one query and proves these two-query constructions
 optimal.
 
-For \(N=4\), exact rational lower certificates and explicit trees settle 395
+For \(N=4\), exact one-query lower obstructions and explicit trees settle 395
 partitions: 4, 6, 48, 248, and 89 have \((D,Q_E)=(1,1),(2,1),(2,2),(3,2)\),
 and \((4,2)\), respectively. Of these, 343 have an exact advantage. For the
 remaining 43 orbit representatives, covering 6040 partitions, exact trees give
 \(Q_E\le3\), while two SCS (Splitting Conic Solver) runs at requested tolerances \(10^{-7}\) and
-\(10^{-8}\) report the two-query SDP infeasible. The resulting assignments,
+\(10^{-8}\) report the two-query SDP (semidefinite programming) infeasible. The resulting assignments,
 1536 at \((D,Q_E)=(3,3)\) and 4504 at
 \((4,3)\), are therefore \emph{numerical candidates}, not exact lower bounds.
 If accepted, they give candidate totals of 4847 speedup and 1588 no-speedup
@@ -500,6 +498,15 @@ At \(k=n\), the stated interference readout is uniform and
 recover \(a\). The model separates loss of the phase-interference route from
 loss of the classical function values themselves.
 
+\paragraph{Machine-checked companion.}
+The supplementary archive includes a Lean~4/mathlib formalization of the
+exact algebraic and finite core. Three \texttt{native\_decide} audits reproduce
+the 35-task and 6,435-task deterministic/restricted-tree censuses, including
+the 395 exact-certificate cases, while additionally trusting Lean's compiler
+and native evaluator. Density-operator/PVM and unrestricted query semantics,
+the general parity lower bound, and exact lower bounds for the 6,040 candidates
+remain unformalized.
+
 We conclude by returning to the role of the answer partition. Equation
 \eqref{eq:task-partition} specifies which hidden instances share an answer,
 while the oracle and protocol provide the physical ingredients---the probe
@@ -533,20 +540,18 @@ census cannot substitute for that analysis.
 
 \begin{acknowledgments}
 The author thanks Noson S. Yanofsky for discussions that motivated this
-work. The author used an OpenAI Codex language-model-based assistant for
-structural editing, consistency checks, and implementation of the finite
-partition census, and accepts responsibility for the final scientific
-content. This research was funded in whole or in part by the
-Austrian Science Fund (FWF), grant
+work. An OpenAI Codex language-model-based assistant supported structural
+editing, consistency checks, the finite census, and the Lean~4 formalization;
+the author accepts responsibility for the final content and code. This research
+was funded in whole or in part by the Austrian Science Fund (FWF), grant
 \href{https://doi.org/10.55776/PIN5424624}{PIN5424624}. The author
 acknowledges TU Wien Bibliothek for support through its Open Access Funding
 Programme.
 \end{acknowledgments}
 
-\noindent\textit{Data availability.---}The source code, exact certificates,
-numerical witnesses, generated tables, and the NPN cross-validation underlying
-the finite census are available at
-\href{https://svozil.github.io/publications/2026-qc-partition-census-supplement.zip}{https://svozil.github.io/publications/2026-qc-partition-census-supplement.zip}.
+\noindent\textit{Data and code availability.---}The Python/Lean~4 sources,
+proof report, certificates, witnesses, tables, and NPN cross-validation are in the
+\href{https://svozil.github.io/publications/2026-qc-partition-census-supplement.zip}{supplementary archive}.
 
 \bibliography{svozil}
 
