@@ -135,15 +135,21 @@ that quantum equality alone does not imply hypergraph or classical equality.
 % ------------------------------------------------------------------
 
 Throughout, $\F\in\{\R,\C\}$ and $H$ is a finite-dimensional Hilbert space
-over $\F$.  A nonzero vector $a$ determines a ray $[a]=\F a$ and a projector
+over $\F$.  For a nonzero vector $v\in H$, we write
+\[
+ [v]:=\operatorname{span}\{v\}=\F v
+     =\{\alpha v:\alpha\in\F\}
+\]
+for the ray, that is, the one-dimensional linear subspace, spanned by $v$.
+The orthogonal projector onto this ray is
 \begin{equation}
- P_a=\frac{|a\rangle\langle a|}{\langle a,a\rangle}.
+ P_v=\frac{|v\rangle\langle v|}{\langle v,v\rangle}.
  \label{eq:ray-projector}
 \end{equation}
-Thus $P_a$ depends only on the ray.  For a density operator $\rho$, the Born
+Thus $P_v$ depends only on the ray $[v]$.  For a density operator $\rho$, the Born
 probability of this ray is
 \begin{equation}
- p_\rho(a)=\Tr(\rho P_a),\qquad \rho\ge0,\quad\Tr\rho=1.
+ p_\rho(v)=\Tr(\rho P_v),\qquad \rho\ge0,\quad\Tr\rho=1.
  \label{eq:born}
 \end{equation}
 In dimension at least three these are precisely the finitely additive
@@ -158,9 +164,25 @@ $\Tr(\rho X)=\Tr(\rho Y)$ for every density operator $\rho$, then $X=Y$.
 \end{lemma}
 
 \begin{proof}
-Set $C=X-Y$ and take $\rho=P_x$ for every unit vector $x$.  Then
-$\langle x,Cx\rangle=0$.  The real or complex polarization identity shows
-that every matrix element of the self-adjoint operator $C$ vanishes.
+Set $C=X-Y$.  Since both $X$ and $Y$ are self-adjoint, so is $C$.  Let $x$
+be any unit vector.  The rank-one projector $P_x$ is positive and has trace
+one, so it is a density operator.  The hypothesis of the lemma therefore
+gives
+\[
+ 0=\Tr(P_xX)-\Tr(P_xY)=\Tr(P_xC)=\langle x,Cx\rangle.
+\]
+Thus the expectation value of $C$ vanishes in every pure state.
+
+Suppose, for contradiction, that $C\ne0$.  By the finite-dimensional
+spectral theorem, a nonzero self-adjoint operator has a nonzero real
+eigenvalue $\mu$ and a corresponding unit eigenvector $u$.  Hence
+\[
+ 0=\langle u,Cu\rangle
+  =\langle u,\mu u\rangle
+  =\mu\|u\|^2
+  =\mu,
+\]
+contrary to $\mu\ne0$.  Therefore $C=0$, and consequently $X=Y$.
 \end{proof}
 
 \begin{definition}[Quantum pseudocontext]
@@ -171,8 +193,10 @@ ray families
  A=\{[a_1],\ldots,[a_k]\},\qquad
  B=\{[b_1],\ldots,[b_k]\}
 \]
-such that the rays within each family are distinct, $A\cap B=\varnothing$,
-and
+where $a_i$ and $b_i$ are chosen unit representatives of their respective
+rays.  This normalization does not affect the projectors or Born
+probabilities, which depend only on the rays.  The rays within each family
+are required to be distinct, $A\cap B=\varnothing$, and
 \begin{equation}
  \sum_{i=1}^{k}p_\rho(a_i)=\sum_{i=1}^{k}p_\rho(b_i)
  \quad\text{for every density operator }\rho.
@@ -193,7 +217,7 @@ operator
  T:=\sum_{i=1}^{k}P_{a_i}=\sum_{i=1}^{k}P_{b_i}
  \label{eq:structure}
 \end{equation}
-the \emph{structure operator}.  In particular,
+the \emph{structure operator}.    In particular,
 \begin{equation}
  T\ge0,\qquad \Tr T=k,\qquad \operatorname{rank}T\le k.
  \label{eq:basic-T}
@@ -201,8 +225,10 @@ the \emph{structure operator}.  In particular,
 
 \begin{proposition}[Genuineness criterion]
 \label{prop:genuine}
-For a quantum pseudocontext with structure operator $T$, the following are
-equivalent:
+For a quantum pseudocontext with structure operator $T$, write
+$\ran T:=\{Tx:x\in H\}$ for the range of $T$, and let
+$\lambda_{\max}(T)$ denote the largest eigenvalue of $T$.  Then the following
+are equivalent:
 \begin{enumerate}
  \item the pseudocontext is genuine;
  \item $T$ is not the orthogonal projector onto $\ran T$;
@@ -211,14 +237,69 @@ equivalent:
 \end{proposition}
 
 \begin{proof}
-One family is an orthonormal basis of $\ran T$ exactly when its projector sum
-is $P_{\ran T}$.  By Eq.~\eqref{eq:structure}, this then holds for both
-families.  If all eigenvalues of $T$ were at most one, then
+We first identify the subspace $\ran T$.  For every $x\in H$,
 \[
- k=\Tr T\le\operatorname{rank}T\le k.
+ \langle x,Tx\rangle
+ =\sum_{i=1}^{k}|\langle a_i,x\rangle|^2.
 \]
-Equality throughout forces exactly $k$ nonzero eigenvalues, all equal to one,
-so $T=P_{\ran T}$.  The converse is immediate.
+Consequently, $Tx=0$ exactly when $x$ is orthogonal to every $a_i$.  Thus
+\[
+ \ker T=\operatorname{span}\{a_1,\ldots,a_k\}^{\perp}.
+\]
+Since $T$ is self-adjoint, its range is the orthogonal complement of its
+kernel.  Therefore
+\[
+ \ran T=\operatorname{span}\{a_1,\ldots,a_k\}.
+\]
+Using the second expression for $T$ in Eq.~\eqref{eq:structure} gives
+similarly
+\[
+ \ran T=\operatorname{span}\{b_1,\ldots,b_k\}.
+\]
+Hence $\ran T$ is the common supporting subspace of the two families.
+
+Let $P_{\ran T}$ denote the orthogonal projector onto $\ran T$.  If the
+$a_i$ form an orthonormal basis of $\ran T$, then the usual resolution of
+the identity on this subspace gives
+\[
+ T=\sum_{i=1}^{k}P_{a_i}=P_{\ran T}.
+\]
+Conversely, suppose that $T=P_{\ran T}$.  Since every $a_j$ lies in
+$\ran T$ and has unit norm,
+\begin{align*}
+ 1
+ &=\langle a_j,P_{\ran T}a_j\rangle
+  =\langle a_j,Ta_j\rangle\\
+ &=\sum_{i=1}^{k}|\langle a_i,a_j\rangle|^2
+  =1+\sum_{i\ne j}|\langle a_i,a_j\rangle|^2.
+\end{align*}
+It follows that $\langle a_i,a_j\rangle=0$ whenever $i\ne j$.  The $a_i$
+therefore form an orthonormal basis of their span, which is $\ran T$.
+The same argument applies to the $b_i$.  Thus either both families are
+orthonormal bases of their common support or neither family is.  By the
+definition of genuineness, this proves the equivalence of (1) and (2).
+
+It remains to relate (2) to the largest eigenvalue.  Put
+$r=\operatorname{rank}T$, and denote the nonzero eigenvalues of $T$ by
+$\lambda_1,\ldots,\lambda_r$.  They are positive because $T\ge0$.  If
+$\lambda_{\max}(T)\le1$, then every $\lambda_j\le1$, and therefore
+\[
+ k=\Tr T=\sum_{j=1}^{r}\lambda_j\le r
+   =\operatorname{rank}T\le k,
+\]
+where the first and last relations follow from Eq.~\eqref{eq:basic-T}.
+Equality must hold throughout.  In particular, every nonzero eigenvalue of
+$T$ equals one.  Hence $T$ acts as the identity on $\ran T$ and as zero on
+its orthogonal complement, so $T=P_{\ran T}$.
+
+Conversely, if $T=P_{\ran T}$, then all its nonzero eigenvalues equal one,
+and therefore $\lambda_{\max}(T)=1$.  We have proved that
+\[
+ T\ne P_{\ran T}
+ \quad\Longleftrightarrow\quad
+ \lambda_{\max}(T)>1,
+\]
+which establishes the equivalence of (2) and (3).
 \end{proof}
 
 Consequently, a genuine quantum pseudocontext equates two Born-weight sums
@@ -518,9 +599,13 @@ Factoring the Gram matrix produces $k$ unit vectors whose frame operator has
 the prescribed nonzero spectrum; an isometry identifies it with $T$.
 \end{proof}
 
-Fix an eigenbasis of $T$ on its support and write
-$\Lambda=\diag(\lambda_1,\ldots,\lambda_r)$.  Every decomposition corresponds
-to a matrix $M\in\F^{r\times k}$ satisfying
+Now fix a positive operator $T$ satisfying Eq.~\eqref{eq:schur-condition}.
+Let $r=\operatorname{rank}T$, and let
+$\lambda_1\ge\cdots\ge\lambda_r>0$ be its nonzero eigenvalues.  Fix an
+orthonormal eigenbasis of $\operatorname{supp}T$ and set
+$\Lambda:=\diag(\lambda_1,\ldots,\lambda_r)$.  For a decomposition
+\eqref{eq:unit-decomposition}, let $M\in\F^{r\times k}$ be the coordinate
+matrix of its synthesis operator in this eigenbasis.  Then
 \begin{equation}
  MM^\dagger=\Lambda,\qquad \|m_j\|=1\quad(j=1,\ldots,k),
  \label{eq:canonical-fiber}
