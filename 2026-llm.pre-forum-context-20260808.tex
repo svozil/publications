@@ -9,6 +9,7 @@
 
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
+\usepackage{bm}
 \usepackage{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning,arrows.meta}
@@ -34,6 +35,8 @@
 \newcommand{\opnorm}[1]{\lVert #1 \rVert_{\mathrm{op}}}
 \newcommand{\norm}[1]{\lVert #1 \rVert}
 \newcommand{\ReLU}{\mathrm{ReLU}}
+\newcommand{\hpar}{h_{\parallel}}
+\newcommand{\hperp}{h_{\perp}}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator{\spanop}{span}
@@ -41,7 +44,7 @@
 
 \begin{document}
 
-\title{Geometric Limits on Semantic Expressibility: Quantum-Inspired Contexts and Polysemy in Large Language Models}
+\title{Semantic Concurrency Limits in Large Language Models}
 
 \author{Karl Svozil}
 \email{karl.svozil@tuwien.ac.at}
@@ -63,92 +66,23 @@ $\sint\sim\sqrt{k/\deff}$ for simultaneous readout. Thus dimension acts
 not merely as storage capacity but as semantic concurrency bandwidth.
 On this geometric foundation we propose a separate hypothesis: some
 polysemous tokens may be organized around stable token-associated
-reference directions, with sense information carried by low-dimensional
-subspaces in their orthogonal complement. The capacity/accessibility
-distinction is the main claim; the reference-subspace hypothesis is a stronger,
+hinge directions, with sense information carried by low-dimensional
+subspaces in the hinge-perpendicular carrier. The capacity/accessibility
+distinction is the main claim; the hinge hypothesis is a stronger,
 separately falsifiable empirical proposal.
 \end{abstract}
 
 \maketitle
-
-\noindent\textit{Author note.---}
-This chapter is adapted and expanded from the preprint
-\href{https://doi.org/10.48550/arXiv.2504.13824}{\textit{Semantic
-Concurrency Limits in Large Language Models}}.  The present version adds
-framing for the Ernst Str\"ungmann Forum volume, cross-chapter connections,
-and revisions reflecting the discussions of the Forum.
 
 % ======================================================================
 \section{Introduction}
 \label{sec:intro}
 % ======================================================================
 
-This chapter examines contextual representation in large language models
-(LLMs) as part of the volume's broader inquiry into ``quantum thinking.''
-Only a minimal orientation to LLM operation is needed here.  Input text is
-first divided into tokens, and each token is mapped to an initial vector.
-Transformer blocks then use self-attention and feed-forward transformations
-to turn those initially context-free vectors into sequence-dependent hidden
-states.  An output layer converts the final state into token scores, and a
-softmax distribution supports probabilistic next-token selection.  This
-compact chain---tokens, embeddings, contextual transformation, and finite
-readout---supplies the computational background for the argument below; the
-details of pre-training, fine-tuning, reinforcement learning, and
-backpropagation are not required.
-
-Current Transformer-based LLMs are classical computational systems.  They
-run on classical hardware and use real-valued matrix operations,
-normalization, nonlinearities, copying, and generally irreversible updates.
-Their reliance on vectors, inner products, high dimension, or probabilistic
-output does not by itself make them quantum or even quantum-like.  The more
-limited question pursued here is where ordinary high-dimensional geometry
-already explains the coexistence and contextual selection of semantic
-features, and where a stronger comparison with quantum-like formalisms might
-begin.  Such a comparison would have to do more than rename familiar neural
-operations: it would need to identify a role for contextual bases or subspaces,
-incompatible or noncommuting alternatives, interference, or
-measurement-like readout that yields explanatory or predictive value beyond
-a classical dynamic-embedding account.
-
-Semantic concurrency makes this boundary concrete.  A model must preserve
-many latent possibilities while making only a small, context-selected subset
-operationally accessible.  Polysemy is the simplest illustration: the same
-token can participate in the meanings of ``river bank'' and ``financial
-bank,'' yet the surrounding sequence drives it toward different contextual
-representations.  This relation among possibility, context, and readout
-connects directly to the volume's recurring themes without implying that the
-underlying machine is physically quantum.  It also motivates a separation
-between what a representation can geometrically accommodate and what a
-finite channel can reliably recover.
-
-Within Part III, the chapter therefore occupies a deliberately intermediate
-position.  Chapter~3 supplies the shared vocabulary of state spaces,
-contexts, Hilbert-space geometry, and quantum-like representation.
-Chapter~7 develops a contrasting route in which classical oscillatory and
-wave dynamics can support interference-like computation.  The present
-chapter instead asks how far high-dimensional representation, contextual
-selection, and readout can take a classical artificial language system.
-Chapter~9 places these results beside neural systems, embodiment, meaning,
-and the limits of the quantum analogy.  Chapter~13 and Bridge~C provide the
-corresponding standards for model comparison and evidence: an analogy should
-be sharpened into explicit structure and then into a discriminative test
-before it is treated as an explanation.
-
-The claims below consequently occupy different rungs of that evidential
-ladder.  Concentration of measure and exponential packing are standard
-results of high-dimensional geometry.  Their use to describe semantic
-capacity, together with the accumulated-interference estimate, is a formal
-model of classical representation subject to stated assumptions about
-effective dimension and coactivation.  The reference-subspace organization is
-a stronger empirical hypothesis about LLM internals and is tested against
-classical controls.  The comparison with quantum contextuality remains a
-limited structural correspondence; no physical quantumness, Born-rule
-dynamics, or semantic Kochen--Specker theorem is inferred.
-
 A finite-dimensional activation space faces a simple tension. High
 dimension lets many semantic features coexist as nearly orthogonal
 directions. Finite readout prevents too many of them from being
-simultaneously recovered from one channel. This chapter makes that
+simultaneously recovered from one channel. This paper makes that
 tension quantitative.
 
 The two sides obey different scalings. On the capacity side,
@@ -188,14 +122,14 @@ dynamic contextual embeddings: a token representation is repeatedly
 transformed by self-attention and MLP layers as it absorbs information
 from its sentential environment~\cite{Vaswani-2017-Attention}.
 
-The chapter makes two claims. The first is the geometric capacity claim:
+The paper makes two claims. The first is the geometric capacity claim:
 concentration permits large semantic capacity, while accumulated
 interference limits simultaneous accessibility. This claim is
 architecture-independent. The second is a stronger organizational
 hypothesis: for some canonically polysemous tokens, readout may be
-structured relative to a stable token-associated \emph{reference direction},
+structured around a stable token-associated \emph{hinge} direction,
 with sense information carried by low-dimensional subspaces in its
-orthogonal complement. The reference-subspace hypothesis is not implied by
+orthogonal complement. The hinge hypothesis is not implied by
 concentration geometry. It is an empirical proposal, and
 Sec.~\ref{sec:predictions} states how it can fail.
 
@@ -212,31 +146,30 @@ participation subspace. Determining which layers, models, and
 preprocessing regimes admit a meaningful $\deff$ is an empirical
 priority.
 
-The reference-subspace hypothesis has a narrower domain. It is meant for
+The hinge hypothesis has a narrower domain. It is meant for
 canonically polysemous tokens with established sense inventories, such
 as WordNet-, OntoNotes-, SemCor-, or WiC-style sense
 distinctions~\cite{pilehvar2019wic} with enough contextual instances
 for testing. Failure on a representative sample, against the controls
-in Sec.~\ref{sec:predictions}, would count against a privileged token
-reference direction even
+in Sec.~\ref{sec:predictions}, would count against hinge anchoring even
 if the broader capacity/accessibility picture survives.
 
 The proposal is adjacent to the superposition hypothesis in mechanistic
 interpretability~\cite{elhage2022superposition}, according to which neural networks
 represent more features than they have neurons by packing features into
-nearly orthogonal directions. The present chapter separates the
+nearly orthogonal directions. The present paper separates the
 geometric background from a possible semantic organization within it.
 The general superposition picture concerns an overcomplete dictionary
-of feature directions and sparse active sets. The reference-subspace picture adds
+of feature directions and sparse active sets. The hinge picture adds
 the more specific possibility that some contextual readout is organized
 around stable token-associated directions.
 
 Section~\ref{sec:concentration} develops the capacity framework:
 quasi-orthogonality, L\'evy's lemma, exponential packing, and the
-kinetic/epistemic distinction. Section~\ref{sec:reference} introduces the
-reference-subspace hypothesis and its relation to dynamic contextual
+kinetic/epistemic distinction. Section~\ref{sec:hinge} introduces the
+hinge-and-frame hypothesis and its relation to dynamic contextual
 embeddings. Section~\ref{sec:attention} connects the picture to
-attention as soft routing rather than literal basis reconstruction.
+attention as soft routing rather than literal frame reconstruction.
 Section~\ref{sec:discussion} discusses superposition, sparse
 autoencoders, limitations, empirical tests, and the limited quantum
 analogy.
@@ -258,20 +191,20 @@ concentration in the representation being probed.
 % ======================================================================
 
 This section is architecture-independent. It gives the geometric
-capacity constraint on which the later reference-subspace hypothesis builds.
+capacity constraint on which the later hinge hypothesis builds.
 
 \subsection{Quasi-orthogonality}
 \label{sec:quasiortho}
 
-Let $w_{1},\dots,w_{N}\in\R^{d}$ be unit feature directions. Strict orthogonality,
-$w_i\T w_j=0$ for $i\neq j$, allows at most $N=d$ such vectors. Semantic
+Let $v_{1},\dots,v_{N}\in\R^{d}$ be unit vectors. Strict orthogonality,
+$v_i\T v_j=0$ for $i\neq j$, allows at most $N=d$ such vectors. Semantic
 encoding does not require exact orthogonality. It requires approximate
 distinguishability. We therefore call a family
 $\varepsilon$-quasi-orthogonal if
 %
 \begin{equation}
 \label{eq:quasiortho}
-|w_i\T w_j|\le \varepsilon,\qquad i\neq j .
+|v_i\T v_j|\le \varepsilon,\qquad i\neq j .
 \end{equation}
 %
 This is the relevant notion for high-dimensional feature storage:
@@ -379,7 +312,7 @@ $\Sph{d-1}$. By Eq.~\eqref{eq:overlap} and a union bound over pairs,
 %
 \begin{equation}
 \label{eq:unionbound}
-\Prob\bigl(\exists\,i\neq j:\ |w_i\T w_j|\ge\varepsilon\bigr)
+\Prob\bigl(\exists\,i\neq j:\ |v_i\T v_j|\ge\varepsilon\bigr)
  < N^{2}\exp(-c\,\deff\,\varepsilon^{2}).
 \end{equation}
 %
@@ -396,10 +329,10 @@ many candidate semantic directions can coexist with small pairwise
 overlap.
 
 The estimate controls pairwise overlap only. It does not guarantee that
-a large collection of feature directions is well-conditioned. By Gershgorin,
-$|w_i\T w_j|\le\varepsilon$ gives only
+a large frame is well-conditioned. By Gershgorin,
+$|e_i\T e_j|\le\varepsilon$ gives only
 $\opnorm{G-I}\le(n-1)\varepsilon$ for an $n$-element Gram matrix, which
-is useless when $n$ is large. Joint readout therefore needs a
+is useless when $n$ is large. Frame-level readout therefore needs a
 separate conditioning assumption, introduced in Sec.~\ref{sec:gated}.
 
 \subsection{Kinetic capacity versus epistemic accessibility}
@@ -408,7 +341,7 @@ separate conditioning assumption, introduced in Sec.~\ref{sec:gated}.
 The packing bound says what can coexist. It does not say what can be
 read. We call the coexistence supply \emph{kinetic semantic capacity}.
 We call the recoverable subset \emph{epistemic semantic accessibility}.
-The distinction is the central point of the chapter.
+The distinction is the central point of the paper.
 
 Let $N$ candidate features be represented by unit directions
 $w_1,\dots,w_N\in\R^{\deff}$. In a given context, suppose an active set
@@ -526,180 +459,182 @@ dimension may differ. The compressed-sensing analogy is therefore
 diagnostic, not literal.
 
 % ======================================================================
-\section{Token reference directions and sense subspaces}
-\label{sec:reference}
+\section{Hinge vectors and sense subspaces}
+\label{sec:hinge}
 % ======================================================================
 
 The previous section established an architecture-independent capacity
-constraint. We now ask a more speculative question: does a trained model
-organize the contextual states of some polysemous tokens relative to a
-stable token-associated reference subspace? This hypothesis is not implied
-by concentration geometry, and it is separately falsifiable.
+constraint. We now ask a more speculative question: how might a trained
+model organize readout within that constraint? The hinge-and-frame
+formalism is one possible answer. It is not implied by concentration
+geometry, and it is separately falsifiable.
 
-The notation distinguishes mathematical types and roles. For a token $t$
-and a sense context $C$:
-%
-\begin{itemize}
-\item $r_t\in\R^d$ is a unit candidate token reference vector;
-\item $\mathcal R_t\subset\R^d$ is the token reference subspace;
-\item $S_{t,C}\subset\mathcal R_t^\perp$ is a low-dimensional sense
-subspace;
-\item $u_{t,C,j}\in S_{t,C}$ are vectors spanning that sense subspace;
-\item $h_\ell(t\mid x)\in\R^d$ is an observed contextual hidden state.
-\end{itemize}
-%
-Thus $r_t$, $u_{t,C,j}$, and $h_\ell(t\mid x)$ are vectors, whereas
-$\mathcal R_t$ and $S_{t,C}$ are subspaces. The $w_i$ used in
-Sec.~\ref{sec:concentration} have a separate role: they are generic feature
-directions in the capacity calculation and are not reused as sense labels.
+\subsection{The hinge hypothesis}
+\label{sec:hingeform}
 
-\subsection{The reference-subspace hypothesis}
-\label{sec:reference-hypothesis}
+For a token $t$, let $v(t)\in\R^d$ be a candidate unit vector, called
+a \emph{hinge}. Empirically this could be the static input embedding,
+a mean contextual embedding, or a learned token-specific probe
+direction. The hypothesis is not that every vector decomposition is
+meaningful. Any state can be decomposed parallel and perpendicular to
+any direction. The claim is stronger: for some tokens, a
+token-associated direction is privileged relative to matched controls.
 
-In the simplest version, let $r_t$ be a candidate unit direction and set
+In the simplest case, given a context $C$, the hinge is the shared
+first vector of a sense frame,
 %
 \begin{equation}
-\label{eq:reference-direction}
-\mathcal R_t=\spanop\{r_t\}.
+\label{eq:hinge-first}
+e_1^C=v(t).
 \end{equation}
 %
-Empirically, $r_t$ could be the normalized static input embedding, a
-normalized mean contextual embedding, or a learned token-specific probe
-direction. It is simply a hypothesized context-stable reference for token
-identity. It is not a mechanical or dynamical object.
-Any state can be decomposed relative to any direction, so the decomposition
-alone has no empirical content. The claim is that a token-associated
-$\mathcal R_t$ exposes sense structure better than matched control
-directions or subspaces.
-
-For each context or sense label $C$, define a low-dimensional subspace
+The carrier for sense information is then the orthogonal complement
+$v(t)^\perp$. A context selects a low-dimensional sense subspace
 %
 \begin{equation}
 \label{eq:sense-subspace}
-S_{t,C}=\spanop\{u_{t,C,1},\dots,u_{t,C,q_C}\}
-\subset\mathcal R_t^\perp,
-\qquad q_C\ll\deff .
+S^C=\spanop\{e_2^C,\dots,e_{q_C+1}^C\}
+\subset v(t)^\perp ,
 \end{equation}
 %
-For example, finance, river-edge, and aircraft-tilt uses of ``bank'' may
-correspond to different subspaces $S_{\mathrm{bank},C}$ inside the common
-orthogonal carrier $\mathcal R_{\mathrm{bank}}^\perp$. A word sense is not
-a single vector: topic, syntax, selectional preferences, and world knowledge
-may require several spanning directions $u_{t,C,j}$.
+with $q_C\ll\deff$ in the intended regime. For example,
+$v(\text{bank})$ might be shared by finance, river, and aircraft-tilt
+sense subspaces.
 
-The reference object may itself require more than one direction. In that
-case define
+More generally, however, two contextual frames need not be interlinked
+by only one shared atom. They may share a nontrivial link subspace
 %
 \begin{equation}
-\label{eq:reference-subspace}
-\mathcal R_t=
-\spanop\{r_{t,1},\dots,r_{t,p}\},
-\qquad p\ge1,
+\label{eq:multi-hinge}
+H_t=\spanop\{v_1(t),\dots,v_r(t)\},
+\qquad r\ge 1 ,
 \end{equation}
 %
-and require
+so that several token-associated directions are common to more than
+one contextual frame. The single-hinge model corresponds to $r=1$.
+For $r>1$, the sense carrier is $H_t^\perp$, and a contextual sense
+subspace has the form
 %
 \begin{equation}
 \label{eq:multi-sense-subspace}
-S_{t,C}\subset\mathcal R_t^\perp .
+S^C\subset H_t^\perp .
 \end{equation}
 %
-Equation~\eqref{eq:reference-direction} is the special case $p=1$.
-The analogy with interlinked quantum contexts is limited to a pattern of
-sharing. In quantum logic, different contexts can share one or more
-observables or projections; finite-dimensional examples with two shared
-observables are known~\cite{svozil:040102}. In the semantic model,
-$\mathcal R_t$ is instead a common token-associated reference subspace, and
-the sense-specific subspaces lie in its orthogonal complement. No
-noncommutativity or quantum probability is implied by
-Eqs.~\eqref{eq:reference-subspace}--\eqref{eq:multi-sense-subspace}.
+This possibility is the semantic analogue of interlinked quantum
+contexts sharing more than one common observable. In quantum logic,
+such multiply interlinked contexts occur already in finite-dimensional
+Hilbert-space configurations; for instance, two four-dimensional
+contexts may be interconnected by two common link observables
+\cite{svozil:040102}.
 
-The low-rank assumption is empirical. It predicts that dominant
-within-sense variation is low-dimensional after projection onto
-$\mathcal R_t^\perp$. This is compatible with evidence that contextualized
-embeddings can separate word senses, but it is stronger: it asks whether
-such separation is privileged relative to a token-associated reference
-subspace~\cite{wiedemann2019does,scarlini2020ares}.
+The low-rank assumption is empirical. A word sense is not a single
+direction: it may involve topic, syntax, selectional preferences, and
+world knowledge. But it should not need the full residual stream
+either. The hinge hypothesis predicts that dominant within-sense
+variation is low-dimensional after projection to the hinge-perpendicular
+carrier, or more generally to the complement of the shared link
+subspace. This prediction is compatible with existing evidence that
+contextualized embeddings can separate word senses, but it is stronger:
+it asks whether such separation is privileged relative to a
+token-associated hinge or link subspace~\cite{wiedemann2019does,scarlini2020ares}.
 
-\subsection{Projection and gated subspace readout}
+\subsection{Gated-subspace readout}
 \label{sec:gated}
 
-Let $h(x)\in\R^d$ be a contextual state and let $P_t$ be the orthogonal
-projector onto $\mathcal R_t$. The two components are
+Let $h(x)\in\R^d$ be the contextual state for input context $x$.
+Relative to the hinge,
 %
 \begin{align}
-\label{eq:reference-decomp}
-h(x)&=h_{\rm ref}(x)+h_\perp(x),\\
-h_{\rm ref}(x)&=P_t h(x),\nonumber\\
-h_\perp(x)&=(I-P_t)h(x)\in\mathcal R_t^\perp.\nonumber
+\label{eq:hinge-decomp}
+h(x)&=\hpar(x)v(t)+\hperp(x),
+\\
+\hpar(x)&=v(t)\T h(x),  \nonumber
+\\
+\hperp(x)&\in v(t)^\perp .  \nonumber
 \end{align}
 %
-For the one-dimensional case, $P_t=r_t r_t\T$ and the scalar
-$a_t(x)=r_t\T h(x)$ measures the component along the reference direction.
-The hypothesis is that most sense-disambiguating variation is present in
-$h_\perp(x)$, not that the projection formula itself is special.
+The scalar $\hpar$ measures engagement with the token-associated
+direction. The perpendicular component $\hperp$ carries the
+sense-disambiguating information. For a multi-link subspace $H_t$, the
+same construction is obtained by replacing the scalar projection onto
+$v(t)$ with the orthogonal projection onto $H_t$, and by taking the
+carrier to be $H_t^\perp$.
 
-Readout inside $S_{t,C}$ also requires the spanning vectors to be
-well-conditioned. Let
+Readout inside $S^C$ requires conditioning. Pairwise small overlaps are
+not enough. Let
 %
 \begin{equation}
-U_{t,C}=[\,u_{t,C,1}\ \cdots\ u_{t,C,q_C}\,],
+F_S^C=[\,e_2^C\ \cdots\ e_{q_C+1}^C\,],
 \qquad
-G_{t,C}=U_{t,C}\T U_{t,C}.
+G_S^C=(F_S^C)\T F_S^C .
 \end{equation}
 %
-The columns of $U_{t,C}$ span $S_{t,C}$; $U_{t,C}$ is a matrix, not an
-additional semantic vector. We call it $\rho$-well-conditioned if
+We call the sense frame $\rho$-stable if
 %
 \begin{equation}
 \label{eq:rho-stable}
-\opnorm{G_{t,C}-I}\le\rho<1.
+\opnorm{G_S^C-I}\le \rho<1 .
 \end{equation}
 %
-Then
+Then the dual frame
 %
 \begin{equation}
-\label{eq:dual-spanning}
-\widetilde U_{t,C}=U_{t,C}G_{t,C}^{-1}
+\label{eq:dual-frame}
+\widetilde F_S^C=F_S^C(G_S^C)^{-1}
 \end{equation}
 %
-is a dual spanning matrix and satisfies
-$\opnorm{\widetilde U_{t,C}}\le(1-\rho)^{-1/2}$. Near-degenerate spanning
-sets amplify readout noise, so the model requires $\rho$ comfortably below
-one. The corresponding coordinates are
+is well-defined and satisfies
+$\opnorm{\widetilde F_S^C}\le(1-\rho)^{-1/2}$. Near-degenerate frames
+amplify readout noise; the model requires $\rho$ comfortably below one.
+
+The dual-frame coefficients are
 %
 \begin{equation}
 \label{eq:alpha}
-\alpha_{t,C}(x)=\widetilde U_{t,C}\T h_\perp(x)
+\alpha^C(x)=\bigl(\widetilde F_S^C\bigr)\T\hperp(x)
 \in\R^{q_C}.
 \end{equation}
 %
-
 A simple sense score is
 %
 \begin{equation}
 \label{eq:sense-score}
-s_{t,C}(x)=g_t(a_t(x))\,f_{t,C}(h_\perp(x)),
+s_C(x)=g(\hpar(x))\,r_C(\hperp(x)),
 \end{equation}
 %
-where $g_t\ge0$ gates engagement with the token reference direction and
-$f_{t,C}\ge0$ measures fit to the sense subspace. One possible choice is
-$f_{t,C}=\norm{\alpha_{t,C}(x)}^2$; a learned positive quadratic form is
-another. The selected sense label is
+where $g\ge0$ is an engagement gate and $r_C\ge0$ measures how well
+$\hperp(x)$ fits the sense subspace. One may take
+$r_C=\norm{\alpha^C(x)}^2$, a squared overlap with a distinguished
+direction in $S^C$, or a learned positive quadratic form. The selected
+sense frame is
 %
 \begin{equation}
-\label{eq:selected-sense}
-C^*(x)=\argmax_C s_{t,C}(x).
+\label{eq:selected-frame}
+C^*(x)=\argmax_C s_C(x).
 \end{equation}
 %
-The empirical content is the proposed separation of roles: the reference
-component tracks token identity or engagement, while the orthogonal
-component contains sense-disambiguating information. If no token-associated
-$\mathcal R_t$ exposes sense structure better than matched random,
-frequency-controlled, or layer-matched subspaces, the hypothesis fails.
+The precise gate is not essential. The empirical content is the
+separation: the parallel coordinate gates token engagement; the
+perpendicular carrier contains sense information.
 
-Figure~\ref{fig:reference-subspace} illustrates these objects as an abstract
-hypergraph incidence structure.
+The hinge matters because different candidate hinges induce different
+carriers. Likewise, different candidate link subspaces induce different
+orthogonal carriers. If no token-associated hinge or link subspace
+exposes sense structure better than matched random or
+frequency-controlled directions, the hinge hypothesis fails.
+
+Figure~\ref{fig:hinge} illustrates the minimal single-link case for the
+polysemous token ``bank.'' The shared vector
+$\bm v(\text{bank})$ is the candidate hinge. The vectors
+$\bm w^{\mathcal C_{\rm fin}}$,
+$\bm w^{\mathcal C_{\rm riv}}$, and
+$\bm w^{\mathcal C_{\rm tilt}}$ denote representative directions inside
+the corresponding sense subspaces
+$S^{\mathcal C_{\rm fin}}$,
+$S^{\mathcal C_{\rm riv}}$, and
+$S^{\mathcal C_{\rm tilt}}$. They are not meant to exhaust those
+subspaces; they merely mark one salient direction in each contextual
+frame.
 
 \begin{figure}[t]
 \centering
@@ -707,40 +642,46 @@ hypergraph incidence structure.
     outer/.style={circle, draw, minimum size=8pt,
                   inner sep=0pt, font=\footnotesize},
     lab/.style={font=\small}]
-% central shared reference-subspace vertex
+% central shared vector
 \coordinate (c) at (0,0);
 
 \node[lab, above right=7pt] at (c)
-{$\mathcal R_{\rm bank}$};
+{$\bm{v}(\text{bank})
+=\bm{e}_1^{\mathcal{C}_{\rm fin}}
+=\bm{e}_1^{\mathcal{C}_{\rm riv}}
+=\bm{e}_1^{\mathcal{C}_{\rm tilt}}$};
 
-% outer sense-subspace vertices
+% outer distinguishing vectors
 \node[outer, red, fill=red!70,
       label={[lab]above:
-      $S_{{\rm bank},{\rm fin}}$}]
+      $\bm{w}^{\mathcal{C}_{\rm fin}}
+      \in S^{\mathcal{C}_{\rm fin}}$}]
       (fin) at (90:4.2cm) {};
 
 \node[outer, green, fill=green!70,
       label={[lab, xshift=-4pt]below left:
-      $S_{{\rm bank},{\rm riv}}$}]
+      $\bm{w}^{\mathcal{C}_{\rm riv}}
+      \in S^{\mathcal{C}_{\rm riv}}$}]
       (riv) at (210:4.2cm) {};
 
 \node[outer, blue, fill=blue!70,
       label={[lab, xshift=4pt]below right:
-      $S_{{\rm bank},{\rm tilt}}$}]
+      $\bm{w}^{\mathcal{C}_{\rm tilt}}
+      \in S^{\mathcal{C}_{\rm tilt}}$}]
       (tilt) at (330:4.2cm) {};
 
-% hyperedges labelled by context
+% edges labelled by contextual frames
 \draw[very thick, red] (c) --
       node[lab, left=2pt, pos=0.45]
-      {$\mathcal E_{\rm fin}$} (fin);
+      {$\mathcal{C}_{\rm fin}$} (fin);
 
 \draw[very thick, green!70!black] (c) --
       node[lab, above left=1pt, pos=0.45]
-      {$\mathcal E_{\rm riv}$} (riv);
+      {$\mathcal{C}_{\rm riv}$} (riv);
 
 \draw[very thick, blue] (c) --
       node[lab, above right=1pt, pos=0.45]
-      {$\mathcal E_{\rm tilt}$} (tilt);
+      {$\mathcal{C}_{\rm tilt}$} (tilt);
 
 % central concentric disks
 \filldraw[blue, very thick] (c) circle (8pt);
@@ -748,30 +689,31 @@ hypergraph incidence structure.
 \filldraw[red, very thick] (c) circle (4pt);
 \end{tikzpicture}
 \caption{%
-Hypergraph schematic of context organization for the polysemous token
-``bank.'' The original star geometry is retained, but its elements are now
-typed as abstract hypergraph objects rather than spatial vectors. The central
-vertex denotes the shared token reference subspace $\mathcal R_{\rm bank}$;
-the colored outer vertices denote the complete low-dimensional sense
-subspaces $S_{{\rm bank},C}\subset\mathcal R_{\rm bank}^{\perp}$, not
-individual directions. Each colored spoke is the context hyperedge
-$\mathcal E_C=\{\mathcal R_{\rm bank},S_{{\rm bank},C}\}$ for
-$C\in\{{\rm fin},{\rm riv},{\rm tilt}\}$. Because each displayed hyperedge
-has two abstract vertices, it is drawn as an ordinary line; a context with
-additional components would be a higher-order hyperedge incident on all of
-them. The star is an incidence diagram, not a coordinate plot, and its spokes
-do not denote vector directions, maps, or causal flow.
+Schematic of hinge-anchored frame sharing in the simplest
+single-link case. A candidate hinge vector associated with the token
+``bank'' is shared by several possible sense frames. The colored outer
+nodes represent exemplary directions
+$\bm w^{\mathcal C_{\rm fin}}$,
+$\bm w^{\mathcal C_{\rm riv}}$, and
+$\bm w^{\mathcal C_{\rm tilt}}$ inside the corresponding sense
+subspaces, not the entire subspaces themselves. The formal model treats
+sense content as lying in low-dimensional subspaces of the
+hinge-perpendicular carrier $\bm v(\text{bank})^\perp$. More generally,
+two contextual frames may share several link directions, in which case
+the relevant carrier is the orthogonal complement of the shared link
+subspace rather than of a single hinge vector.
 }
-\label{fig:reference-subspace}
+\label{fig:hinge}
 \end{figure}
 
-\subsection{Packing sense subspaces in a shared orthogonal carrier}
+\subsection{Packing sense subspaces around one hinge}
 \label{sec:grassmann}
 
-The vector packing bound extends to low-dimensional subspaces. Fix a unit
-reference vector $r_0\in\Sph{d-1}$ and let $m=d-1$. For $1\le q\ll m$ and
-any fixed threshold $\mu>2\sqrt{q/m}$, there exist $q$-dimensional
-subspaces $S_1,\dots,S_M\subset r_0^\perp$ such that
+The vector packing bound extends to low-dimensional subspaces. Fix a
+unit vector $v_0\in\Sph{d-1}$ and let $m=d-1$. For $1\le q\ll m$ and
+any fixed threshold $\mu>2\sqrt{q/m}$, there exist
+$q$-dimensional subspaces
+$S_1,\dots,S_M\subset v_0^\perp$ such that
 %
 \begin{equation}
 \label{eq:grassmann-coherence}
@@ -787,65 +729,70 @@ M\ge \exp(c_{\mu,q}m)
 %
 for some positive $c_{\mu,q}$.
 
-This is a standard Grassmannian packing consequence of concentration on
-Stiefel and Grassmann manifolds~\cite{szarek1982nets,conway1996packings}.
-For two independent Haar-random $q$-planes, the singular values of $U\T V$
-are the cosines of their principal angles. In the regime $q\ll m$, the
-largest principal correlation is of order
-$\sqrt{q/m}$~\cite{chikuse2003statistics,absil2006condition,edelman1998random}.
-A union bound over sampled subspaces then gives an exponential packing.
+This is a standard Grassmannian packing consequence of concentration
+on Stiefel and Grassmann manifolds~\cite{szarek1982nets,conway1996packings}. For
+two independent Haar-random $q$-planes, the singular values of
+$U\T V$ are the cosines of their principal angles. In the regime
+$q\ll m$, the largest principal correlation is of order
+$\sqrt{q/m}$~\cite{chikuse2003statistics,absil2006condition,edelman1998random}. A union bound
+over sampled subspaces then gives an exponential packing.
 
 For trained representations this statement must be read inside an
-approximately isotropic effective carrier. If
-$\dim(\mathcal R_t)=p$, its effective dimension is
-$\meff=\deff-p$, not necessarily the raw ambient dimension minus $p$.
-Without such an effective carrier, the Haar-random subspace model is not a
-good description of activation geometry.
+approximately isotropic effective carrier of dimension
+$\meff=\deff-1$, not necessarily inside the raw ambient space. More
+generally, if the shared link subspace has dimension $r$, the relevant
+carrier dimension is $\meff=\deff-r$. Without such an effective
+carrier, the Haar-random subspace model is not a good description of
+activation geometry.
 
 \subsection{Relation to dynamic contextual embeddings}
 \label{sec:dynamic}
 
-Transformers already handle polysemy dynamically. The hidden state
+Transformers already handle polysemy dynamically. The state
 $h_\ell(t\mid x)$ of token $t$ at layer $\ell$ depends on context $x$.
-The reference-subspace hypothesis is not an alternative architecture; it is
-a proposed organization of these observed trajectories.
+The hinge formalism is not an alternative architecture; it is a
+possible decomposition of such trajectories.
 
-Given a candidate reference subspace $\mathcal R_t$ and its projector $P_t$,
-write
+Given a candidate hinge $h_t$, write
 %
 \begin{align}
 \label{eq:layer-decomp}
 h_\ell(t\mid x)
-&=P_t h_\ell(t\mid x)+z_\ell(t,x),\\
-z_\ell(t,x)&=(I-P_t)h_\ell(t\mid x)
-\in\mathcal R_t^\perp.\nonumber
+&=
+a_\ell(t,x)h_t+z_\ell(t,x),
+\\
+a_\ell(t,x)&=h_t\T h_\ell(t\mid x),\nonumber
+\\
+z_\ell(t,x)&\in h_t^\perp .\nonumber
 \end{align}
 %
-The decomposition is automatic; the hypothesis is not. It predicts that
-$P_t h_\ell(t\mid x)$ tracks token identity or engagement, while
-$z_\ell(t,x)$ carries most sense-disambiguating information. Sense labels
-should be more separable in $\mathcal R_t^\perp$ than in the orthogonal
-complements of matched control subspaces. For each sense $C$, the projected
-states $z_\ell(t,x)$ should also concentrate near the low-dimensional
-subspace $S_{t,C}\subset\mathcal R_t^\perp$.
+The decomposition is trivial; the hypothesis is not. Hinge anchoring
+predicts that $a_\ell$ tracks token engagement or salience, while
+$z_\ell$ carries most sense-disambiguating information. Sense labels
+should become more separable in $h_t^\perp$ than in the orthogonal
+complements of matched control directions. For each sense $s$, the
+vectors $z_\ell(t,x)$ should also concentrate near a low-dimensional
+subspace $S_s\subset h_t^\perp$. In the multi-link variant, $h_t^\perp$
+is replaced by the orthogonal complement of the candidate link subspace
+$H_t$.
 
-Thus the critical question is not whether contextual embeddings move; they
-do. It is whether their sense-relevant movement has a privileged
-organization relative to a token-associated reference subspace.
+Thus the critical question is not whether contextual embeddings move;
+they do. The question is whether their movement has a privileged
+hinge-perpendicular, or more generally link-complement, organization.
 
 \begin{table*}[ht]
-\caption{Dynamic contextual embeddings versus the reference-subspace
+\caption{Dynamic contextual embeddings versus the hinge-decomposition
 hypothesis.}
 \label{tab:two-views}
 \centering
-\begin{minipage}{0.72\textwidth}
+\begin{minipage}{0.68\textwidth}
 \begin{ruledtabular}
 \begin{tabular}{@{}ll@{}}
-Dynamic description & Reference-subspace hypothesis \\
+Dynamic description & Hinge-decomposition hypothesis \\
 \colrule
-Token state changes by context and layer & State is projected relative to $\mathcal R_t$ \\
-Layer activation carries context & $\mathcal R_t^\perp$ contains sense variation \\
-Polysemy by vector deformation & Polysemy by context-conditioned subspaces \\
+Token state changes by context and layer & State decomposes relative to a hinge \\
+Layer activation carries context & Hinge-perpendicular part carries sense \\
+Polysemy by vector deformation & Polysemy by gated subspace readout \\
 Resource is depth and width & Resource is quasi-dimensionality \\
 Limit is activation bottleneck & Limit is interference/accessibility \\
 \end{tabular}
@@ -854,7 +801,7 @@ Limit is activation bottleneck & Limit is interference/accessibility \\
 \end{table*}
 
 % ======================================================================
-\section{Attention and latent context selection}
+\section{Attention and latent frame selection}
 \label{sec:attention}
 % ======================================================================
 
@@ -869,39 +816,38 @@ h'=\sum_j\alpha_j\nu_j,
 {\sum_{j'}\exp(q\T k_{j'}/\sqrt d)} .
 \end{equation}
 %
-Keys and values are produced by different learned maps, so value vectors
-are not generally coefficients of a dual basis for the key vectors.
-Attention is therefore not literal basis reconstruction.
+Keys and values are produced by different learned maps, so values are
+not generally dual-frame coefficients for keys. Attention is therefore
+not literal dual-frame reconstruction.
 
-The useful analogy is softer. Attention routes information: it amplifies
-some contextual directions and suppresses others. In the terminology of
-Sec.~\ref{sec:reference}, this resembles context-dependent subspace
-selection. A literal basis-reconstruction interpretation would require
-additional constraints, such as approximately Parseval keys and values
-implementing the corresponding dual reconstruction. We do not assume this.
+The useful analogy is softer. Attention routes information: it
+amplifies some contextual directions and suppresses others. In the
+hinge language, this resembles subspace or frame selection. A literal
+dual-frame interpretation would require additional constraints, such
+as approximately Parseval keys and values implementing the corresponding
+dual reconstruction. We do not assume this.
 
 A compact latent-variable version is
 %
 \begin{equation}
 \label{eq:latent}
-p(y\mid x,t)=\sum_C p(y\mid x,t,C)\,p(C\mid x,t),
+p(t\mid x)=\sum_C p(t\mid x,C)\,p(C\mid x),
 \end{equation}
 %
-where $t$ is the token being disambiguated, $y$ is a possible output token,
-and $C$ indexes candidate sense contexts. One may model
+where $C$ indexes candidate contextual frames. One may model
 %
 \begin{equation}
-\label{eq:context-temp}
-p(C\mid x,t)=
-\frac{\exp(s_{t,C}(x)/T)}
-{\sum_{C'}\exp(s_{t,C'}(x)/T)} ,
+\label{eq:frame-temp}
+p(C\mid x)=
+\frac{\exp(s_C(x)/T)}
+{\sum_{C'}\exp(s_{C'}(x)/T)} ,
 \end{equation}
 %
-with $s_{t,C}$ the gated score of Eq.~\eqref{eq:sense-score}. This is not
+with $s_C$ the gated score of Eq.~\eqref{eq:sense-score}. This is not
 a claim about the literal implementation of decoding in current LLMs:
 standard temperature acts on token logits, not on explicit latent
-sense labels. The point is only that ambiguity can be represented as a
-distribution over possible sense contexts rather than as a single fixed
+frames. The point is only that ambiguity can be represented as a
+distribution over possible readout frames rather than as a single fixed
 interpretation.
 
 % ======================================================================
@@ -909,9 +855,9 @@ interpretation.
 \label{sec:discussion}
 % ======================================================================
 
-The main proposal is the capacity/accessibility distinction. The
-reference-subspace hypothesis is one possible organization within that
-constraint, not a consequence of it.
+The main proposal is the capacity/accessibility distinction. The hinge
+formalism is a possible organization within that constraint, not a
+consequence of it.
 
 \subsection{Relation to superposition and sparse autoencoders}
 \label{sec:superposition}
@@ -933,7 +879,7 @@ studied SAE feature geometry, and automated interpretation of large
 numbers of latents~\cite{gao2025scaling,li2025geometry,paulo2025automatically,shu2025survey}. In the
 present framework, SAE decoder directions can test the
 capacity/accessibility prediction, while sense-conditioned SAE
-activation clusters can test the stronger reference-subspace hypothesis.
+activation clusters can test the stronger hinge hypothesis.
 
 \subsection{A coactivation-weighted capacity limit}
 \label{sec:capacity-limit}
@@ -943,7 +889,7 @@ uses the coactivation graph
 %
 \begin{equation}
 \label{eq:coactivation}
-A_{ij}=\Prob(i,j\text{ active}).
+C_{ij}=\Prob(i,j\text{ active}).
 \end{equation}
 %
 If active amplitudes have, conditional on coactivation, zero mean and
@@ -951,13 +897,13 @@ pairwise uncorrelated signs, then cross terms cancel in expectation and
 feature $j$ contributes to the readout variance of feature $i$ in
 proportion to
 $\E[x_j^2\mid i,j\text{ active}](w_i\T w_j)^2$. Absorbing amplitude
-variance and feature importance into coefficients $b_i,b_j$ gives
+variance and feature importance into coefficients $a_i,a_j$ gives
 %
 \begin{equation}
 \label{eq:int-energy}
 \Eint=
 \sum_{i\neq j}
-A_{ij}b_i b_j (w_i\T w_j)^2 .
+C_{ij}a_i a_j (w_i\T w_j)^2 .
 \end{equation}
 %
 Frequently coactive features are therefore pressured toward
@@ -981,14 +927,14 @@ be treated as an automatic or universal property of all Transformer
 representations~\cite{machina2024anisotropy}. The bounds should always
 be read in terms of the effective dimension actually achieved.
 
-Second, the spanning matrix $U_{t,C}$ needs to be well-conditioned. If
-$\rho$ in Eq.~\eqref{eq:rho-stable} is close to one, its dual amplifies
-readout noise.
+Second, the hinge readout needs well-conditioned sense frames. If
+$\rho$ in Eq.~\eqref{eq:rho-stable} is close to one, the dual-frame
+readout amplifies noise.
 
-Third, the reference-subspace pattern may simply be descriptively wrong. Trained
+Third, the hinge pattern may simply be descriptively wrong. Trained
 models may represent polysemy without any preferred token-associated
-direction or subspace. In that case the capacity/accessibility
-account may still hold, but the reference-subspace hypothesis fails.
+direction or link subspace. In that case the capacity/accessibility
+account may still hold, but the hinge hypothesis fails.
 
 Fourth, the law $\sint\sim\sqrt{k/\deff}$ assumes random-like
 incoherent directions and weakly correlated signs or amplitudes.
@@ -996,8 +942,8 @@ Learned networks may improve on this by orthogonalizing frequently
 coactive features, or worsen it through anisotropy and correlated
 errors. The law is a scaling principle, not a universal equality.
 
-Finally, the model has choices: the candidate reference subspace
-$\mathcal R_t$, the gate, the selector, and the sense-subspace dimension.
+Finally, the hinge formalism has modeling choices: the hinge or link
+subspace, the gate, the selector, and the sense-subspace dimension.
 These choices must be fixed or controlled empirically. Otherwise the
 framework risks describing whatever geometry is found after the fact.
 
@@ -1005,50 +951,54 @@ framework risks describing whatever geometry is found after the fact.
 \label{sec:predictions}
 
 The key empirical task is to separate the general capacity claim from
-the stronger reference-subspace claim.
+the stronger hinge claim.
 
-{Claim A: privileged token reference subspace.}
+{Claim A: hinge anchoring.}
 For a polysemous token $t$, there exists a privileged token-associated
-subspace $\mathcal R_t$ such that sense-relevant variation is better
-exposed in $\mathcal R_t^\perp$ than in the orthogonal complements of
-matched control subspaces of the same dimension.
+direction $h_t$, or more generally a privileged token-associated link
+subspace $H_t$, such that sense-relevant variation is better exposed in
+the corresponding orthogonal carrier than in the orthogonal complements
+of matched control directions or subspaces.
 
-{Claim B: low-dimensional sense subspaces.}
-Within $\mathcal R_t^\perp$,
+{Claim B: low-dimensional sense frames.}
+Within $h_t^\perp$, or more generally within $H_t^\perp$,
 sense-conditioned states concentrate near low-dimensional subspaces
 with small cross-sense coherence.
 
 These claims can fail independently. Claim A can hold while sense
 information remains high-dimensional. Claim B can hold relative to some
-non-token-associated subspace, in which case Claim A fails.
+non-token-associated direction or subspace, in which case hinge
+anchoring fails.
 
 The following tests separate the possibilities.
 
 \begin{enumerate}
-\item \emph{Reference-subspace test.}
-For a polysemous token, choose candidate reference subspaces generated
-by the normalized static input embedding, mean contextual embedding,
-learned token-specific directions, or a low-dimensional combination of
-these. Project layer states as in Eq.~\eqref{eq:layer-decomp}. Sense labels
-should be better separated in $\mathcal R_t^\perp$ than in orthogonal
-complements of random, frequency-matched, or layer-matched control
-subspaces of the same dimension. The statistic may be classification accuracy or
+\item \emph{Hinge-anchoring test.}
+For a polysemous token, choose candidate hinges such as the static input
+embedding, mean contextual embedding, or a learned token-specific
+direction. Decompose layer states as in Eq.~\eqref{eq:layer-decomp}.
+Sense labels should be better separated in $h_t^\perp$ than in
+orthogonal complements of random, frequency-matched, or layer-matched
+control directions. The statistic may be classification accuracy or
 mutual information with sense labels, assessed by permutation over
-sense labels and bootstrap over token instances.
+sense labels and bootstrap over token instances. The same test can be
+run for candidate link subspaces $H_t$ by replacing $h_t^\perp$ with
+$H_t^\perp$.
 
 \item \emph{Operational subspace test.}
 For each sense $s$, collect projected states
-$z_\ell(t,x)\in\mathcal R_t^\perp$ and estimate a low-rank subspace by PCA or
-probabilistic factor analysis. With $U_{t,s}$ the first $q$ principal
-directions for sense $s$, measure cross-sense coherence
-$\opnorm{U_{t,s}\T U_{t,s'}}$. True sense labels should yield lower
+$z_\ell(t,x)\in h_t^\perp$ and estimate a low-rank subspace by PCA or
+probabilistic factor analysis. With $U_s$ the first $q$ principal
+directions, measure cross-sense coherence
+$\opnorm{U_s\T U_{s'}}$. True sense labels should yield lower
 cross-sense coherence than shuffled labels and stronger separation than
-matched control reference subspaces.
+control hinges. In the multi-link variant, the same procedure is
+performed after projection to $H_t^\perp$.
 
 \item \emph{Gated-readout test.}
 Linear probes trained on $z_\ell(t,x)$ should perform comparably to
 probes trained on the full state $h_\ell(t\mid x)$, while probes
-restricted to the reference component $P_t h_\ell(t\mid x)$ should perform
+restricted to the parallel component $a_\ell(t,x)h_t$ should perform
 near chance on sense classification.
 
 \item \emph{Overlap-distribution test.}
@@ -1074,70 +1024,30 @@ orthogonalized.
 Frequently coactive features should show reduced mutual coherence
 relative to rarely coactive features. This tests the broader
 capacity/accessibility framework through Eq.~\eqref{eq:int-energy},
-independently of the reference-subspace hypothesis.
+independently of the hinge hypothesis.
 \end{enumerate}
 
 \subsection{Scope of the quantum analogy}
 \label{sec:quantum}
 
 The analogy to quantum contextuality is structural and limited. Both
-settings involve vectors whose operational role depends on a context or
-basis.
+settings involve vectors whose operational role depends on a frame.
 But quantum contextuality has the force of no-go theorems such as
 Kochen--Specker~\cite{specker-60,kochen1}; no analogous theorem is
-claimed here for semantic embeddings. The borrowed idea is only the pattern
-of sharing: context-specific bases may include vectors spanning a common
-subspace, and readout depends on the selected context. A basis is a set of
-vectors; it is not itself a vector or a subspace. In quantum terminology a
-complete basis is sometimes called a frame; that usage is distinct from the
-token reference subspace $\mathcal R_t$ defined here.
+claimed here for semantic embeddings. The borrowed idea is only the
+shared-vector frame structure: one or more vectors may participate in
+several possible frames, and readout depends on which frame is selected.
 
-Three levels of analysis should not be conflated.
-%
-\begin{enumerate}
-\item \emph{Classical high-dimensional representation.}
-A present-day Transformer carries real-valued hidden states through
-attention, nonlinear feed-forward maps, residual connections, and
-normalization.  Concentration, quasi-orthogonality, feature superposition,
-dynamic embeddings, and finite readout are all available at this level.
-None requires quantum probability or quantum hardware.
-
-\item \emph{Quantum-like semantic or contextual formalism.}
-States, contexts, bases, interference terms, noncommuting questions, or
-measurement-like updates may be used as an abstract model of meaning even
-when the implementation remains classical.  The relevant issue is not the
-vocabulary but whether this extra structure improves compression,
-explanation, or prediction relative to an ordinary contextual embedding
-model.
-
-\item \emph{Genuine quantum machine learning or quantum attention.}
-Here semantic states would be encoded in qubits or other physical quantum
-degrees of freedom, intermediate evolution would be unitary, phase would
-affect interference, and measurement would follow quantum probability.  A
-standard Transformer does none of these things.
-\end{enumerate}
-%
-
-Most of the present chapter belongs to the first level.  The
-capacity/accessibility distinction is a claim about classical geometry, and
-the reference-subspace hypothesis is an empirically testable proposal about
-the internal organization of a classical model. Its use of a common
-subspace across alternative contexts creates a structural correspondence with the second
-level, but the correspondence would become a specifically quantum-like
-model only after additional ingredients---for example, noncommuting context
-updates or phase-sensitive interference---were formally specified and shown
-to make discriminative predictions.  The tests in
-Sec.~\ref{sec:predictions} therefore target the reference-subspace hypothesis itself; they
-do not constitute evidence for physical quantum computation.
-
-The dimension of $\mathcal R_t$ is also explicit. In Hilbert-space quantum
-logic, different contexts can share one observable, as in the familiar
-tripod-like case, or several observables; a four-dimensional example has
-two contexts with two common observables~\cite{svozil:040102}. The semantic
-analogue is $\dim(\mathcal R_t)=p$: $p=1$ is the simplest case, while
-$p>1$ permits several token-associated reference directions. In every case,
-sense-specific information is hypothesized to occupy subspaces of
-$\mathcal R_t^\perp$.
+The qualifier ``one or more'' is important. In Hilbert-space quantum
+logic, different contexts can be interlinked by a single common
+observable, as in the familiar tripod-like case, but also by several
+common observables. A four-dimensional example consists of two contexts
+interconnected by two link observables~\cite{svozil:040102}.
+The semantic analogue is that a token need not possess only a single
+hinge direction. A family of related senses may share a
+higher-dimensional link subspace $H_t$, with sense-specific information
+carried in subspaces of $H_t^\perp$. Thus the single-hinge picture
+should be read as the minimal case, not as a structural necessity.
 
 % ======================================================================
 \section{Conclusion}
@@ -1161,60 +1071,21 @@ noise scale. They are not the same kind of theorem, but together they
 describe the difference between semantic capacity and semantic
 accessibility.
 
-Within this framework we proposed the reference-subspace hypothesis: some
+Within this framework we proposed the hinge-and-frame hypothesis: some
 polysemous tokens may be organized around stable token-associated
-reference subspaces,
+directions, or more generally around token-associated link subspaces,
 with sense information encoded in low-dimensional subspaces of the
 orthogonal carrier. This hypothesis is not forced by geometry. Its
-critical test is whether token-associated reference subspaces
+critical test is whether token-associated hinges or link subspaces
 expose sense structure better than matched controls. A negative result
-would falsify that organizational hypothesis while leaving the broader superposition
+would falsify hinge anchoring while leaving the broader superposition
 and interference picture intact.
 
-Placed in the three-level comparison used throughout the volume, the result
-is correspondingly bounded.  At the first level, a classical Transformer
-can host a very large repertoire of almost independent semantic directions,
-contextualize them through attention, and expose only a limited active set at
-readout.  This is the chapter's principal contribution and requires no
-quantum premise.  At the second level, a quantum-like semantic model may
-represent a state relative to alternative contexts or bases and may add
-noncommuting updates, interference terms, or a measurement-like selection
-rule. The reference-subspace construction offers a possible bridge to that
-language, but in its present form it remains a falsifiable hypothesis about
-classical LLM representations rather than evidence of nonclassical
-probability.  At the third level, genuine quantum attention would require
-physical quantum states, unitary evolution, phase-sensitive interference,
-and terminal quantum measurement.  In the terminology of the earlier
-thought experiment, classical attention mixes values through nonlinear
-softmax weights, whereas a genuinely quantum mechanism would have to rotate
-states unitarily before measurement.  Present Transformers belong to the
-former class.
-
-The chapter's relation to the rest of the volume is therefore also a division
-of labor.  Chapter~3 provides the formal vocabulary with which stronger
-quantum-like claims can be stated; Chapter~7 supplies a classical
-wave-based comparison in which interference-like behavior arises by a
-different mechanism; and Chapter~9 asks how representation in LLMs relates
-to neural systems, embodiment, and meaning.  Chapter~13 and Bridge~C supply
-the decisive next step: comparing the reference-subspace model and any stronger
-quantum-like alternative with classical baselines under conditions where
-their predictions diverge.  Until such tests succeed, the quantum analogy is
-best treated as a disciplined source of hypotheses, while semantic
-concurrency and finite contextual readout remain the substantive geometric
-claims.
-
 \begin{acknowledgments}
-OpenAI Codex (GPT-5) was used to assist with literature organization, \LaTeX{}
-editing, and checks of derivations.  The authors specified the scientific
-direction and prompts; model output retained in the manuscript was checked
-against the cited sources and explicit calculations.  The authors accept full
-responsibility for the final text.
-
-This research was funded in part by the Austrian
-Science Fund (FWF), Grant DOI \href{https://doi.org/10.55776/PIN5424624}{10.55776/PIN5424624}, and the Czech Science
-Foundation (GA\v{C}R), Grant No.~25-20013L.
-
-The authors declare no conflict of interest.
+This work was supported in part by the Austrian Science Fund (FWF)
+Grant DOI: 10.55776/PIN5424624. Portions of the manuscript were drafted
+with assistance from large language models; all ideas, arguments, and
+final formulations are the author's responsibility.
 \end{acknowledgments}
 
 \bibliography{svozil}
