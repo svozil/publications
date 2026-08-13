@@ -45,14 +45,11 @@ Beginning with tokenization and vector encoding, we study two parts of this
 question.  First, high-dimensional geometry permits exponentially many nearly
 orthogonal feature directions at a fixed tolerance, although their residual
 overlaps limit simultaneous readout.  Second, polysemy requires us to
-distinguish classical convex mixtures of word senses, context-dependent
-occurrence vectors, quantum coherence, and one direction shared by several
-orthonormal contexts.  For ordinary transformers the quantum comparisons are
-structural and deliberately limited.  A final appendix, \emph{A minimal
-quantum attention model}, presents a finite-dimensional construction with
-complex amplitudes, learned unitary evolution, optional partial tracing, and
-phase-sensitive projective Born-rule predictions.
-Further mathematical details are
+distinguish static mixtures of word senses, context-dependent occurrence
+vectors, neural feature superposition, quantum coherence, and one direction
+shared by several orthonormal contexts.  The quantum comparisons are
+structural and deliberately limited.  We end with an informal explanation of
+self-attention, training, and autoregressive output; mathematical details are
 relegated to undergraduate-level appendices.
 \end{abstract}
 
@@ -88,10 +85,7 @@ separate object called ``meaning.''  It is rewarded for predicting how
 language is used.  Successful prediction can favor internal distinctions that
 track the contexts in which words and constructions occur.  Whether this is
 intrinsic understanding or a powerful simulation remains open; the present
-chapter concerns the geometry of the representation.  It reports no new
-experiment.  The concentration results are established mathematics; their
-realization in learned LLM feature dictionaries and the shared-context
-construction are empirical hypotheses.
+chapter concerns the geometry of the representation.
 
 Two issues provide a manageable route into that geometry.
 
@@ -112,11 +106,10 @@ The order of exposition is intentional.  Section~\ref{sec:vectors} begins
 with tokenization and explains why vector representations are useful.
 Section~\ref{sec:quasi} develops the abundance--interference tradeoff in
 informal terms.  Section~\ref{sec:polysemy} treats polysemy and the quantum
-comparisons.  Appendix~\ref{app:quantum-attention}, \emph{A minimal quantum
-attention model}, presents a quantum model in its own right rather than a
-reinterpretation of ordinary transformer attention.  Additional formal
-statements and derivations appear in the
-appendices, where every symbol is defined as it is introduced.
+comparisons.  Only then does Sec.~\ref{sec:attention} open the Transformer and
+explain attention, learning, and output generation.  Formal statements and
+derivations appear in the appendices, where every symbol is defined as it is
+introduced.
 
 % ======================================================================
 \section{From text to vectors}
@@ -144,7 +137,7 @@ A learned lookup table assigns a real vector to every token identifier.  Two
 occurrences of the same identifier begin with the same table row.  The model
 must also know order: ``the dog chased the cat'' is not equivalent to ``the
 cat chased the dog.''  Position is therefore supplied in some form, either by
-adding positional information or by using another positional mechanism.
+adding positional information or by altering comparisons inside attention.
 
 The resulting initial vector is not a contextually complete meaning.  It has
 been trained across many occurrences and can reflect what those occurrences
@@ -153,12 +146,6 @@ occurrence.  The occurrence of ``bank'' near ``loan'' can consequently acquire
 a different hidden state from the same token near ``river,'' although both
 began from the same lookup row.  This distinction between a token \emph{type}
 and a contextual token \emph{occurrence} will be essential for polysemy.
-
-Successive transformer layers let each token position combine information from
-the positions available to it, thereby producing context-dependent vectors.
-During training, prediction errors adjust persistent model parameters.  During
-ordinary response generation those parameters remain fixed, and each selected
-token is appended to the text before the next token is predicted.
 
 \subsection{Why vectors?}
 
@@ -169,35 +156,28 @@ in one state.  Most importantly here, lengths, directions, projections, and
 subspaces provide an economical language for graded features.
 
 Suppose a unit vector $u$ has been fitted as a direction associated with some
-property at a chosen layer.  Relative to a declared baseline $h_0$, the scalar
-$u\T(h-h_0)$ is the signed coordinate of a hidden state $h$ along that
-direction.  It is the coordinate, not the axis itself, that says on which side
-of the contrast the state lies and how strongly.  In a simplified gender
-example, the one-dimensional subspace $\mathrm{span}\{u\}$ supplies a fitted
-direction for a gender-associated contrast.  The subspace is unoriented:
-$u$ and $-u$ span the same line.  One may orient $u$ from a feminine-marked
-sample mean toward a masculine-marked sample mean.  Together with $h_0$, this
-defines the affine axis $h_0+\mathrm{span}\{u\}$.  Positive and negative projections then
-describe opposite sides of the same axis; they are not two orthogonal
-directions.  The baseline or a probe intercept defines the zero.  Modern
-contextual representations may use several related directions rather than one
-universal axis, and the score can change from sentence to sentence
+property at a chosen layer.  The scalar $u\T h$ is then the signed coordinate
+of a hidden state $h$ along that direction.  It is the coordinate, not the
+axis itself, that says on which side of the contrast the state lies and how
+strongly.  In a simplified gender example, [[let one orientation or subspace spanned by a vector, encode gender. O]]ne may orient a fitted axis from
+a feminine-marked sample mean toward a masculine-marked sample mean.  Positive
+and negative projections then describe opposite sides of the same fitted
+contrast; they are not two orthogonal directions.  A midpoint or probe
+intercept must define the zero.  Modern contextual representations may use
+several related directions rather than one universal axis, and the score can
+change from sentence to sentence
 \cite{bolukbasi2016gender,zhao2019contextualgender}.  The superscript
 $\mathsf T$ means transpose, so $u\T h$ is the ordinary Euclidean inner
 product.
 
 This directional interpretation is operational, not metaphysical.  It depends
-on the layer, data, centering, inner product, and extraction method.  A probe
-that reads a property shows that the information is linearly available; it
-does not by itself prove that the model uses that direction causally.
-Orthogonality nevertheless has one precise consequence.  If two property
-directions are perpendicular, a component along either direction contributes
-no cross-talk when the other is read by an inner product.  The two directions
-are therefore \emph{geometrically decoupled for this linear readout}.  If one
-uses the phrase ``operational semantic independence,'' it means only this
-absence of readout cross-talk.  It does not mean that the corresponding concepts are
-logically unrelated, statistically independent in the data, or causally
-independent inside the model.
+on the layer, data, centering, inner product, and extraction method. [[ A probe
+that reads a property does not by itself prove that the model uses the same
+direction causally.  Nor does perpendicularity prove that two concepts are
+unrelated---??? contradictory to independence?]].  Orthogonality has one precise consequence for a linear readout:
+[[\textit{semantic independence} of the respective concepts, as
+a component along one direction [[representing one concept]] contributes no cross-talk when the other [[concept orr feature]] is
+read by an inner product.
 
 The reason to emphasize vectors is therefore not that meanings are known in
 advance to be points in a Euclidean space.  It is that a trained vector system
@@ -246,9 +226,8 @@ counts directions available at the chosen tolerance, not a second
 vector-space dimension.  It is a geometric possibility, not proof that a
 trained model uses all those directions.  The allowed overlap must be stated,
 and an exponentially large dictionary is not automatically readable when
-many of its elements are active at once.  Appendix~\ref{app:vectors}
-introduces the notation, and Appendix~\ref{app:geometry} gives the
-concentration, union-bound, and Johnson--Lindenstrauss calculations.
+many of its elements are active at once.  Appendix~\ref{app:geometry} gives
+the concentration, union-bound, and Johnson--Lindenstrauss calculations. [[please refer to Appendix \label-for-A earlier]]
 
 \subsection{The price of abundance: interference}
 
@@ -290,7 +269,7 @@ when the conditional states or their relative dynamics satisfy an explicit
 typicality assumption; dimension alone is not enough, since the conditional
 states could remain identical.  The author's companion analysis studies this
 purely geometric contribution to decoherence
-\cite{svozil2026geometricdecoherence}.
+\cite{svozil2026geometricdecoherence}. [[---please quote as https://doi.org/10.48550/arXiv.2605.03807 ]]
 
 The LLM analogy is narrow.  Quasi-orthogonal semantic directions suppress
 linear cross-talk in much the way that nearly orthogonal environmental branch
@@ -304,9 +283,8 @@ shared physical mechanism
 \cite{RevModPhys.75.715}.
 
 The word \emph{orthogonal} also has different operational meanings here.  For
-the LLM readout it means geometric decoupling: absence of linear cross-talk in
-the chosen inner product.  Within one quantum measurement
-context, orthogonal rays represent
+the LLM readout it means [[semantic independence and ]]absence of linear cross-talk in the chosen inner
+product.  Within one quantum measurement context, orthogonal rays represent
 mutually exclusive outcomes.  The common inner-product geometry does not make
 these interpretations identical.
 
@@ -323,12 +301,8 @@ reliably recovered together.
 
 \subsection{A sense is not a single feature}
 
-The simplest vector account of polysemy is entirely classical.  A static word
-vector may be modeled as a real, frequency-weighted convex combination of
-vectors associated with its senses.  A contextual model goes further by
-constructing a different real occurrence vector from the available text.
-Neither construction is, without additional operational structure, a coherent
-quantum superposition.
+[[Present encoding of semantic polysemy is in terms of a classical real-valued convex summation---not a quantum complex superposition---of vectors contributing.
+]]
 
 A \emph{sense} is a contextually appropriate meaning of a lexical item.  The
 financial, river-edge, and seat meanings of ``bank'' are different senses.
@@ -346,18 +320,17 @@ vectors for its occurrences.  These are related but not identical problems.
 \subsection{A static vector as a corpus-level mixture}
 
 In a static system such as word2vec, the same stored type vector is used in
-every occurrence.  This may appear poorly suited to polysemy.  Under a
-particular generative model, however, Arora and collaborators establish an
-approximate relation between that one type vector and hypothetical sense
-vectors \cite{arora-etal-2018-linear}.  The following three-sense equation
-illustrates the corresponding finite-mixture idea:
+every occurrence.  [[In contradistinction, ]]under a particular generative model, Arora and
+collaborators establish an approximate relation between that vector
+and hypothetical sense vectors \cite{arora-etal-2018-linear}.  The following
+three-sense equation illustrates the corresponding finite-mixture idea:
 \begin{equation}
 \begin{aligned}
  &v_{\rm bank}\approx
  p_{\rm fin}v_{\rm fin}
  +p_{\rm river}v_{\rm river}
  +p_{\rm seat}v_{\rm seat},\\
- &p_{\rm fin},p_{\rm river},p_{\rm seat}\geq 0,\\
+ &p_{\rm fin},p_{\rm river},p_{\rm seat}\geµ 0,\\
  &p_{\rm fin}+p_{\rm river}+p_{\rm seat}=1 .
 \end{aligned}
  \label{eq:static-mixture-main}
@@ -376,33 +349,42 @@ one-to-one with dictionary senses.  The geometric results of
 Sec.~\ref{sec:quasi} establish what is possible at a chosen tolerance; they do
 not establish what a learned lexical dictionary actually contains.
 
+[[ please delete entirely if not essential. Oterewise tell me, and completely rewrite without technical blurbs
+
 \subsection{Contextual occurrences}
 
-A static mixture summarizes a word type across a corpus; it does not determine
-the meaning of one occurrence.  Modern transformers begin occurrences of the
-same token type from the same lookup vector, but the available text changes
-the vectors constructed later.  Thus ``bank'' in a financial passage and
-``bank'' in a river passage can acquire different occurrence vectors.  In a
-causal text generator, a position can use only earlier text; a clarifying word
-that appears later can influence later positions, but it cannot retrospectively
-change the earlier state.
+Modern transformers begin each occurrence of a token type from the same
+lookup row, apart from positional treatment, but the available sequence
+changes the subsequent calculation.  The financial and river occurrences of
+``bank'' can therefore acquire different hidden vectors.  In a causal
+decoder, the state at a position uses only the prefix available there.  If a
+disambiguating word follows ``bank,'' the earlier state for ``bank'' cannot
+see it, although later positions can combine both words.  The phrase
+``surrounding context'' must be understood with that causal qualification.
 
-For intuition, one may imagine the context as changing the relative importance
-of several sense contributions.  This need not be the transformer's literal
-internal algorithm, and an ambiguous sentence or pun may preserve more than
-one possibility.  The cautious statement is therefore that context
-\emph{transforms} an occurrence representation.  It does not perform a quantum
-measurement or collapse a physical superposition.  Appendix~\ref{app:polysemy}
-gives a compact mathematical version of this distinction.
+A simple interpretable model would let the available text reweight several
+sense vectors.  A real transformer is not required to implement that literal
+mixture.  Its layers apply learned linear maps, nonlinear transformations,
+residual additions, and attention.  Ambiguous sentences and puns may also
+preserve information relevant to more than one sense.  It is therefore safer
+to say that contextualization \emph{transforms} an occurrence representation
+than that it selects or collapses one pre-existing branch.
+
+The phrase \emph{neural feature superposition} denotes yet another classical
+idea.  A hidden state may contain a sum of many feature directions, with a
+sparse subset appreciably active on a particular input
+\cite{elhage2022superposition,bricken2023monosemanticity}.  The coefficients
+may be signed and need not add to one; the features need not be word senses.
+Thus a static lexical mixture, a contextual occurrence state, and neural
+feature superposition are three different objects.
+
+]]
 
 \subsection{Why this is not automatically quantum coherence}
 
 Quantum theory uses the word \emph{superposition} in a stronger operational
-sense.  A pure state combines alternatives with probability amplitudes that
-may be real or complex.  They need not be nonnegative and need not sum to one;
-instead, the sum of their squared magnitudes is one.  A pure-state
-superposition is therefore not a convex average.  Relative phase can affect
-later measurement probabilities when alternatives
+sense.  A pure state combines alternatives with [[complex and thus not necessarily convex]] probability amplitudes.
+Relative phase can affect later measurement probabilities when alternatives
 are recombined in another basis, and the Born rule turns amplitudes into
 probabilities.  A classical frequency average such as
 Eq.~\eqref{eq:static-mixture-main} provides none of this.  Its coefficients are
@@ -415,13 +397,10 @@ a new mathematical model that does so.  But the proposal would have to state
 the sense basis, amplitudes, relative phases, allowed transformations,
 measurement rule, and an experiment in which phase changes alter observable
 predictions.  Without those ingredients, replacing the classical weights by
-symbols resembling quantum amplitudes merely renames a vector sum.  Ordinary
-transformer processing supplies no Born rule and no physical collapse.  The
+symbols resembling quantum amplitudes merely renames a vector sum.  Existing
+Transformer attention supplies no Born rule and no physical collapse.  The
 explicit pure-state and density-matrix comparison is given in
-Appendix~\ref{app:polysemy}.  Appendix~\ref{app:quantum-attention}, \emph{A
-minimal quantum attention model}, supplies such a specification, including a
-phase-sensitive ``bank'' experiment.  It is not a reinterpretation of
-ordinary transformer attention.
+Appendix~\ref{app:polysemy}.
 
 \subsection{A different quantum analogy: shared contexts}
 
@@ -511,9 +490,167 @@ polysemy is a quantum measurement.  Appendix~\ref{app:polysemy} gives the
 shared-projector construction and explains why quantum probability rules do
 not transfer to linguistic context.
 
-If the proposed lexical anchor is unstable or provides no advantage over an
-equally flexible model without it, this optional shared-context hypothesis
-fails while the ordinary contextual account of polysemy remains intact.
+
+[[ I would completely eliminate these entire sectiosn ...
+
+% ======================================================================
+\section{What is established, what is proposed, and how it could fail}
+\label{sec:tests}
+% ======================================================================
+
+This chapter reports no new experiment.  It combines established mathematics
+with empirical hypotheses, and that distinction should remain visible.
+
+The geometric statements are established.  At a fixed nonzero tolerance,
+high-dimensional spheres admit exponentially large families of directions
+with bounded pairwise overlap.  Uniformly random pairs have RMS overlap
+$1/\sqrt d$.  For a specified linear correlation readout, overlap produces the
+cross-term displayed in Eq.~\eqref{eq:two-feature-main}.  These facts say
+nothing by themselves about which semantic features an LLM has learned.
+
+The first empirical question is therefore whether feature directions
+extracted by a declared method show useful geometry on held-out data.  Their
+overlaps should be compared with isotropic random controls and with
+activity-matched controls.  The most relevant overlaps are those between
+features that coactivate and need to be read together.  Failure to beat these
+baselines would weaken the claim that learning has allocated angular
+separation strategically.
+
+The second question concerns polysemy.  An Arora-style static mixture should be
+tested in one declared lexical space with sense frequencies estimated from
+training data.  A contextual representation should then predict held-out
+senses or same-sense judgments better than that static prior.  Otherwise the
+contextual account has added complexity without demonstrated benefit.
+
+The third question concerns the optional shared anchor in
+Fig.~\ref{fig:contexts}.  It must be learned on training data, remain
+non-negligible and stable on held-out occurrences, and improve prediction,
+compression, or sample efficiency relative to equally flexible models without
+the shared-anchor constraint.  Since any chosen vector can be completed to an
+orthonormal basis, merely drawing several contexts around one ray is no
+evidence.  If the anchor becomes negligible, varies strongly with context, or
+fails against simpler controls, this optional proposal should be rejected
+while the ordinary contextual account remains intact.
+
+No such test establishes consciousness, intrinsic intentionality, or a
+physical quantum process.  The measurable claims concern representation,
+overlap, readout, and predictive behavior.
+
+% ======================================================================
+\section{How attention uses context and produces text}
+\label{sec:attention}
+% ======================================================================
+
+We have so far treated the transformer---a layered neural-network architecture
+centered on attention---as a device that changes an initial token vector into
+a context-dependent occurrence vector.  We now return to that missing
+mechanism.  The informal account needs only vectors, matrices, inner products,
+weighted averages, and smooth nonlinear transformations.
+
+\subsection{Two meanings of ``weight''}
+
+The word \emph{weight} is used for two different things.  The embedding table
+and the matrices inside attention, feed-forward, and output blocks are
+\emph{persistent model parameters}.  Training changes them, and the resulting
+numbers survive from one prompt to the next.  Self-attention also computes
+temporary, input-dependent numbers commonly called attention weights.  To
+avoid confusion, we call the latter \emph{attention coefficients}.  They are
+recomputed for every sequence, layer, head, and permitted target--source pair
+of positions.  Attention does not itself create the persistent model
+parameters.
+
+\subsection{Self-attention as context-dependent routing}
+
+At a given layer, every token position carries a current hidden vector.  One
+attention head applies three learned linear maps to these vectors.  Their
+outputs are conventionally called queries, keys, and values.  The query and
+key are two transformed views used to calculate a match score; the value is
+the transformed content routed according to that score.  The names are
+mnemonics rather than literal mental operations.
+
+For one target position, the head compares its query with the keys at the
+positions it is allowed to inspect.  Inner products supply the comparison
+scores.  A text-generating, decoder-only model uses a causal mask, so it cannot
+inspect future tokens.  Softmax normalization turns the permitted scores into
+nonnegative
+attention coefficients whose sum is one.  The head then forms a weighted
+average of the corresponding value vectors
+\cite{Vaswani-2017-Attention}.
+
+This weighted average is only the immediate output of one head.  A practical
+layer combines several heads.  An output map combines their results; a
+residual connection adds the layer's input back; and a feed-forward block is
+a small nonlinear network applied at each position.  The complete layer is
+therefore neither a mere average nor an orthogonal projection.
+Repeated layers allow the representation at one position to gather and
+transform information from many permitted positions.
+
+For ``bank,'' evidence such as ``deposit,'' ``loan,'' and ``interest'' can
+create different query--key matches and value contributions than ``river,''
+``water,'' and ``shore.''  At the position of ``bank,'' a causal model can use
+only evidence already in the prefix; evidence appearing later can be combined
+with ``bank'' only at later positions.  Attention thereby participates in
+contextualization and may retain, combine, or later discard several kinds of
+evidence.
+
+\subsection{How training learns the persistent parameters}
+
+During language-model training, the network sees a token sequence and is
+asked at each permitted position to predict the following token.  One sequence
+therefore supplies many prediction examples: the state at position $i$
+predicts the token at position $i+1$.  Because the causal mask prevents access
+to later tokens, the eligible distributions can be computed in parallel
+during one forward pass.  A loss is large when the continuation that actually
+occurred received little probability and small when it received much
+probability.
+
+Backpropagation applies the multivariable chain rule to determine how the loss
+changes when each persistent parameter changes.  An optimizer then adjusts
+the parameters slightly to lower the current minibatch loss.  Repeating the
+forward--loss--backward--update cycle over many varied text segments aims to
+improve prediction on unseen continuations and produces the trained model
+\cite{Goodfellow-et-al-2016-Book}.
+
+Self-attention matters during this process because the error is differentiated
+through its query, key, value, and softmax calculations.  Nevertheless, in
+each individual forward pass the persistent matrices are fixed.  Attention
+produces contextual activations and temporary coefficients; gradient-based
+optimization produces the trained parameter values.
+
+\subsection{Autoregressive output}
+
+When a trained model answers a prompt, its persistent parameters normally
+remain fixed.  The prompt is tokenized, mapped to initial vectors, and passed
+through the transformer.  An output map converts the final-layer hidden state
+at the last position of the current prefix into one score for every token in
+the vocabulary.  Softmax turns those scores into a distribution over possible
+next tokens; it is not a probability that the completed statement is true.
+A decoding rule either chooses a
+high-scoring token or samples from a selected portion of that distribution
+\cite{Brown2020May}.
+
+The chosen identifier is appended to the prefix.  The enlarged prefix becomes
+the input for the following prediction, so one generated token can change all
+later hidden states and attention coefficients.  The model ordinarily does
+not compose a complete answer in a hidden store and then reveal it.  It
+constructs the response one token at a time.  Finally, detokenization joins
+the generated pieces into readable text.
+
+This loop is recursive in its state but not usually in its persistent
+parameters: output becomes new input, while the deployed weights remain
+unchanged.  External memory or retrieval can also change later inputs without
+changing the model.  Genuine online learning would be a separate
+parameter-update procedure, not ordinary autoregression.
+
+The calculation now closes the conceptual loop.  The model never receives a
+dictionary entry called ``meaning.''  It receives token occurrences in human
+text, turns them into vectors, and learns transformations that improve
+prediction.  Some of the resulting geometry supports distinctions and
+contextual responses that readers interpret semantically.  This explains a
+plausible, testable route to meaning-sensitive behavior without deciding whether the machine
+understands in Searle's philosophical sense.
+
+... until here!]]
 
 % ======================================================================
 \section{Conclusion}
@@ -528,8 +665,7 @@ behavior.
 Token identifiers first become vectors because vectors support graded
 coordinates, learned transformations, comparison, and combination.  Their
 high-dimensional geometry addresses the first problem considered here.  A
-fixed-width representation space can accommodate exponentially many
-quasi-orthogonal
+fixed-width representation space can accommodate exponentially many quasi-orthogonal
 directions at a chosen tolerance, even though it has only $d$ exactly
 independent coordinates.  This is expressive room, not cost-free access.
 Residual overlaps create interference, especially when many relevant features
@@ -539,38 +675,29 @@ The resulting overlap suppression has a limited quantum counterpart.  Small
 inner products suppress cross-terms both in linear semantic readout and in
 the environmental overlaps that enter quantum decoherence.  The shared
 geometry justifies the phrase geometric decoherence, while the absence of
-quantum dynamics, relative phases, and environmental tracing in ordinary
-transformer processing prevents a physical identification.
+quantum dynamics, relative phases, and environmental tracing prevents a physical
+identification.
 
 Polysemy exposes different limits of the quantum comparison.  A static word
 vector may approximate a frequency-weighted convex mixture of sense vectors,
 and a transformer constructs context-dependent occurrence vectors.  Neither
-is thereby a coherent quantum superposition, and contextualization is not
-quantum collapse.
+is thereby a coherent quantum superposition, and attention is not collapse.
 The star diagram retains only a quantum-logical incidence idea: one lexical
 projector may be shared by several orthonormal contexts.  That optional
 constraint must earn its place empirically; the common ray alone does not
 select a meaning.
 
-At present, the relation between ordinary transformer LLMs and quantum mechanics
-is best regarded as a limited analogy of inner-product geometry rather than a
-common physical or semantic theory.  Language-model activations inhabit
-finite-dimensional real inner-product spaces; standard quantum mechanics
-represents pure states as rays in a complex Hilbert space and adds observables,
-tensor composition, and the Born rule.  Even shared terms have different
-meanings: linguistic context is surrounding text, whereas a quantum context is
-a family of compatible observables; ``interference'' here means linear readout
-cross-talk, whereas quantum interference is phase-sensitive.
-
-Quasi-orthogonality is nevertheless a genuine common geometric motif.  In a
-language model it offers a possible capacity mechanism for many approximately
-distinguishable features, subject to cross-talk and empirical confirmation.
-In quantum theory, near-orthogonality of conditional environmental states can,
-under appropriate dynamics, suppress reduced-state coherences and thereby
-contribute to quasi-classical behavior.  It does not by itself select a pointer
-basis, produce definite outcomes, or establish stable classical records.  The
-paper thus identifies geometric resources for semantic discrimination, not a
-complete theory of machine understanding.
+Attention finally explains how available tokens affect one another's
+representations, training explains how prediction errors change persistent
+parameters, and autoregression explains how vectors are converted back into a
+sequence of tokens.  Together these mechanisms outline a plausible route by
+which syntactic prediction can acquire a geometry useful for semantic
+discrimination.
+[[ At the moment quantum mechanics appears to bear only superficial resemblence with LLMs: they
+both share Hilbert space; but  different ones n terms of scalars and encoding structures such as contexts,
+or coherence and interference.
+Some aspects pertain in both formalisms; in particular, when it comes to quasi-orthogonality wich in
+LLM is the basis of semantic richness, and in quantum mechanics mayimpress quasi-classicality of macro-events.]]
 
 \appendix
 
@@ -610,9 +737,9 @@ vector for identifier $t_i$.  In a simple additive positional scheme,
  \label{eq:lookup-app}
 \end{equation}
 Here $p_i$ supplies the position and the superscript $(0)$ means the stage
-before the first transformer layer.  Some architectures incorporate position
-inside later comparison operations rather than literally adding $p_i$; the
-conceptual role is the same.  The identifier $t_i$, the table row $E[t_i]$, and the
+before the first transformer layer.  Some architectures encode position by
+rotating queries and keys rather than literally adding $p_i$; the conceptual
+role is the same.  The identifier $t_i$, the table row $E[t_i]$, and the
 contextual state produced at a later layer are three different objects.
 
 The geometric analysis need not use all $d_{\rm model}$ architectural
@@ -892,10 +1019,8 @@ two features that never need to be recovered together may have little cost.
 \subsection{The common algebra behind geometric decoherence}
 \label{app:dirac}
 
-We first introduce the notation used in this comparison.  A pure quantum
-state may be represented by a normalized complex column vector; vectors that
-differ only by an overall phase represent the same physical ray.  Dirac
-notation writes such a vector as a
+We first introduce the notation used in this comparison.  A quantum state is
+a complex column vector.  Dirac notation writes such a vector as a
 \emph{ket} $|v\rangle$ and its conjugate transpose as the \emph{bra}
 $\langle v|$.  Thus $\langle v|w\rangle$ is an inner product, whereas
 $|v\rangle\langle w|$ is a matrix called an outer product.  A density matrix
@@ -967,7 +1092,7 @@ Eq.~\eqref{eq:double-exponential-app} is not an ordinary LLM capacity claim.
 \label{app:polysemy}
 % ======================================================================
 
-\subsection{Static mixture and contextual reweighting}
+\subsection{Static mixture, contextual reweighting, and feature code}
 
 Let $t$ denote a word type, or a token that corresponds to a complete lexical
 item, and let $s\in\{1,\ldots,S_t\}$ index its candidate senses.  Let
@@ -1015,6 +1140,19 @@ an occurrence state
 \end{equation}
 at layer $\ell$.  It need not implement the explicit convex mixture in
 Eq.~\eqref{eq:context-mixture-app}.
+
+A general neural feature code has still another form:
+\begin{equation}
+ h_\ell(t\mid x)
+ =b_\ell+\sum_{i=1}^{M}a_i(t,x)w_i+e_\ell(t,x).
+ \label{eq:neural-superposition-app}
+\end{equation}
+Here $b_\ell$ is a baseline, $w_i$ are learned or extracted feature
+directions, $a_i$ are input-dependent activations, and $e_\ell$ is the
+unmodeled residual.  The $a_i$ may be signed and need not sum to one.  Only a
+subset may be appreciably active.  Thus Eq.~\eqref{eq:neural-superposition-app}
+is a linear decomposition of an activation, not a probability mixture of word
+senses.
 
 \subsection{Quantum pure superposition and incoherent mixture}
 
@@ -1129,172 +1267,136 @@ out such assignments under its own assumptions \cite{specker-60,kochen1}.
 Neither theorem implies that linguistic context should obey a Born rule.
 
 % ======================================================================
+\section{Formal companion to attention, training, and output}
+\label{app:attention}
+% ======================================================================
 
-\section{A minimal quantum attention model}
-\label{app:quantum-attention}
+Let $\Theta$ denote all persistent model parameters: the embedding table,
+attention and feed-forward matrices, normalization parameters, and vocabulary
+readout.  During one forward pass $\Theta$ is fixed.  Hidden states, queries,
+keys, values, and attention coefficients are transient quantities computed
+from the current sequence.
 
-This appendix defines a \emph{minimal quantum attention model}, formulated in
-a finite-dimensional complex Hilbert space.  Its ingredients are
-learned unitary matrices, normalized complex amplitudes, projective Born
-readout, and, for the incoherent output, a partial trace.  The coherent output
-retains relative phases and therefore permits phase-sensitive predictions.
-Together these ingredients define a quantum attention model in its own right,
-not a reinterpretation of standard transformer attention.
+\subsection{One causal attention head}
 
-For each target $i$, the construction uses an address space
-$\mathcal H_A^{(i)}\simeq\mathbb C^i$ with orthonormal basis
-$\{|j\rangle_A:j=1,\ldots,i\}$ and a semantic or value space
-$\mathcal H_S\simeq\mathbb C^V$ with a complete orthonormal vocabulary basis
-$\{|y\rangle_S:y=1,\ldots,V\}$, where $V$ is the vocabulary size.  The
-complete orthonormal vocabulary basis is
-an explicit assumption of this toy model.  Their joint space is
-$\mathcal H_A^{(i)}\otimes\mathcal H_S$; tracing out the address factor leaves
-a state on $\mathcal H_S$.
-
-For each $i$ choose a normalized reference $|0\rangle_A\in\mathcal H_A^{(i)}$
-and choose $|0\rangle_S\in\mathcal H_S$.  Encode source position $j$ and form
-query, key, and value states by unitary matrices:
+Let $h_i\in\R^{d_{\rm model}}$ be the current hidden vector at target position
+$i$.  Let $d_h$ be the width of one attention head.  Three learned matrices
+$W_Q,W_K,W_V\in\R^{d_h\times d_{\rm model}}$ produce
 \begin{equation}
-\begin{aligned}
- |\psi_j\rangle&=U_{\rm enc}(x_j)|0\rangle_S,\\
- |q_i\rangle&=Q_\theta|\psi_i\rangle,\qquad
- |k_j\rangle=K_\theta|\psi_j\rangle,\qquad
- |v_j\rangle=V_\theta|\psi_j\rangle .
-\end{aligned}
-\label{eq:mqa-encoding}
+ q_i=W_Qh_i,\qquad
+ k_j=W_Kh_j,\qquad
+ v_j=W_Vh_j.
+ \label{eq:qkv-app}
 \end{equation}
-Here $Q_\theta,K_\theta,V_\theta\in U(V)$ are learned.  The complex
-query--key overlap is the score.  Independently formed overlaps are not
-generally one row of a unitary matrix, so they must be normalized explicitly:
-\begin{equation}
-\begin{aligned}
- c_{ij}&=\langle q_i|k_j\rangle,
- &Z_i&=\sum_{r\leq i}|c_{ir}|^2,\\
- \alpha_{ij}&=\frac{c_{ij}}{\sqrt{Z_i}},
- &Z_i&>0 .
-\end{aligned}
-\label{eq:mqa-scores}
-\end{equation}
-Thus $\sum_{j\leq i}|\alpha_{ij}|^2=1$.  The $\alpha_{ij}$ are amplitudes
-rather than classical weights, and their relative phases are retained.
+The vectors $q_i$, $k_j$, and $v_j$ are the query at target position $i$ and
+the key and value at source position $j$.
 
-Let one prefix-dependent unitary $W_i=W_i(x_{\leq i};\theta)$ prepare
-\begin{equation}
- |\Omega_i\rangle
- =W_i|0\rangle_A|0\rangle_S
- =\sum_{j\leq i}\alpha_{ij}|j\rangle_A|v_j\rangle_S .
-\label{eq:mqa-unitary}
-\end{equation}
-The right-hand side is normalized because the address states are orthogonal
-and every value state is normalized.  It can therefore be extended to an
-orthonormal basis and chosen as one column of a unitary matrix.
-Operationally, $W_i$ may be compiled as address-state preparation followed by
-token-controlled value preparation.  In this elementary specification the
-amplitudes are first obtained from Eq.~\eqref{eq:mqa-scores} and $W_i$ is then
-compiled as a prefix-dependent state-preparation unitary; the equations do not
-provide a coherent overlap-estimation subroutine.
+In a decoder-only causal model, position $i$ may use positions $j\leq i$.  The
+scaled score, attention coefficient, and one-head aggregate are
+\begin{align}
+ s_{ij}&=\frac{q_i\T k_j}{\sqrt{d_h}},\nonumber\\
+ \alpha_{ij}
+ &=\frac{\exp(s_{ij})}
+ {\sum_{r=1}^{i}\exp(s_{ir})},\nonumber\\
+ a_i^{\rm att}&=\sum_{j=1}^{i}\alpha_{ij}v_j.
+ \label{eq:attention-app}
+\end{align}
+The factor $1/\sqrt{d_h}$ keeps the scale of the scores roughly stable.  If
+coordinate products have comparable variance, adding $d_h$ of them makes an
+unscaled dot product's typical size grow like $\sqrt{d_h}$.
+The exponential is positive, so every $\alpha_{ij}\geq0$, and direct
+summation shows $\sum_{j=1}^i\alpha_{ij}=1$.  Thus the immediate aggregate of
+one head is a convex combination of its permitted value vectors.  The complete
+multi-head block subsequently applies output maps and a residual connection,
+so the whole transformer layer need not be a convex combination or a
+projector.
 
-A projective measurement of the address gives the normalized Born attention
-weights, without a softmax:
-\begin{equation}
- p_i(j)
- =\operatorname{tr}\!\left[
- (|j\rangle\langle j|_A\otimes I_S)
- |\Omega_i\rangle\langle\Omega_i|
- \right]
- =|\alpha_{ij}|^2
- =\frac{|c_{ij}|^2}{Z_i}.
-\label{eq:mqa-address}
-\end{equation}
-If the address is traced out---whether or not it is first measured and
-forgotten or completely dephased---the retained value state is simply
-\begin{equation}
- \rho_{S,i}^{\rm mix}
- =\operatorname{tr}_A|\Omega_i\rangle\langle\Omega_i|
- =\sum_{j\leq i}p_i(j)|v_j\rangle\langle v_j|.
-\label{eq:mqa-mixture}
-\end{equation}
-Equation~\eqref{eq:mqa-mixture} defines the incoherent output of the model.
-It contains no interference between different addresses.  In
-particular, the partial trace does not produce the coherent sum
-$\sum_j\alpha_{ij}|v_j\rangle$.
+The Cauchy--Schwarz inequality gives
+$|q_i\T k_j|\leq\norm{q_i}\norm{k_j}$.  A large score therefore requires
+appropriate alignment and scale.  The learned matrices decide which aspects
+of the incoming states become relevant to the comparison.
 
-From $|\Omega_i\rangle$, that sum is obtained by a postselected
-complementary-basis projective readout rather than by tracing out $A$.  Put
-\begin{equation}
- |+\rangle_A=\frac{1}{\sqrt{i}}\sum_{j\leq i}|j\rangle_A,\qquad
- N_i=\left\|\sum_{j\leq i}\alpha_{ij}|v_j\rangle\right\|^2 .
-\label{eq:mqa-erasure}
-\end{equation}
-When $N_i>0$, conditioned on the $|+\rangle_A$ outcome, the semantic state and the
-probability of obtaining it are
-\begin{equation}
- |\phi_i\rangle
- =\frac{\sum_{j\leq i}\alpha_{ij}|v_j\rangle}{\sqrt{N_i}},
- \qquad
- r_i=\Pr(+)=\frac{N_i}{i}.
-\label{eq:mqa-coherent}
-\end{equation}
-This postselected projective ``quantum eraser'' removes which-address information.
-Measuring which address was selected and coherently erasing that information
-are alternative readouts of the same prepared state.
+\subsection{Next-token probabilities and training}
 
-The orthonormal vocabulary basis now gives an ordinary projective Born rule:
-\begin{equation}
-\begin{aligned}
- p_i^{\rm coh}(y\mid +)
- &=|\langle y|\phi_i\rangle|^2
- =\frac{\left|\sum_{j\leq i}
-       \alpha_{ij}\langle y|v_j\rangle\right|^2}{N_i},\\
- p_i^{\rm mix}(y)
- &=\operatorname{tr}\!\left(
- |y\rangle\langle y|\rho_{S,i}^{\rm mix}\right)
- =\sum_{j\leq i}p_i(j)|\langle y|v_j\rangle|^2 .
-\end{aligned}
-\label{eq:mqa-vocabulary}
-\end{equation}
-Both distributions sum to one.  The coherent probability contains
-phase-sensitive cross-terms; the mixture does not.  The parameters of the
-unitary matrices may be trained by minimizing, for example,
-$-\sum_i\log p_i^{\rm coh}(y_i^{\rm true}\mid +)$.  A physical implementation
-must also account for the erasure success probability $r_i$, for instance by
-training the joint probability $r_i p_i^{\rm coh}(y_i^{\rm true}\mid +)$.
+After the final layer $L$, let $h_i^{(L)}$ be the contextual state at position
+$i$.  Let $W_{\rm out}\in\R^{V\times d_{\rm model}}$ and $b\in\R^V$ be the
+vocabulary readout matrix and bias.  The score vector $g_i\in\R^V$ and the
+probability of candidate token $a\in\mathcal V$ are
+\begin{align}
+ g_i&=W_{\rm out}h_i^{(L)}+b,\nonumber\\
+ p_\Theta(a\mid t_1,\ldots,t_i)
+ &=\frac{\exp(g_{i,a})}
+ {\sum_{c\in\mathcal V}\exp(g_{i,c})}.
+ \label{eq:output-softmax-app}
+\end{align}
+The entries of $g_i$ are scores, often called logits.  The softmax denominator
+makes the probabilities nonnegative and makes them sum to one over the
+vocabulary.
 
-For the promised intervention, retain two orthonormal values
-$|{\rm F}\rangle$ and $|{\rm R}\rangle$ for the financial and river-edge
-senses of ``bank.''  Let
-$\alpha_{\rm F}=1/\sqrt2$ and
-$\alpha_{\rm R}=e^{i\varphi}/\sqrt2$.  Successful address erasure prepares
+For a training sequence $(t_1,\ldots,t_T)$ with $T\geq2$, the standard
+next-token negative log-likelihood is
 \begin{equation}
- |\phi_\varphi\rangle
- =\frac{|{\rm F}\rangle+e^{i\varphi}|{\rm R}\rangle}{\sqrt2}.
-\label{eq:mqa-bank-state}
+ \mathcal L(\Theta)
+ =-\sum_{i=1}^{T-1}
+ \log p_\Theta(t_{i+1}\mid t_1,\ldots,t_i).
+ \label{eq:loss-app}
 \end{equation}
-For this experiment choose two vocabulary basis vectors as the incompatible
-pair $|\mathord{\pm}\rangle=(|{\rm F}\rangle\pm|{\rm R}\rangle)/\sqrt2$.
-The projective Born probabilities are
+Each term is small when the observed next token received high probability.
+Backpropagation applies the multivariable chain rule to compute the gradient
+$\nabla_\Theta\mathcal L$.  The elementary gradient step
 \begin{equation}
- p_+(\varphi)=\cos^2\frac{\varphi}{2},\qquad
- p_-(\varphi)=\sin^2\frac{\varphi}{2}.
-\label{eq:mqa-bank-fringe}
+ \Theta_{\rm new}
+ =\Theta-\eta\nabla_\Theta\mathcal L,
+ \qquad \eta>0,
+ \label{eq:gradient-app}
 \end{equation}
-Changing $\varphi$ from zero to $\pi$ reverses the prediction, while the
-direct $|{\rm F}\rangle,|{\rm R}\rangle$ populations remain $1/2$.  By
-contrast, Eq.~\eqref{eq:mqa-mixture} gives the phase-insensitive state
-$(|{\rm F}\rangle\langle{\rm F}|
- +|{\rm R}\rangle\langle{\rm R}|)/2$ and therefore $p_+=p_-=1/2$.
-This is the required experiment in which relative phase changes an observable
-prediction while direct-path populations are held fixed.
+changes the persistent parameters.  At a point where the loss is
+differentiable, the first-order Taylor formula explains the minus sign:
+\begin{equation}
+ \mathcal L(\Theta-\eta\nabla\mathcal L)
+ \approx\mathcal L(\Theta)
+ -\eta\norm{\nabla\mathcal L}^2.
+ \label{eq:taylor-app}
+\end{equation}
+For a nonzero gradient and a sufficiently small step, the linear term lowers
+the same loss locally.  Practical optimizers add batching, adaptive scaling,
+momentum, regularization, and other refinements; the separation remains:
+attention computes transient coefficients, while optimization updates
+persistent parameters.
 
-On a classical computer these equations only simulate complex vectors,
-unitary matrices, a partial trace, and projective Born probabilities.  They
-supply neither physical collapse nor a quantum computational advantage.  On
-quantum hardware $W_i$, address erasure, and vocabulary measurement would be
-physical operations subject to ordinary measurement and no-cloning
-constraints.  The query, key, and value encodings, including
-Eq.~\eqref{eq:mqa-unitary}, are freshly prepared from classically specified
-tokens; they do not copy an unknown quantum state.
+\subsection{Autoregressive generation}
 
+Let $(u_1,\ldots,u_m)$ be the tokenized prompt, where $m$ is its length, and
+let $\Theta^\star$ be the deployed parameters.  Here the star labels the
+chosen deployment checkpoint; it is not complex conjugation.  After
+processing a current
+prefix $(u_1,\ldots,u_j)$, the model produces scores $g_{j,a}$ for the next
+token.  With a positive decoding temperature $\tau_{\rm dec}$, define
+\begin{equation}
+ \pi_j(a)=
+ \frac{\exp(g_{j,a}/\tau_{\rm dec})}
+ {\sum_{c\in\mathcal V}\exp(g_{j,c}/\tau_{\rm dec})},
+ \qquad \tau_{\rm dec}>0.
+ \label{eq:generation-softmax-app}
+\end{equation}
+Lower temperature magnifies score differences and concentrates the
+distribution; higher temperature makes it flatter.  Temperature changes the
+sampling distribution, not the learned scores themselves.
+The next identifier $u_{j+1}$ is selected from $\pi_j$ by the declared
+decoding rule and appended to the prefix:
+\begin{equation}
+ (u_1,\ldots,u_j)
+ \longmapsto
+ (u_1,\ldots,u_j,u_{j+1}).
+ \label{eq:autoregressive-app}
+\end{equation}
+The enlarged prefix is processed again for the following token.  During
+ordinary inference $\Theta^\star$ stays fixed; the prefix, hidden states, and
+attention coefficients change.  Detokenization assembles the generated
+identifiers into the final character string.
+
+Online adaptation would be a separate learning procedure and lies outside the
+present scope.
 
 \begin{acknowledgments}
 OpenAI Codex using GPT-5 (generative pre-trained transformer, version 5) was

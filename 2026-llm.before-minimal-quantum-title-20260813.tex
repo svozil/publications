@@ -48,10 +48,10 @@ overlaps limit simultaneous readout.  Second, polysemy requires us to
 distinguish classical convex mixtures of word senses, context-dependent
 occurrence vectors, quantum coherence, and one direction shared by several
 orthonormal contexts.  For ordinary transformers the quantum comparisons are
-structural and deliberately limited.  A final appendix, \emph{A minimal
-quantum attention model}, presents a finite-dimensional construction with
-complex amplitudes, learned unitary evolution, optional partial tracing, and
-phase-sensitive projective Born-rule predictions.
+structural and deliberately limited.  A final appendix defines
+\emph{unitary--trace attention}, a finite-dimensional quantum attention model
+with complex amplitudes, learned unitary evolution, optional partial tracing,
+and phase-sensitive projective Born-rule predictions.
 Further mathematical details are
 relegated to undergraduate-level appendices.
 \end{abstract}
@@ -112,9 +112,9 @@ The order of exposition is intentional.  Section~\ref{sec:vectors} begins
 with tokenization and explains why vector representations are useful.
 Section~\ref{sec:quasi} develops the abundance--interference tradeoff in
 informal terms.  Section~\ref{sec:polysemy} treats polysemy and the quantum
-comparisons.  Appendix~\ref{app:quantum-attention}, \emph{A minimal quantum
-attention model}, presents a quantum model in its own right rather than a
-reinterpretation of ordinary transformer attention.  Additional formal
+comparisons.  Appendix~\ref{app:quantum-attention} defines
+\emph{unitary--trace attention}, a quantum model in its own right rather than
+a reinterpretation of ordinary transformer attention.  Additional formal
 statements and derivations appear in the
 appendices, where every symbol is defined as it is introduced.
 
@@ -418,8 +418,8 @@ predictions.  Without those ingredients, replacing the classical weights by
 symbols resembling quantum amplitudes merely renames a vector sum.  Ordinary
 transformer processing supplies no Born rule and no physical collapse.  The
 explicit pure-state and density-matrix comparison is given in
-Appendix~\ref{app:polysemy}.  Appendix~\ref{app:quantum-attention}, \emph{A
-minimal quantum attention model}, supplies such a specification, including a
+Appendix~\ref{app:polysemy}.  Appendix~\ref{app:quantum-attention} supplies
+such a specification in the form of unitary--trace attention, including a
 phase-sensitive ``bank'' experiment.  It is not a reinterpretation of
 ordinary transformer attention.
 
@@ -1130,11 +1130,11 @@ Neither theorem implies that linguistic context should obey a Born rule.
 
 % ======================================================================
 
-\section{A minimal quantum attention model}
+\section{Unitary--trace attention}
 \label{app:quantum-attention}
 
-This appendix defines a \emph{minimal quantum attention model}, formulated in
-a finite-dimensional complex Hilbert space.  Its ingredients are
+This appendix defines \emph{unitary--trace attention}, a finite-dimensional
+attention model formulated in complex Hilbert space.  Its ingredients are
 learned unitary matrices, normalized complex amplitudes, projective Born
 readout, and, for the incoherent output, a partial trace.  The coherent output
 retains relative phases and therefore permits phase-sensitive predictions.
@@ -1144,9 +1144,8 @@ not a reinterpretation of standard transformer attention.
 For each target $i$, the construction uses an address space
 $\mathcal H_A^{(i)}\simeq\mathbb C^i$ with orthonormal basis
 $\{|j\rangle_A:j=1,\ldots,i\}$ and a semantic or value space
-$\mathcal H_S\simeq\mathbb C^V$ with a complete orthonormal vocabulary basis
-$\{|y\rangle_S:y=1,\ldots,V\}$, where $V$ is the vocabulary size.  The
-complete orthonormal vocabulary basis is
+$\mathcal H_S\simeq\mathbb C^d$ has a complete orthonormal vocabulary basis
+$\{|y\rangle_S:y=1,\ldots,d\}$.  The complete orthonormal vocabulary basis is
 an explicit assumption of this toy model.  Their joint space is
 $\mathcal H_A^{(i)}\otimes\mathcal H_S$; tracing out the address factor leaves
 a state on $\mathcal H_S$.
@@ -1161,9 +1160,9 @@ query, key, and value states by unitary matrices:
  |k_j\rangle=K_\theta|\psi_j\rangle,\qquad
  |v_j\rangle=V_\theta|\psi_j\rangle .
 \end{aligned}
-\label{eq:mqa-encoding}
+\label{eq:uta-encoding}
 \end{equation}
-Here $Q_\theta,K_\theta,V_\theta\in U(V)$ are learned.  The complex
+Here $Q_\theta,K_\theta,V_\theta\in U(d)$ are learned.  The complex
 query--key overlap is the score.  Independently formed overlaps are not
 generally one row of a unitary matrix, so they must be normalized explicitly:
 \begin{equation}
@@ -1173,7 +1172,7 @@ generally one row of a unitary matrix, so they must be normalized explicitly:
  \alpha_{ij}&=\frac{c_{ij}}{\sqrt{Z_i}},
  &Z_i&>0 .
 \end{aligned}
-\label{eq:mqa-scores}
+\label{eq:uta-scores}
 \end{equation}
 Thus $\sum_{j\leq i}|\alpha_{ij}|^2=1$.  The $\alpha_{ij}$ are amplitudes
 rather than classical weights, and their relative phases are retained.
@@ -1183,14 +1182,14 @@ Let one prefix-dependent unitary $W_i=W_i(x_{\leq i};\theta)$ prepare
  |\Omega_i\rangle
  =W_i|0\rangle_A|0\rangle_S
  =\sum_{j\leq i}\alpha_{ij}|j\rangle_A|v_j\rangle_S .
-\label{eq:mqa-unitary}
+\label{eq:uta-unitary}
 \end{equation}
 The right-hand side is normalized because the address states are orthogonal
 and every value state is normalized.  It can therefore be extended to an
 orthonormal basis and chosen as one column of a unitary matrix.
 Operationally, $W_i$ may be compiled as address-state preparation followed by
 token-controlled value preparation.  In this elementary specification the
-amplitudes are first obtained from Eq.~\eqref{eq:mqa-scores} and $W_i$ is then
+amplitudes are first obtained from Eq.~\eqref{eq:uta-scores} and $W_i$ is then
 compiled as a prefix-dependent state-preparation unitary; the equations do not
 provide a coherent overlap-estimation subroutine.
 
@@ -1204,7 +1203,7 @@ weights, without a softmax:
  \right]
  =|\alpha_{ij}|^2
  =\frac{|c_{ij}|^2}{Z_i}.
-\label{eq:mqa-address}
+\label{eq:uta-address}
 \end{equation}
 If the address is traced out---whether or not it is first measured and
 forgotten or completely dephased---the retained value state is simply
@@ -1212,9 +1211,9 @@ forgotten or completely dephased---the retained value state is simply
  \rho_{S,i}^{\rm mix}
  =\operatorname{tr}_A|\Omega_i\rangle\langle\Omega_i|
  =\sum_{j\leq i}p_i(j)|v_j\rangle\langle v_j|.
-\label{eq:mqa-mixture}
+\label{eq:uta-mixture}
 \end{equation}
-Equation~\eqref{eq:mqa-mixture} defines the incoherent output of the model.
+Equation~\eqref{eq:uta-mixture} defines incoherent unitary--trace attention.
 It contains no interference between different addresses.  In
 particular, the partial trace does not produce the coherent sum
 $\sum_j\alpha_{ij}|v_j\rangle$.
@@ -1224,7 +1223,7 @@ complementary-basis projective readout rather than by tracing out $A$.  Put
 \begin{equation}
  |+\rangle_A=\frac{1}{\sqrt{i}}\sum_{j\leq i}|j\rangle_A,\qquad
  N_i=\left\|\sum_{j\leq i}\alpha_{ij}|v_j\rangle\right\|^2 .
-\label{eq:mqa-erasure}
+\label{eq:uta-erasure}
 \end{equation}
 When $N_i>0$, conditioned on the $|+\rangle_A$ outcome, the semantic state and the
 probability of obtaining it are
@@ -1233,7 +1232,7 @@ probability of obtaining it are
  =\frac{\sum_{j\leq i}\alpha_{ij}|v_j\rangle}{\sqrt{N_i}},
  \qquad
  r_i=\Pr(+)=\frac{N_i}{i}.
-\label{eq:mqa-coherent}
+\label{eq:uta-coherent}
 \end{equation}
 This postselected projective ``quantum eraser'' removes which-address information.
 Measuring which address was selected and coherently erasing that information
@@ -1251,7 +1250,7 @@ The orthonormal vocabulary basis now gives an ordinary projective Born rule:
  |y\rangle\langle y|\rho_{S,i}^{\rm mix}\right)
  =\sum_{j\leq i}p_i(j)|\langle y|v_j\rangle|^2 .
 \end{aligned}
-\label{eq:mqa-vocabulary}
+\label{eq:uta-vocabulary}
 \end{equation}
 Both distributions sum to one.  The coherent probability contains
 phase-sensitive cross-terms; the mixture does not.  The parameters of the
@@ -1268,7 +1267,7 @@ $\alpha_{\rm R}=e^{i\varphi}/\sqrt2$.  Successful address erasure prepares
 \begin{equation}
  |\phi_\varphi\rangle
  =\frac{|{\rm F}\rangle+e^{i\varphi}|{\rm R}\rangle}{\sqrt2}.
-\label{eq:mqa-bank-state}
+\label{eq:uta-bank-state}
 \end{equation}
 For this experiment choose two vocabulary basis vectors as the incompatible
 pair $|\mathord{\pm}\rangle=(|{\rm F}\rangle\pm|{\rm R}\rangle)/\sqrt2$.
@@ -1276,11 +1275,11 @@ The projective Born probabilities are
 \begin{equation}
  p_+(\varphi)=\cos^2\frac{\varphi}{2},\qquad
  p_-(\varphi)=\sin^2\frac{\varphi}{2}.
-\label{eq:mqa-bank-fringe}
+\label{eq:uta-bank-fringe}
 \end{equation}
 Changing $\varphi$ from zero to $\pi$ reverses the prediction, while the
 direct $|{\rm F}\rangle,|{\rm R}\rangle$ populations remain $1/2$.  By
-contrast, Eq.~\eqref{eq:mqa-mixture} gives the phase-insensitive state
+contrast, Eq.~\eqref{eq:uta-mixture} gives the phase-insensitive state
 $(|{\rm F}\rangle\langle{\rm F}|
  +|{\rm R}\rangle\langle{\rm R}|)/2$ and therefore $p_+=p_-=1/2$.
 This is the required experiment in which relative phase changes an observable
@@ -1292,7 +1291,7 @@ supply neither physical collapse nor a quantum computational advantage.  On
 quantum hardware $W_i$, address erasure, and vocabulary measurement would be
 physical operations subject to ordinary measurement and no-cloning
 constraints.  The query, key, and value encodings, including
-Eq.~\eqref{eq:mqa-unitary}, are freshly prepared from classically specified
+Eq.~\eqref{eq:uta-unitary}, are freshly prepared from classically specified
 tokens; they do not copy an unknown quantum state.
 
 
