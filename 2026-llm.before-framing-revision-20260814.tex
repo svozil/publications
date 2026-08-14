@@ -30,7 +30,7 @@
 
 \begin{document}
 
-\title{Shared Geometry, Separate Physics: \\ Quantum Analogies and Their Limits in Large Language Models}
+\title{Geometric Limits on Semantic Expressibility: Quantum-Inspired Contexts and Polysemy in Large Language Models}
 
 \author{Karl Svozil}
 \email{karl.svozil@tuwien.ac.at}
@@ -40,18 +40,18 @@ Wiedner Hauptstra\ss{}e 8--10/136, 1040 Vienna, Austria}
 \date{\today}
 
 \begin{abstract}
-We analyze two geometric aspects of meaning-sensitive behavior in next-token
-models.  First, high-dimensional geometry permits exponentially many nearly
+Why can next-token prediction produce language that appears meaningful?
+Beginning with tokenization and vector encoding, we study two parts of this
+question.  First, high-dimensional geometry permits exponentially many nearly
 orthogonal feature directions at a fixed tolerance, although their residual
 overlaps limit simultaneous readout.  Second, polysemy requires us to
 distinguish classical convex mixtures of sense vectors, context-dependent
-occurrence vectors, quantum coherence, and an optional shared-projector
-incidence construction over sense-labelled bases.  For ordinary transformers,
-the quantum comparisons are structural and deliberately limited.
-Appendix~\ref{app:quantum-attention} serves as a representational foil: it adds
-coherent complex amplitudes, unitary state preparation, and Born-rule readout
-so that relative phase can affect a prediction.  It supplies neither an
-efficient quantum attention algorithm nor evidence of quantum speedup.
+occurrence vectors, quantum coherence, and one lexical projector shared by
+several sense-labelled quantum contexts.  For ordinary transformers the
+quantum comparisons are structural and deliberately limited.  A final appendix, \emph{A minimal
+quantum attention model}, presents a finite-dimensional construction with
+complex amplitudes, learned unitary evolution, optional partial tracing, and
+phase-sensitive projective Born-rule predictions.
 Further mathematical details are
 relegated to undergraduate-level appendices.
 \end{abstract}
@@ -59,14 +59,16 @@ relegated to undergraduate-level appendices.
 \maketitle
 
 % ======================================================================
-\section{From formal prediction to meaning-sensitive behavior}
+\section{Why does a syntactic machine appear to understand?}
 \label{sec:puzzle}
 % ======================================================================
 
 A large language model (LLM) receives strings and returns strings.  Yet it can
 answer questions, continue an argument, translate a passage, and alter its
-wording when the surrounding text changes.  Its behavior is therefore
-sensitive to distinctions that readers describe as semantic.
+wording when the surrounding text changes.  In this behavioral sense it often
+appears cognizant of what a text is about.  How can a machine trained to
+predict linguistic form display abilities that we ordinarily describe in
+terms of meaning?
 
 The question recalls John Searle's Chinese Room thought experiment
 \cite{searl-80a}.  A person who does not know Chinese follows formal rules for
@@ -86,23 +88,10 @@ separate object called ``meaning.''  It is rewarded for predicting how
 language is used.  Successful prediction can favor internal distinctions that
 track the contexts in which words and constructions occur.  Whether this is
 intrinsic understanding or a powerful simulation remains open; the present
-paper concerns the geometry of the representation.  It reports no new
+chapter concerns the geometry of the representation.  It reports no new
 experiment.  The concentration results are established mathematics; their
-realization in learned LLM feature dictionaries and the shared-projector
+realization in learned LLM feature dictionaries and the shared-context
 construction are empirical hypotheses.
-
-\paragraph*{Relation to prior work.}
-Three adjacent literatures use related language for different objects.  In
-mechanistic interpretability, \emph{feature superposition} means representing
-more learned features than there are available dimensions; it does not imply
-quantum coherence \cite{elhage2022superposition}.  Contextual-representation
-and word-sense-disambiguation studies ask whether occurrence vectors
-distinguish meanings in context
-\cite{ethayarajh2019,pilehvar2019wic,wiedemann2019does,scarlini2020ares}; we
-use that distinction but propose no new disambiguation method.  Quantum
-cognition applies Hilbert-space probability to concepts and the mental lexicon
-\cite{bruza2009lexicon,Busemeyer2012}; here it motivates a structural
-comparison, not a claim that ordinary transformers implement quantum dynamics.
 
 Two issues provide a manageable route into that geometry.
 
@@ -111,23 +100,21 @@ may need to distinguish vastly more properties.  High-dimensional vector
 spaces make this geometrically possible because they can contain very many directions that
 are not exactly orthogonal but have small mutual overlaps.  We ask how this
 \emph{quasi-orthogonality} enlarges expressive capacity and how accumulated
-overlap---or readout cross-talk---limits access to the stored distinctions.
+overlap---or interference---limits access to the stored distinctions.
 
 Second, one word can have several meanings.  The word ``bank'' may refer to a
 financial institution, the edge of a river, or a seat.  We ask how a single
 token type and its many occurrences can represent such polysemy.  This leads
 to comparisons with two different quantum ideas: coherent superposition and
-one lexical projector shared by several sense-labelled orthonormal bases.
+one lexical direction shared by several sense-labelled orthonormal bases.
 
 The order of exposition is intentional.  Section~\ref{sec:vectors} begins
 with tokenization and explains why vector representations are useful.
-Section~\ref{sec:quasi} develops the abundance--cross-talk tradeoff in
+Section~\ref{sec:quasi} develops the abundance--interference tradeoff in
 informal terms.  Section~\ref{sec:polysemy} treats polysemy and the quantum
 comparisons.  Appendix~\ref{app:quantum-attention}, \emph{A minimal quantum
-attention model as a representational foil}, makes explicit the extra
-structure used in a phase-sensitive quantum construction.  It is not a
-reinterpretation of ordinary transformer attention, an efficient quantum
-algorithm, or a claim of computational advantage.  Additional formal
+attention model}, presents a quantum model in its own right rather than a
+reinterpretation of ordinary transformer attention.  Additional formal
 statements and derivations appear in the
 appendices, where every symbol is defined as it is introduced.
 
@@ -263,7 +250,7 @@ many of its elements are active at once.  Appendix~\ref{app:vectors}
 introduces the notation, and Appendix~\ref{app:geometry} gives the
 concentration, union-bound, and Johnson--Lindenstrauss calculations.
 
-\subsection{The price of abundance: readout cross-talk}
+\subsection{The price of abundance: interference}
 
 The simplest calculation already shows the access problem.  Suppose a hidden
 state contains two unit feature directions,
@@ -279,7 +266,7 @@ quasi-orthogonality bounds its size by $\varepsilon|b|$.
 Many small unwanted terms can nevertheless accumulate.  If $k$ comparably
 sized, random-like features are active and their signs do not align
 systematically, their mean squared errors add as in the Pythagorean theorem.
-The resulting root-mean-square (RMS) cross-talk is of order
+The resulting root-mean-square (RMS) interference is of order
 $\sqrt{k/d}$ relative to one unit-scale target.  This is an average random-code
 benchmark, not a guarantee for every learned dictionary.  In the worst case,
 aligned cross-terms can add rather than cancel.
@@ -293,7 +280,7 @@ decoder, and the tolerated error.  A learned model may use its angular budget
 selectively, placing greater separation between features that frequently need
 to be read together.
 
-\subsection{Readout cross-talk and a limited quantum comparison}
+\subsection{A limited analogy with geometric decoherence}
 
 Small overlaps also occur in quantum theory.  When alternatives of a quantum
 system become correlated with nearly orthogonal environmental states, the
@@ -305,13 +292,16 @@ states could remain identical.  The author's companion analysis studies this
 purely geometric contribution to decoherence
 \cite{svozil2026geometricdecoherence}.
 
-For an LLM, quasi-orthogonal feature directions reduce linear-readout
-cross-talk.  In environmental decoherence, nearly orthogonal conditional
-environmental states reduce off-diagonal terms of the reduced state.  Both
-statements contain small inner products, but only the second describes
-physical decoherence.  An LLM has no required system--environment split,
-unitary branch dynamics, or partial trace.  The common element is algebraic,
-not dynamical or physical \cite{RevModPhys.75.715}.
+The LLM analogy is narrow.  Quasi-orthogonal semantic directions suppress
+linear cross-talk in much the way that nearly orthogonal environmental branch
+states suppress observable coherence terms.  We call this \emph{geometric
+decoherence}: unwanted contributions become small because the relevant inner
+products are small.  It is not physical quantum decoherence.  An LLM has no
+required system--environment split, unitary branch dynamics, partial trace,
+or local loss of access to phase relations after environmental degrees of
+freedom are traced out.  High dimension supplies shared geometry, not a
+shared physical mechanism
+\cite{RevModPhys.75.715}.
 
 The word \emph{orthogonal} also has different operational meanings here.  For
 the LLM readout it means geometric decoupling: absence of linear cross-talk in
@@ -389,15 +379,12 @@ mixture is not a coherent quantum superposition, and contextualization is not
 quantum collapse.
 
 Appendix~\ref{app:polysemy} displays the pure-state and density-matrix
-comparison explicitly.  Appendix~\ref{app:quantum-attention} instead supplies
-a separate representational foil.  Its ``bank'' calculation shows how a
-controlled relative phase can affect a Born-rule outcome after coherent
-preparation and an incompatible readout.  The phase is not assigned a
-linguistic meaning and is not part of ordinary transformer computation.
+comparison explicitly.  Appendix~\ref{app:quantum-attention} instead defines
+a separate quantum model and a phase-sensitive ``bank'' calculation.
 
-\subsection{A shared-projector incidence model}
+\subsection{A projector shared by quantum contexts}
 
-A separate, limited analogy uses incidence rather than addition.  A
+A different quantum-logical analogy uses incidence rather than addition.  A
 quantum measurement context is an orthonormal basis, equivalently a set of
 mutually orthogonal rank-one projectors that sum to the identity.  In
 dimension $d\geq3$, different contexts can share one projector while differing
@@ -472,21 +459,13 @@ quantum theory, mutually orthogonal projectors can represent mutually
 exclusive outcomes in one measurement context.  The analogy therefore uses
 only the shared incidence structure.
 
-The displayed configuration is Kochen--Specker colorable: assigning value
-$1$ to $P_{\rm bank}$ and $0$ to every other projector gives exactly one value
-$1$ in each context.  Shared incidence alone therefore does not establish
-Kochen--Specker contextuality \cite{specker-60,kochen1}.
-
 The shared projector does not select a sense; linguistic context may favor
 one.  For a fixed quantum state, Appendix~\ref{app:polysemy} shows that the
 Born probability of the shared projector does not depend on the other
 projectors that complete its context.  Since any unit vector can be completed
-to many bases, basis completion alone has no empirical content.  A direct test
-would fix a layer, fit $r_t$ and $a_t$ on sense-labelled training occurrences,
-and then freeze them.  On held-out occurrences, the RMS deviation of
-$r_t\T h_\ell(t\mid x)$ from $a_t$ can be compared with sense-specific
-coefficients and random directions.  Controlling for the initial lookup vector
-would test whether the anchor is more than residual word-form identity.
+to many bases, the proposal has empirical content only if the shared lexical
+component is approximately stable across held-out contexts or improves
+held-out sense prediction.
 % ======================================================================
 \section{Conclusion}
 \label{sec:conclusion}
@@ -504,18 +483,20 @@ fixed-width representation space can accommodate exponentially many
 quasi-orthogonal
 directions at a chosen tolerance, even though it has only $d$ exactly
 independent coordinates.  This is expressive room, not cost-free access.
-Residual overlaps create readout cross-talk, especially when many relevant
-features are active together.
+Residual overlaps create interference, especially when many relevant features
+are active together.
 
-Small overlaps reduce cross-talk in a linear semantic readout.  Environmental
-overlaps can also suppress off-diagonal terms in a quantum reduced state, but
-only the latter process is decoherence.  The two settings share an
-inner-product pattern, not a physical mechanism.
+The resulting overlap suppression has a limited quantum counterpart.  Small
+inner products suppress cross-terms both in linear semantic readout and in
+the environmental overlaps that enter quantum decoherence.  The shared
+geometry justifies the phrase geometric decoherence, while the absence of
+quantum dynamics, relative phases, and environmental tracing in ordinary
+transformer processing prevents a physical identification.
 
 Polysemy requires three representations to be distinguished.  A static type
 vector may approximate a frequency-weighted convex mixture of sense vectors;
 a transformer constructs context-dependent occurrence vectors; and the
-optional shared-projector construction places one lexical projector in a
+optional shared-context model places one lexical projector in a
 sense-labelled basis for each sense.  The first two are not quantum
 superpositions, and the third does not select a sense by itself.
 
@@ -525,18 +506,9 @@ common physical or semantic theory.  Language-model activations inhabit
 finite-dimensional real inner-product spaces; standard quantum mechanics
 represents pure states as rays in a complex Hilbert space and adds observables,
 tensor composition, and the Born rule.  Even shared terms have different
-meanings: linguistic context is surrounding text, whereas a quantum
-measurement context is an orthonormal basis, equivalently its rank-one
-projectors; ``interference''
-here means linear readout cross-talk, whereas quantum interference is
-phase-sensitive.
-
-Appendix~\ref{app:quantum-attention} makes this distinction constructive.  Its
-phase-sensitive result requires coherent complex amplitudes and a Born-rule
-readout that ordinary transformer attention does not provide.  Because the
-construction takes the scores as available and then compiles the required
-state preparation, it is a representational foil rather than an end-to-end
-quantum algorithm; no efficient implementation or speedup is established.
+meanings: linguistic context is surrounding text, whereas a quantum context is
+a family of compatible observables; ``interference'' here means linear readout
+cross-talk, whereas quantum interference is phase-sensitive.
 
 Quasi-orthogonality is nevertheless a genuine common geometric motif.  In a
 language model it offers a possible capacity mechanism for many approximately
@@ -865,7 +837,7 @@ follows from $d$ and $M$ alone.  A task must also specify active coefficients,
 coactivation frequencies, a decoder, and an accepted error.  Overlap between
 two features that never need to be recovered together may have little cost.
 
-\subsection{Linear readout cross-talk and quantum decoherence}
+\subsection{The common algebra behind geometric decoherence}
 \label{app:dirac}
 
 We first introduce the notation used in this comparison.  A pure quantum
@@ -912,9 +884,10 @@ matrix is close to the matrix obtained by deleting all off-diagonal terms.
 Compare Eq.~\eqref{eq:reduced-state-app} with
 Eq.~\eqref{eq:readout-app}.  The quantum coherence term is suppressed by
 $\langle E_j|E_i\rangle$; the classical readout error is suppressed by
-$w_j\T w_i$.  Both are small-overlap effects, but only the first follows from
-a joint quantum state and a partial trace.  In the LLM setting the effect is
-ordinary suppression of linear-readout cross-talk, not decoherence.
+$w_j\T w_i$.  Both are small-overlap effects.  Only the former follows from a
+joint quantum state and a partial trace.  The latter is ordinary cross-talk in
+a real linear readout.  This is why geometric decoherence is an analogy in the
+LLM setting rather than a claim of physical decoherence.
 
 \subsection{Conditional tensor-product amplification}
 
@@ -1024,10 +997,6 @@ Different sense-labelled contexts can share $P_t$ and differ in their other
 projectors.  Completing $r_t$ to such bases is automatic; it is not an
 empirical result.  Because each basis spans the same space, its choice alone
 adds no constraint; the fixed projection below is the substantive part.
-The resulting star of bases is Kochen--Specker colorable: setting
-$v(P_t)=1$ and assigning value $0$ to every other projector gives exactly one
-value $1$ in each context.  Thus this incidence pattern alone is not a proof
-of quantum contextuality.
 
 An idealized shared-anchor hypothesis for occurrence states can be written
 \begin{equation}
@@ -1037,17 +1006,9 @@ An idealized shared-anchor hypothesis for occurrence states can be written
 \end{equation}
 Here $x$ is the linguistic context and $s(x)$ is an assigned sense label; the
 equation does not infer that label.  Its exact form requires the same
-nonzero $a_t$ for every occurrence of type $t$.  This common coefficient is
-the testable hypothesis; completing $r_t$ to the bases is automatic.
-
-A direct test fixes a layer $\ell$, estimates $r_t$ and $a_t$ on
-sense-labelled training occurrences, and then freezes them.  On held-out
-occurrences, report the RMS error of $r_t\T h_\ell(t\mid x)-a_t$ and compare it
-with a model that allows a separate coefficient $a_{t,s}$ for each sense and
-with matched random directions.  The shared-anchor hypothesis requires a
-nonzero common coefficient with little held-out penalty relative to the
-sense-specific model.  Repeating the analysis after controlling for the
-initial lookup vector separates a learned anchor from persistent type identity.
+nonzero $a_t$ for every occurrence of type $t$; an empirical version would
+test approximate stability.  This shared component is the substantive
+hypothesis, while the remaining coordinates may change with the occurrence.
 
 For a fixed quantum state $\rho$, the Born probability assigned to the shared
 projector is
@@ -1061,17 +1022,16 @@ sense.
 
 % ======================================================================
 
-\section{A minimal quantum attention model as a representational foil}
+\section{A minimal quantum attention model}
 \label{app:quantum-attention}
 
-This appendix gives a minimal quantum attention construction as a
-\emph{representational foil}.  Its purpose is to display the extra mathematical
-structure used here to make relative phase observable: a complex Hilbert
-space, coherent unitary state preparation, a tensor-product address--value
-state, and projective Born readout.  The partial-trace output supplies the
-incoherent comparison.  The construction is neither a reinterpretation of
-ordinary transformer attention nor a proposed efficient quantum algorithm.
-No quantum speedup or empirical linguistic advantage is claimed.
+This appendix defines a \emph{minimal quantum attention model}, formulated in
+a finite-dimensional complex Hilbert space.  Its ingredients are
+learned unitary matrices, normalized complex amplitudes, projective Born
+readout, and, for the incoherent output, a partial trace.  The coherent output
+retains relative phases and therefore permits phase-sensitive predictions.
+Together these ingredients define a quantum attention model in its own right,
+not a reinterpretation of standard transformer attention.
 
 For each target $i$, the construction uses an address space
 $\mathcal H_A^{(i)}\simeq\mathbb C^i$ with orthonormal basis
@@ -1121,10 +1081,10 @@ The right-hand side is normalized because the address states are orthogonal
 and every value state is normalized.  It can therefore be extended to an
 orthonormal basis and chosen as one column of a unitary matrix.
 Operationally, $W_i$ may be compiled as address-state preparation followed by
-token-controlled value preparation.  In this specification, however, the
-scores $c_{ij}$ and normalized amplitudes $\alpha_{ij}$ must be obtained before
-$W_i$ is compiled.  No coherent score-computation routine or efficient
-state-preparation circuit is given.
+token-controlled value preparation.  In this elementary specification the
+amplitudes are first obtained from Eq.~\eqref{eq:mqa-scores} and $W_i$ is then
+compiled as a prefix-dependent state-preparation unitary; the equations do not
+provide a coherent overlap-estimation subroutine.
 
 A projective measurement of the address gives the normalized Born attention
 weights, without a softmax:
@@ -1192,45 +1152,40 @@ $-\sum_i\log p_i^{\rm coh}(y_i^{\rm true}\mid +)$.  A physical implementation
 must also account for the erasure success probability $r_i$, for instance by
 training the joint probability $r_i p_i^{\rm coh}(y_i^{\rm true}\mid +)$.
 
-For a diagnostic phase intervention, take two orthonormal value states
-$|{\rm F}\rangle$ and $|{\rm R}\rangle$, labelled by the financial and
-river-edge senses of ``bank.''  Let
+For the promised intervention, retain two orthonormal values
+$|{\rm F}\rangle$ and $|{\rm R}\rangle$ for the financial and river-edge
+senses of ``bank.''  Let
 $\alpha_{\rm F}=1/\sqrt2$ and
-$\alpha_{\rm R}=e^{i\varphi}/\sqrt2$.  Here $\varphi$ is only a control
-parameter: the construction gives it no linguistic interpretation and no rule
-by which text would set or learn it.  The orthogonality of the two
-sense-labelled states is likewise an assumption of this toy example.
-Successful address erasure prepares
+$\alpha_{\rm R}=e^{i\varphi}/\sqrt2$.  Successful address erasure prepares
 \begin{equation}
  |\phi_\varphi\rangle
  =\frac{|{\rm F}\rangle+e^{i\varphi}|{\rm R}\rangle}{\sqrt2}.
 \label{eq:mqa-bank-state}
 \end{equation}
-Within this two-dimensional subspace, use the readout basis
-$|\mathord{\pm}\rangle=(|{\rm F}\rangle\pm|{\rm R}\rangle)/\sqrt2$.
+For this calculation choose two vocabulary basis vectors as the incompatible
+pair $|\mathord{\pm}\rangle=(|{\rm F}\rangle\pm|{\rm R}\rangle)/\sqrt2$.
 The projective Born probabilities are
 \begin{equation}
  p_+(\varphi)=\cos^2\frac{\varphi}{2},\qquad
  p_-(\varphi)=\sin^2\frac{\varphi}{2}.
 \label{eq:mqa-bank-fringe}
 \end{equation}
-Changing $\varphi$ from zero to $\pi$ exchanges the two readout probabilities,
-while the direct $|{\rm F}\rangle,|{\rm R}\rangle$ populations remain $1/2$.
-By contrast, Eq.~\eqref{eq:mqa-mixture} gives the phase-insensitive state
+Changing $\varphi$ from zero to $\pi$ reverses the prediction, while the
+direct $|{\rm F}\rangle,|{\rm R}\rangle$ populations remain $1/2$.  By
+contrast, Eq.~\eqref{eq:mqa-mixture} gives the phase-insensitive state
 $(|{\rm F}\rangle\langle{\rm F}|
  +|{\rm R}\rangle\langle{\rm R}|)/2$ and therefore $p_+=p_-=1/2$.
 Thus relative phase changes a prediction while direct-path populations are
 held fixed.
 
-These equations can be simulated classically.  They specify states and
-readouts, not an end-to-end quantum attention algorithm.  In particular, no
-coherent score-computation routine or efficient state-preparation procedure is
-provided, so the appendix establishes no quantum computational advantage.  If
-instantiated on quantum hardware, $W_i$, address erasure, and projective
-measurement would be physical operations subject to ordinary measurement and
-no-cloning constraints.  The required states would have to be freshly
-prepared from classically specified tokens; no unknown quantum state is
-copied.
+On a classical computer these equations only simulate complex vectors,
+unitary matrices, a partial trace, and projective Born probabilities.  They
+supply neither physical collapse nor a quantum computational advantage.  On
+quantum hardware $W_i$, address erasure, and vocabulary measurement would be
+physical operations subject to ordinary measurement and no-cloning
+constraints.  The query, key, and value encodings, including
+Eq.~\eqref{eq:mqa-unitary}, are freshly prepared from classically specified
+tokens; they do not copy an unknown quantum state.
 
 
 \begin{acknowledgments}

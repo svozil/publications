@@ -30,7 +30,7 @@
 
 \begin{document}
 
-\title{Shared Geometry, Separate Physics: \\ Quantum Analogies and Their Limits in Large Language Models}
+\title{Geometric Limits on Semantic Expressibility: Quantum-Inspired Contexts and Polysemy in Large Language Models}
 
 \author{Karl Svozil}
 \email{karl.svozil@tuwien.ac.at}
@@ -40,18 +40,18 @@ Wiedner Hauptstra\ss{}e 8--10/136, 1040 Vienna, Austria}
 \date{\today}
 
 \begin{abstract}
-We analyze two geometric aspects of meaning-sensitive behavior in next-token
-models.  First, high-dimensional geometry permits exponentially many nearly
+Why can next-token prediction produce language that appears meaningful?
+Beginning with tokenization and vector encoding, we study two parts of this
+question.  First, high-dimensional geometry permits exponentially many nearly
 orthogonal feature directions at a fixed tolerance, although their residual
 overlaps limit simultaneous readout.  Second, polysemy requires us to
-distinguish classical convex mixtures of sense vectors, context-dependent
-occurrence vectors, quantum coherence, and an optional shared-projector
-incidence construction over sense-labelled bases.  For ordinary transformers,
-the quantum comparisons are structural and deliberately limited.
-Appendix~\ref{app:quantum-attention} serves as a representational foil: it adds
-coherent complex amplitudes, unitary state preparation, and Born-rule readout
-so that relative phase can affect a prediction.  It supplies neither an
-efficient quantum attention algorithm nor evidence of quantum speedup.
+distinguish classical convex mixtures of word senses, context-dependent
+occurrence vectors, quantum coherence, and one direction shared by several
+orthonormal contexts.  For ordinary transformers the quantum comparisons are
+structural and deliberately limited.  A final appendix, \emph{A minimal
+quantum attention model}, presents a finite-dimensional construction with
+complex amplitudes, learned unitary evolution, optional partial tracing, and
+phase-sensitive projective Born-rule predictions.
 Further mathematical details are
 relegated to undergraduate-level appendices.
 \end{abstract}
@@ -59,14 +59,16 @@ relegated to undergraduate-level appendices.
 \maketitle
 
 % ======================================================================
-\section{From formal prediction to meaning-sensitive behavior}
+\section{Why does a syntactic machine appear to understand?}
 \label{sec:puzzle}
 % ======================================================================
 
 A large language model (LLM) receives strings and returns strings.  Yet it can
 answer questions, continue an argument, translate a passage, and alter its
-wording when the surrounding text changes.  Its behavior is therefore
-sensitive to distinctions that readers describe as semantic.
+wording when the surrounding text changes.  In this behavioral sense it often
+appears cognizant of what a text is about.  How can a machine trained to
+predict linguistic form display abilities that we ordinarily describe in
+terms of meaning?
 
 The question recalls John Searle's Chinese Room thought experiment
 \cite{searl-80a}.  A person who does not know Chinese follows formal rules for
@@ -86,23 +88,10 @@ separate object called ``meaning.''  It is rewarded for predicting how
 language is used.  Successful prediction can favor internal distinctions that
 track the contexts in which words and constructions occur.  Whether this is
 intrinsic understanding or a powerful simulation remains open; the present
-paper concerns the geometry of the representation.  It reports no new
+chapter concerns the geometry of the representation.  It reports no new
 experiment.  The concentration results are established mathematics; their
-realization in learned LLM feature dictionaries and the shared-projector
+realization in learned LLM feature dictionaries and the shared-context
 construction are empirical hypotheses.
-
-\paragraph*{Relation to prior work.}
-Three adjacent literatures use related language for different objects.  In
-mechanistic interpretability, \emph{feature superposition} means representing
-more learned features than there are available dimensions; it does not imply
-quantum coherence \cite{elhage2022superposition}.  Contextual-representation
-and word-sense-disambiguation studies ask whether occurrence vectors
-distinguish meanings in context
-\cite{ethayarajh2019,pilehvar2019wic,wiedemann2019does,scarlini2020ares}; we
-use that distinction but propose no new disambiguation method.  Quantum
-cognition applies Hilbert-space probability to concepts and the mental lexicon
-\cite{bruza2009lexicon,Busemeyer2012}; here it motivates a structural
-comparison, not a claim that ordinary transformers implement quantum dynamics.
 
 Two issues provide a manageable route into that geometry.
 
@@ -111,23 +100,21 @@ may need to distinguish vastly more properties.  High-dimensional vector
 spaces make this geometrically possible because they can contain very many directions that
 are not exactly orthogonal but have small mutual overlaps.  We ask how this
 \emph{quasi-orthogonality} enlarges expressive capacity and how accumulated
-overlap---or readout cross-talk---limits access to the stored distinctions.
+overlap---or interference---limits access to the stored distinctions.
 
 Second, one word can have several meanings.  The word ``bank'' may refer to a
 financial institution, the edge of a river, or a seat.  We ask how a single
 token type and its many occurrences can represent such polysemy.  This leads
 to comparisons with two different quantum ideas: coherent superposition and
-one lexical projector shared by several sense-labelled orthonormal bases.
+one direction belonging to several orthonormal bases.
 
 The order of exposition is intentional.  Section~\ref{sec:vectors} begins
 with tokenization and explains why vector representations are useful.
-Section~\ref{sec:quasi} develops the abundance--cross-talk tradeoff in
+Section~\ref{sec:quasi} develops the abundance--interference tradeoff in
 informal terms.  Section~\ref{sec:polysemy} treats polysemy and the quantum
 comparisons.  Appendix~\ref{app:quantum-attention}, \emph{A minimal quantum
-attention model as a representational foil}, makes explicit the extra
-structure used in a phase-sensitive quantum construction.  It is not a
-reinterpretation of ordinary transformer attention, an efficient quantum
-algorithm, or a claim of computational advantage.  Additional formal
+attention model}, presents a quantum model in its own right rather than a
+reinterpretation of ordinary transformer attention.  Additional formal
 statements and derivations appear in the
 appendices, where every symbol is defined as it is introduced.
 
@@ -263,7 +250,7 @@ many of its elements are active at once.  Appendix~\ref{app:vectors}
 introduces the notation, and Appendix~\ref{app:geometry} gives the
 concentration, union-bound, and Johnson--Lindenstrauss calculations.
 
-\subsection{The price of abundance: readout cross-talk}
+\subsection{The price of abundance: interference}
 
 The simplest calculation already shows the access problem.  Suppose a hidden
 state contains two unit feature directions,
@@ -279,7 +266,7 @@ quasi-orthogonality bounds its size by $\varepsilon|b|$.
 Many small unwanted terms can nevertheless accumulate.  If $k$ comparably
 sized, random-like features are active and their signs do not align
 systematically, their mean squared errors add as in the Pythagorean theorem.
-The resulting root-mean-square (RMS) cross-talk is of order
+The resulting root-mean-square (RMS) interference is of order
 $\sqrt{k/d}$ relative to one unit-scale target.  This is an average random-code
 benchmark, not a guarantee for every learned dictionary.  In the worst case,
 aligned cross-terms can add rather than cancel.
@@ -293,7 +280,7 @@ decoder, and the tolerated error.  A learned model may use its angular budget
 selectively, placing greater separation between features that frequently need
 to be read together.
 
-\subsection{Readout cross-talk and a limited quantum comparison}
+\subsection{A limited analogy with geometric decoherence}
 
 Small overlaps also occur in quantum theory.  When alternatives of a quantum
 system become correlated with nearly orthogonal environmental states, the
@@ -305,13 +292,16 @@ states could remain identical.  The author's companion analysis studies this
 purely geometric contribution to decoherence
 \cite{svozil2026geometricdecoherence}.
 
-For an LLM, quasi-orthogonal feature directions reduce linear-readout
-cross-talk.  In environmental decoherence, nearly orthogonal conditional
-environmental states reduce off-diagonal terms of the reduced state.  Both
-statements contain small inner products, but only the second describes
-physical decoherence.  An LLM has no required system--environment split,
-unitary branch dynamics, or partial trace.  The common element is algebraic,
-not dynamical or physical \cite{RevModPhys.75.715}.
+The LLM analogy is narrow.  Quasi-orthogonal semantic directions suppress
+linear cross-talk in much the way that nearly orthogonal environmental branch
+states suppress observable coherence terms.  We call this \emph{geometric
+decoherence}: unwanted contributions become small because the relevant inner
+products are small.  It is not physical quantum decoherence.  An LLM has no
+required system--environment split, unitary branch dynamics, partial trace,
+or local loss of access to phase relations after environmental degrees of
+freedom are traced out.  High dimension supplies shared geometry, not a
+shared physical mechanism
+\cite{RevModPhys.75.715}.
 
 The word \emph{orthogonal} also has different operational meanings here.  For
 the LLM readout it means geometric decoupling: absence of linear cross-talk in
@@ -331,86 +321,138 @@ reliably recovered together.
 \label{sec:polysemy}
 % ======================================================================
 
-\subsection{Terms}
+\subsection{A sense is not a single feature} [[what does that mean? Incomprehensible]]
 
-A \emph{sense} is one conventional meaning of a word form.  For example,
-``bank'' may mean a financial institution, the edge of a river, a bench or
-long seat, or the lateral tilt of an aircraft.  We use \emph{polysemy} in the
-broad computational sense: one word form has more than one sense.
+The simplest vector account of polysemy is entirely classical.  A static word
+vector may be modeled as a real, frequency-weighted convex combination of
+vectors associated with its senses.  A contextual model goes further by
+constructing a different real occurrence vector from the available text.
+Neither construction is, without additional operational structure, a coherent
+quantum superposition.
 
-For simplicity, assume that the tokenizer represents ``bank'' by one token.
-Its vocabulary entry is the \emph{token type}; one use in a text is a
-\emph{token occurrence}.  The surrounding text that helps identify its sense
-is the \emph{linguistic context}.  A \emph{semantic feature}, such as animacy,
-is one reusable property that may help characterize a sense; it is not itself
-a complete word meaning.
 
-\subsection{Static and contextual vectors}
+[[please introduce sense first, then polysemy]]
+A \emph{sense} is a contextually appropriate meaning of a lexical item.
+[[Take a simple example, and consider the wort (maybe token? ``bank'':
+There exist at least three contextual meanings of the same word (token?) ``bank'':]]
+[[(i)]] financial, [[(ii)]] river-edge, and [[(iii)]] seat meanings of ``bank'' are different senses.
+The banking or tilting of an aircraft supplies another[[, forth, sense]].
 
-A static embedding such as word2vec assigns the same vector to every
-occurrence of a token type \cite{mikolov2013}.  Under the generative model of
-Arora and collaborators, this type vector is approximately a
-frequency-weighted average of hypothetical sense vectors
-\cite{arora-etal-2018-linear}.  Retaining three senses of ``bank'' for the
-illustration gives
+A semantic feature is
+narrower: it may mark animacy, tense, number, sentiment, or one fitted gender
+contrast.  [[I dont understand this...what is the exact difference between sense and semantic feature?]]
+
+ Several features can contribute to one sense, and one feature can
+recur in many words and senses.
+
+Polysemy is therefore not solved merely by
+finding one direction for every dictionary definition. [[aka sense or what? This is blabla-blurbing]]
+
+It is also important to say which representation is being discussed.  A
+static embedding assigns one stored vector to a word type.  A transformer has
+one initial lookup row for a token type but constructs different hidden
+vectors for its occurrences.  These are related but not identical problems. [[what does that mean?---again blabla-blurbing?]]
+
+\subsection{A static vector as a corpus-level mixture}
+
+In a static system such as word2vec,[[quotation]] the same stored type vector is used in
+every occurrence.  This may appear poorly suited to polysemy.
+
+[[Presently, polysemy is handled differently:]] Under[[?]] a
+particular generative model,  Arora and collaborators establish an
+approximate relation between that one type vector and hypothetical sense
+vectors \cite{arora-etal-2018-linear}.  The following three-sense equation
+illustrates the corresponding finite-mixture idea:
 \begin{equation}
 \begin{aligned}
- v_{\rm bank}
- &\approx p_{\rm finance}v_{{\rm bank},{\rm finance}}
- +p_{\rm river}v_{{\rm bank},{\rm river}}\\
- &\quad+p_{\rm seat}v_{{\rm bank},{\rm seat}},\\
- &p_{\rm finance},p_{\rm river},p_{\rm seat}\geq 0,\\
- &p_{\rm finance}+p_{\rm river}+p_{\rm seat}=1 .
+ &v_{\rm bank}\approx
+ p_{\rm fin}v_{\rm fin}  [[please write out {\rm finance} instead, everywhere it occurs]]
+ +p_{\rm river}v_{\rm river}
+ +p_{\rm seat}v_{\rm seat},\\
+ &p_{\rm fin},p_{\rm river},p_{\rm seat}\geq 0,\\
+ &p_{\rm fin}+p_{\rm river}+p_{\rm seat}=1 .
 \end{aligned}
  \label{eq:static-mixture-main}
 \end{equation}
-Here $v_{{\rm bank},s}$ is the hypothetical vector for sense $s$, and $p_s$
-is its relative corpus frequency.  Equation
-\eqref{eq:static-mixture-main} is a classical convex combination: it
-summarizes a token type over the corpus but does not identify the sense of one
-occurrence.  It also does not require the sense vectors to be orthogonal.
+The nonnegative coefficients  summarize how frequently the senses occur in the
+corpus.  The equation is an approximate classical convex combination and a
+population-level summary.  It does not decide what one occurrence means, nor
+does one observed sum uniquely determine its hidden summands.
 
-A transformer likewise has one initial lookup vector for a token type, but it
-then computes a hidden vector for each occurrence from the available text.
-Thus the occurrences of ``bank'' in ``central bank'' and ``river bank'' begin
-with the same lookup vector but can acquire different hidden vectors.  This
-contextualization need not implement the convex sum in
-Eq.~\eqref{eq:static-mixture-main}.
+Arora et al. also expressed each word vector using only a few reusable,
+topic-like directions, which they called discourse atoms.  This sparse
+description can help recover recurring components across many words.  It does
+not show that all sense vectors or atoms are mutually quasi-orthogonal, and
+the atoms need not correspond
+one-to-one with dictionary senses.  The geometric results of
+Sec.~\ref{sec:quasi} establish what is possible at a chosen tolerance; they do
+not establish what a learned lexical dictionary actually contains.
 
-\subsection{Why this is not a quantum superposition}
+\subsection{Contextual occurrences}
 
-In Eq.~\eqref{eq:static-mixture-main}, the coefficients are nonnegative real
-frequencies that sum to one.  In a quantum pure state
-$|\psi\rangle=\sum_s c_s|s\rangle$, the $c_s$ are complex amplitudes,
-$\sum_s|c_s|^2=1$, and relative phases can change later measurement
-probabilities.  Ordinary embeddings specify neither such phase-sensitive
-transformations nor a Born-rule measurement.  Therefore a static convex
-mixture is not a coherent quantum superposition, and contextualization is not
-quantum collapse.
+[[What does that mean? I dont understand:
 
-Appendix~\ref{app:polysemy} displays the pure-state and density-matrix
-comparison explicitly.  Appendix~\ref{app:quantum-attention} instead supplies
-a separate representational foil.  Its ``bank'' calculation shows how a
-controlled relative phase can affect a Born-rule outcome after coherent
-preparation and an incompatible readout.  The phase is not assigned a
-linguistic meaning and is not part of ordinary transformer computation.
+A static mixture summarizes a word type across a corpus; it does not determine
+the meaning of one occurrence.  Modern transformers begin occurrences of the
+same token type from the same lookup vector, but the available text changes
+the vectors constructed later.  Thus ``bank'' in a financial passage and
+``bank'' in a river passage can acquire different occurrence vectors.  In a
+causal text generator, a position can use only earlier text; a clarifying word
+that appears later can influence later positions, but it cannot retrospectively
+change the earlier state.  ]]
 
-\subsection{A shared-projector incidence model}
+For intuition, one may imagine the context as changing the relative importance
+of several sense contributions.  This need not be the transformer's literal
+internal algorithm, and an ambiguous sentence or pun may preserve more than
+one possibility.  The cautious statement is therefore that context
+\emph{transforms} an occurrence representation.  It does not perform a quantum
+measurement or collapse a physical superposition.  Appendix~\ref{app:polysemy}
+gives a compact mathematical version of this distinction.
 
-A separate, limited analogy uses incidence rather than addition.  A
-quantum measurement context is an orthonormal basis, equivalently a set of
-mutually orthogonal rank-one projectors that sum to the identity.  In
-dimension $d\geq3$, different contexts can share one projector while differing
-in the others.
+\subsection{Why this is not quantum coherence}
 
-For the linguistic analogy, let each sense $s$ of ``bank'' have a context
-$\mathcal E_s$ that contains the same lexical projector $P_{\rm bank}$.  The
-other projectors specify the basis associated with $s$.  Here $s$ is a
-linguistic sense and $\mathcal E_s$ is the quantum-style context assigned to
-it, not the surrounding text.  This is a representation after $s$ has been
-assigned, not a rule for inferring $s$.  Unlike
-Eq.~\eqref{eq:static-mixture-main}, this model places one common element in
-several bases; it does not average sense vectors.
+Quantum theory uses the word \emph{superposition} in a stronger operational
+sense.  A pure state combines alternatives with probability amplitudes that
+may be real or complex.  They need not be nonnegative and need not sum to one;
+instead, the sum of their squared magnitudes is one.  A pure-state
+superposition is therefore not a convex average.  Relative phase can affect
+later measurement probabilities when alternatives
+are recombined in another basis, and the Born rule turns amplitudes into
+probabilities.  A classical frequency average such as
+Eq.~\eqref{eq:static-mixture-main} provides none of this.  Its coefficients are
+frequencies, not amplitudes; no phase-sensitive transformation or interference
+experiment is specified; and its sense vectors are not declared orthonormal
+measurement outcomes.
+
+Why not impose a full quantum-style superposition?  One may certainly propose
+a new mathematical model that does so.  But the proposal would have to state
+the sense basis, amplitudes, relative phases, allowed transformations,
+measurement rule, and an experiment in which phase changes alter observable
+predictions.  Without those ingredients, replacing the classical weights by
+symbols resembling quantum amplitudes merely renames a vector sum.  Ordinary
+transformer processing supplies no Born rule and no physical collapse.
+The
+explicit pure-state and density-matrix comparison is given in
+Appendix~\ref{app:polysemy}.
+[[Is it, really?]]
+Appendix~\ref{app:quantum-attention}, a \emph{minimal quantum attention model}, supplies such a specification, including a
+phase-sensitive ``bank'' experiment.  It is not a reinterpretation of
+ordinary transformer attention.
+
+\subsection{A different quantum analogy: shared contexts}
+
+Quantum logic suggests a comparison that does not rely on vector addition.
+An orthonormal measurement context can be represented by mutually orthogonal
+rays, or equivalently by rank-one projectors that sum to the identity.  In
+dimension at least three, distinct contexts may contain the same projector
+while differing in their other members.  This is an incidence relation: one
+element belongs to several contexts.
+
+The diagram below borrows that pattern for a speculative representation of
+``bank.''  Its center is a fixed lexical projector.  Each colored arm belongs
+to a different larger context, whose remaining directions carry
+context-specific information.  The same lexical element is retained, while
+the financial, river-edge, and seat contexts differ around it.
 
 \begin{figure}[t]
 \centering
@@ -427,27 +469,27 @@ several bases; it does not average sense vectors.
 % outer sense-subspace vertices
 \node[outer, red, fill=red!70,
       label={[lab]above:
-      $P_{{\rm bank},{\rm finance},2}$}]
-      (finance) at (90:4.2cm) {};
+      $S_{{\rm bank},{\rm fin}}$}]
+      (fin) at (90:4.2cm) {};
 
 \node[outer, green, fill=green!70,
       label={[lab, xshift=-4pt]below left:
-      $P_{{\rm bank},{\rm river},2}$}]
-      (river) at (210:4.2cm) {};
+      $S_{{\rm bank},{\rm riv}}$}]
+      (riv) at (210:4.2cm) {};
 
 \node[outer, blue, fill=blue!70,
       label={[lab, xshift=4pt]below right:
-      $P_{{\rm bank},{\rm seat},2}$}]
+      $S_{{\rm bank},{\rm seat}}$}]
       (seat) at (330:4.2cm) {};
 
 % hyperedges labelled by context
 \draw[very thick, red] (c) --
       node[lab, left=2pt, pos=0.45]
-      {$\mathcal E_{\rm finance}$} (finance);
+      {$\mathcal E_{\rm fin}$} (fin);
 
 \draw[very thick, green!70!black] (c) --
       node[lab, above left=1pt, pos=0.45]
-      {$\mathcal E_{\rm river}$} (river);
+      {$\mathcal E_{\rm riv}$} (riv);
 
 \draw[very thick, blue] (c) --
       node[lab, above right=1pt, pos=0.45]
@@ -458,35 +500,44 @@ several bases; it does not average sense vectors.
 \filldraw[green!70!black, very thick] (c) circle (6pt);
 \filldraw[red, very thick] (c) circle (4pt);
 \end{tikzpicture}
-\caption{Shared-incidence schematic for ``bank.''  For each sense $s$, the
-basis $\mathcal E_s$ contains the lexical projector $P_{\rm bank}$ and the
-shown projector $P_{{\rm bank},s,2}$.  Unshown projectors complete each basis.
-The diagram shows shared incidence, not a vector sum.}
+\caption{Structural incidence schematic for ``bank.''  The central projector
+$P_{\rm bank}$ is shared.  Each colored arm shows only a fragment of one
+context hyperedge; unshown orthogonal projectors complete the corresponding
+basis.  An outer node $S_{{\rm bank},s}$ summarizes a residual semantic sector,
+not necessarily one rank-one outcome.  The drawing depicts shared incidence,
+not the vector sum in Eq.~\eqref{eq:static-mixture-main}.}
 \label{fig:contexts}
 \end{figure}
 
-Orthogonality has different roles in the two settings.  For an embedding
-readout, $u\T v=0$ removes cross-talk from $v$ when the coefficient along $u$
-is read by inner product; it does not imply statistical independence.  In
-quantum theory, mutually orthogonal projectors can represent mutually
-exclusive outcomes in one measurement context.  The analogy therefore uses
-only the shared incidence structure.
+This analogy has a sharp limit.  The shared projector alone cannot say which
+sense is intended.  If a quantum system were prepared exactly in that shared
+ray, a measurement in any basis containing it would return the shared outcome
+with certainty.  More generally, for a fixed quantum state the Born
+probability of the same projector does not depend on which compatible
+projectors complete the basis.  Linguistic interpretation is different in the
+relevant respect: it is supposed to depend on the available text.
 
-The displayed configuration is Kochen--Specker colorable: assigning value
-$1$ to $P_{\rm bank}$ and $0$ to every other projector gives exactly one value
-$1$ in each context.  Shared incidence alone therefore does not establish
-Kochen--Specker contextuality \cite{specker-60,kochen1}.
+[[Also relevant here: orthogonality in the LLM context means INDEPENDENCE,
+whereas in quantum mechanics it means: belonging to the SAME CONTEXT--- this is almost dia... different! ]]
 
-The shared projector does not select a sense; linguistic context may favor
-one.  For a fixed quantum state, Appendix~\ref{app:polysemy} shows that the
-Born probability of the shared projector does not depend on the other
-projectors that complete its context.  Since any unit vector can be completed
-to many bases, basis completion alone has no empirical content.  A direct test
-would fix a layer, fit $r_t$ and $a_t$ on sense-labelled training occurrences,
-and then freeze them.  On held-out occurrences, the RMS deviation of
-$r_t\T h_\ell(t\mid x)$ from $a_t$ can be compared with sense-specific
-coefficients and random directions.  Controlling for the initial lookup vector
-would test whether the anchor is more than residual word-form identity.
+The diagram can therefore motivate only an optional classical hypothesis: a
+contextual occurrence vector might retain a stable nonzero lexical component
+while placing sense-dependent information in accompanying directions.  Such a
+decomposition is mathematically easy to construct; its scientific content
+would lie in stability, predictive usefulness, and improvement over simpler
+untied contextual models.
+[[Blablabla-blurb?: The analogy is structural, not a claim that
+polysemy is a quantum measurement. ]]
+Appendix~\ref{app:polysemy} gives the
+shared-projector construction [[really?]]and explains why quantum probability rules do
+not transfer to linguistic context.
+
+If the proposed lexical anchor is unstable or provides no advantage over an
+equally flexible model without it, this optional shared-context hypothesis
+fails while the ordinary contextual account of polysemy remains intact.
+
+[[So: Whereas in the current scheme polysemy is handled as a convex real combination of vectors, in the new,, quantum-logic inspired scheme,
+polysemy is modelled by common vectors to intertwining contexts aka senses(?) or semantics(?)]]
 % ======================================================================
 \section{Conclusion}
 \label{sec:conclusion}
@@ -504,20 +555,25 @@ fixed-width representation space can accommodate exponentially many
 quasi-orthogonal
 directions at a chosen tolerance, even though it has only $d$ exactly
 independent coordinates.  This is expressive room, not cost-free access.
-Residual overlaps create readout cross-talk, especially when many relevant
-features are active together.
+Residual overlaps create interference, especially when many relevant features
+are active together.
 
-Small overlaps reduce cross-talk in a linear semantic readout.  Environmental
-overlaps can also suppress off-diagonal terms in a quantum reduced state, but
-only the latter process is decoherence.  The two settings share an
-inner-product pattern, not a physical mechanism.
+The resulting overlap suppression has a limited quantum counterpart.  Small
+inner products suppress cross-terms both in linear semantic readout and in
+the environmental overlaps that enter quantum decoherence.  The shared
+geometry justifies the phrase geometric decoherence, while the absence of
+quantum dynamics, relative phases, and environmental tracing in ordinary
+transformer processing prevents a physical identification.
 
-Polysemy requires three representations to be distinguished.  A static type
-vector may approximate a frequency-weighted convex mixture of sense vectors;
-a transformer constructs context-dependent occurrence vectors; and the
-optional shared-projector construction places one lexical projector in a
-sense-labelled basis for each sense.  The first two are not quantum
-superpositions, and the third does not select a sense by itself.
+Polysemy exposes different limits of the quantum comparison.  A static word
+vector may approximate a frequency-weighted convex mixture of sense vectors,
+and a transformer constructs context-dependent occurrence vectors.  Neither
+is thereby a coherent quantum superposition, and contextualization is not
+quantum collapse.
+The star diagram retains only a quantum-logical incidence idea: one lexical
+projector may be shared by several orthonormal contexts.  That optional
+constraint must earn its place empirically; the common ray alone does not
+select a meaning.
 
 At present, the relation between ordinary transformer LLMs and quantum mechanics
 is best regarded as a limited analogy of inner-product geometry rather than a
@@ -525,18 +581,9 @@ common physical or semantic theory.  Language-model activations inhabit
 finite-dimensional real inner-product spaces; standard quantum mechanics
 represents pure states as rays in a complex Hilbert space and adds observables,
 tensor composition, and the Born rule.  Even shared terms have different
-meanings: linguistic context is surrounding text, whereas a quantum
-measurement context is an orthonormal basis, equivalently its rank-one
-projectors; ``interference''
-here means linear readout cross-talk, whereas quantum interference is
-phase-sensitive.
-
-Appendix~\ref{app:quantum-attention} makes this distinction constructive.  Its
-phase-sensitive result requires coherent complex amplitudes and a Born-rule
-readout that ordinary transformer attention does not provide.  Because the
-construction takes the scores as available and then compiles the required
-state preparation, it is a representational foil rather than an end-to-end
-quantum algorithm; no efficient implementation or speedup is established.
+meanings: linguistic context is surrounding text, whereas a quantum context is
+a family of compatible observables; ``interference'' here means linear readout
+cross-talk, whereas quantum interference is phase-sensitive.
 
 Quasi-orthogonality is nevertheless a genuine common geometric motif.  In a
 language model it offers a possible capacity mechanism for many approximately
@@ -865,7 +912,7 @@ follows from $d$ and $M$ alone.  A task must also specify active coefficients,
 coactivation frequencies, a decoder, and an accepted error.  Overlap between
 two features that never need to be recovered together may have little cost.
 
-\subsection{Linear readout cross-talk and quantum decoherence}
+\subsection{The common algebra behind geometric decoherence}
 \label{app:dirac}
 
 We first introduce the notation used in this comparison.  A pure quantum
@@ -912,9 +959,10 @@ matrix is close to the matrix obtained by deleting all off-diagonal terms.
 Compare Eq.~\eqref{eq:reduced-state-app} with
 Eq.~\eqref{eq:readout-app}.  The quantum coherence term is suppressed by
 $\langle E_j|E_i\rangle$; the classical readout error is suppressed by
-$w_j\T w_i$.  Both are small-overlap effects, but only the first follows from
-a joint quantum state and a partial trace.  In the LLM setting the effect is
-ordinary suppression of linear-readout cross-talk, not decoherence.
+$w_j\T w_i$.  Both are small-overlap effects.  Only the former follows from a
+joint quantum state and a partial trace.  The latter is ordinary cross-talk in
+a real linear readout.  This is why geometric decoherence is an analogy in the
+LLM setting rather than a claim of physical decoherence.
 
 \subsection{Conditional tensor-product amplification}
 
@@ -942,33 +990,54 @@ Eq.~\eqref{eq:double-exponential-app} is not an ordinary LLM capacity claim.
 \label{app:polysemy}
 % ======================================================================
 
-\subsection{Static and contextual vectors}
+\subsection{Static mixture and contextual reweighting}
 
-Let $t$ be a token type that represents a complete word, and let
-$s\in\{1,\ldots,S_t\}$ index that word's senses.  Under the generative model
-of Arora et al., the population type vector $\bar v_t$ is approximately
+Let $t$ denote a word type, or a token that corresponds to a complete lexical
+item, and let $s\in\{1,\ldots,S_t\}$ index its candidate senses.  Let
+$v_{t,n}^{\rm type}$ be the static embedding estimated from an amount of corpus
+data indexed by $n$.  Under the generative assumptions used by Arora et al.,
+this estimate converges in the corpus limit to a population vector $\bar v_t$.
+That limit is approximately related to sense-specific embeddings
+$q_{t,s}$ by
 \begin{equation}
 \begin{aligned}
- \bar v_t&\approx\sum_{s=1}^{S_t}\pi_t(s)v_{t,s},\\
- \pi_t(s)&=\frac{f_{t,s}}{\sum_r f_{t,r}},
+ v_{t,n}^{\rm type}&\longrightarrow\bar v_t &&(n\to\infty),\\
+ \bar v_t&\approx\sum_{s=1}^{S_t}\pi_t(s)q_{t,s},
  &\qquad \sum_s\pi_t(s)&=1.
 \end{aligned}
  \label{eq:arora-app}
 \end{equation}
-Here $v_{t,s}$ is a hypothetical sense vector and $f_{t,s}$ is the number of
-occurrences with sense $s$.  This relation is model-dependent.  Arora et al.\
-prove the two-sense case explicitly; the displayed multisense form uses the
-same conditioning argument
-\cite{arora-etal-2018-linear}.
+If $f_{t,s}$ is the corpus count of sense $s$ among occurrences of type $t$,
+then $\pi_t(s)=f_{t,s}/\sum_r f_{t,r}$ is its relative frequency.  The first
+relation is the asymptotic convergence statement; the second is the
+model-dependent approximation to a frequency-weighted sense sum.  Arora et
+al.\ prove the displayed relation explicitly for two senses; the finite
+multisense expression is their general linearity assertion and follows from
+the same conditioning argument \cite{arora-etal-2018-linear}.  Keeping the two
+relations separate avoids attributing every modeling residual to finite-sample
+error.
 
-A transformer makes the different statement that a learned map $F_\ell$
-produces one state for an occurrence in linguistic context $x$:
+An interpretable contextual extension replaces the fixed frequency prior by
+weights inferred from the available text $x$:
+\begin{equation}
+\begin{aligned}
+ q_t^{\rm mix}(x)
+ &=\sum_{s=1}^{S_t}p_\theta(s\mid x,t)q_{t,s},\\
+ p_\theta(s\mid x,t)&\geq0,
+ &\sum_s p_\theta(s\mid x,t)&=1.
+\end{aligned}
+ \label{eq:context-mixture-app}
+\end{equation}
+The subscript $\theta$ denotes fitted parameters of the contextual weighting
+rule.  Equation~\eqref{eq:context-mixture-app} is a useful classical baseline.
+An actual transformer guarantees only that some learned map $F_\ell$ produces
+an occurrence state
 \begin{equation}
  h_\ell(t\mid x)=F_\ell(E[t],x)
  \label{eq:context-state-app}
 \end{equation}
-at layer $\ell$, where $E[t]$ is the token-type lookup vector.  This map need
-not be a convex mixture of fixed sense vectors.
+at layer $\ell$.  It need not implement the explicit convex mixture in
+Eq.~\eqref{eq:context-mixture-app}.
 
 \subsection{Quantum pure superposition and incoherent mixture}
 
@@ -981,8 +1050,10 @@ pure state is
  \sum_s|c_s|^2=1.
  \label{eq:pure-superposition-app}
 \end{equation}
-The coefficients $c_s$ are amplitudes.  Their relative signs or phases can
-affect probabilities after a change of measurement basis.
+The coefficients $c_s$ are amplitudes.  They may be real or complex; quantum
+coherence does not require every amplitude to be non-real.  What matters is
+that relative signs or phases can affect probabilities after a change of
+measurement basis.
 
 The density matrix of the pure state is
 \begin{equation}
@@ -990,29 +1061,48 @@ The density matrix of the pure state is
  =\sum_{s,r}c_s c_r^*|s\rangle\langle r|.
  \label{eq:pure-density-app}
 \end{equation}
-The terms with $s\ne r$ are phase-sensitive coherences.  By contrast, an
-incoherent mixture of the same quantum alternatives is
+The star denotes complex conjugation.  Terms with $s\ne r$ are off-diagonal
+coherences in this basis.  By contrast, an incoherent quantum state formed by
+classical probabilistic mixing of the same orthogonal alternatives is
+represented by
 \begin{equation}
  \rho_{\rm mix}=\sum_s p_s|s\rangle\langle s|,
  \qquad p_s\geq0,\quad\sum_s p_s=1.
  \label{eq:density-mixture-app}
 \end{equation}
-Equation~\eqref{eq:density-mixture-app} has no off-diagonal terms in this
-basis.  The lexical average in Eq.~\eqref{eq:arora-app} is neither
+This positive semidefinite, trace-one matrix has no off-diagonal terms in the
+displayed basis.  Under its intended lexical interpretation, the Arora sum in
+Eq.~\eqref{eq:arora-app} is neither
 Eq.~\eqref{eq:pure-superposition-app} nor
-Eq.~\eqref{eq:density-mixture-app}: it is an average of real embedding
-vectors, with no quantum measurement rule.
+Eq.~\eqref{eq:density-mixture-app}: it is a real vector average in a lexical
+embedding space.  Ordinary Euclidean cross-terms do not establish quantum
+interference.
 
-\subsection{One projector shared by several sense-labelled contexts}
+\subsection{The optional shared-projector construction}
 
-Let $d\geq3$, let $r_t\in\R^d$ be a unit lexical anchor, and put
-$P_t=r_t r_t\T$.  For each sense $s$, choose an orthonormal basis
+Let $r_t\in\R^d$ be a unit lexical anchor and let
 \begin{equation}
- \{r_t,u_{t,s,2},\ldots,u_{t,s,d}\}
+ P_t=r_t r_t\T
+ \label{eq:lexical-projector-app}
+\end{equation}
+be its rank-one projector.  For linguistic context class $s$, choose
+$m_s$ orthonormal residual directions perpendicular to $r_t$ and place them
+in the columns of
+\begin{equation}
+\begin{aligned}
+ B_{t,s}&=
+ [u_{t,s,1}\ \cdots\ u_{t,s,m_s}],\\
+ B_{t,s}\T B_{t,s}&=I_{m_s},
+ &B_{t,s}\T r_t&=0.
+\end{aligned}
  \label{eq:residual-basis-app}
 \end{equation}
-and define $P_{t,s,j}=u_{t,s,j}u_{t,s,j}\T$.  The associated quantum-style
-context is
+The identity matrix $I_{m_s}$ has $m_s$ rows and columns.  The columns of
+$B_{t,s}$ form an orthonormal partial frame.  The Gram--Schmidt or
+orthonormal-extension theorem permits it to be completed to a full basis of
+$\R^d$.  Put $P_{t,s,j+1}=u_{t,s,j}u_{t,s,j}\T$ for the displayed residual
+directions and use the additional basis directions for the remaining
+projectors.  In projector language, a completed context has the form
 \begin{equation}
  \mathcal E_{t,s}
  =\{P_t,P_{t,s,2},\ldots,P_{t,s,d}\},
@@ -1020,34 +1110,31 @@ context is
  P_t+\sum_{j=2}^{d}P_{t,s,j}=I_d.
  \label{eq:context-hyperedge-app}
 \end{equation}
-Different sense-labelled contexts can share $P_t$ and differ in their other
-projectors.  Completing $r_t$ to such bases is automatic; it is not an
-empirical result.  Because each basis spans the same space, its choice alone
-adds no constraint; the fixed projection below is the substantive part.
-The resulting star of bases is Kochen--Specker colorable: setting
-$v(P_t)=1$ and assigning value $0$ to every other projector gives exactly one
-value $1$ in each context.  Thus this incidence pattern alone is not a proof
-of quantum contextuality.
+The $P_{t,s,j}$ are mutually orthogonal rank-one projectors.  Different
+hyperedges $\mathcal E_{t,s}$ may share $P_t$ and differ in their other
+projectors.  The orthonormal completion is nonunique, so its mere existence is
+automatic mathematics rather than an empirical discovery.
 
-An idealized shared-anchor hypothesis for occurrence states can be written
+A strict shared-anchor hypothesis for contextual states could be written
 \begin{equation}
+\begin{aligned}
  h_\ell(t\mid x)
- =a_t r_t+\sum_{j=2}^{d}z_{t,s(x),j}(x)u_{t,s(x),j} .
+ &=a_t r_t+B_{t,s(x)}z_{t,s(x)}(x)\\
+ &\quad+e_t(x),\\
+ P_t e_t(x)&=0,\\
+ B_{t,s(x)}\T e_t(x)&=0.
+\end{aligned}
  \label{eq:shared-anchor-app}
 \end{equation}
-Here $x$ is the linguistic context and $s(x)$ is an assigned sense label; the
-equation does not infer that label.  Its exact form requires the same
-nonzero $a_t$ for every occurrence of type $t$.  This common coefficient is
-the testable hypothesis; completing $r_t$ to the bases is automatic.
-
-A direct test fixes a layer $\ell$, estimates $r_t$ and $a_t$ on
-sense-labelled training occurrences, and then freezes them.  On held-out
-occurrences, report the RMS error of $r_t\T h_\ell(t\mid x)-a_t$ and compare it
-with a model that allows a separate coefficient $a_{t,s}$ for each sense and
-with matched random directions.  The shared-anchor hypothesis requires a
-nonzero common coefficient with little held-out penalty relative to the
-sense-specific model.  Repeating the analysis after controlling for the
-initial lookup vector separates a learned anchor from persistent type identity.
+Here $s(x)$ is a context class inferred from text, $z_{t,s(x)}(x)$ contains
+context-dependent residual coordinates, and $a_t\ne0$ is required to be the
+same across contexts.  The two displayed orthogonality conditions put
+$e_t(x)$ outside both the anchor and the selected residual sector, so
+components cannot be shifted arbitrarily between $B_{t,s(x)}z_{t,s(x)}(x)$
+and $e_t(x)$.  Only the component $a_t r_t$ is fixed; the complete
+occurrence vector generally changes.  If the entire vector were fixed, the
+context would have to be stored elsewhere and that vector alone would not
+encode polysemy.
 
 For a fixed quantum state $\rho$, the Born probability assigned to the shared
 projector is
@@ -1056,22 +1143,26 @@ projector is
  \label{eq:born-shared-app}
 \end{equation}
 No term in this expression names the other projectors that complete the
-measurement context.  Hence the shared projector alone does not select a
-sense.
+measurement context.  Gleason's theorem, under its additivity hypotheses in
+real or complex dimension at least three, derives this density-operator form
+for projector probabilities \cite{Gleason}.  This limited probability
+consistency does not say that quantum mechanics admits a global
+noncontextual assignment of sharp values.  The Kochen--Specker theorem rules
+out such assignments under its own assumptions \cite{specker-60,kochen1}.
+Neither theorem implies that linguistic context should obey a Born rule.
 
 % ======================================================================
 
-\section{A minimal quantum attention model as a representational foil}
+\section{A minimal quantum attention model}
 \label{app:quantum-attention}
 
-This appendix gives a minimal quantum attention construction as a
-\emph{representational foil}.  Its purpose is to display the extra mathematical
-structure used here to make relative phase observable: a complex Hilbert
-space, coherent unitary state preparation, a tensor-product address--value
-state, and projective Born readout.  The partial-trace output supplies the
-incoherent comparison.  The construction is neither a reinterpretation of
-ordinary transformer attention nor a proposed efficient quantum algorithm.
-No quantum speedup or empirical linguistic advantage is claimed.
+This appendix defines a \emph{minimal quantum attention model}, formulated in
+a finite-dimensional complex Hilbert space.  Its ingredients are
+learned unitary matrices, normalized complex amplitudes, projective Born
+readout, and, for the incoherent output, a partial trace.  The coherent output
+retains relative phases and therefore permits phase-sensitive predictions.
+Together these ingredients define a quantum attention model in its own right,
+not a reinterpretation of standard transformer attention.
 
 For each target $i$, the construction uses an address space
 $\mathcal H_A^{(i)}\simeq\mathbb C^i$ with orthonormal basis
@@ -1121,10 +1212,10 @@ The right-hand side is normalized because the address states are orthogonal
 and every value state is normalized.  It can therefore be extended to an
 orthonormal basis and chosen as one column of a unitary matrix.
 Operationally, $W_i$ may be compiled as address-state preparation followed by
-token-controlled value preparation.  In this specification, however, the
-scores $c_{ij}$ and normalized amplitudes $\alpha_{ij}$ must be obtained before
-$W_i$ is compiled.  No coherent score-computation routine or efficient
-state-preparation circuit is given.
+token-controlled value preparation.  In this elementary specification the
+amplitudes are first obtained from Eq.~\eqref{eq:mqa-scores} and $W_i$ is then
+compiled as a prefix-dependent state-preparation unitary; the equations do not
+provide a coherent overlap-estimation subroutine.
 
 A projective measurement of the address gives the normalized Born attention
 weights, without a softmax:
@@ -1192,45 +1283,40 @@ $-\sum_i\log p_i^{\rm coh}(y_i^{\rm true}\mid +)$.  A physical implementation
 must also account for the erasure success probability $r_i$, for instance by
 training the joint probability $r_i p_i^{\rm coh}(y_i^{\rm true}\mid +)$.
 
-For a diagnostic phase intervention, take two orthonormal value states
-$|{\rm F}\rangle$ and $|{\rm R}\rangle$, labelled by the financial and
-river-edge senses of ``bank.''  Let
+For the promised intervention, retain two orthonormal values
+$|{\rm F}\rangle$ and $|{\rm R}\rangle$ for the financial and river-edge
+senses of ``bank.''  Let
 $\alpha_{\rm F}=1/\sqrt2$ and
-$\alpha_{\rm R}=e^{i\varphi}/\sqrt2$.  Here $\varphi$ is only a control
-parameter: the construction gives it no linguistic interpretation and no rule
-by which text would set or learn it.  The orthogonality of the two
-sense-labelled states is likewise an assumption of this toy example.
-Successful address erasure prepares
+$\alpha_{\rm R}=e^{i\varphi}/\sqrt2$.  Successful address erasure prepares
 \begin{equation}
  |\phi_\varphi\rangle
  =\frac{|{\rm F}\rangle+e^{i\varphi}|{\rm R}\rangle}{\sqrt2}.
 \label{eq:mqa-bank-state}
 \end{equation}
-Within this two-dimensional subspace, use the readout basis
-$|\mathord{\pm}\rangle=(|{\rm F}\rangle\pm|{\rm R}\rangle)/\sqrt2$.
+For this experiment choose two vocabulary basis vectors as the incompatible
+pair $|\mathord{\pm}\rangle=(|{\rm F}\rangle\pm|{\rm R}\rangle)/\sqrt2$.
 The projective Born probabilities are
 \begin{equation}
  p_+(\varphi)=\cos^2\frac{\varphi}{2},\qquad
  p_-(\varphi)=\sin^2\frac{\varphi}{2}.
 \label{eq:mqa-bank-fringe}
 \end{equation}
-Changing $\varphi$ from zero to $\pi$ exchanges the two readout probabilities,
-while the direct $|{\rm F}\rangle,|{\rm R}\rangle$ populations remain $1/2$.
-By contrast, Eq.~\eqref{eq:mqa-mixture} gives the phase-insensitive state
+Changing $\varphi$ from zero to $\pi$ reverses the prediction, while the
+direct $|{\rm F}\rangle,|{\rm R}\rangle$ populations remain $1/2$.  By
+contrast, Eq.~\eqref{eq:mqa-mixture} gives the phase-insensitive state
 $(|{\rm F}\rangle\langle{\rm F}|
  +|{\rm R}\rangle\langle{\rm R}|)/2$ and therefore $p_+=p_-=1/2$.
-Thus relative phase changes a prediction while direct-path populations are
-held fixed.
+This is the required experiment in which relative phase changes an observable
+prediction while direct-path populations are held fixed.
 
-These equations can be simulated classically.  They specify states and
-readouts, not an end-to-end quantum attention algorithm.  In particular, no
-coherent score-computation routine or efficient state-preparation procedure is
-provided, so the appendix establishes no quantum computational advantage.  If
-instantiated on quantum hardware, $W_i$, address erasure, and projective
-measurement would be physical operations subject to ordinary measurement and
-no-cloning constraints.  The required states would have to be freshly
-prepared from classically specified tokens; no unknown quantum state is
-copied.
+On a classical computer these equations only simulate complex vectors,
+unitary matrices, a partial trace, and projective Born probabilities.  They
+supply neither physical collapse nor a quantum computational advantage.  On
+quantum hardware $W_i$, address erasure, and vocabulary measurement would be
+physical operations subject to ordinary measurement and no-cloning
+constraints.  The query, key, and value encodings, including
+Eq.~\eqref{eq:mqa-unitary}, are freshly prepared from classically specified
+tokens; they do not copy an unknown quantum state.
 
 
 \begin{acknowledgments}
