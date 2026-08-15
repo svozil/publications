@@ -30,7 +30,7 @@
 
 \begin{document}
 
-\title{Quasi-Orthogonality And Polysemy:\texorpdfstring{\\}{ }
+\title{Quasi-Orthogonality And Polysemy:\\
 The Limits of Quantum Analogy in Large Language Models}
 
 \author{Karl Svozil}
@@ -67,29 +67,45 @@ The question recalls John Searle's Chinese Room thought experiment
 \cite{searl-80a}.  A person who does not know Chinese follows formal rules for
 transforming Chinese symbols and thereby produces answers that appear
 intelligent to an outside reader.  Searle asks whether successful symbol
-manipulation is sufficient for understanding---whether semantics follows from
-syntax.  We do not try to settle that philosophical question, and fluent
-behavior will not be used as evidence for the emergence of meaning or even
+manipulation is sufficient for understanding; whether semantics follows from syntax.  We do not try to settle that
+philosophical question, and fluent behavior will not be used as evidence emergence of meaning or even
 consciousness.  Our question is narrower and operational: what internal
 organization allows calculations on tokens to construct and exploit distinctions that
 human readers recognize as semantic?
 
-An LLM computation begins by encoding text as vectors.  A tokenizer maps a
-string to token identifiers, and an embedding table maps each identifier to a
-learned lookup vector.  After positional information is supplied, transformer
-layers use the available sequence context---the preceding tokens in a causal
-LLM---to construct a context-dependent vector for each token occurrence.
+There is an important clue.  An LLM is not trained on arbitrary strings.
+Its corpus was produced by people writing about objects, actions, intentions,
+events, and one another.  Regularities of use therefore contain indirect
+traces of regularities in human experience.  The model is never handed a
+separate object called ``meaning.''  It is rewarded for predicting how
+language is used.  Successful prediction can favor internal distinctions that
+track the contexts in which words and constructions occur.  Whether this is
+intrinsic understanding or a powerful simulation remains open; the present
+paper concerns the geometry of the representation.  It reports no new
+experiment.  The concentration results are established mathematics; their
+realization in learned LLM feature dictionaries and the shared-projector
+construction are empirical hypotheses.
 
-This use of vectors creates a limited formal point of contact with quantum mechanics, where a pure state is represented by a ray in a complex Hilbert space. Between measurements, an isolated system evolves unitarily---essentially by one-to-one reversible linear transformations preserving vector lengths. A projective measurement stochastically yields one of its possible outcomes with probabilities given by the Born rule. In complex Hilbert spaces of dimension at least three, Gleason's theorem shows that a normalized, context-independent probability assignment additive over mutually orthogonal projectors gives that Born rule.
+\paragraph*{Relation to prior work.}
+Three adjacent literatures use related language for different objects.  In
+mechanistic interpretability, \emph{feature superposition} means representing
+more learned features than there are available dimensions; it does not imply
+quantum coherence \cite{elhage2022superposition}.  Contextual-representation
+and word-sense-disambiguation studies ask whether occurrence vectors
+distinguish meanings in context
+\cite{ethayarajh2019,pilehvar2019wic,wiedemann2019does,scarlini2020ares}; we
+use that distinction but propose no new disambiguation method.  Quantum
+cognition applies Hilbert-space probability to concepts and the mental lexicon
+\cite{bruza2009lexicon,Busemeyer2012}; here it motivates a structural
+comparison, not a claim that ordinary transformers implement quantum dynamics.
 
-Against this shared inner-product background, two issues provide a manageable
-way to examine the analogy and its limits.
+Two issues provide a manageable route into that geometry.
 
-First, a fixed-width representation space has only finitely many linearly
-independent directions, but a model may need to distinguish vastly more
-properties.  High-dimensional spaces nevertheless contain many directions
-with small mutual overlaps.  We ask how this \emph{quasi-orthogonality} can
-provide representational capacity and how accumulated
+First, a representation has a fixed number of independent coordinates, but it
+may need to distinguish vastly more properties.  High-dimensional vector
+spaces make this geometrically possible because they can contain very many directions that
+are not exactly orthogonal but have small mutual overlaps.  We ask how this
+\emph{quasi-orthogonality} enlarges expressive capacity and how accumulated
 overlap---or readout cross-talk---limits access to the stored distinctions.
 
 Second, one word can have several meanings.  The word ``bank'' may refer to a
@@ -98,18 +114,12 @@ token type and its many occurrences can represent such polysemy.  This leads
 to comparisons with two different quantum ideas: coherent superposition and
 one lexical projector shared by several sense-labelled orthonormal bases.
 
-The paper reports no new experiment.  The concentration results are
-established mathematics; their realization in learned LLM feature dictionaries
-and the shared-projector construction remain empirical hypotheses.
-
 The order of exposition is intentional.  Section~\ref{sec:vectors} begins
 with tokenization and explains why vector representations are useful.
-Section~\ref{sec:quasi} develops the abundance--cross-talk tradeoff and a
-limited comparison with quantum decoherence.  Section~\ref{sec:polysemy}
-distinguishes contextual polysemy from coherent superposition and introduces
-the shared-projector construction.  Section~\ref{sec:prior-work} relates these
-comparisons to adjacent literatures.  Appendix~\ref{app:quantum-attention},
-\emph{A minimal quantum attention model as a representational foil}, makes explicit the extra
+Section~\ref{sec:quasi} develops the abundance--cross-talk tradeoff in
+informal terms.  Section~\ref{sec:polysemy} treats polysemy and the quantum
+comparisons.  Appendix~\ref{app:quantum-attention}, \emph{A minimal quantum
+attention model as a representational foil}, makes explicit the extra
 structure used in a phase-sensitive quantum construction.  It is not a
 reinterpretation of ordinary transformer attention, an efficient quantum
 algorithm, or a claim of computational advantage.  Additional formal
@@ -311,8 +321,6 @@ alternatives operationally difficult to confuse; and the number of pairwise
 small overlaps is not the same as the number of alternatives that can be
 reliably recovered together.
 
-
-
 % ======================================================================
 \section{Polysemy: one form, several meanings}
 \label{sec:polysemy}
@@ -384,10 +392,9 @@ linguistic meaning and is not part of ordinary transformer computation.
 
 \subsection{A shared-projector incidence model}
 
-A separate, limited analogy uses incidence rather than addition.  Here a
-\emph{rank-one projective measurement context} means an orthonormal basis,
-equivalently the associated mutually orthogonal rank-one projectors, which sum
-to the identity.  In
+A separate, limited analogy uses incidence rather than addition.  A
+quantum measurement context is an orthonormal basis, equivalently a set of
+mutually orthogonal rank-one projectors that sum to the identity.  In
 dimension $d\geq3$, different contexts can share one projector while differing
 in the others.
 
@@ -475,24 +482,6 @@ and then freeze them.  On held-out occurrences, the RMS deviation of
 $r_t\T h_\ell(t\mid x)$ from $a_t$ can be compared with sense-specific
 coefficients and random directions.  Controlling for the initial lookup vector
 would test whether the anchor is more than residual word-form identity.
-
-% ======================================================================
-\section{Relation to prior work}
-\label{sec:prior-work}
-% ======================================================================
-
-Three adjacent literatures use related language for different objects.  In
-mechanistic interpretability, \emph{feature superposition} means representing
-more learned features than there are available dimensions; it does not imply
-quantum coherence \cite{elhage2022superposition}.  Contextual-representation
-and word-sense-disambiguation studies ask whether occurrence vectors
-distinguish meanings in context
-\cite{ethayarajh2019,pilehvar2019wic,wiedemann2019does,scarlini2020ares}; we
-use that distinction but propose no new disambiguation method.  Quantum
-cognition applies Hilbert-space probability to concepts and the mental lexicon
-\cite{bruza2009lexicon,Busemeyer2012}; here it motivates a structural
-comparison, not a claim that ordinary transformers implement quantum dynamics.
-
 % ======================================================================
 \section{Conclusion}
 \label{sec:conclusion}
@@ -518,24 +507,22 @@ overlaps can also suppress off-diagonal terms in a quantum reduced state, but
 only the latter process is decoherence.  The two settings share an
 inner-product pattern, not a physical mechanism.
 
-The discussion of polysemy distinguishes four constructions: a static type
-vector that may approximate a frequency-weighted convex mixture of sense
-vectors; context-dependent occurrence vectors; a coherent quantum
-superposition; and the optional shared-projector incidence construction.  The
-first two are classical representation models, the third is a quantum
-comparator rather than an ordinary transformer state, and the fourth does not
-select a sense by itself.
+Polysemy requires three representations to be distinguished.  A static type
+vector may approximate a frequency-weighted convex mixture of sense vectors;
+a transformer constructs context-dependent occurrence vectors; and the
+optional shared-projector construction places one lexical projector in a
+sense-labelled basis for each sense.  The first two are not quantum
+superpositions, and the third does not select a sense by itself.
 
 At present, the relation between ordinary transformer LLMs and quantum mechanics
 is best regarded as a limited analogy of inner-product geometry rather than a
 common physical or semantic theory.  Language-model activations inhabit
 finite-dimensional real inner-product spaces; standard quantum mechanics
-represents pure states as rays in a complex Hilbert space and supplements this
-geometry with observables and the Born rule; composite systems are represented
-by tensor products.  Even shared terms have different
+represents pure states as rays in a complex Hilbert space and adds observables,
+tensor composition, and the Born rule.  Even shared terms have different
 meanings: linguistic context is surrounding text, whereas a quantum
-measurement context as used here is an orthonormal basis, equivalently its
-rank-one projectors; ``interference''
+measurement context is an orthonormal basis, equivalently its rank-one
+projectors; ``interference''
 here means linear readout cross-talk, whereas quantum interference is
 phase-sensitive.
 
@@ -1028,8 +1015,6 @@ context is
  P_t+\sum_{j=2}^{d}P_{t,s,j}=I_d.
  \label{eq:context-hyperedge-app}
 \end{equation}
-For the quantum-style reading, these real vectors and projectors are identified
-with their canonical embeddings in $\mathbb C^d$.
 Different sense-labelled contexts can share $P_t$ and differ in their other
 projectors.  Completing $r_t$ to such bases is automatic; it is not an
 empirical result.  Because each basis spans the same space, its choice alone
