@@ -1,0 +1,584 @@
+\documentclass{beamer}
+\usetheme{boxes}
+\usecolortheme{default}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{csquotes}
+\usepackage{array}
+\usepackage{colortbl}
+
+
+% Style: C:/mytex/2026-Krakow-pres.tex.
+% Source: C:/mytex/2026-trade.tex, dated July 29, 2026.
+% Focus on the paper's computable countermarket construction.
+% Discounted price: slide 5. Explicit worked example: slide 9.
+% Private randomization: slides 12--13. Permutation stress test: slide 20.
+% Former financial digressions remain removed.
+% Exactly 21 frames. All numerical paths are illustrative, not market data.
+% Self-contained; compile twice with pdflatex 2026-trade-pres.tex.
+\newcommand{\doiref}[2]{%
+  \href{https://doi.org/#1}{\textcolor{blue!65!black}{#2}}}
+\newcommand{\sourcefoot}[1]{%
+  \par\vfill{\fontsize{6.3}{7.5}\selectfont\color{black!65}Sources: #1\par}}
+
+\title{No Trading Strategy Can Win\\on Every Price Path}
+\subtitle{A Computable Countermarket for Every Trader}
+\author{\texorpdfstring{Karl Svozil\\ITP, TU Wien, Vienna, Austria}%
+{Karl Svozil, ITP, TU Wien, Vienna, Austria}}
+\date{ECONVN 2026/2027, HUB/AJEB,\\ Ho Chi Minh City, Vietnam\\
+12-14 October 2026\\
+{\footnotesize \url{https://svozil.github.io/publications/2026-ECONVN-pres.pdf} }
+\\
+based on
+\\
+\url{https://doi.org/10.48550/arXiv.2604.13334}
+}
+
+\begin{document}
+
+% Slide 1.
+\begin{frame}
+\titlepage
+\end{frame}
+
+% Slide 2.
+\begin{frame}{``Message'': Finite profits are possible, but not programmable}
+\small
+\begin{block}{A trader can make money over a finite period}
+Accurate information, luck, or a continuing trend can produce profits.
+Exuberance, innovation, and improvements in production can support a rise.
+\end{block}
+\begin{exampleblock}{The same kind of bet can also lose}
+Information may be false. Exuberance may turn into panic.
+Expected gains from innovation or cost cutting may fail to reach shareholders.
+\end{exampleblock}
+\begin{alertblock}{The claim that fails}
+\enquote{One trading rule that earns strict profit on every possible
+price history.}
+\par\medskip
+The reason is constructive (algorithmically provable): use the proposed rule to build its
+\emph{countermarket}, a price record on which it cannot win.
+\end{alertblock}
+\end{frame}
+
+% Slide 3.
+\begin{frame}{The trader chooses from the history so far}
+\small
+\begin{block}{A trading rule}
+The rule observes past and current prices and chooses a position before
+the next price arrives. It cannot use a future price that it has not observed.
+\end{block}
+\begin{exampleblock}{Three choices}
+\begin{description}
+\setlength{\itemsep}{0.55em}
+\item[Long:] own shares and gain when their price rises.
+\item[Short:] borrow and sell shares, intending to buy them back later;
+gain when their price falls.
+\item[Wait:] hold no shares and earn zero trading gain.
+\end{description}
+\end{exampleblock}
+\begin{alertblock}{The mathematical setting}
+The rule is an algorithm that returns an action on every finite history
+(\emph{total and computable}), without random choices (\emph{deterministic}).
+Positions are whole shares or fractions of integers (\emph{rational} amounts).
+\end{alertblock}
+\end{frame}
+
+% Slide 4.
+\begin{frame}[shrink=8]{Context: Cantor's diagonal idea, also used by G\"odel, Turing et al}
+\small
+Proof by contradiction: Suppose there exist a \emph{complete} list claimed to contain \emph{all} infinite sequences of zeros and
+ones. Its beginning might look like this:
+\[
+\begin{array}{c|ccccc}
+ & \text{bit 1}&\text{bit 2}&\text{bit 3}&\text{bit 4}&\cdots\\\hline
+\text{row 1}&\textcolor{red}{0}&1&1&0&\cdots\\
+\text{row 2}&1&\textcolor{red}{1}&0&1&\cdots\\
+\text{row 3}&0&1&\textcolor{red}{0}&0&\cdots\\
+\text{row 4}&1&0&1&\textcolor{red}{1}&\cdots\\
+\vdots&\vdots&\vdots&\vdots&\vdots&\ddots
+\end{array}
+\]
+\begin{exampleblock}{Change the diagonal entries}
+Read the highlighted bits and change each $0$ to $1$, each $1$ to $0$.
+The new sequence begins $1,0,1,0,\ldots$.
+\end{exampleblock}
+\begin{alertblock}{Why the list cannot be complete}
+The new sequence differs from row 1 at bit 1, from row 2 at bit 2,
+and from every row at its diagonal position. It is absent from the list.
+\end{alertblock}
+\sourcefoot{Metamathematics; eg, Noson S. Yanofsky,
+\doiref{10.2178/bsl/1058448677}{\emph{A Universal Approach to Self-Referential Paradoxes, Incompleteness and Fixed Points} (2003)}.}
+\end{frame}
+
+% Slide 5.
+\begin{frame}[shrink=5]{Discounted price: value compared with the bank}
+\small
+\begin{block}{Definition}
+A \emph{discounted price} is the asset's price divided by the current
+value of one unit of the comparison bank account.
+It tells us how many such bank units the asset is worth.
+The model treats this account as risk-free.  All money amounts below are in a fixed currency; eg, Vietnamese dong (VND).
+\end{block}
+\begin{exampleblock}{Example: one bank unit is a deposit of 100 VND}
+Suppose the account earns $10\%$ over the year, whereas the share sells at 121 VND.
+\par\medskip
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}lrrc@{}}
+ & Bank unit & One share & Discounted price\\\hline
+At the start & $100$ & $100$ & $100/100=1$\\
+After one year & $110$ & $121$ & $121/110=1.10$
+\end{tabular}
+\end{exampleblock}
+\begin{alertblock}{What the number means}
+Selling the share now buys $1.10$ bank units instead of $1$.
+The share gained $10\%$ \emph{relative to the bank account}.
+Had the share risen only to $110$, its discounted price would still be $1$.
+(This adjusts for bank interest, not inflation.)
+\end{alertblock}
+\end{frame}
+
+% Requires \usepackage{colortbl} in the preamble.
+
+% Slide 6.
+\begin{frame}{From Cantor's idea to a countermarket}
+\small
+
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{0.485\textwidth}
+  @{\hspace{0.03\textwidth}}
+  >{\raggedright\arraybackslash}p{0.485\textwidth}
+  @{}}
+\textcolor{blue}{Cantor's construction}
+&
+\textcolor{green!50!black}{The trading construction}
+\\[0.8em]
+
+\rowcolor{black!15}
+Start with a purportedly complete enumeration.
+&
+Start with a proposed universally profitable rule.
+\\[1em]
+
+
+Use that list itself to construct something that it misses.
+&
+Use that rule itself to construct a price path on which it fails.
+\\[1em]
+
+\rowcolor{black!15}
+Changing the selected bit defeats the completeness claim.
+&
+Opposing each position defeats the universal-profit claim.
+\end{tabular}
+
+\medskip
+\begin{alertblock}{The common idea is diagonal opposition}
+The counterexample depends on the proposed universal object.
+Here we construct a market for one fixed trader; we do not need to list
+all trading programs.
+\end{alertblock}
+\end{frame}
+
+% Slide 7.
+\begin{frame}{A Computable Countermarket for Every Trader}
+\small
+\begin{block}{The central result developed in the paper}
+For every deterministic trading program that returns a whole or fractional
+share position on every finite history, there is a fixed, positive,
+computable price path on which its total trading gain is never positive (price strictly above zero)
+at any finite date.
+\end{block}
+\begin{exampleblock}{The stronger statement about active trading}
+Every nonzero position loses on the constructed path.
+After any period of active trading, its accumulated gain is strictly
+negative. A trader that always waits earns zero.
+\end{exampleblock}
+\begin{alertblock}{What we are measuring}
+Prices are discounted as on slide 5: gain is measured relative to the bank
+account. Trading is \emph{self-financing}: new positions use the shares and
+bank balance already held, with no outside cash added. The simple proof
+omits trading fees, which would further reduce gains.
+\end{alertblock}
+\sourcefoot{KS, \doiref{10.48550/arXiv.2604.13334}{\emph{No Trading Strategy Can Win on Every Price Path},
+section \enquote{A Computable Countermarket for Every Trader} (2026)}.}
+\end{frame}
+
+% Slide 8.
+\begin{frame}[shrink=5]{The countermarket: a constructive proof}
+\small
+\begin{block}{Use the proposed trader's own program}
+Calculate its position from the history constructed so far. Then choose
+the next price move according to this table:
+\end{block}
+\begin{exampleblock}{Opposition at every trading date}
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{lll}
+Trader's choice & Countermarket's move & Trading result\\\hline
+\rowcolor{black!15}
+Hold or buy shares & Price falls & Loss\\
+Sell borrowed shares & Price rises & Loss\\
+\rowcolor{black!15}
+Hold no position & Price stays the same & Zero
+\end{tabular}
+\end{exampleblock}
+\begin{alertblock}{Why this proves the claim}
+Choose a fixed, small percentage rise or fall that keeps prices positive,
+and repeat.
+Adding losses and zeros can never produce a positive gain.
+For each fixed trader this gives one fixed computable price path, whereby the countermarket is constructed from this trader's program.
+Any finite part of its price history can be calculated before trading begins.
+It need not defeat other traders.
+\end{alertblock}
+\end{frame}
+
+% Slide 9.
+\begin{frame}[shrink=5]{Worked example: we construct the adverse prices}
+\small
+\begin{block}{The trader's rule is fixed first}
+The rule is: buy for one period, sell short for the next, then wait.
+\textbf{We construct a price history that makes this rule lose.}
+\end{block}
+\begin{exampleblock}{Our construction, step by step}
+\begin{enumerate}
+\setlength{\itemsep}{0.55em}
+\item The trader buys one share for $100$.\newline
+We choose $90$ as the next price. Selling the share then loses $10$.
+\item The trader borrows a share and sells it for $90$.\newline
+We choose $99$ as the next price. Buying it back to return it loses $9$.
+\item The trader holds no shares.\newline
+We leave the price at $99$. Its trading gain is zero.
+\end{enumerate}
+\end{exampleblock}
+\begin{alertblock}{Why this is a counterexample}
+The proposed rule claims a strictly positive gain on every price history.
+The history we have constructed instead produces a loss.
+Therefore, this rule cannot satisfy its claim of universal profitability.
+\end{alertblock}
+\end{frame}
+
+% Slide 10.
+\begin{frame}{Why the countermarket is a fixed computable path}
+\small
+\begin{block}{Put the trader's code inside a price-generating program}
+\begin{enumerate}
+\setlength{\itemsep}{0.45em}
+\item Start with a positive price and the history built so far.
+\item Run the trader's program on that history to obtain its position.
+\item Choose a small price fall for a long position, a small rise for a
+short position, and no change for zero holdings.
+\item Append that price to the history and repeat.
+\end{enumerate}
+\end{block}
+\begin{exampleblock}{Each requested finite part can be calculated}
+The trader returns its position in finite time. Whole shares and fractions
+of integers can be compared with zero exactly. Each next price is therefore
+computable.
+\end{exampleblock}
+\begin{alertblock}{The market does not have to observe live orders}
+For a fixed trader, the generator is fixed. Any finite portion can be
+computed before trading begins, although computation may be slow.
+\end{alertblock}
+\end{frame}
+
+% Slide 11.
+\begin{frame}{Every trader has its own countermarket}
+\small
+\begin{block}{The order of the claim matters}
+Proposed guarantee: \enquote{There is one trader that profits on every path.}
+\par\medskip
+Countermarket result: \enquote{For each proposed trader, construct a path
+on which it fails to profit.}
+\end{block}
+\begin{exampleblock}{Another trader may win on that same record}
+For one price rise, a trader holding one share gains and a trader shorting
+one share loses. A price fall reverses their fortunes.
+There need not be one path defeating all traders simultaneously.
+\end{exampleblock}
+\begin{alertblock}{The precise scope of the construction}
+The countermarket need not be typical, likely, or an economic equilibrium.
+Its role is to refute a claim about \emph{every} positive computable price path.
+The argument uses direct diagonal opposition and needs no Halting-Problem
+reduction. The following results address separate questions.
+\end{alertblock}
+\end{frame}
+
+% Slide 12.
+\begin{frame}[shrink=8]{Randomized trading: what does the trader randomize?}
+\small
+\begin{block}{A private coin chooses the position}
+After observing the past, the trader may toss a private coin:
+heads means own one share, tails means sell one borrowed share.
+The coin chooses the \emph{position}.
+The subsequent price movement determines whether that position gains or loses.
+\end{block}
+
+\begin{alertblock}{Why the earlier diagonal construction needs qualification}
+For a deterministic trader, its program and the price history determine
+its next position.
+With private randomness, we also need the outcome of its coin toss.
+The preceding countermarket construction therefore cannot calculate and
+oppose each hidden choice from the program and price history alone.
+\end{alertblock}
+
+\begin{exampleblock}{A separate argument using an independent market}
+We instead let the market choose its price movements independently of
+the trader's orders. Such a market is called \emph{passive}: it does not
+react to those orders.
+The trader may still randomize, so both sides can randomize simultaneously.
+\par\smallskip
+We now calculate \emph{expected gain}: the probability-weighted average
+of the possible gains and losses.
+\end{exampleblock}
+\end{frame}
+
+% Slide 13.
+\begin{frame}[shrink=8]{An independent fair market gives zero expected gain}
+\small
+\begin{block}{The market's coin chooses the price movement}
+The trader first chooses its position, possibly at random.
+An independent fair coin then moves the discounted price from $100$
+to $90$ or $110$, each with probability one half.
+The market's coin is independent of the past and of the trader's private coin.
+\end{block}
+
+\begin{exampleblock}{Average over the market's two equally likely moves}
+\centering
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}lrrc@{}}
+Position & Price $90$ & Price $110$ & Expected gain\\\hline
+\rowcolor{black!15}
+Own one share & $-10$ & $+10$ & $0$\\
+Short one share & $+10$ & $-10$ & $0$\\
+\rowcolor{black!15}
+Hold no position & $0$ & $0$ & $0$
+\end{tabular}
+\end{exampleblock}
+
+\begin{alertblock}{The result applies to deterministic and randomized traders}
+Every chosen position has expected gain zero, however the trader selected it.
+Repeat with independent fair choices of a $10\%$ rise or fall from each
+current price. Expected total gain over any fixed finite number of trades
+is then zero, provided gains and losses have finite averages.
+\par\smallskip
+Individual runs may win or lose. Randomizing the position cannot guarantee
+positive expected gain in \emph{every} market.
+\end{alertblock}
+\end{frame}
+
+% Slide 14.
+\begin{frame}{Gold: can history reveal the market's rule?}
+\small
+\begin{block}{Learning in the limit}
+After each new observation, a learner proposes a program explaining the
+whole sequence. Success means eventually settling on one correct program
+and never changing it again. The learner need not know when it has succeeded.
+\end{block}
+\begin{alertblock}{Gold's negative result}
+No algorithm achieves this for \emph{every} computable sequence of zeros
+and ones. For each learner, some computable history defeats this requirement.
+Failure means no eventual correct identification, rather than a specified
+number of losing trades.
+\end{alertblock}
+\begin{exampleblock}{Restrictions can make learning possible}
+If an algorithm can list the allowed rules, and each rule computes every
+requested term in finite time, identification in the limit is possible.
+What matters is which market rules the learner admits.
+\end{exampleblock}
+\sourcefoot{E.\,M. Gold,
+\doiref{10.2307/2270580}{\emph{Limiting recursion} (1965)};
+\doiref{10.1016/S0019-9958(67)91165-5}{\emph{Language identification in the limit} (1967)}.
+Related prediction construction: \doiref{10.48550/arXiv.cs/0606070}{Legg, Is there an Elegant Universal Theory of Prediction? (2006)}.}
+\end{frame}
+
+% Slide 15.
+\begin{frame}[shrink=8]{Turing: will the price ever rise?}
+\small
+
+\begin{block}{An artificial market controlled by a program}
+Take any program with a fixed input. Start the price at $1$.
+Execute one instruction of the program per day.
+\begin{itemize}
+\item While the program keeps running, the price stays at $1$.
+\item If the program stops, the price becomes $2$ and stays there.
+\end{itemize}
+The prices simply indicate whether the program has stopped.
+\end{block}
+
+\begin{exampleblock}{We can calculate the price on any specified day}
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}lccccc@{}}
+Program's behaviour & Day 1 & Day 2 & Day 3 & Day 4 & $\cdots$\\\hline
+Stops at instruction 3 & $1$ & $1$ & $2$ & $2$ & $\cdots$\\
+Never stops            & $1$ & $1$ & $1$ & $1$ & $\cdots$
+\end{tabular}
+\par\medskip
+\raggedright
+For day $100$, simulate at most $100$ instructions.
+If the program has stopped, report $2$; otherwise, report $1$.
+We never need to wait indefinitely.
+\end{exampleblock}
+
+\begin{alertblock}{But will the price \emph{ever} rise?}
+This asks whether the program will \emph{ever} stop:
+the \emph{Halting Problem}.
+Turing proved that no algorithm can always answer this correctly
+for every program and input.
+\par\smallskip
+Therefore, even with the price generator's code, no algorithm can
+decide for every such market whether its price will ever rise.
+\end{alertblock}
+
+\sourcefoot{A.\,M. Turing,
+\doiref{10.1112/plms/s2-42.1.230}{\emph{On computable numbers} (1936--37)}.
+Market construction: the paper.}
+\end{frame}
+
+% Slide 16.
+\begin{frame}{Rad\'o's Busy Beaver: how long must we wait?}
+\small
+\begin{block}{A finite maximum with no computable general bound}
+Fix a programming language. Among programs of at most $n$ bits that
+eventually stop, take the longest running time. This is the runtime
+\emph{Busy Beaver} value, written $\mathrm{BB}(n)$.
+Here $n$ measures program length, not elapsed time.
+\end{block}
+\begin{exampleblock}{Return to the price $1$ that may become $2$}
+A short program can run for an extraordinarily long time before stopping.
+Its market can therefore remain flat through a long observation period and
+change only later.
+\end{exampleblock}
+\begin{alertblock}{Why no waiting rule suffices}
+No computable deadline based only on program length covers every eventual
+halt. Such a deadline would solve Turing's problem: wait until it expires.
+Some finite cases can be settled, but they give no general extrapolation rule.
+\end{alertblock}
+\sourcefoot{T. Rad\'o,
+\doiref{10.1002/j.1538-7305.1962.tb00480.x}{\emph{On non-computable functions} (1962)};
+G.\,J. Chaitin,
+\doiref{10.1007/978-1-4612-4808-8_28}{\emph{Computing the busy beaver function} (1987)}.}
+\end{frame}
+
+% Slide 17.
+\begin{frame}{Martin-L\"of: randomness still permits finite wins}
+\small
+\begin{block}{Random relative to which model?}
+Use a binary record with independent, equally probable zeros and ones.
+A \emph{Martin-L\"of-random} infinite record escapes every algorithmically
+specified statistical test whose exceptional sets have probabilities
+shrinking effectively to zero.
+\end{block}
+\begin{alertblock}{The betting consequence}
+In the corresponding fair betting game, no computable strategy that keeps
+its capital nonnegative can make that capital unbounded on such a record.
+\emph{Fair} means that, conditional on the history, the average next capital
+equals the current capital.
+\end{alertblock}
+\begin{exampleblock}{What remains possible}
+Finite winning streaks, apparent trends, and correct forecasts still occur.
+Every finite record has both computable and algorithmically random
+continuations. A finite sample alone cannot certify randomness.
+\end{exampleblock}
+\sourcefoot{P. Martin-L\"of,
+\doiref{10.1016/S0019-9958(66)80018-9}{\emph{The definition of random sequences} (1966)};
+J. Ville, \href{https://www.numdam.org/item/THESE_1939__218__1_0/}{\emph{\'Etude critique de la notion de collectif} (1939)}.}
+\end{frame}
+
+% Slide 18.
+\begin{frame}{Ramsey: order appears even without a predictive law}
+\small
+\begin{block}{An unavoidable pattern}
+Join every pair among six objects and color each link red or blue.
+Whatever the coloring, three objects have all three links the same color.
+This is a basic finite case of Ramsey's theorem.
+\end{block}
+\begin{exampleblock}{Repeated symbols at equally spaced dates}
+Van der Waerden's theorem gives a related result: in a sufficiently long
+record with finitely many symbols, some symbol repeats at equally spaced
+positions for any prescribed finite number of repetitions.
+\end{exampleblock}
+\begin{alertblock}{The finite-pattern trap}
+The selected dates need not be consecutive, the returns need not be positive,
+and the pattern need not continue. Calude and Longo emphasize that large
+data sets force some regularities even when the records resist compression.
+Such patterns coexist with Martin-L\"of randomness.
+\end{alertblock}
+\sourcefoot{Graham, Rothschild \& Spencer, \emph{Ramsey Theory} (1990);
+\doiref{10.1038/scientificamerican0790-112}{Graham \& Spencer (1990)};
+\doiref{10.1007/s10699-016-9489-4}{Calude \& Longo, \emph{The deluge of spurious correlations in big data} (2017)}.}
+\end{frame}
+
+% Slide 19.
+\begin{frame}{Time reversal as a search for counterexamples}
+\small
+\begin{block}{Hold the trading rule fixed, change the record}
+Test it on the illustrative prices $100,\ 110,\ 120$ and then rerun it
+from scratch on $120,\ 110,\ 100$.
+At every date it may use only the history available on that run.
+Reversing the original orders would give it information from the future.
+\end{block}
+\begin{alertblock}{One failure refutes an all-path claim}
+If both records belong to the claimed market class, a nonpositive gain on
+either refutes strict profit on every path.
+Reversal alone does not prove that a rule must fail on one of the pair.
+It supplies a stress test, whereas diagonalization supplies the counterexample.
+\end{alertblock}
+\sourcefoot{KS, \enquote{A Practical Robustness Diagnostic: Time Reversal},
+Reversal Falsification Test.}
+\end{frame}
+
+% Slide 20.
+\begin{frame}[shrink=8]{Beyond time reversal: reshuffling the record}
+\small
+\begin{block}{Algorithmic and random permutations}
+A \emph{permutation} rearranges the same finite record of discounted price
+levels. Use a fixed algorithm or a random shuffle. Rerun the trader from
+scratch, giving it only the past available in the new order.
+\end{block}
+\begin{alertblock}{A necessary condition for a universal profit guarantee}
+A strategy claiming strict profit on \emph{every} permitted path
+\textbf{must remain profitable under every reshuffling that stays within
+its claimed market class}. The amount of profit may change.
+One zero or negative gain refutes that universal claim.
+\end{alertblock}
+\begin{exampleblock}{What this requirement means}
+A strategy exploiting a particular trend may fail when reshuffling destroys
+that trend. Such failure limits its scope. Conversely, passing a finite
+collection of shuffles cannot establish universal profitability.
+\end{exampleblock}
+\medskip
+\emph{Literary analogy:} Greg Egan's \emph{Permutation City} (1994)
+explores the ordering of computational states.
+\sourcefoot{Greg Egan, \href{https://www.gregegan.net/PERMUTATION/Permutation.html}{\emph{Permutation City} (1994)};
+\href{https://www.gregegan.net/PERMUTATION/FAQ/FAQ.html}{Egan's \emph{Dust Theory FAQ}, questions 1--2}.}
+\end{frame}
+
+% Slide 21.
+\begin{frame}{Conclusions}
+\small
+\begin{block}{Computable diagonal countermarket}
+For every total deterministic computable trading rule with rational positions,
+there exists a positive computable price path on which its self-financing
+gain is nonpositive at every finite horizon.
+\end{block}
+\begin{alertblock}{Scope of the result}
+The countermarket depends on the chosen rule. Every nonzero position incurs
+a loss, while zero holdings yield zero gain. Thus no such rule guarantees
+strictly positive discounted gain on every positive computable price path.
+\end{alertblock}
+\begin{exampleblock}{Finite profitability}
+Information, luck, or favorable market conditions can produce finite profits.
+These remain compatible with adverse continuations and do not establish
+a universal guarantee.
+\end{exampleblock}
+\vfill
+\begin{center}
+\Large\color{blue}Thank you for your attention
+\end{center}
+\end{frame}
+
+\end{document}
