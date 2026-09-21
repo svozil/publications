@@ -46,22 +46,18 @@
 \date{September 19, 2026}
 
 \begin{abstract}
-Every universal-trading claim pairs a trader with a market---a path, generator,
-or law. For any total deterministic computable trader, its code yields a fixed
-positive rational countermarket for one discounted asset: every proportional
-return is either \(+\epsilon\) or \(-\epsilon\), every active position loses,
-and inactivity earns zero. Thus the obstruction persists when flat paths are
-excluded. The model is frictionless and self-financing, with rational orders
-and no computation deadline. Gold-style learning cannot
-identify every computable binary market rule from history. Separately,
-Turing-universal generators make certification of unbounded-future events
-undecidable; Busy-Beaver growth defeats every computable description-size
-waiting schedule. A computable process law produces Martin-L\"of-random
-records almost surely, while finite observations cannot certify randomness;
-no-arbitrage supplies a distinct financial boundary. Together these results
-form an expository taxonomy: repeatable success requires a market restriction,
-benchmark, risk premium, or informational advantage, while time reversal and
-within-class permutations supply simple stress tests.
+We explain why no trading algorithm can guarantee profit in every market.
+For each deterministic program that always returns a finite-precision position,
+we construct a fixed, algorithmically generated price path on which every active
+position loses and inactivity earns nothing. This holds with positive,
+continually changing prices, costless trading, and unlimited computation time.
+Separate arguments limit learning market rules, certifying future events, and
+establishing randomness from finite data; financial assumptions excluding
+risk-free gains without initial investment impose another boundary.
+Useful strategies may exploit market structure, information, or compensation
+for risk, while benchmark performance need not imply profit. Reversing and
+rearranging price histories within the assumed market class provide practical
+stress tests, distinguishing conditional success from universal guarantees.
 \end{abstract}
 
 \maketitle
@@ -73,34 +69,57 @@ within-class permutations supply simple stress tests.
 
 Throughout this paper the elementary configuration has two sides: a
 \emph{trader} and a \emph{market}. At each date the trader converts observed
-history into a position; the market supplies the next price. Depending on the
-question, the market side is a realized path, a path-generating program, a
-probability law, or a price process constrained by no-arbitrage. Holding the
-trader fixed while changing the admitted market side reveals which universal
-claim is at issue.
+history into a position, meaning its chosen asset holdings; the market supplies
+the next price. Depending on the question, the market side is a realized path
+(a sequence of prices), a path-generating program, a probability law assigning
+probabilities to possible outcomes, or a price process constrained by
+no-arbitrage. A price process models prices as random variables over time;
+no-arbitrage excludes a risk-free opportunity to gain from zero initial capital.
+Holding the trader fixed while changing the admitted market side reveals which
+universal claim is at issue. A pathwise claim concerns individual price paths,
+rather than averages over a probability law.
 
 A strategy is \emph{universal} here only if, after discounting by a specified
 numeraire, it produces strictly positive terminal gain from zero initial
-capital on every admitted trajectory at a specified finite horizon. This
-differs from nonnegative gain everywhere with positive gain somewhere, eventual
-profit at a path-dependent date, expected profit under a law, and small regret
-to a benchmark. Zero cost, self-financing,
-admissibility, and discounted gain distinguish this claim from positive wealth
-obtained by investing positive capital. Its quantifier order is
+capital on every admitted trajectory at a specified finite horizon. The
+numeraire is a positive-valued reference asset, here a bank account;
+discounting expresses prices and gains in units of that asset. The horizon is
+the final evaluation date, and a trajectory is a price path. This claim differs
+from nonnegative gain everywhere with positive gain somewhere, eventual profit
+at a path-dependent date, expected profit (a probability-weighted average), and
+small regret to a benchmark. A benchmark is a specified reference investment
+or strategy; regret measures a strategy's performance shortfall relative to it.
+Zero cost means zero initial investment, self-financing means no later external
+cash injections, and admissibility imposes restrictions on allowable trading,
+such as a lower bound on wealth. These conditions distinguish trading gain
+from positive wealth obtained by investing positive capital. The order of the
+quantifiers, which specify ``there exists'' and ``for every,'' is
 \begin{equation}
   \exists\,\sigma\ \forall\,\mathcal E:
-  \qquad \sigma\ \hbox{wins against }\mathcal E,
+  \qquad \sigma\ \hbox{wins against }\mathcal E.
   \label{eq:universalquantifiers}
 \end{equation}
-whereas diagonalization establishes
+Here \(\sigma\) denotes a trading strategy and \(\mathcal E\) an admitted
+market; \(\exists\) means ``there exists'' and \(\forall\) means ``for every.''
+``Wins'' means earning strictly positive discounted gain from zero initial
+capital at the specified finite horizon. The order requires one fixed strategy
+to succeed against every admitted market.
+By contrast, diagonalization---constructing a counterexample tailored to the
+proposed strategy---establishes
 \begin{equation}
   \forall\,\sigma\ \exists\,\mathcal E_\sigma:
   \qquad \sigma\ \hbox{does not win against }\mathcal E_\sigma.
   \label{eq:counterquantifiers}
 \end{equation}
+The subscript in \(\mathcal E_\sigma\) indicates that the countermarket may
+depend on the chosen strategy; there need not be one market defeating all
+strategies.
 
-For a fixed total deterministic computable trader, its code can be embedded in
-a total program that recursively chooses the next bounded proportional price
+A computable rule is one executable by an algorithm; ``effective'' and
+``recursive'' have this same computational meaning here. A total rule returns
+an answer on every allowed input, and a deterministic rule makes no random
+choices. For a fixed total deterministic computable trader, its code can be
+embedded in a total program that recursively chooses the next bounded proportional price
 move opposite to each nonzero position and a nonzero move during inactivity.
 The resulting countermarket is one
 fixed computable path; any finite prefix can be generated offline. A trader that
@@ -108,31 +127,51 @@ never takes a position earns zero, which already refutes a guarantee of strict
 profit. This is the trading counterpart of the next-bit construction
 \(x_0=1-F(\varnothing)\) and
 \(x_t=1-F(x_0,\ldots,x_{t-1})\) for \(t\geq1\): it defeats the fixed proposed
-rule, not every rule on one exceptional sequence.
+rule, not every rule on one exceptional sequence. Here a bit is either zero
+or one, \(F\) predicts the next bit from the preceding bits,
+\(\varnothing\) denotes the empty history, and \(x_t\) is the bit chosen
+opposite to that prediction at date \(t\). A prefix is an initial finite
+segment of a sequence; generating it offline means computing it without
+interacting with a live market.
 
 Three complementary limits use different market information. Gold's learner
 sees an accumulating history and must eventually stabilize on a correct
 program; no effective learner identifies every binary total recursive time
-function, although restricted classes such as the primitive-recursive time
-functions are identifiable in the limit~\cite{go-65,go-67}. A source-code
-procedure that settled every future event of Turing-universal generators would
-instead decide the Halting Problem, while Busy-Beaver growth excludes a
-computable worst-case waiting horizon. Finally, relative to a specified
-computable measure, a Martin-L\"of-random record escapes every effective null
-test. Such records have measure one, but finite samples cannot certify this
-infinite-sequence property. No-arbitrage supplies a separate
-pricing-measure boundary.
+function (a program assigning a bit to every date), although restricted
+classes such as the primitive-recursive time functions are identifiable in
+the limit~\cite{go-65,go-67}. Primitive-recursive functions are built from
+elementary functions using composition and recursion whose number of stages is set by the input. Identification in the limit means eventually keeping
+one correct rule, without necessarily knowing when that point has been reached.
+A source-code procedure that settled every future event of Turing-universal
+generators, which can simulate any program, would instead decide the Halting
+Problem: whether an arbitrary program eventually stops. Busy-Beaver growth,
+the growth of the longest halting runtime among programs up to a given length,
+excludes a computable worst-case waiting horizon. Finally, relative to a
+specified computable probability law, a Martin-L\"of-random record escapes
+every effective null test: an algorithmically specified test whose full
+failure set has probability zero. Such records have measure one, meaning
+probability one, also called ``almost surely.'' Finite samples cannot certify
+this infinite-sequence property. No-arbitrage supplies a separate boundary
+through a pricing measure, a probability law used to value discounted payoffs.
 
 Repeatable practical success must therefore identify structure absent from the
-unrestricted market class: persistence, mean reversion, a risk premium, a
-benchmark, lawful information, or another distributional asymmetry. Large,
-crowded, or public strategies may also change the distribution through price
-impact and adaptation. This falsifiable restriction on the market side is the
-operational meaning of ``insight'' used below.
+unrestricted market class: persistence (continuation of past behavior), mean
+reversion (movement back toward a reference level), a risk premium (expected
+compensation for bearing risk), a benchmark, lawful information, or another
+distributional asymmetry (an imbalance in possible outcomes or their
+probabilities). An edge is an expected performance advantage under specified
+market conditions. Large, crowded, or public strategies may also change the
+distribution through price impact, meaning price changes caused by their own
+orders, and adaptation by other participants. This falsifiable restriction,
+one that evidence could contradict, is the operational meaning of ``insight''
+used below.
 
 \begin{table*}[t]
 \caption{\label{tab:claimmap}Distinct claims organized by the trader--market
-configuration. They are complementary, not interchangeable.}
+configuration. They are complementary, not interchangeable.
+Here \(P_\sigma\) is the price path constructed for strategy \(\sigma\);
+a black box reveals outputs but not its internal program, and a promise
+restricts the inputs on which an algorithm must work.}
 \centering
 \begin{ruledtabular}
 \begin{tabular}{p{0.18\textwidth}p{0.27\textwidth}p{0.24\textwidth}p{0.23\textwidth}}
@@ -158,16 +197,16 @@ description-size waiting horizon \\
 Algorithmic\newline randomness
 & Passive binary record under the computable fair-coin reference law
 & Each Martin-L\"of-random path; such paths have measure one
-& Independent fair trials yield ML-random records almost surely; finite
-tests cannot certify randomness \\
+& Independent fair trials yield Martin-L\"of-random records almost surely;
+finite tests cannot certify randomness \\
 No-arbitrage
 & Stochastic price process admitting a coherent pricing measure
-& Almost-sure payoff conditions under an ELMM
+& Payoff conditions holding with probability one under a pricing measure
 & No admissible zero-cost classical arbitrage \\
 Cover universality
 & Passive bounded sequence and a stated benchmark class
-& Pathwise, but benchmark-relative and asymptotic
-& Vanishing per-period regret, not guaranteed positive profit \\
+& Pathwise and benchmark-relative as the horizon grows
+& Average regret per period tends to zero, without guaranteeing positive profit \\
 \end{tabular}
 \end{ruledtabular}
 \end{table*}
@@ -179,8 +218,11 @@ strategy.'' The construction and its proofs are expository reformulations
 rather than a claim of a newly discovered impossibility theorem.
 The analysis connects this quantifier map to the literature on unpredictable
 prices~\cite{Bachelier1900,Samuelson1965,Fama1970}, Gold learning, computability
-and randomness, no-arbitrage and NFL, time-reversal and permutation stress
-testing, the Wheel, Cover universality, and conditional FAPP strategies.
+and randomness, no-arbitrage and no-free-lunch (NFL) results about performance
+averaged across possible problems, time-reversal and permutation stress
+testing (reversing or otherwise reordering a record), an options-strategy case
+study, Cover universality, and conditional strategies that work ``for all
+practical purposes'' (FAPP).
 
 %%------------------------------------------------------------------------------
 \section{The Trader and the Market: Computability and Randomness}
@@ -194,33 +236,42 @@ different boundaries: a fixed computable countermarket tailored to a trader
 defeats its claim of pathwise universality; Gold's history protocol precludes
 identifying every computable rule in the limit; a computationally universal
 class of market generators makes uniform certification of unbounded future
-events undecidable; and a computable probability law links process randomness
+events undecidable, meaning that no algorithm can always give a correct
+yes-or-no answer and terminate; and a computable probability law links process randomness
 to individual random records through an almost-sure statement.
 
 \subsection{A Computable Countermarket for Every Trader}
 
-Throughout the discrete constructions, \(P_t=S_t/B_t\) is the discounted
+Throughout the discrete constructions, dates \(t=0,1,2,\ldots\) count trading
+periods, and \(T\) denotes a finite final date. The quantity \(P_t=S_t/B_t\) is the discounted
 price of one asset, where \(S_t\) is its price in a fixed currency and
 \(B_t>0\) is the value of one unit of the chosen risk-free bank account.
 For example, if both initially equal \(100\), and later \(S_1=121\) and
 \(B_1=110\), the discounted price rises from \(1\) to \(1.1\).
 This measures performance relative to the bank account, not inflation.
 The position \(w_t\) is a number of shares chosen before \(P_{t+1}\) is
-observed. Trading is self-financing: changes in holdings are funded through
+observed. A positive position holds shares, a negative position sells borrowed
+shares short, and zero means no asset exposure. A short position profits from
+a price fall and loses from a rise. Trading is self-financing: changes in holdings are funded through
 the existing share and bank balances, with no external cash injections.
-More explicitly, holding \(w_t\) shares and the residual
+Let \(V_t\) be total portfolio wealth at date \(t\), measured in bank-account
+units. More explicitly, holding \(w_t\) shares and the residual
 \(V_t-w_tP_t\) in the discounted bank account gives
 \[
   V_{t+1}=V_t+w_t(P_{t+1}-P_t).
 \]
-We omit transaction costs, borrowing limits, leverage caps, and solvency
-constraints. The counterexample therefore also applies to any subclass of
+We omit transaction costs, borrowing limits, leverage caps (limits on exposure
+relative to capital), and solvency constraints (requirements to remain able to
+meet obligations). The counterexample therefore also applies to any subclass of
 these strategies satisfying additional restrictions.
 
 Let
 \(M_\sigma\colon\mathbb Q_{>0}^{<\omega}\to\mathbb Q\)
 be a total computable function on finite rational histories, encoded in the
 usual effective way, with \(w_t=M_\sigma(P_0,\ldots,P_t)\).
+Here \(\mathbb Q\) is the set of rational numbers, \(\mathbb Q_{>0}\) its
+positive members, and the superscript \(<\omega\) denotes all finite
+sequences; the arrow specifies the function's input and output sets.
 Totality requires an
 action in finite computation time on every input; it supplies no prescribed
 running-time bound or guarantee of meeting a trading deadline. Rational outputs
@@ -231,8 +282,8 @@ rational-valued computable price paths.
 \begin{samepage}
 \begin{theorem}[Computable Diagonal Countermarket]
   \label{thm:counterpath}
-  Fix rational \(P_0>0\) and \(0<\epsilon<1\). For every total deterministic
-  computable strategy \(M_\sigma\), there exists a fixed path
+  Fix a rational initial price \(P_0>0\) and a rational proportional price-change
+  magnitude \(0<\epsilon<1\). For every total deterministic computable strategy \(M_\sigma\), there exists a fixed path
   \(P^{M_\sigma}\in\mathcal P_{\mathrm{comp}}^{+}\), starting at \(P_0\), with
   \(P_{t+1}/P_t\in\{1-\epsilon,1+\epsilon\}\) at every date, on which its
   self-financing gain
@@ -243,6 +294,11 @@ rational-valued computable price paths.
   the strategy has taken a nonzero position at least once.
 \end{theorem}
 \end{samepage}
+The superscript in \(P^{M_\sigma}\) labels dependence on the trader's program;
+it is not a power. The gain \(G_T\) sums the position times the price change
+over the first \(T\) periods and equals final discounted wealth when
+\(V_0=0\). The proportional return is the price change divided by the
+preceding price; its magnitude here is always \(\epsilon\).
 
 \begin{proof}
 Choose rational \(P_0>0\) and rational \(0<\epsilon<1\). Recursively compute
@@ -289,7 +345,8 @@ offline. It is therefore a lawful, deterministic, computable counterexample,
 although not necessarily an efficient one computationally. If the market side
 is regarded as an opponent whose objective is to prevent this trader's gain,
 the rule is rational relative to that objective. It is not thereby shown to be
-an economic equilibrium or an arbitrage-free price process, and another trader
+an economic equilibrium, with mutually consistent participant choices, or an
+arbitrage-free price process, and another trader
 may profit on it. Such a trader has, in turn, its own computable countermarket.
 \end{remark}
 
@@ -316,8 +373,9 @@ A trader normally receives neither the market generator's source code nor a
 proof of its law. The trader sees an expanding record
 \(x_0,x_1,\ldots\) and must infer from each finite prefix how it will continue.
 Gold's function-identification model formalizes exactly this information flow.
-At time \(n\), an effective learner \(L\) maps
-\((x_0,\ldots,x_n)\) to the index of a Turing machine. It
+At time \(n\), an effective learner \(L\), itself an algorithm, maps
+\((x_0,\ldots,x_n)\) to the index, or numbered program description, of a
+Turing machine, an abstract model of computation. It
 \emph{identifies \(x\) in the limit} if, from some finite date onward, every
 guess is the same index and that machine computes the whole sequence. The
 learner need not know when its last change of mind has occurred
@@ -355,8 +413,9 @@ program names alone does not count the learner's next-step errors.
 
 The opposite-bit construction also appears explicitly in Legg's analysis of
 universal prediction~\cite{Legg2006}. The qualifier \emph{computable} is
-essential. Solomonoff induction defines an uncomputable universal predictive
-ideal; for computable probabilistic environments its conditional predictions
+essential. Solomonoff induction combines program-based predictive models,
+giving shorter descriptions greater weight. It defines an uncomputable
+universal predictive ideal; for computable probabilistic environments its conditional predictions
 converge, with quantitative error bounds developed by Hutter
 \cite{solomonoff,solomonoff-II,solomonoff1,Hutter2001}. It therefore evades,
 rather than contradicts, the diagonal result: it is not a total executable
@@ -364,17 +423,21 @@ trading rule, and predictive convergence is not Gold's requirement of
 stabilizing on one exact generating program. For probability-valued forecasts,
 V'yugin gives a further, distinct impossibility: a randomized construction can
 make any partial computable forecaster fail calibration with probability
-arbitrarily close to one~\cite{Vyugin2006}. Calibration, next-bit error, and
-identification in the limit are three different criteria.
+arbitrarily close to one~\cite{Vyugin2006}. A partial algorithm may fail to
+return an answer on some inputs; calibration requires forecast probabilities
+to agree with observed frequencies on the corresponding forecast groups.
+Calibration, next-bit error, and identification in the limit are three
+different criteria.
 
 Gold's results also show why the restriction on the market side matters. Every
-uniformly effective indexed family of total computable functions is
-identifiable in the limit: a learner selects the least index consistent with
+uniformly effective indexed family of total computable functions---one
+algorithm computes any member from its index and input---is identifiable in the limit: a learner selects the least index consistent with
 the observed prefix, and eventually eliminates every smaller incorrect index.
 In particular, primitive-recursive time functions form such a family. In Gold's interactive
 black-box model, where the eventual hypothesis must reproduce future
-input--output behavior, finite-state boxes are weakly identifiable in the
-limit, whereas the class of primitive-recursive black boxes is not
+input--output behavior, finite-state boxes, with only finitely many internal
+states, are weakly identifiable in the limit, whereas the class of
+primitive-recursive black boxes is not
 \cite{go-65}. These are different object classes, not contradictory claims.
 Gold's 1967 language model further makes explicit that learnability depends on
 the admitted class, the presentation of the evidence, and the allowed names
@@ -393,7 +456,7 @@ event-certification question does.
 
 \begin{theorem}[Undecidability of Eventual Profit]
   \label{thm:profit-undecidable}
-  Fix the positive computable price path \(P_t=t+1\), \(t\in\mathbb{N}\).
+  Fix the positive computable price path \(P_t=t+1\), \(t=0,1,\ldots\).
   There is no algorithm which, under the promise that its input code computes
   a total trading program \(M_\sigma\), correctly decides for every such code
   whether
@@ -416,8 +479,9 @@ would therefore decide the Halting Problem, which is impossible
 \cite{turing-36}.
 \end{proof}
 
-The reduction can also be placed directly on the market side, which is the
-form most closely connected to source-code event certification.
+This reduction, a conversion of one decision problem into another that
+preserves its answer, can also be placed directly on the market side, which is
+the form most closely connected to source-code event certification.
 
 \begin{theorem}[Undecidability of a Market Event]
   \label{thm:market-undecidable}
@@ -435,8 +499,9 @@ Given a Turing machine \(A\) and input \(x\), define the total generator by
   \qquad t\geq1 .
   \label{eq:market-halting}
 \end{equation}
-Each quoted price requires only a finite \(t\)-step simulation, so the
-generator is total and computable. Its initial price is one, and it ever quotes
+Here \(\mathbf{1}\{\cdot\}\) is the indicator: one when its condition holds
+and zero otherwise. Each quoted price requires only a finite \(t\)-step
+simulation, so the generator is total and computable. Its initial price is one, and it ever quotes
 a higher price if and only if \(A(x)\) halts. A universal decider for the stated
 market event would therefore decide the Halting Problem.
 \end{proof}
@@ -446,8 +511,9 @@ the admissible generators can emulate an arbitrary machine and expose its
 outcome through a price event. No algorithm can then certify every future
 event of every such market. Both reductions concern promise domains: the
 putative decider must halt and be correct on every promised total input.
-Positive instances are semidecidable by simulation until the event occurs;
-there is no terminating general procedure for certifying its perpetual absence.
+Positive instances are semidecidable: simulation confirms them when the event
+occurs, but may run forever when it does not. There is no terminating general
+procedure for certifying its perpetual absence.
 
 This is not Gold's theorem. The reduction receives source code and must halt
 with a yes-or-no answer; Gold's learner receives accumulating data and need
@@ -463,8 +529,9 @@ classes may still be learnable
 \paragraph{Busy-Beaver horizons: finite glimpses and noncomputable waiting}
 
 Fix a step-counted universal machine \(V\) with an effective compiler that adds
-only fixed overhead for a given program schema, and define the runtime Busy
-Beaver function by
+only fixed overhead for a given program schema, or template. The compiler
+translates descriptions into code for \(V\); fixed overhead is a constant
+number of extra code bits. Define the runtime Busy Beaver function by
 \begin{equation}
   \operatorname{BB}(n)
   =
@@ -472,8 +539,9 @@ Beaver function by
   |p|\leq n\text{ and }V(p)\text{ halts}\},
   \label{eq:busybeaver}
 \end{equation}
-with value zero if the set is empty. The input \(n\) is a program-description
-budget, not a date; \(\operatorname{BB}(n)\) is a runtime, which becomes a
+with value zero if the set is empty. Here \(p\) is a program, \(|p|\) its
+length in bits, and \(\operatorname{time}_V(p)\) its number of execution steps
+on \(V\). The input \(n\) is a program-description budget, not a date; \(\operatorname{BB}(n)\) is a runtime, which becomes a
 possible trading date when the computation is embedded in a market generator.
 A small increase in rule length may therefore require waiting beyond every
 computably prescribed scale.
@@ -485,17 +553,21 @@ table can be hard-coded, and its apparent pattern licenses no extrapolation. If
 a total computable \(h\) upper-bounded \(\operatorname{BB}\), simulating every
 program of length at most \(n\) for \(h(n)\) steps would decide halting.
 Eventual domination uses a further program-schema argument. For each \(n\), a
-program of \(O(\log n)\) bits can encode \(n\), compute \(h(n)\), execute more
-than \(h(n)\) dummy steps, and halt. For all sufficiently large \(n\), its
+program of \(O(\log n)\) bits---at most a constant times \(\log n\) for
+sufficiently large \(n\)---can encode \(n\), compute \(h(n)\), execute more
+than \(h(n)\) computation steps solely to delay termination, and halt.
+Here and below, \(\log\) denotes the natural logarithm. For all sufficiently large \(n\), its
 compiled \(V\)-code has length at most \(n\), so
 \(\operatorname{BB}(n)>h(n)\). Thus, up to the fixed machine convention,
 \(\operatorname{BB}\) eventually exceeds every total computable
 function~\cite{rado,chaitin-bb}.
 
 Calude, Dinneen, and Shu illustrate the finite/infinite divide. For one explicit
-universal self-delimiting register machine, computation and mathematical proof
-settled halting through 84-bit programs and certified 64 initial bits of its
-halting probability \(\Omega_U\). They did not compute Busy Beaver values, and
+universal machine \(U\) with prefix-free program codes, meaning no valid code
+is a proper prefix of another, computation and mathematical proof settled
+halting through 84-bit programs and certified 64 initial bits of its halting
+probability \(\Omega_U\). This is the probability that \(U\) halts when its
+program bits are supplied by independent fair coin tosses. They did not compute Busy Beaver values, and
 the work needed to recover the relevant halting programs from longer supplied
 prefixes of \(\Omega_U\) outruns every computable bound. Their result is a
 formidable finite glimpse, not a scalable computation of an uncomputable object
@@ -523,10 +595,11 @@ nor selects its maximizer uniformly. Noncomputability lies in certification
 across the family. Each realized path is deterministic and computable, hence
 not Martin-L\"of random under fair-coin coding.
 
-This barrier is stronger than sensitive dependence or visual complexity alone
-in a precise decision-theoretic sense. A finite contractive iterated-function
-system or chaotic map with computable data can generate an intricate phenotype
-from a short rule, yet Turing universality additionally creates questions about
+This barrier is stronger than sensitive dependence on initial conditions or
+visual complexity alone in a precise decision-theoretic sense. Repeatedly
+applying finitely many distance-shrinking maps, or a chaotic map in which
+nearby initial states can separate strongly, can generate intricate output
+from a short computable rule. Turing universality additionally creates questions about
 the unbounded future for which no terminating general algorithm exists. The
 categories can overlap when a dynamical system performs universal computation.
 This is a worst-case claim across generator descriptions, not evidence that
@@ -540,11 +613,14 @@ total programs can still be run and their realized prices and gains computed.
 
 Returning to the direct countermarket, its finite-horizon value can be stated
 explicitly, and the role of a trader's hidden randomization can be separated
-from deterministic pathwise opposition.
+from deterministic pathwise opposition. The maximin value is the best
+worst-case lower bound on gain: the inner infimum ranges over markets, and the
+outer supremum ranges over strategies.
 
 \begin{corollary}[Maximin Value]
   \label{cor:maximin}
-  At every finite horizon \(T\), if the neutral strategy is allowed, then
+  At every finite horizon \(T\), if the neutral strategy (always holding zero
+  shares) is allowed, then
   \[
     \sup_{\text{\rm total computable }M_\sigma}
     \inf_{P\in\mathcal P_{\mathrm{comp}}^{+}}
@@ -566,36 +642,45 @@ movements. They can occur separately or together and need not have the same
 effect on profits. Private randomization need not destroy an existing edge,
 and random market movements can have positive expected discounted returns.
 The result below uses the stronger assumption that the next discounted price
-change has conditional mean zero, even given the trader's private seed.
-Under integrability this gives zero expected gain at each fixed horizon,
+change has conditional mean zero, even given the trader's private seed, the
+random input used to choose positions. Thus the expected next change, given
+all available information, is zero. Integrability means finite expected
+absolute value; under this condition the gain has expectation zero at each fixed horizon,
 not convergence of realized profits to zero in the long run.
 
 \begin{proposition}[Private Randomization Does Not Create a Guarantee]
   \label{prop:randomized}
   Fix a finite horizon \(T\), a rational \(P_0>0\), and a rational
   \(\epsilon\in(0,1)\). There is a single passive computable market law,
-  independent of the trader, under which every predictable randomized strategy
-  with integrable gains has expected gain zero. Specifically, let
+  independent of the trader, under which every predictable randomized strategy,
+  choosing positions using only information already available, with integrable
+  gains has expected gain zero. Specifically, let
   \[
     P_{t+1}=P_t(1+\epsilon\xi_{t+1}),
     \qquad t=0,\ldots,T-1,
   \]
-  where \((\xi_t)_{t\geq1}\) are independent fair signs, also independent of
-  the trader's private random seed. If \(w_t\) is measurable with respect to
+  where \((\xi_t)_{t\geq1}\) are independent fair signs, each equal to \(+1\)
+  or \(-1\) with probability one half, also independent of the trader's private
+  random seed. If \(w_t\) is measurable with respect to
   the information available when the position is chosen and
   \(w_t(P_{t+1}-P_t)\) is integrable, then
   \[
     G_n=\sum_{t=0}^{n-1}w_t(P_{t+1}-P_t),
     \qquad n=0,\ldots,T,
   \]
-  is a martingale. In particular, \(\mathbb E[G_T]=0\).
+  is a martingale: its expected next value, conditional on current information,
+  equals its current value. In particular, \(\mathbb E[G_T]=0\), where
+  \(\mathbb E\) denotes expectation.
 \end{proposition}
 
 \begin{proof}
 Let \(R\) denote the trader's private seed and set
-\(\mathcal G_t=\sigma(P_0,\ldots,P_t,R)\). Allowing \(\mathcal G_t\) to contain
-all of \(R\) only strengthens the claim. Predictability makes \(w_t\)
-\(\mathcal G_t\)-measurable, while \(\xi_{t+1}\) is independent of
+\(\mathcal G_t=\sigma(P_0,\ldots,P_t,R)\), the information generated by these
+observations and the seed; here \(\sigma(\cdot)\) denotes their generated
+sigma-algebra, the collection of events they determine. Allowing
+\(\mathcal G_t\) to contain all of \(R\) only strengthens the claim.
+Predictability makes \(w_t\) \(\mathcal G_t\)-measurable, meaning determined
+by this information, while \(\xi_{t+1}\) is independent of
 \(\mathcal G_t\) and has mean zero. Hence
 \[
  \mathbb E\!\left[
@@ -605,7 +690,8 @@ all of \(R\) only strengthens the claim. Predictability makes \(w_t\)
    \mathbb E[\xi_{t+1}\mid\mathcal G_t]
  =0.
 \]
-The integrability assumption therefore makes \((G_n)_{n=0}^T\) a martingale,
+Here \(\mathbb E[\,\cdot\mid\mathcal G_t]\) is expectation conditional on
+that information. The integrability assumption therefore makes \((G_n)_{n=0}^T\) a martingale,
 and \(\mathbb E[G_T]=\mathbb E[G_0]=0\).
 \end{proof}
 
@@ -613,7 +699,8 @@ Private randomization prevents a deterministic countermarket based only on the
 public history from mechanically opposing the unseen current draw, but it does
 not yield strictly positive expected gain in every environment. More precisely,
 under the proposition's integrability assumptions it excludes
-\(\forall P:\mathbb P_R(G_T(P,R)>0)=1\) at the fixed horizon \(T\).
+\(\forall P:\mathbb P_R(G_T(P,R)>0)=1\) at the fixed horizon \(T\), where
+\(\mathbb P_R\) takes probability over the trader's seed for a fixed path.
 Each of the finitely many fair-sign prefixes has positive probability and a
 computable infinite continuation; such a guarantee would imply
 \(G_T>0\) almost surely jointly, hence \(\mathbb E[G_T]>0\), a contradiction.
@@ -623,15 +710,17 @@ benchmark-relative success.
 \paragraph{Optional online-game reading}
 
 The recursion in Theorem~\ref{thm:counterpath} also defines a finite
-perfect-information game: the trader announces \(w_t\), the environment chooses
+perfect-information game, in which both players observe every previous move:
+the trader announces \(w_t\), the environment chooses
 the next return, and Corollary~\ref{cor:maximin} gives the trader-first maximin
 value zero. This reading is optional because the fixed deterministic trader's
 countermarket program already generates the same path offline. Borel
-determinacy concerns infinite games with Borel payoff sets and does not by
-itself identify a winner here~\cite{Martin1975}. Hidden private randomization is
+determinacy concerns infinite games whose winning sets are generated from
+finite-history events by complements and countable unions (Borel sets); it
+does not by itself identify a winner here~\cite{Martin1975}. Hidden private randomization is
 a different information structure: Proposition~\ref{prop:randomized} proves
-zero expected gain under one passive computable fair-sign law, not a mixed-game
-value without specified strategy spaces.
+zero expected gain under one passive computable fair-sign law, not a value
+for a game with randomized strategies without specified strategy spaces.
 
 \subsection{A Passive Market: Martin-L\"of Randomness}
 
@@ -647,18 +736,22 @@ probability one.} Equivalently, the sufficient process condition is
   \quad\text{a.s. for every }n\geq0,
   \label{eq:conditional-fairness}
 \end{equation}
-including the first bit at \(n=0\).
+Here \(X_n\) is the random bit at date \(n\), \(\mathbb P\) denotes
+probability, and ``a.s.'' means almost surely, or with probability one. The
+condition includes the first bit at \(n=0\).
 
 Independence alone is insufficient for \emph{fair-coin} randomness: independent
-bits of fixed bias \(p\neq1/2\) almost surely have limiting frequency \(p\).
+bits with a fixed probability \(p\neq1/2\) of being one almost surely have
+limiting frequency \(p\).
 Fair one-bit probabilities alone are also insufficient: repeating one fair
-bit forever gives fair marginals but a constant, predictable record.
+bit forever gives fair marginals---each bit separately is equally likely to
+be zero or one---but a constant, predictable record.
 Independence is not necessary for ML randomness relative to the process's
 \emph{own} computable law, which may include bias or dependence.
 
 For FAPP use, the conclusion is therefore conditional on a justified source
-model, for example independent fair trials. Tests for bias and serial
-dependence can challenge that model over observed scales; passing them cannot
+model, for example independent fair trials. Tests for bias and serial dependence (statistical dependence between different
+dates) can challenge that model over observed scales; passing them cannot
 certify independence indefinitely or the ML randomness of an infinite output.
 An almost-sure conclusion allows exceptional records of probability zero.
 A fixed deterministic pseudorandom generator with a finite seed cannot produce
@@ -666,10 +759,13 @@ a fair-coin ML-random infinite sequence, however well its finite outputs test.
 
 Here is the precise classical result. A computable law \(\mu\) has cylinder
 probabilities \(\mu([s])\) uniformly approximable to any requested accuracy,
-where \([s]\) comprises sequences beginning with \(s\). An ML test is a
-uniformly computably enumerable sequence of open sets \((U_k)\) with
-\(\mu(U_k)\leq2^{-k}\). A record is \(\mu\)-ML-random if it avoids
-\(\bigcap_kU_k\) for every such test.
+where \(s\) is a finite bit string and its cylinder \([s]\) comprises all
+infinite sequences beginning with \(s\). An ML test is a uniformly computably
+enumerable sequence of open sets \((U_k)\) with \(\mu(U_k)\leq2^{-k}\):
+each set is a union of cylinders, and one algorithm lists their defining
+prefixes given \(k\). A record is \(\mu\)-ML-random if it avoids
+\(\bigcap_kU_k\), the set common to every level, for every such test. Write
+\(\mathrm{MLR}_\mu\) for the set of these random records.
 
 \begin{proposition}[Classical Measure-One Result, Martin-L\"of]
   \label{prop:process-ml}
@@ -678,8 +774,8 @@ uniformly computably enumerable sequence of open sets \((U_k)\) with
     \mathbb P\bigl((X_1,X_2,\ldots)\in\mathrm{MLR}_\mu\bigr)=1.
     \label{eq:process-ml}
   \end{equation}
-  This includes independent fair trials, computable Bernoulli biases, and
-  computable dependent laws~\cite[Sec.~IV]{MartinLof1966}.
+  This includes independent fair trials, independent bits with a fixed
+  computable probability of one (a Bernoulli bias), and computable dependent laws~\cite[Sec.~IV]{MartinLof1966}.
 \end{proposition}
 
 \begin{proof}
@@ -687,15 +783,17 @@ Each test's failure set has measure zero. There are countably many effective
 tests, so their union still has measure zero.
 \end{proof}
 
-The law must be specified: randomness relative to an atomic law need not mean
-fresh uncertainty at each trial. For example, either constant record is random
+The law must be specified: randomness relative to an atomic law, which gives
+positive probability to individual records, need not mean fresh uncertainty
+at each trial. For example, either constant record is random
 for the law that repeats one fair bit forever.
 
 \paragraph{Borel normality is weaker}
 \label{par:normality}
 
-A sequence is Borel normal in base \(b\) when every word of length \(k\)
-has limiting frequency \(b^{-k}\), for every \(k\geq1\).
+A sequence is Borel normal in base \(b\) when every word, or contiguous block,
+of \(k\) digits has limiting frequency \(b^{-k}\), for every \(k\geq1\);
+the digit alphabet is \(0,\ldots,b-1\).
 ML randomness for uniform base-\(b\) digits implies normality, but the converse
 fails. Champernowne's decimal
 \(0.123456789101112\ldots\), formed by concatenating the positive integers,
@@ -712,12 +810,13 @@ Champernowne, can establish normality; extensive sampling alone cannot.
 A large market record can be pattern-rich even when it contains no exploitable
 law. Ramsey theory makes this finite combinatorial point without assuming a
 probability model. For fixed positive integers \(c,m,q\), there is a finite
-number \(R_q(m;c)\) such that every \(c\)-coloring of the \(q\)-element subsets
-of any set of size at least \(R_q(m;c)\) has an \(m\)-element subset whose
-\(q\)-subsets all receive the same color. Thus every red--blue coloring of the
-pairs among six objects contains a monochromatic triangle. Van der Waerden's
-theorem similarly forces a monochromatic arithmetic progression of any
-prescribed finite length in every sufficiently long finite coloring
+number \(R_q(m;c)\) such that every assignment of one of \(c\) colors to
+each \(q\)-element subset of any set of size at least \(R_q(m;c)\) has an
+\(m\)-element subset whose \(q\)-subsets all receive the same color. Thus every red--blue coloring of the
+pairs among six objects contains a monochromatic triangle, with all three
+pairs the same color. Van der Waerden's theorem similarly forces an arithmetic
+progression---equally spaced indices---of any prescribed finite length, all
+of one color, in every sufficiently long finite coloring
 \cite{Ramsey-GRS-90,GS-90}. These thresholds may be enormous, but they are
 finite and computable, unlike a Busy-Beaver horizon.
 
@@ -741,25 +840,33 @@ sample correlation is false: a Ramsey configuration is not itself a
 correlation coefficient, and a pattern observed in one finite history is
 compatible with both random and computable continuations.
 
-Trading research compounds this pattern abundance with selection. If all
-\(M\) null hypotheses are true, their rejection events are independent, and
+Trading research compounds this pattern abundance with selection. A null
+hypothesis is the baseline claim assessed by a statistical test, such as the
+absence of a forecasting relation. If all \(M\) null hypotheses are true,
+their rejection events are independent, and
 each has rejection probability exactly \(\alpha\), the probability of at least
 one false rejection is
 \(1-(1-\alpha)^M\); if their probabilities are at most \(\alpha\), this is an
-upper bound. Without independence, the union bound gives
+upper bound. Without independence, the union bound, which bounds the
+probability of any rejection by the sum of individual rejection probabilities,
+gives
 \(\min\{1,M\alpha\}\) as an upper bound. This
 probabilistic multiple-testing problem is distinct from Ramsey's deterministic
 existence theorem, but its practical lesson is aligned: a trend or cross-market
 relation retained after searching many assets, windows, transformations, lags,
 and parameters is a candidate hypothesis, not yet an edge. A defensible FAPP
-claim must report the search universe and survive selection correction, costs,
-a genuinely untouched holdout or independent replication, and testing outside
+claim must report the search universe and survive selection correction
+(accounting for the search over alternatives), costs, an untouched holdout
+(data never used to choose or tune the strategy) or independent replication,
+and testing outside
 the selected regime~\cite{BaileyLopez2014}.
 
 \subsection{What Rice's Theorem Does and Does Not Say}
 
 Rice's theorem makes every nontrivial extensional property of arbitrary partial
-computable functions undecidable~\cite{Rice-1953}; in particular, totality is
+computable functions undecidable~\cite{Rice-1953}. ``Extensional'' means
+depending only on the function computed, not its program text; ``nontrivial''
+means holding for some such functions but not all. In particular, totality is
 undecidable in general~\cite{turing-36}. It does not make a fixed total
 strategy's gain on a completed finite computable path undecidable, because that
 program can simply be simulated. Theorems~\ref{thm:profit-undecidable} and
@@ -781,20 +888,32 @@ which trader--market pairs are coherent.
 
 Let the market be defined on a filtered probability space
 \((\Omega,\mathcal{F},\{\mathcal{F}_t\}_{t\in[0,T]},\mathbb{P})\).
+Here \(\Omega\) is the set of possible outcomes, \(\mathcal{F}\) the collection
+of events assigned probabilities by the physical, or real-world, law
+\(\mathbb{P}\), and \(\mathcal{F}_t\) the information available by time \(t\).
+The increasing family \(\{\mathcal{F}_t\}\) is the \emph{filtration}, and \(T\)
+is the finite trading horizon.
 Let \(B_t>0\) be a numeraire and \(S_t\) the vector of traded asset prices.
-Write \(\overline S_t=S_t/B_t\) for discounted prices. A predictable,
-\(\overline S\)-integrable strategy \(H\) has discounted self-financing gain
+Write \(\overline S_t=S_t/B_t\) for discounted prices. A predictable strategy
+chooses holdings from information available just before each price move;
+\(\overline S\)-integrability means that its stochastic gain integral exists,
+which differs from finite expected absolute value. Such a strategy \(H\) has
+discounted self-financing gain
 \begin{equation}
   G_t=(H\mathbin{\cdot}\overline S)_t,\qquad G_0=0.
   \label{eq:gain}
 \end{equation}
-It is \emph{admissible} if there is a finite constant \(a\) such that
+Here \(H_t\) records the asset holdings, and the dot denotes stochastic
+integration: the continuous-time counterpart of summing holdings times
+discounted price changes. The strategy is \emph{admissible} if there is a
+finite constant \(a\geq0\), a fixed bound on its possible intermediate loss,
+such that
 \begin{equation}
   G_t\geq -a\quad\text{for all }t\in[0,T],\quad\mathbb{P}\text{-a.s.}
   \label{eq:admissible}
 \end{equation}
-This uniform lower bound rules out doubling systems financed by unbounded
-credit.
+This uniform lower bound rules out doubling systems, which repeatedly
+increase the stake after losses and can require unbounded credit.
 
 \begin{observation}[Universality Implies Classical Arbitrage]
   \label{thm:arbitrage}
@@ -819,23 +938,43 @@ with \(\mathbb{P}(G_T>0)=1\).
 
 \begin{remark}[Terminology and Strength]
 The pathwise condition is sometimes called a sure or strong arbitrage, but it
-is not synonymous with \emph{arbitrage of the first kind}. The latter is the
-condition dual to No Unbounded Profit with Bounded Risk (NUPBR/NA1) and is a
-distinct, weaker viability concept~\cite{Kardaras2012}. Classical
-no-arbitrage alone already excludes the universal strategy in
-Observation~\ref{thm:arbitrage}; NFLVR is invoked below because it supplies the
+is not synonymous with \emph{arbitrage of the first kind}. The latter means
+that one fixed nonnegative terminal payoff, positive with positive probability,
+can be covered from every strictly positive initial capital while wealth
+remains nonnegative. Its absence, No Arbitrage of the First Kind (NA1), is
+equivalent to No Unbounded Profit with Bounded Risk (NUPBR) under the standard
+portfolio hypotheses~\cite{Kardaras2012}. Classical no-arbitrage (NA) alone
+already excludes the universal strategy in Observation~\ref{thm:arbitrage};
+No Free Lunch with Vanishing Risk (NFLVR), explained next, supplies the
 standard martingale-measure formulation.
 \end{remark}
 
 \subsection{NA, NUPBR, and Benchmark-Relative Gains}
 
+A \emph{stopping time} is a decision time recognizable from the information
+then available. A \emph{local martingale} becomes a martingale after stopping
+along a suitable increasing sequence of such times that eventually covers the
+horizon. A \emph{semimartingale} is the sum of a local martingale and a process
+of finite variation, meaning finite accumulated absolute movement on each
+finite interval; this is the standard framework for stochastic trading gains.
+
 The relevant no-arbitrage notions do not form the simple chain sometimes
-suggested in informal discussions. In the standard semimartingale setting,
-NFLVR combines classical NA with NUPBR, whereas NA and NUPBR are in general
-logically distinct. NUPBR is equivalent, under standard portfolio hypotheses,
-to the existence of a numeraire portfolio whose positive relative-wealth
-processes are supermartingales~\cite{KaratzasKardaras2007,Kardaras2012}.
-It may hold even when the stronger NFLVR condition and an ELMM fail.
+suggested in informal discussions. NUPBR requires terminal gains from
+zero-cost strategies whose gains never fall below minus one to be
+\emph{bounded in probability}: the probability of exceeding a large gain
+threshold must tend to zero uniformly over those strategies. NFLVR excludes even approximate arbitrage: bounded payoffs covered by
+admissible zero-cost terminal gains cannot approach a nonnegative payoff,
+positive with positive probability, with the largest possible approximation
+error tending to zero apart from probability-zero exceptions. In the standard
+semimartingale setting, NFLVR combines classical NA with NUPBR, whereas NA
+and NUPBR are in general logically distinct.
+NUPBR is equivalent, under standard portfolio hypotheses, to the existence of
+a \emph{numeraire portfolio}: when other positive wealth processes are divided
+by its wealth, the resulting relative-wealth processes are
+\emph{supermartingales}, whose conditional expected future values do not exceed
+their present values~\cite{KaratzasKardaras2007,Kardaras2012}.
+It may hold even when the stronger NFLVR condition and the equivalent local
+martingale measure defined below fail.
 
 This distinction prevents two overstatements. First, Observation~\ref{thm:arbitrage}
 uses only classical NA; NUPBR alone is not silently substituted for it. If a
@@ -844,21 +983,33 @@ terminal time, scaling would violate NUPBR, but terminal pathwise positivity
 together with only a strategy-specific lower bound does not by itself supply
 that scaling argument. Second, benchmark and stochastic-portfolio approaches
 can generate gains \emph{relative} to a numeraire or market portfolio without
-producing zero-cost positive gain on every path. Relative arbitrage in diverse
-equity markets and real-world benchmark pricing therefore do not contradict
-the theorem~\cite{FernholzKaratzasKardaras2005,PlatenHeath2010}.
+producing zero-cost positive gain on every path. The market portfolio weights
+stocks by their shares of total market value; a diverse equity market keeps
+every such weight uniformly below one. Relative arbitrage matches a chosen
+benchmark at terminal time with probability one and beats it with positive
+probability, starting from the same wealth. Real-world benchmark pricing
+values payoffs in benchmark units using the physical probability law.
+These approaches therefore do not contradict the
+theorem~\cite{FernholzKaratzasKardaras2005,PlatenHeath2010}.
 
 \subsection{The Martingale Constraint}
 
-For a locally bounded semimartingale price process, the
-Delbaen--Schachermayer form of the First Fundamental Theorem states that No
-Free Lunch with Vanishing Risk (NFLVR) is equivalent to the existence of an
-equivalent local martingale measure (ELMM)
-\(\mathbb{Q}\sim\mathbb{P}\) under which \(\overline S\) is a local
-martingale~\cite{Harrison1981,Delbaen1994}. For general unbounded
-semimartingales the corresponding formulation uses an equivalent
-\(\sigma\)-martingale measure~\cite{DelbaenSchachermayer1998}; the corollary below
-retains the locally bounded setting.
+A price process is \emph{locally bounded} if it is bounded by a deterministic
+constant after stopping
+along an increasing sequence of stopping times that eventually covers the
+horizon. For a locally bounded semimartingale price process, the
+Delbaen--Schachermayer form of the First Fundamental Theorem of Asset Pricing
+(FTAP) states that
+NFLVR is equivalent to the existence of an equivalent local martingale measure
+(ELMM) \(\mathbb{Q}\sim\mathbb{P}\) under which \(\overline S\) is a local
+martingale~\cite{Harrison1981,Delbaen1994}. Here \(\mathbb{Q}\) is a pricing
+probability law, and equivalence, denoted by \(\sim\), means that the two laws
+assign probability zero to exactly the same events.
+For general unbounded semimartingales the corresponding formulation uses an
+equivalent \(\sigma\)-martingale measure: under that law, some strictly
+positive predictable weighting of price increments has a martingale
+stochastic integral~\cite{DelbaenSchachermayer1998}. The corollary below retains
+the locally bounded setting.
 
 \begin{corollary}[No Universal Zero-Cost Strategy]
   \label{cor:noarb}
@@ -888,12 +1039,15 @@ expected returns may compensate risk.
 \subsection{Win Rate Is Not Expected Value}
 
 The probability of closing a trade at a profit can greatly exceed \(1/2\)
-even in a fair market. Optional stopping gives the precise distinction.
+even in a fair market. Optional stopping---preservation of a martingale's
+expected value under suitable stopping conditions---gives the precise
+distinction.
 
 \begin{proposition}[Asymmetric Barriers in a Fair Random Walk]
   \label{prop:optional}
-  Let \(X_n\) be a simple symmetric random walk with \(X_0=0\), and for positive
-  integers \(a,b\) let
+  Let \(X_n\) be a simple symmetric random walk with \(X_0=0\): each step is
+  independently \(+1\) or \(-1\), with equal probabilities. For positive
+  integers \(a,b\), let \(\tau\) be the first time either barrier is reached:
   \[
     \tau=\inf\{n\geq0:X_n=a\text{ or }X_n=-b\}.
   \]
@@ -908,15 +1062,18 @@ even in a fair market. Optional stopping gives the precise distinction.
 
 \begin{proof}
 For this finite interval, \(\tau<\infty\) almost surely and
-\(|X_{n\wedge\tau}|\leq\max\{a,b\}\). Optional stopping gives
-\(\mathbb E[X_{n\wedge\tau}]=0\), and bounded convergence yields
-\(\mathbb E[X_\tau]=0\)~\cite{Doob1953}. If
+\(|X_{n\wedge\tau}|\leq\max\{a,b\}\), where \(n\wedge\tau\) is the earlier
+of \(n\) and \(\tau\). Optional stopping gives
+\(\mathbb E[X_{n\wedge\tau}]=0\), and bounded convergence---which permits
+exchanging the limit and expectation for these uniformly bounded
+variables---yields \(\mathbb E[X_\tau]=0\)~\cite{Doob1953}. If
 \(p=\mathbb{P}(X_\tau=a)\), then
 \(0=\mathbb{E}[X_\tau]=ap-b(1-p)\), which gives
 \(p=b/(a+b)\).
 \end{proof}
 
-With a take-profit of \(a=1\) and a stop-loss of \(b=9\), the win probability
+With a take-profit order closing the trade at gain \(a=1\) and a stop-loss
+order closing it at loss \(b=9\), the win probability
 is \(0.9\), but the expected payoff is zero: nine frequent unit gains are
 offset by one nine-unit loss in expectation. Thus prediction accuracy, trade
 win rate, and expected discounted profit are three different quantities.
@@ -926,45 +1083,55 @@ win rate, and expected discounted profit are three different quantities.
 \label{sec:nfl}
 %%------------------------------------------------------------------------------
 
-Here the opposing side is an ensemble of market records rather than an
-adaptive market. The optimization NFL theorem and the elementary prediction
+Here the opposing side is an ensemble, a collection of possible market
+records equipped with a probability law, rather than an adaptive market. The optimization NFL theorem and the elementary prediction
 result needed for market-direction claims should be distinguished.
 
 \begin{theorem}[Classical Optimization NFL, Wolpert--Macready]
   \label{thm:nfl}
-  Let \(X\) and \(Y\) be finite and give the function class \(Y^X\) its uniform
-  law. For any two non-revisiting black-box algorithms and any fixed number
-  \(q\leq |X|\) of queries, the resulting \(q\)-term sequences of observed
-  values have the same distribution. Consequently, every performance
-  functional depending only on that observed value sequence has the same
+  Let \(X\) be a finite search domain and \(Y\) a finite set of possible
+  function values. Give \(Y^X\), the class of all functions from \(X\) to \(Y\),
+  its uniform law, so each function is equally likely. A non-revisiting
+  black-box algorithm learns function values only by querying inputs and never
+  queries the same input twice. For any two such algorithms and any fixed
+  number \(q\leq |X|\) of queries, where \(|X|\) is the number of inputs,
+  the resulting \(q\)-term sequences of observed values have the same
+  distribution. Consequently, every performance functional, meaning a
+  numerical score depending only on that observed value sequence, has the same
   average for both algorithms
   \cite{Wolpert:1997:NFL:2221336.2221408}.
 \end{theorem}
 
-The theorem concerns oracle-based optimization over function spaces. It does
+The theorem concerns optimization using an oracle, a device that returns a
+function's value at each queried input. It does
 not, by itself, imply a statement about self-financing gains on stochastic
 price paths. A sharpening makes its structural assumption explicit: for a
 uniform distribution on a finite function class, the NFL equality for all
 non-revisiting algorithms holds precisely when the class is closed under
-permutations of the search domain~\cite{SchumacherVoseWhitley2001}. Financial
+permutations of the search domain: relabeling the inputs of any function
+leaves it within the same class~\cite{SchumacherVoseWhitley2001}. Financial
 path classes are generally not permutation-closed: temporal order, continuity,
 financing, and no-arbitrage restrictions distinguish one permutation from
 another. Thus a financial edge, when present, resides in exactly such
-symmetry-breaking structure and the inductive bias used to model it.
+symmetry-breaking structure and the inductive bias used to model it, meaning
+the assumptions that guide generalization beyond observed data.
 
 For binary directional prediction the relevant result is simpler and can be
 derived directly.
 
 \begin{proposition}[Uniform Binary Prediction]
   \label{prop:binary}
-  Let \(X_1,\ldots,X_T\) be uniformly distributed on \(\{0,1\}^T\). A causal
-  deterministic predictor chooses
+  Let \(X_1,\ldots,X_T\) be uniformly distributed on \(\{0,1\}^T\), so every
+  length-\(T\) binary string is equally likely. A causal deterministic
+  predictor uses only past observations to choose its forecast
   \(\widehat X_t=f_t(X_1,\ldots,X_{t-1})\). Its mean accuracy
   \[
     A_T=\frac1T\sum_{t=1}^T
       \mathbf{1}\{\widehat X_t=X_t\}
   \]
-  satisfies \(\mathbb{E}[A_T]=1/2\). The same holds for a randomized predictor
+  uses the indicator \(\mathbf{1}\), equal to one for a correct forecast and
+  zero otherwise, and satisfies \(\mathbb{E}[A_T]=1/2\).
+  The same holds for a randomized predictor
   driven by a private random seed independent of
   \((X_1,\ldots,X_T)\).
 \end{proposition}
@@ -1006,15 +1173,18 @@ persistence. It is not a further impossibility theorem on the level of the
 Halting reductions or no-arbitrage.
 
 Let \(\mathcal{M}\) be a space of strictly positive discounted price paths
-\(P\colon[0,T]\to\mathbb{R}_{>0}^n\). The time reversal of \(P\) is
+\(P\colon[0,T]\to\mathbb{R}_{>0}^n\), where \(\mathbb{R}_{>0}^n\) denotes
+vectors of \(n\) positive real prices, one per asset, and \(T\) is the horizon. The time reversal of \(P\) is
 \begin{equation}
   \widetilde{P}(t)=P(T-t), \qquad t\in[0,T].
   \label{eq:timereversal}
 \end{equation}
 Literal reversal reuses the observed price levels and preserves the magnitudes
-of log-price moves while reversing their order and signs. It is not the same
-as merely negating arithmetic returns: if a forward gross return is \(R\), the
-corresponding reversed gross return is \(1/R\). In an empirical implementation
+of log-price moves, the logarithms of successive price ratios, while reversing
+their order and signs. It is not the same as merely negating arithmetic
+returns: a gross return \(R\) is the later price divided by the earlier price,
+and the corresponding arithmetic return is \(R-1\). The reversed gross return
+is \(1/R\). In an empirical implementation
 the strategy must be rerun causally from scratch on the reversed record;
 reversing the original orders or realized profit would leak future information.
 If the initial level is prescribed, literal reversal can leave the market
@@ -1022,8 +1192,11 @@ class. One may instead test componentwise normalized reversal,
 \[
   P_i^{\mathrm{rev}}(t)=P_i(0)\frac{P_i(T-t)}{P_i(T)},
 \]
+where \(i\) labels the asset and \(\mathrm{rev}\) its reversed path,
 provided it remains in the claimed class. Scaling can change the actions of a
-strategy that is not scale invariant; it is therefore a distinct test.
+strategy that is not scale invariant, meaning that its decisions change when
+all prices of an asset are multiplied by the same positive constant; it is
+therefore a distinct test.
 For a causal strategy \(\sigma\), let \(\Pi_t[\sigma;P]\) denote its discounted
 gain from zero initial capital through time \(t\) on \(P\). Call \(\sigma\)
 \emph{pathwise admissible} on \(\mathcal M\) if some finite \(C\) satisfies
@@ -1039,8 +1212,8 @@ gain from zero initial capital through time \(t\) on \(P\). Call \(\sigma\)
 
 \begin{criterion}[Reversal Falsification Test]
   \label{crit:tr}
-  Suppose \(\mathcal{M}\) is closed under time reversal. If there exists
-  \(P\in\mathcal{M}\) such that
+  Suppose \(\mathcal{M}\) is closed under time reversal, meaning that reversing
+  any member produces another member. If there exists \(P\in\mathcal{M}\) such that
   \begin{equation}
     \min\{\Pi_T[\sigma;P],\Pi_T[\sigma;\widetilde P]\}\leq 0,
     \label{eq:reversaltest}
@@ -1063,7 +1236,8 @@ under their respective assumptions.
 
 Time reversal is a special permutation of a sampled record. For a finite
 record of discounted price levels \(P=(P_0,\ldots,P_N)\), let \(\pi\) be
-a permutation of \(\{0,\ldots,N\}\) and define
+a permutation of \(\{0,\ldots,N\}\), a rearrangement using every index exactly
+once, and define
 \begin{equation}
   (P^\pi)_t=P_{\pi(t)},\qquad t=0,\ldots,N.
   \label{eq:price-permutation}
@@ -1097,8 +1271,8 @@ profit on every member requires strict profit on this one.
 
 The shuffle rearranges price levels, not returns or previously chosen orders.
 At each date the rerun uses only the history available in the new order.
-Permuting levels preserves their multiset but generally changes the returns
-and their magnitudes. It can also violate a fixed initial-price condition,
+Permuting levels preserves their multiset, the collection of levels with
+repetitions counted, but generally changes the returns and their magnitudes. It can also violate a fixed initial-price condition,
 a bound on price moves, or another restriction defining \(\mathcal M_N\).
 Only transformations that remain within that class test its universal claim;
 closure under all permutations is unnecessary. Failure after destroying a
@@ -1119,9 +1293,10 @@ the universal-profit requirement.
 
 \begin{remark}[Computable Stress Tests Beyond Reversal]
 \label{rem:stressfamily}
-Time reversal is one of countably many computable probes: sign reversal,
-regime splicing, jumps, delays, volatility rescaling, financing, and transaction
-costs. Since program totality is undecidable, an operational battery must select
+Time reversal is one of countably many computable probes: reversing return
+signs, joining segments from different market conditions (regime splicing),
+adding price jumps or execution delays, changing the size of price
+fluctuations (volatility rescaling), and varying financing or transaction costs. Since program totality is undecidable, an operational battery must select
 known-terminating transformations whose outputs remain in the claimed market
 class. Here ``test'' means empirical stress, not a Martin-L\"of test: a uniformly
 computably enumerable sequence of open sets with effective measure bounds.
@@ -1131,18 +1306,30 @@ tested robustness, not universality.
 
 \begin{remark}[Filtrations and Time Reversal]
 Stochastic model classes are not automatically reversal-closed:
-\(P(T-t)\) is generally not adapted to the forward filtration, and reversing a
-diffusion requires additional hypotheses~\cite{HaussmannPardoux1986}. For
+\(P(T-t)\) is generally not adapted to the forward filtration, meaning that
+its value at time \(t\) need not be determined by information available by
+then. Reversing a diffusion, a continuous process driven by Brownian noise,
+requires additional hypotheses~\cite{HaussmannPardoux1986}. For
 example, if
 \[
   X_t=\log(S_t/S_0)=mt+\sigma W_t,
 \]
-then \(X_{T-t}-X_T\), under its reversed filtration, has drift \(-m\) and
-volatility \(\sigma\), so a class containing both drift signs is closed in law
-under reversed increments. Physically, \(m=\mu-\sigma^2/2\); under a
-risk-neutral measure the discounted stock may be a martingale while its
-logarithm retains It\^o drift \(-\sigma^2/2\). Neither an ELMM nor a driftless
-arithmetic-Brownian special case establishes detailed balance in general. The
+\(X_t\) is the stock's cumulative log return, \(m\) its drift (average rate of
+change), and \(W_t\) standard Brownian motion, whose independent normal
+increments have mean zero and variance equal to elapsed time. Here
+\(\sigma\geq0\) denotes volatility, the scale of random fluctuations, rather
+than a trading strategy. Then \(X_{T-t}-X_T\), under the information revealed
+by the reversed increments, has drift \(-m\) and volatility \(\sigma\).
+Thus a class containing both drift signs is closed in law under this
+transformation: the transformed process has a distribution within the class.
+Under the physical law, \(m=\mu-\sigma^2/2\), where \(\mu\) is the stock's
+instantaneous expected proportional return. Under a risk-neutral measure,
+a probability law used for pricing through discounted expectations, the
+discounted stock may be a martingale while its logarithm retains the
+It\^o drift \(-\sigma^2/2\), the correction caused by taking logarithms of
+Brownian-driven prices. Neither an ELMM nor zero drift in an additive
+Brownian price model establishes detailed balance, meaning invariance of
+equilibrium history probabilities under time reversal, in general. The
 diagnostic remains pathwise; Section~\ref{sec:noarb} gives the probabilistic
 constraints.
 \end{remark}
@@ -1152,22 +1339,30 @@ constraints.
 \label{sec:wheel}
 %%------------------------------------------------------------------------------
 
-The Wheel makes the trader--market configuration concrete. It sells a
-cash-secured put and, after assignment, sells a covered call against the
-acquired stock. For one matched pair of European options, with strike \(K\)
-and maturity \(T\), the terminal-payoff identity is
+The Wheel makes the trader--market configuration concrete. A put gives its
+buyer the right to sell stock at a specified exercise price (the strike);
+a call gives the right to buy. The Wheel first sells a cash-secured put,
+reserving enough cash to buy the stock if assigned, that is, required to
+fulfill the seller's obligation. It then sells a covered call, backed by
+the acquired stock. For one matched pair of European options, exercisable
+only at their expiry date (maturity) \(T\), with strike \(K\), the
+terminal-payoff identity is
 \begin{equation}
   S_T-(S_T-K)^+
   =K-(K-S_T)^+
   =\min\{S_T,K\}.
   \label{eq:putcall}
 \end{equation}
-The cash leg pays \(K\) at maturity and must be financed at its present value;
-dividends and other cash flows must be matched separately. This is a local
-payoff comparison, not a model of the rolling Wheel. American exercise,
-assignment, changing strikes and maturities, roll rules, spreads, taxes, and
-financing make the realized strategy path dependent. Each short-option leg
-nevertheless carries the associated downside exposure.
+Here \(S_T\) is the terminal stock price and \(x^+=\max\{x,0\}\) denotes
+the positive part of \(x\). The cash leg pays \(K\) at maturity and must be
+financed at its present value, the amount invested today to deliver \(K\)
+then; dividends and other cash flows must be matched separately. This is a local
+payoff comparison, not a model of the rolling Wheel. Early exercise of
+American options, assignment, changing strikes and maturities, rules for
+replacing existing options (rolling), bid--ask spreads (the difference between
+quoted purchase and sale prices), taxes, and financing make the realized
+strategy depend on the intervening price history. Each sold, or short,
+option nevertheless carries the associated downside exposure.
 
 Option selling can nevertheless have positive mean return under a physical
 law. The
@@ -1184,10 +1379,12 @@ after assignment produces essentially one-for-one downside below \(K\). A
 persistent decline can make repeated premiums too small to offset the renewed
 short-put exposure. In a large rally, assignment and call exercise can still
 leave a positive absolute profit, but the cap at \(K\) can underperform a
-buy-and-hold benchmark. Finally, capital exhaustion is absorbing for a
-self-financing trader: if \(W_{t+1}=W_t(1+fR_{t+1})\) and
-\(1+fR_{t+1}=0\), then \(W_{t+1}=0\) unless external capital is injected. A
-fully cash-secured, unlevered implementation has bounded loss, but an
+buy-and-hold benchmark. Finally, under proportional position sizing, capital exhaustion is absorbing:
+if wealth evolves as \(W_{t+1}=W_t(1+fR_{t+1})\), where \(f\) is the fixed
+fraction exposed to the risky arithmetic return \(R_{t+1}\), then
+\(1+fR_{t+1}=0\) leaves wealth at zero thereafter unless external capital is
+injected. A fully cash-secured, unlevered implementation, using no borrowed
+investment capital, has bounded loss, but an
 underlying that falls to zero can consume almost all committed capital net of
 premium.
 
@@ -1211,15 +1408,22 @@ pathwise profit guarantee.
 Here the trader changes the claim made against the market side: it seeks small
 regret to a benchmark portfolio class, not positive profit on every path. The
 word ``universal'' also appears in a celebrated positive theorem.
-For price-relative vectors \(x_t\in\mathbb{R}_{>0}^m\), a constant-rebalanced
-portfolio \(b\) has wealth
+For \(m\) assets, let the price-relative vector \(x_t\in\mathbb{R}_{>0}^m\)
+contain each asset's price at date \(t\) divided by its price at date \(t-1\).
+A constant-rebalanced portfolio restores the same nonnegative investment
+fractions \(b=(b_1,\ldots,b_m)\), with \(\sum_i b_i=1\), at each date.
+Starting from unit wealth, it has wealth
 \[
   S_T(b)=\prod_{t=1}^T b^\mathsf{T}x_t.
 \]
-Cover's universal portfolio is nonanticipating and, under the conditions of
-his theorem, has the same asymptotic exponential growth rate as the best
-constant-rebalanced portfolio chosen in hindsight on every individual bounded
-sequence~\cite{Cover1991}. In regret notation,
+The transpose notation \(b^\mathsf{T}x_t=\sum_i b_i x_{t,i}\) gives the
+portfolio's gross return for that period. Cover's universal portfolio is
+nonanticipating, using only previously observed prices, and, under the
+conditions of his theorem, has the same asymptotic exponential growth rate,
+measured by log wealth per period, as the best constant-rebalanced portfolio
+chosen in hindsight on every individual bounded
+sequence~\cite{Cover1991}. Writing \(S_T^{\mathrm{UP}}\) for its wealth and
+calling the benchmark's excess log wealth the log regret,
 \begin{equation}
   \frac1T\left[
   \log\max_{b}S_T(b)-\log S_T^{\mathrm{UP}}
@@ -1234,12 +1438,16 @@ regret. Cover's result therefore does not contradict
 Corollary~\ref{cor:noarb}; it illustrates a useful benchmark-relative meaning
 of ``universal'' once the comparison class is specified.
 
-Online regret methods also yield financial guarantees of another kind.
-DeMarzo, Kremer, and Mansour show that gradient strategies designed to
-minimize asymptotic regret imply trading strategies that provide
-arbitrage-based option price bounds without assuming continuous price paths,
-complete markets, or a pricing kernel; the bounds depend on realized quadratic
-variation
+Online regret methods, which update decisions as observations arrive, also
+yield financial guarantees of another kind. DeMarzo, Kremer, and Mansour show
+that gradient strategies, adjusting decisions using local rates of change of
+the objective, can minimize asymptotic regret and imply trading strategies
+that provide arbitrage-based option price bounds. They require neither
+continuous price paths, complete markets (in which every contingent payoff
+can be replicated by trading), nor a pricing kernel (a random factor converting
+future payoffs into present prices through expectation). The bounds depend
+on realized quadratic variation, the limiting sum of squared price changes
+as observation intervals shrink
 \cite{DeMarzoKremerMansour2016}. This is robust pricing and hedging, not
 guaranteed positive profit or next-move prediction.
 
@@ -1272,9 +1480,10 @@ FAPP or statistical edge
 \end{ruledtabular}
 \end{table*}
 
-Superhedging duality gives another quantitative notion: once a contingent
-claim and an admissible model class are fixed, its superhedging price is the
-least initial capital needed for a pathwise guarantee. Requiring zero initial
+Superhedging gives another quantitative notion: once a contingent claim,
+a payoff depending on future market outcomes, and an admissible model class
+are fixed, its superhedging price is the least initial capital needed to
+ensure that terminal wealth covers that payoff on every allowed path. Requiring zero initial
 capital while demanding a strictly positive payoff is precisely the
 degenerate, arbitrage-producing endpoint ruled out above.
 
@@ -1286,67 +1495,84 @@ degenerate, arbitrage-producing endpoint ruled out above.
 Although pathwise universal profit is excluded, a strategy may be profitable
 \emph{for all practical purposes} (FAPP, following Bell~\cite{bell-a}) relative
 to a physical law \(\mathbb P\), a benchmark, and a finite horizon. Market
-making may earn spreads when adverse selection and inventory risk are
-controlled, and Kelly investing maximizes expected logarithmic growth when the
+making, posting buy and sell quotes, may earn spreads when adverse selection
+(losses from trading with better-informed counterparties) and inventory risk
+(price risk on accumulated holdings) are controlled. Kelly investing chooses
+position sizes to maximize expected logarithmic wealth growth when the
 relevant distribution is sufficiently well specified~\cite{Kelly1956}. Neither
 is an unconditional guarantee.
 
 Here ``insight'' means a falsifiable restriction on the market side. In actual
-trading it usually appears as a heuristic: persistence, mean reversion,
-valuation correction, or compensation for an identified risk. The fact that a
+trading it usually appears as a heuristic, a useful but fallible decision
+rule: persistence, mean reversion, valuation correction (prices moving toward
+an estimated fundamental value), or compensation for an identified risk. The fact that a
 heuristic is algorithmic does not disqualify it; its edge is a regime-dependent
-empirical hypothesis. A repeatable ex ante claim must therefore specify its
-market class, horizon, costs, benchmark, and validation protocol.
+empirical hypothesis. A repeatable claim stated before outcomes are observed
+must therefore specify its market class, horizon, costs, benchmark, and
+validation protocol.
 
 Only lawfully acquired and used information is included in this practical
 strategy class; an informational advantage remains short of a pathwise
 guarantee.
 
 The unit of performance matters as well. For a funded portfolio, let
-\(R^{\mathrm{nom}}\) be nominal total return and \(\pi\) inflation over the same
-interval under a stated price index. Then
+\(R^{\mathrm{nom}}\) be the proportional total return before adjusting for inflation,
+\(R^{\mathrm{real}}\) the return adjusted for purchasing power, and \(\pi\)
+inflation over the same interval under a stated price index. Then
 \begin{equation}
   1+R^{\mathrm{real}}
   =\frac{1+R^{\mathrm{nom}}}{1+\pi}.
   \label{eq:real-return}
 \end{equation}
 A positive nominal return can therefore be a purchasing-power loss. The price
-index is an economic deflator, not necessarily a tradable numeraire for the
-FTAP; the consumption benchmark and financing account serve different
-purposes.
+index is an economic deflator, converting currency values into purchasing-power
+units, not necessarily a tradable numeraire for the FTAP; the consumption
+benchmark and financing account serve different purposes.
 
 Productivity growth may support positive real returns when its benefits reach
 investors as cash flows~\cite{Solow1957}. Prices, discount rates, and the
 displacement of incumbents intervene~\cite{Schumpeter1942}; aggregate growth
-therefore establishes neither next-move prediction nor active alpha.
+therefore establishes neither next-move prediction nor active alpha, excess
+return attributable to the strategy relative to a specified risk-adjusted
+benchmark.
 
 Equilibrium theory likewise permits only conditional edges. Grossman and
 Stiglitz show that perfectly informationally efficient markets are inconsistent
 with costly information acquisition: if prices revealed all information
 without reward, agents would not pay to produce it~\cite{GrossmanStiglitz1980}.
-Conversely, under its common-prior, common-knowledge, risk-aversion, and
-Pareto-optimality assumptions, the Milgrom--Stokey no-trade theorem limits trade
-based on private information alone~\cite{MilgromStokey1982}. A complementary
-market-selection result is also conditional: among agents in Sandroni's
-complete-market model who share an intertemporal discount factor and choose
-saving endogenously, accurate forecasters prosper and inaccurate ones are driven
+Conversely, the Milgrom--Stokey no-trade theorem limits trade based on private
+information alone~\cite{MilgromStokey1982}. Its assumptions include a common
+prior (shared initial probabilistic beliefs), common knowledge (each agent
+knows the relevant facts, knows that the others know, and so on), risk aversion
+(a preference for less risk at a given expected payoff), and Pareto optimality
+(an allocation that cannot improve one agent's welfare without harming another).
+A complementary market-selection result is also conditional: among agents in
+Sandroni's complete-market model who share an intertemporal discount factor,
+the weight attached to future utility (the model's measure of satisfaction),
+and choose saving within the model,
+accurate forecasters prosper and inaccurate ones are driven
 out~\cite{Sandroni2000}. These equilibrium results depend on their model
 assumptions; none is a pathwise trading guarantee or a substitute for the FTAP.
 
 Deployment can also change the market side. A large, crowded, or public
-strategy consumes liquidity, moves quotes, attracts imitation or opposition,
-and changes the distribution on which it was estimated. Lo's Adaptive Markets
+strategy consumes liquidity, the capacity to trade near prevailing prices,
+moves quotes, attracts imitation or opposition, and changes the distribution
+on which it was estimated. Lo's Adaptive Markets
 Hypothesis provides this evolutionary interpretation~\cite{Lo2004}: competition
 and impact may erode an edge without producing the tailored countermarket of
-Theorem~\ref{thm:counterpath}. Feedback invalidates scale-free extrapolation; it
+Theorem~\ref{thm:counterpath}. Feedback invalidates extrapolation that assumes unchanged performance as
+trading size grows; it
 does not imply that every large strategy loses.
 
 Finally, the finite-pattern trap of Section~\ref{sec:ramseytrap} becomes
 operational in strategy discovery. Trying many specifications and retaining the
-best backtest turns its Sharpe ratio into an order statistic. The Deflated
-Sharpe Ratio corrects for selection, non-normality, and the number of
-trials~\cite{BaileyLopez2014}; untouched validation, costs, and deployment
-analysis remain necessary. These controls do not prove an edge, but make a
+best backtest, a simulation on historical data, turns its Sharpe ratio into
+an order statistic, a value selected by its rank among the tested results.
+The Sharpe ratio is mean return above the financing rate divided by the
+standard deviation of returns, which measures their spread around the mean. The Deflated Sharpe Ratio adjusts the assessment of significance
+for selection, departures from a normal return distribution, and the number
+of trials~\cite{BaileyLopez2014}; untouched validation data, costs, and
+deployment analysis remain necessary. These controls do not prove an edge, but make a
 finite-sample FAPP claim more honestly falsifiable.
 
 %%------------------------------------------------------------------------------
