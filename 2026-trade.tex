@@ -43,16 +43,22 @@
 \email{karl.svozil@tuwien.ac.at}
 \homepage{http://tph.tuwien.ac.at/~svozil}
 
-\date{September 19, 2026}
+\date{October 9, 2026}
 
 \begin{abstract}
 We explain why no trading algorithm can guarantee profit in every market.
-For each deterministic program that always returns a finite-precision position,
+For each deterministic program that always returns an exact rational position,
 we construct a fixed, algorithmically generated price path on which every active
 position loses and inactivity earns nothing. This holds with positive,
 continually changing prices, costless trading, and unlimited computation time.
-Separate arguments limit learning market rules, certifying future events, and
-establishing randomness from finite data.
+Conversely, a supplied total computable price program with nonzero moves
+admits a computable trader that profits at every step. Mutual countering
+depends on information, timing, and termination.
+Approximation-based real outputs preserve the cumulative obstruction but
+not the loss on every active position. Separate arguments limit learning
+market rules, certifying future events, and establishing randomness from
+finite data. Betting-martingale characterizations connect trading with
+computable and Martin-L\"of randomness.
 Useful strategies may exploit market structure, information, or compensation
 for risk, while benchmark performance need not imply profit. Reversing and
 rearranging price histories within the assumed market class provide practical
@@ -134,6 +140,16 @@ opposite to that prediction at date \(t\). A prefix is an initial finite
 segment of a sequence; generating it offline means computing it without
 interacting with a live market.
 
+The opponent-specific character of the construction also permits a converse.
+Given a total computable price program with nonzero changes, a trader can
+compute the next change and choose its profitable sign.
+Section~\ref{sec:countertrader} establishes this countertrader result and
+distinguishes separate counterconstructions from mutually consistent
+responses in a single interaction. Code access does not give both sides
+the ability to respond last. Section~\ref{sec:martingales} connects
+bounded-credit trading to betting martingales and distinguishes
+computable from lower-semicomputable capital processes.
+
 Three complementary limits use different market information. Gold's learner
 sees an accumulating history and must eventually stabilize on a correct
 program; no effective learner identifies every binary total recursive time
@@ -181,7 +197,13 @@ Diagonal\newline\mbox{countermarket}
 & Fixed total program constructed from the fixed trader's code
 & Pathwise worst case:
 \(\forall\sigma\,\exists P_\sigma\)
-& No total deterministic computable trader wins on every computable price path \\
+& No total deterministic computable trader with exact rational outputs wins
+on every positive rational-valued computable price path \\
+Known-program\newline countertrader
+& Supplied total computable price program with nonzero changes
+& Opponent-specific construction; every positive finite horizon
+& Each such path admits a profitable computable trader; the two perfect
+current responses cannot hold together \\
 Gold identification\newline in the limit
 & Accumulating computable history, or interaction with a black box
 & Success is eventual stabilization on a correct program, without a known
@@ -198,6 +220,11 @@ Algorithmic\newline randomness
 & Each Martin-L\"of-random path; such paths have measure one
 & Independent fair trials yield Martin-L\"of-random records almost surely;
 finite tests cannot certify randomness \\
+Betting martingales
+& Binary fixed-magnitude paths; bounded-credit trading
+& Unbounded capital along an infinite record
+& Computable and lower-semicomputable capital characterize different
+randomness notions; finite-horizon success has a probability bound \\
 \end{tabular}
 \end{ruledtabular}
 \end{table*}
@@ -254,16 +281,17 @@ positive members, and the superscript \(<\omega\) denotes all finite
 sequences; the arrow specifies the function's input and output sets.
 Totality requires an
 action in finite computation time on every input; it supplies no prescribed
-running-time bound or guarantee of meeting a trading deadline. Rational outputs
-model finite-precision orders and, crucially, make comparison with zero
-decidable. Let \(\mathcal P_{\mathrm{comp}}^{+}\) denote the positive
+running-time bound or guarantee of meeting a trading deadline. Here the program outputs an exact rational representation, not merely a
+procedure approximating a real number. Such outputs model finite-precision
+orders and make comparison with zero decidable. Let \(\mathcal P_{\mathrm{comp}}^{+}\) denote the positive
 rational-valued computable price paths.
 
 \begin{samepage}
 \begin{theorem}[Computable Diagonal Countermarket]
   \label{thm:counterpath}
   Fix a rational initial price \(P_0>0\) and a rational proportional price-change
-  magnitude \(0<\epsilon<1\). For every total deterministic computable strategy \(M_\sigma\), there exists a fixed path
+  magnitude \(0<\epsilon<1\). For every total deterministic computable strategy \(M_\sigma\)
+that returns exact rational positions, there exists a fixed path
   \(P^{M_\sigma}\in\mathcal P_{\mathrm{comp}}^{+}\), starting at \(P_0\), with
   \(P_{t+1}/P_t\in\{1-\epsilon,1+\epsilon\}\) at every date, on which its
   self-financing gain
@@ -321,24 +349,26 @@ are illustrative, not market data.
 Theorem~\ref{thm:counterpath} uses the trader's \emph{code}, not a physical
 market's observation of a deployed order. Once \(M_\sigma\) is fixed, the
 countermarket program is fixed and can generate any desired finite prefix
-offline. It is therefore a lawful, deterministic, computable counterexample,
-although not necessarily an efficient one computationally. If the market side
-is regarded as an opponent whose objective is to prevent this trader's gain,
-the rule is rational relative to that objective. It is not thereby shown to be
-an economic equilibrium, with mutually consistent participant choices, or an
-arbitrage-free price process, and another trader
-may profit on it. Such a trader has, in turn, its own computable countermarket.
+offline. It is therefore an admissible deterministic computable counterexample
+within the stated model, although not necessarily an efficient one.
+Computability and economic rationality are separate assumptions. If an
+artificial opponent is assigned the objective of preventing this trader's
+strict gain, the rule serves that objective; it is not thereby an economic
+equilibrium or an arbitrage-free price process. Another trader may profit
+on the resulting path and has, in turn, its own computable countermarket.
+Section~\ref{sec:countertrader} makes this converse and its limits explicit.
 
-The countermarket construction uses insider knowledge of the trader's
-algorithmic strategy, namely access to its code. Without this knowledge, an
-antagonistic market that must anticipate the next position from past trades
-faces the same rule-inference limits as the trader facing an unknown market.
-Even traders whose buy-or-sell decisions depend only on time can generate
-every computable binary sequence, so Gold's limit (Section~\ref{sec:learning}) applies to identifying their
-rules from history~\cite{go-65,go-67}. This concerns rule identification, not
-the failure of every antagonistic action. Unbounded questions about a trader,
-such as whether it will ever take a nonzero position, can also encode the
-Halting Problem and remain undecidable even when its code is supplied
+Code access is an information assumption of the construction. Without it, a
+market required to forecast the next buy-or-sell action from past actions
+faces the direct next-bit obstruction of Section~\ref{sec:learning}: every
+total computable predictor has a computable time-dependent trading rule
+against which each forecast is wrong. Identifying the trader's generating
+rule is a different task. Since time-dependent buy-or-sell rules can generate
+every computable binary sequence, Gold's identification limit also applies
+to that task~\cite{go-65,go-67}. Neither statement establishes the failure of
+every antagonistic action. Unbounded questions about a trader, such as
+whether it will ever take a nonzero position, can also encode the Halting
+Problem and remain undecidable even when its code is supplied
 (Section~\ref{sec:halting}). If the market instead observes the current
 position before setting the next price, it can oppose that position directly
 without knowing or inferring the strategy.
@@ -360,6 +390,91 @@ trader incurs a strict loss even on the class with fixed return magnitude
 \(\epsilon\), which contains no flat path. It does not supply a path on which every strategy
 strictly loses: permanently long and permanently short positions cannot both
 lose on the same one-step price move.
+
+\begin{remark}[Exact Outputs and Computable-Real Positions]
+\label{rem:rational}
+Theorem~\ref{thm:counterpath} assumes that each position is returned as an
+exact rational number, whose sign is decidable. An alternative representation
+provides, on input a rational price history and precision \(k\), a rational
+approximation to the position with error at most \(2^{-k}\). The approximation
+algorithm must be total and uniform in both inputs. Strict positivity and
+strict negativity are then semidecidable, but deciding between them and zero
+need not be possible. The distinction concerns the effective representation:
+even positions whose values are all dyadic rationals can exhibit this problem.
+A generic sign search may wait forever at an exactly zero position, so
+Eq.~\eqref{eq:adversary} need not define a total program in this representation.
+Finite-precision executed orders fit the exact-output model; the
+approximation-based model is a mathematical idealization.
+Empty price histories may be assigned position zero throughout.
+\end{remark}
+
+\begin{proposition}[Failure of Per-Period Opposition]
+\label{prop:real-positions}
+Fix \(P_0\) and \(\epsilon\) as in Theorem~\ref{thm:counterpath}, retaining
+the same price-path class but allowing approximation-based outputs instead
+of exact rational outputs.
+There is a trader with uniformly computable-real positions, depending only
+on the date, such that every computable path in the fixed-magnitude class
+gives it a strictly positive gain in at least one period.
+\end{proposition}
+
+\begin{proof}
+Enumerate the partial computable functions
+\(\varphi_e\colon\mathbb N\rightharpoonup\{-1,+1\}\).
+If \(\varphi_e(e)\) halts after \(n\geq1\) steps with output \(b\), set
+\(w_e=b2^{-n}\); otherwise set \(w_e=0\).
+Simulating for \(k\) steps and returning the exact value if it has appeared,
+and zero otherwise, approximates \(w_e\) within \(2^{-k}\), uniformly in
+\(e\). Use the history length minus one to obtain the date.
+For any computable path in the stated class,
+\(d_t=\operatorname{sgn}(P_{t+1}-P_t)\) is a total computable sign sequence.
+Choose an index \(e\) with \(\varphi_e=d\). Then \(w_e\neq0\) has sign
+\(d_e\), so \(w_e(P_{e+1}-P_e)>0\).
+\end{proof}
+
+The two results concern different representations of traders on the same
+class of paths. The positions just constructed are dyadic rationals, but no
+uniform algorithm returns their exact rational values or decides their signs
+including zero. Code access therefore does not make
+Eq.~\eqref{eq:adversary} executable for this trader. The proof covers every
+computable path, including any produced from the trader's code; it makes no
+independence assumption about the path. A positive gain in one period also
+need not make cumulative gain positive.
+
+\begin{proposition}[Cumulative Nonpositivity Survives]
+\label{prop:real-cumulative}
+For every trader whose positions on rational histories are uniformly
+computable reals, there exists a computable path in the same fixed-magnitude
+class with \(G_T\leq0\) at every finite horizon.
+\end{proposition}
+
+\begin{proof}
+Consider the computable all-up path \(P_t=P_0(1+\epsilon)^t\).
+If every position along it is zero, it is already the required path.
+Otherwise let \(s\) be its first nonzero-position date. Retain its history
+through \(P_s\), then choose the return opposite to that position.
+This gives \(G_T=0\) for \(T\leq s\) and \(G_{s+1}<0\).
+The finite prefix and this direction can be hard-coded.
+
+Thereafter, given \(G_t<0\), the two possible next cumulative gains are
+\[
+  A_+=G_t+\epsilon P_tw_t,\qquad A_-=G_t-\epsilon P_tw_t.
+\]
+Both are computable reals and their average is \(G_t<0\); hence at least
+one is strictly negative. Run their strict-negativity tests in parallel and
+choose the direction whose test first certifies negativity. Each step
+terminates and preserves \(G_{t+1}<0\), generating a computable infinite
+price path. The initial case distinction and finite-prefix selection establish
+existence, without providing a uniform procedure from trader code to
+countermarket code.
+\end{proof}
+
+Thus approximated positions invalidate the guarantee that \emph{every}
+active position loses, but not the existence of a computable countermarket
+preventing positive cumulative gain at every horizon. Given the trader's
+approximation program, a Halting-Problem oracle can decide each sign,
+including zero, and recover the per-period construction relative to
+\(\emptyset'\).
 
 \section{Learning a Market Rule from History: Gold's Limit}
 \label{sec:learning}
@@ -681,10 +796,10 @@ not convergence of realized profits to zero in the long run.
 \end{proposition}
 
 \begin{proof}
-Let \(R\) denote the trader's private seed and set
-\(\mathcal G_t=\sigma(P_0,\ldots,P_t,R)\), the information generated by these
-observations and the seed; here \(\sigma(\cdot)\) denotes their generated
-sigma-algebra, the collection of events they determine. Allowing
+Let \(R\) denote the trader's private seed and
+let \(\mathcal G_t\) be the sigma-algebra generated by
+\(P_0,\ldots,P_t,R\): the collection of events determined by the
+observed prices and the private seed. Allowing
 \(\mathcal G_t\) to contain all of \(R\) only strengthens the claim.
 Predictability makes \(w_t\) \(\mathcal G_t\)-measurable, meaning determined
 by this information, while \(\xi_{t+1}\) is independent of
@@ -728,6 +843,8 @@ does not by itself identify a winner here~\cite{Martin1975}. Hidden private rand
 a different information structure: Proposition~\ref{prop:randomized} proves
 zero expected gain under one passive computable fair-sign law, not a value
 for a game with randomized strategies without specified strategy spaces.
+Section~\ref{sec:countertrader} specifies a simultaneous game and
+distinguishes its mixed-strategy equilibrium from this martingale statement.
 
 \section{A Passive Market: Martin-L\"of Randomness}
 \label{sec:randomness}
@@ -812,6 +929,133 @@ No finite frequency check proves it, since any finite prefix admits both
 normal and nonnormal continuations. A proof from a construction, as for
 Champernowne, can establish normality; extensive sampling alone cannot.
 
+%%------------------------------------------------------------------------------
+\section{Trading, Martingales, and Algorithmic Randomness}
+\label{sec:martingales}
+%%------------------------------------------------------------------------------
+
+Effective randomness can also be expressed through the inability of specified
+betting strategies to accumulate unbounded capital. The computational class
+of the strategy matters: computable randomness and Martin-L\"of randomness
+use different classes~\cite{Schnorr1971,DH,Nies2009}.
+This betting viewpoint complements Levin's characterization using the
+monotone description complexity of initial segments~\cite{levin-73}.
+
+Fix rational \(P_0>0\), rational \(0<\epsilon<1\), and initial credit \(C>0\).
+For \(x=(x_1,x_2,\ldots)\in\{0,1\}^{\mathbb N}\), set
+\[
+  P_t(x)=P_0\prod_{i=1}^{t}(1+\epsilon(2x_i-1)).
+\]
+Each price history in this class determines its bit string.
+A trader is \emph{admissible with credit \(C\)} if its gain satisfies
+\(G_n\ge-C\) at every date on every such history.
+Thus \(C+G_n\) is nonnegative wealth. A nonnegative function \(d\) on finite
+binary strings is a \emph{martingale} if
+\[
+  d(s)=\tfrac12\bigl(d(s0)+d(s1)\bigr).
+\]
+It \emph{succeeds} on \(x\) when
+\(\limsup_n d(x\upharpoonright n)=\infty\), where
+\(x\upharpoonright n\) is the first \(n\) bits.
+
+\begin{proposition}[Traders and Martingales]
+\label{prop:trader-martingale}
+Total computable traders returning exact rational positions and admissible with rational credit
+\(C\) correspond exactly, on this price class, to nonnegative martingales
+with exactly computed rational values and \(d(\emptyset)=C\).
+The correspondence and its inverse are
+\[
+  d(s)=C+G_{|s|}(s),\qquad
+  w_{|s|}(s)=\frac{d(s1)-d(s0)}{2\epsilon P_{|s|}(s)}.
+\]
+\end{proposition}
+
+\begin{proof}
+The two next gains are \(\pm w_{|s|}(s)\epsilon P_{|s|}(s)\), so their
+average is zero. Conversely, the displayed position gives gain
+\(d(sb)-d(s)\) on extension by \(b\); these increments telescope.
+Nonnegativity is precisely admissibility. All quantities are rational and
+computable. Set the trader's position to zero on price histories outside
+the specified class, including the empty history, to obtain a total rule.
+\end{proof}
+
+\begin{theorem}[Effective Betting Characterizations]
+\label{thm:ville}
+A binary record \(x\) is computably random if and only if every total
+computable trader returning exact rational positions and admissible with some rational credit
+has bounded gain along \(P(x)\).
+It is Martin-L\"of random if and only if no nonnegative
+left-computably-enumerable martingale succeeds on it.
+\end{theorem}
+
+Here \emph{left-computably-enumerable}, or \emph{lower semicomputable}, means
+that the values have uniformly computable increasing rational approximations,
+without a required computable error bound.
+The standard betting characterizations give the theorem
+\cite{Schnorr1971,DH,Nies2009}.
+Restricting computable martingales to exact rational outputs does not change
+computable randomness. Given a computable-real martingale \(d\), choose
+rational initial capital greater than \(d(\emptyset)+1\). Approximate each
+capital wager \((d(s1)-d(s0))/2\) by a rational within
+\(2^{-|s|-2}\), and update the new capital by adding or subtracting that
+rational. Along every path the accumulated error is less than \(1/2\).
+The resulting rational martingale stays nonnegative and differs from \(d\)
+by a bounded amount, so preserves success.
+
+The second characterization must not be read as an equivalence with our
+executable rational traders. A left-computably-enumerable martingale may
+have noncomputable initial capital. Indeed, if its initial capital is
+computable, its averaging identities and lower approximations give upper
+approximations too, making all its values computable reals. Furthermore,
+the difference \(d(s1)-d(s0)\) in the position formula need not be lower
+semicomputable or rational. Lower approximations to wealth therefore do not
+by themselves produce computable orders.
+
+There is nevertheless one left-computably-enumerable martingale succeeding
+on every non-Martin-L\"of-random record. To see this, take a universal
+Martin-L\"of test \((U_n)_{n\ge1}\), with fair-coin measure
+\(\mu(U_n)\le2^{-n}\), and put
+\[
+  D(s)=\sum_{n\ge1}\frac{\mu(U_n\cap[s])}{\mu([s])}.
+\]
+Here \([s]\) is the set of infinite extensions of \(s\).
+The sum is finite at every string, is lower semicomputable, and satisfies
+the martingale identity, with \(D(\emptyset)\le1\).
+If \(x\in\bigcap_nU_n\), each of the first arbitrarily many summands
+eventually equals one along \(x\), proving success.
+Universality here concerns successful records; it does not assert
+multiplicative domination of every left-computably-enumerable martingale.
+In particular, it is not obtained by effectively listing all such
+martingales and taking their weighted sum~\cite{DH,Nies2009}.
+
+For any specified computable record and rational \(C>0\), an ordinary rational trader can instead
+stake its available wealth on each computed next sign. Its wealth is
+\(C2^n\) along that record and becomes zero after an incorrect sign.
+Thus a computable countermarket is exploitable without bound by another
+admissible trader. For a known rule \(\Phi\) as in
+Proposition~\ref{prop:countertrader}, compute its return from the actual
+prior positions before each stake; the same doubling follows.
+The trader still depends on the specified record or rule. The universal process above uses
+a different computational class, and success concerns infinite-time
+unboundedness, not guaranteed profit at a fixed horizon.
+
+\paragraph{A probability bound}
+Under independent fair signs, every predictable admissible trader, including
+one using an independent private random seed, satisfies Ville's bound
+\cite{Ville1939}:
+\[
+  \mathbb P\!\left(\max_{0\le t\le T}G_t\ge K\right)
+  \le\frac{C}{C+K},\qquad K>0.
+\]
+For randomized traders, require measurable positions and admissibility on
+every history for each seed. Nonnegativity of both next wealth values gives
+\(\epsilon P_t|w_t|\le C+G_t\), hence \(0\le C+G_t\le2^tC\).
+Thus finite-horizon integrability follows automatically.
+Stopping this martingale when it first reaches \(C+K\), or at \(T\),
+gives \(C\ge(C+K)\mathbb P(\max_{t\le T}G_t\ge K)\).
+This quantifies Proposition~\ref{prop:randomized} without requiring
+computability of the trader.
+
 \section{Ramsey Regularity and the Finite-Pattern Trap}
 \label{sec:ramseytrap}
 
@@ -868,6 +1112,144 @@ claim must report the search universe and survive selection correction
 (data never used to choose or tune the strategy) or independent replication,
 and testing outside
 the selected regime~\cite{BaileyLopez2014}.
+
+%%------------------------------------------------------------------------------
+\section{Countertraders and Mutual Countering}
+\label{sec:countertrader}
+%%------------------------------------------------------------------------------
+
+\begin{definition}[Countertrader]
+For a specified market and initial price, a \emph{countertrader} is a total
+deterministic computable strategy satisfying
+\[
+  w_t(P_{t+1}-P_t)>0
+\]
+at every date along its interaction with that market. The strategy may
+depend on the market's program; the definition does not require discovering
+an unknown program from observations.
+\end{definition}
+
+Every fixed positive rational-valued computable price path with a nonzero
+change at every date admits such a trader. Given its generating program,
+compute the next change and set
+\(w_t=\operatorname{sgn}(P_{t+1}-P_t)\), where
+\(\operatorname{sgn}\) returns \(+1\) for a positive argument and \(-1\) for a
+negative one. The gain is \(|P_{t+1}-P_t|>0\).
+This is still a strategy of the form used in
+Section~\ref{sec:countermarket}: it can use the supplied history's length to
+find the date, compute the specified path, and ignore the observed price
+values; on the unused empty history, return zero. Its guarantee concerns
+that path only, and relies on the costless
+trading and unrestricted computation time assumed above.
+
+A similar construction applies to a market that reacts to earlier positions.
+The restriction to \emph{earlier} positions specifies the information available
+when the current return is computed.
+
+\begin{proposition}[Countertrader for a Computable Market Rule]
+\label{prop:countertrader}
+Fix rational \(P_0>0\) and rational \(0<\epsilon<1\).
+Let a total computable function
+\(\Phi\colon\mathbb Q^{<\omega}\to\{-\epsilon,+\epsilon\}\)
+determine the next proportional return by
+\[
+  r_t=\Phi(w_0,\ldots,w_{t-1}),\qquad
+  P_{t+1}=P_t(1+r_t).
+\]
+Then this market admits a countertrader, with strictly positive gain at
+every finite horizon \(T\geq1\).
+\end{proposition}
+
+\begin{proof}
+Recursively choose
+\(w_t=\operatorname{sgn}\Phi(w_0,\ldots,w_{t-1})\).
+Only previously computed positions are needed, so totality of \(\Phi\)
+makes the position sequence computable. Its gain in period \(t\) is
+\(w_tP_tr_t=\epsilon P_t>0\); summing gives the horizon claim.
+To obtain a total function on arbitrary nonempty price histories, use their
+length to regenerate this position sequence; return zero on the empty history.
+\end{proof}
+
+This does not contradict Theorem~\ref{thm:counterpath}.
+That theorem fixes a trader \(M_\sigma\) and constructs its countermarket
+\(P^{M_\sigma}\). A countertrader exploiting this path is a different trader.
+Constructing a countermarket against the replacement can produce a different
+path again. Thus every fixed trader has a countermarket, while every fixed
+computable path with nonzero changes has a countertrader.
+Each responding program depends on the opponent already specified.
+The quantifiers express dependence, not the temporal order of deployed trades.
+The success criteria also differ: the countertrader earns strictly positive
+gain, whereas the countermarket prevents strictly positive gain and cannot
+make an abstaining trader lose. Allowing flat price paths would invalidate
+the stated countertrader guarantee.
+
+\paragraph{Perfect current responses}
+
+Write \(a_t\in\{-1,+1\}\) for a unit position and
+\(d_t\in\{-1,+1\}\) for the return direction.
+A perfectly profitable trader and a perfectly opposing market would require,
+respectively,
+\[
+  a_t=d_t,\qquad d_t=-a_t.
+\]
+These equations have no solution. This rules out their simultaneous
+satisfaction, not interaction between arbitrary deterministic programs:
+any two total rules on past histories produce well-defined play.
+If each program first simulates the other on the same current history and
+returns only after that simulation returns, neither computation terminates.
+This violates the totality assumption
+\cite{FallensteinTaylorChristiano2015}.
+
+If the trader announces its current position before the market chooses the
+return, the market can oppose every nonzero position; abstention secures zero.
+If the market commits to a nonzero current return and reveals it before the
+position is chosen, the trader can profit. Knowledge of a deterministic
+opponent's code can sometimes replace observation of its action, but does not
+make incompatible perfect-response requirements consistent.
+Calling a market rational also requires assigning it an objective, such as
+minimizing this trader's gain; computability alone supplies no such objective.
+
+Total computability supplies no trading deadline. A simulation may finish
+too late. In the mutually dependent current-response construction, timeouts
+or fallback actions can restore termination only by abandoning at least one
+exact countering requirement. There is no general rule that a counterstrategy needs
+a larger computational complexity class: an always-up market is countered
+by an always-long trader. Equal computation budgets alone determine neither
+the winner nor a zero payoff.
+
+\paragraph{Hidden random choices}
+
+For a simple one-period simultaneous game, fix the current price \(P_t>0\),
+restrict positions to \(w_t\in\{-1,0,+1\}\), retain directions
+\(d_t\in\{-1,+1\}\), and assign the trader payoff
+\(\epsilon P_tw_td_t\) and the market its negative.
+This is matching pennies with an abstention option. Its value is zero.
+A mixed equilibrium, meaning neither side can improve its expected payoff
+by changing its own choice distribution alone, has a fair market direction
+and equal trader probabilities for long and short. Any remaining probability
+may be assigned to abstention. Choices are hidden and independently
+randomized. The stated distributions give expected payoff zero against every
+opposing pure action, which proves the equilibrium claim.
+There is no pure equilibrium: any fixed nonzero direction can be exploited,
+and any active fixed position can be opposed.
+
+This equilibrium statement is distinct from
+Proposition~\ref{prop:randomized}. That proposition makes every predictable
+trader's gain, subject to its integrability assumptions, a martingale under
+the specified fair-sign market law. It does not require mean-zero positions
+or establish mutual best responses. For example, always holding one share
+has expected gain zero under that law, although an opposing market would
+prefer downward moves.
+
+Reflective-oracle models provide a more general framework for consistent
+mutual reasoning through oracle access and probabilistic answers
+\cite{FallensteinTaylorChristiano2015}. This changes the computational model;
+ordinary randomization does not make exact universal next-move prediction possible.
+Related tensions between prediction and optimization arise in repeated-game
+learning under assumptions on beliefs or uncertainty about opponents' payoffs
+\cite{Nachbar1997,FosterYoung2001}. These results provide context; the
+countertrader construction and the incompatible current-response equations
+already establish the distinction needed here.
 
 %%------------------------------------------------------------------------------
 \section{Practical Robustness Diagnostics: Time Reversal and Permutations}
@@ -1022,21 +1404,20 @@ that this value need not be determined by information available at time \(t\). R
 requires additional hypotheses~\cite{HaussmannPardoux1986}. For
 example, if
 \[
-  X_t=\log(S_t/S_0)=mt+\sigma W_t,
+  X_t=\log(S_t/S_0)=mt+\nu W_t,
 \]
 \(X_t\) is the stock's cumulative log return, \(m\) its drift (average rate of
 change), and \(W_t\) standard Brownian motion, whose independent normal
 increments have mean zero and variance equal to elapsed time. Here
-\(\sigma\geq0\) denotes volatility, the scale of random fluctuations, rather
-than a trading strategy. Then \(X_{T-t}-X_T\), under the information revealed
-by the reversed increments, has drift \(-m\) and volatility \(\sigma\).
+\(\nu\geq0\) denotes volatility, the scale of random fluctuations. Then \(X_{T-t}-X_T\), under the information revealed
+by the reversed increments, has drift \(-m\) and volatility \(\nu\).
 Thus a class containing both drift signs is closed in law under this
 transformation: the transformed process has a distribution within the class.
-Under the physical, or real-world, probability law, \(m=\mu-\sigma^2/2\), where \(\mu\) is the stock's
+Under the physical, or real-world, probability law, \(m=\mu-\nu^2/2\), where \(\mu\) is the stock's
 instantaneous expected proportional return. Under a risk-neutral measure,
 a probability law used for pricing through discounted expectations, the
 discounted stock may be a martingale while its logarithm retains the
-It\^o drift \(-\sigma^2/2\), the correction caused by taking logarithms of
+It\^o drift \(-\nu^2/2\), the correction caused by taking logarithms of
 Brownian-driven prices. Zero drift in an additive Brownian price model does
 not establish detailed balance in general, meaning invariance of equilibrium
 history probabilities under time reversal. The diagnostic remains pathwise.
@@ -1058,6 +1439,13 @@ position loses on its trader-relative countermarket. This direct diagonal
 result uses no Halting-Problem reduction and identifies no single path that
 defeats every trader.
 
+The converse construction is also opponent-specific. A trader supplied
+with a total computable program for nonzero price changes can choose
+profitable positions, but remains vulnerable to a new countermarket.
+These separate constructions do not yield mutually perfect current-move
+responses: their interaction requires an explicit account of timing,
+information, and termination (Section~\ref{sec:countertrader}).
+
 The remaining limits concern different market sides. Gold precludes identifying
 every computable binary generator in the limit, while next-bit diagonalization
 defeats each fixed computable predictor on its predictor-relative record.
@@ -1070,6 +1458,14 @@ from a finite sample. Ramsey regularity explains why finite
 structured subsequences nevertheless remain abundant, including in random
 records. These conclusions are complementary because their inputs,
 quantifiers, and success criteria differ.
+
+Proposition~\ref{prop:real-cumulative} preserves cumulative nonpositivity
+even for approximation-based computable-real positions, although a computable
+path need not make every active position lose. The martingale correspondence
+in Section~\ref{sec:martingales} concerns bounded-credit trading and
+unbounded wealth over an infinite record. A universal lower-semicomputable
+capital process therefore does not provide an executable universal trader
+with strict profit at a prescribed finite horizon.
 
 These limits leave room for FAPP profitability under specified market
 conditions, lawful information, or compensation for risk. Such claims remain
@@ -1084,8 +1480,8 @@ data protocol, and deployment effects. Time reversal and other within-class
 permutations are robustness probes: one nonpositive gain refutes an all-path
 claim, while passing a finite set of probes does not certify universality.
 Useful strategies may exist, but no total deterministic computable
-self-financing rule guarantees strict gain on every positive computable price
-path.
+self-financing rule with exact rational-valued positions guarantees strict
+gain on every positive rational-valued computable price path.
 
 \begin{acknowledgments}
 This research was funded in whole or in part by the Austrian Science Fund
