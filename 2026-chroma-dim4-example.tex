@@ -13,6 +13,80 @@
 \usepackage{bm}
 \usepackage{booktabs}
 \usepackage{tikz}
+\usetikzlibrary{calc}
+
+% Symmetric Yu--Oh figure, adapted from Svozil (2025), Fig. 1(a).
+\newif\ifDistinctContexts
+\DistinctContextsfalse
+
+% Constant colours on context orbits preserve the threefold colour symmetry.
+\definecolor{YOtriad}{HTML}{246A9A}
+\definecolor{YObasis}{HTML}{8A939B}
+\definecolor{YOspoke}{HTML}{237D70}
+\definecolor{YOouterA}{HTML}{85458B}
+\definecolor{YOouterB}{HTML}{B47620}
+\definecolor{YOdiagonal}{HTML}{B44850}
+\colorlet{YOctx1}{YOtriad}
+\colorlet{YOctx2}{YOtriad}
+\colorlet{YOctx3}{YOtriad}
+\colorlet{YOctx4}{YObasis}
+\colorlet{YOctx5}{YOspoke}
+\colorlet{YOctx6}{YOspoke}
+\colorlet{YOctx7}{YOspoke}
+\colorlet{YOctx8}{YOouterA}
+\colorlet{YOctx11}{YOouterA}
+\colorlet{YOctx16}{YOouterA}
+\colorlet{YOctx9}{YOouterB}
+\colorlet{YOctx13}{YOouterB}
+\colorlet{YOctx14}{YOouterB}
+\colorlet{YOctx10}{YOdiagonal}
+\colorlet{YOctx12}{YOdiagonal}
+\colorlet{YOctx15}{YOdiagonal}
+\ifDistinctContexts
+  \definecolor{YOctx1}{HTML}{BF1FB4}
+  \definecolor{YOctx2}{HTML}{B4000A}
+  \definecolor{YOctx3}{HTML}{C99400}
+  \definecolor{YOctx4}{HTML}{555F00}
+  \definecolor{YOctx5}{HTML}{559F2A}
+  \definecolor{YOctx6}{HTML}{D48A6A}
+  \definecolor{YOctx7}{HTML}{F47400}
+  \definecolor{YOctx8}{HTML}{B4944A}
+  \definecolor{YOctx9}{HTML}{DF74BF}
+  \definecolor{YOctx10}{HTML}{744ABF}
+  \definecolor{YOctx11}{HTML}{35552A}
+  \definecolor{YOctx12}{HTML}{C955FF}
+  \definecolor{YOctx13}{HTML}{00B49F}
+  \definecolor{YOctx14}{HTML}{6A558A}
+  \definecolor{YOctx15}{HTML}{743F00}
+  \definecolor{YOctx16}{HTML}{FF0035}
+\fi
+\tikzset{
+  YOtrace/.style={line width=1.45pt,line cap=round,line join=round},
+  YOapex/.style={line width=.68pt,line cap=round,dash pattern=on 2.4pt off 2.1pt,draw opacity=.65},
+  YOlabel/.style={font=\small,inner sep=1.2pt,fill=white},
+  YOnumber/.style={font=\sffamily\fontsize{8}{8}\selectfont,inner sep=0pt},
+}
+\newcommand{\YOline}[4]{\draw[YOtrace,YOctx#1] (v#2)--(v#3)--(v#4);}
+\newcommand{\YOapexlink}[6]{%
+  \draw[YOapex,draw=YOctx#1] (#3)
+    -- ($(#3)!-#4!(#2)$)
+    .. controls ($(#3)!-#5!(#2)$) and #6 .. (v26);%
+}
+\newcommand{\YOapexvia}[9]{%
+  \draw[YOapex,draw=YOctx#1] (#3)
+    -- ($(#3)!-#4!(#2)$)
+    .. controls ($(#3)!-#5!(#2)$) and #6 .. #7
+    .. controls #8 and #9 .. (v26);%
+}
+\newcommand{\YOvertex}[2]{%
+  \foreach \context/\radius in {#2}{%
+    \fill[YOctx\context] (v#1) circle[radius=\radius cm];%
+  }%
+  \fill[white] (v#1) circle[radius=.18cm];%
+  \node[YOnumber] at (v#1) {#1};%
+}
+
+
 \usepackage{hyperref}
 
 \hypersetup{
@@ -289,7 +363,7 @@ E_{29}=\bigl\{
 \bigr\}.
 \end{aligned}
 \end{equation}
-The complete coordinate table $v_i=(x_{i,1},x_{i,2},x_{i,3},x_{i,4})^T\in\R^4$ and a strong $5$-coloring $c(i)\in\{0,1,2,3,4\}$ for all $65$ vertices are given in Eq.~\eqref{eq:h65-coordinates} (and enumerated vertex-by-vertex and context-by-context in Appendix~\ref{app:h65}). Figure~\ref{fig:hyo4} illustrates the $26$-vertex, $16$-context non-linear warm-up apex suspension $H_{\YO}^{(4)}$ of Proposition~\ref{prop:warmup} (with the common apex vertex $26$ at the center surrounded by $16$ concentric colored disks), while Fig.~\ref{fig:h65-hypergraph} presents the full $65$-vertex, $29$-context four-uniform hypergraph diagram of the canonical linear hypergraph $H_{65}$.
+The complete coordinate table $v_i=(x_{i,1},x_{i,2},x_{i,3},x_{i,4})^T\in\R^4$ and a strong $5$-coloring $c(i)\in\{0,1,2,3,4\}$ for all $65$ vertices are given in Eq.~\eqref{eq:h65-coordinates} (and enumerated vertex-by-vertex and context-by-context in Appendix~\ref{app:h65}). Figure~\ref{fig:hyo4} illustrates the $26$-vertex, $16$-context warm-up apex suspension $H_{\YO}^{(4)}$ of Proposition~\ref{prop:warmup}. Its basic $25$-vertex layout is adapted from Fig.~1(a) of Svozil~\cite{svozil-2025-color}, preserving the threefold symmetry of the base; smooth dashed continuations connect the ends of its context traces to the common apex $26$, shown at the side. Figure~\ref{fig:h65-hypergraph} presents the full $65$-vertex, $29$-context four-uniform hypergraph diagram of the canonical linear hypergraph $H_{65}$.
 
 % --- Styles and Colors from thicker-band-styles.tex ---
 \definecolor{ucA01}{HTML}{1C638E}
@@ -321,22 +395,6 @@ The complete coordinate table $v_i=(x_{i,1},x_{i,2},x_{i,3},x_{i,4})^T\in\R^4$ a
 \definecolor{ucA27}{HTML}{35AAC9}
 \definecolor{ucA28}{HTML}{7F3F55}
 \definecolor{ucA29}{HTML}{0035E9}
-\definecolor{ucB01}{HTML}{BF1FB4}
-\definecolor{ucB02}{HTML}{B4000A}
-\definecolor{ucB03}{HTML}{C99400}
-\definecolor{ucB04}{HTML}{555F00}
-\definecolor{ucB05}{HTML}{559F2A}
-\definecolor{ucB06}{HTML}{D48A6A}
-\definecolor{ucB07}{HTML}{F47400}
-\definecolor{ucB08}{HTML}{B4944A}
-\definecolor{ucB09}{HTML}{DF74BF}
-\definecolor{ucB10}{HTML}{744ABF}
-\definecolor{ucB11}{HTML}{35552A}
-\definecolor{ucB12}{HTML}{C955FF}
-\definecolor{ucB13}{HTML}{00B49F}
-\definecolor{ucB14}{HTML}{6A558A}
-\definecolor{ucB15}{HTML}{743F00}
-\definecolor{ucB16}{HTML}{FF0035}
 \definecolor{sgink}{HTML}{3D454B}
 \definecolor{sggray}{HTML}{858B90}
 \tikzset{
@@ -356,80 +414,136 @@ The complete coordinate table $v_i=(x_{i,1},x_{i,2},x_{i,3},x_{i,4})^T\in\R^4$ a
 
 \begin{figure*}[t]
 \centering
-\resizebox{.94\linewidth}{!}{%
+\resizebox{.90\linewidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
-\path[use as bounding box] (-9.243973,-5.589432) rectangle (9.243973,5.589432);
-\coordinate (v1) at (-3.216983,1.048128);
-\coordinate (v2) at (-3.567509,-0.362143);
-\coordinate (v3) at (-1.379483,-1.801989);
-\coordinate (v4) at (2.966186,-0.125290);
-\coordinate (v5) at (3.815958,-0.792939);
-\coordinate (v6) at (4.675091,-3.397791);
-\coordinate (v7) at (0.978064,-3.707941);
-\coordinate (v8) at (8.077831,-3.538823);
-\coordinate (v9) at (8.612646,1.013532);
-\coordinate (v10) at (1.646133,3.917796);
-\coordinate (v11) at (0.672313,-1.969435);
-\coordinate (v12) at (-0.970374,-3.059963);
-\coordinate (v13) at (-8.110774,-0.726462);
-\coordinate (v14) at (-0.276465,-2.438373);
-\coordinate (v15) at (0.547207,-1.507374);
-\coordinate (v16) at (5.378003,2.489894);
-\coordinate (v17) at (1.493386,-5.240418);
-\coordinate (v18) at (-0.534357,2.533443);
-\coordinate (v19) at (1.926512,2.577800);
-\coordinate (v20) at (-4.292117,1.021310);
-\coordinate (v21) at (-5.713601,1.476058);
-\coordinate (v22) at (3.672093,-2.262020);
-\coordinate (v23) at (4.147951,4.827861);
-\coordinate (v24) at (2.180609,-2.006296);
-\coordinate (v25) at (-1.212231,-1.071963);
-\coordinate (v26) at (0.000000,0.000000);
-\draw[sg/context,draw=ucB01,line width=1.20pt] (-3.216983,1.048128) arc[start angle=142.1993817,end angle=361.7082696,radius=1.7974947cm]; % T1
-\draw[sg/context,draw=ucB02,line width=1.20pt] (-0.000000,0.000000) arc[start angle=169.7543359,end angle=383.6690001,radius=4.5331288cm]; % T2
-\draw[sg/context,draw=ucB03,line width=1.20pt] (4.675091,-3.397791) arc[start angle=-6.0168023,end angle=113.9985299,radius=3.3364802cm]; % T3
-\draw[sg/context,draw=ucB04,line width=1.20pt] (8.077831,-3.538823) arc[start angle=45.2876706,end angle=104.1958857,radius=12.2739448cm]; % T4
-\draw[sg/context,draw=ucB05,line width=1.20pt] (-0.000000,-0.000000) arc[start angle=106.9547023,end angle=217.8556323,radius=1.9487608cm]; % T5
-\draw[sg/context,draw=ucB06,line width=1.20pt] (8.612646,1.013532) arc[start angle=47.3355937,end angle=178.7225923,radius=5.7128344cm]; % T6
-\draw[sg/context,draw=ucB07,line width=1.20pt] (-0.000000,-0.000000) arc[start angle=129.8205665,end angle=338.1611611,radius=2.9803858cm]; % T7
-\draw[sg/context,draw=ucB08,line width=1.20pt] (-1.379483,-1.801989) arc[start angle=209.0506577,end angle=436.0788165,radius=1.2374513cm]; % T8
-\draw[sg/context,draw=ucB09,line width=1.20pt] (0.978064,-3.707941) arc[start angle=5.9027291,end angle=23.6505801,radius=12.4294939cm]; % T9
-\draw[sg/context,draw=ucB10,line width=1.20pt] (-0.000000,0.000000) arc[start angle=157.6325035,end angle=377.5300864,radius=1.5791688cm]; % T10
-\draw[sg/context,draw=ucB11,line width=1.20pt] (8.612646,1.013532) arc[start angle=6.8715282,end angle=186.5518079,radius=4.3360553cm]; % T11
-\draw[sg/context,draw=ucB12,line width=1.20pt] (-3.216983,1.048128) arc[start angle=215.2887733,end angle=385.7999393,radius=2.8330427cm]; % T12
-\draw[sg/context,draw=ucB13,line width=1.20pt] (1.646133,3.917796) arc[start angle=87.7097871,end angle=308.4535597,radius=2.2684481cm]; % T13
-\draw[sg/context,draw=ucB14,line width=1.20pt] (-0.000000,0.000000) arc[start angle=57.1403125,end angle=133.0960496,radius=6.6166807cm]; % T14
-\draw[sg/context,draw=ucB15,line width=1.20pt] (0.978064,-3.707941) arc[start angle=-8.5029546,end angle=152.1800982,radius=4.8514497cm]; % T15
-\draw[sg/context,draw=ucB16,line width=1.20pt] (4.675091,-3.397791) arc[start angle=37.0717226,end angle=119.3263570,radius=9.9294951cm]; % T16
-\FCvertex{1}{ucB14/0.330000,ucB12/0.270000,ucB01/0.210000}
-\FCvertex{2}{ucB04/0.270000,ucB01/0.210000}
-\FCvertex{3}{ucB08/0.330000,ucB05/0.270000,ucB01/0.210000}
-\FCvertex{4}{ucB13/0.330000,ucB10/0.270000,ucB03/0.210000}
-\FCvertex{5}{ucB04/0.270000,ucB03/0.210000}
-\FCvertex{6}{ucB16/0.330000,ucB07/0.270000,ucB03/0.210000}
-\FCvertex{7}{ucB15/0.330000,ucB09/0.270000,ucB02/0.210000}
-\FCvertex{8}{ucB04/0.270000,ucB02/0.210000}
-\FCvertex{9}{ucB11/0.330000,ucB06/0.270000,ucB02/0.210000}
-\FCvertex{10}{ucB13/0.330000,ucB12/0.270000,ucB11/0.210000}
-\FCvertex{11}{ucB10/0.273358,ucB09/0.233349,ucB08/0.193341}
-\FCvertex{12}{ucB07/0.330000,ucB06/0.270000,ucB05/0.210000}
-\FCvertex{13}{ucB16/0.330000,ucB15/0.270000,ucB14/0.210000}
-\FCvertex{14}{ucB08/0.210000}
-\FCvertex{15}{ucB09/0.193341}
-\FCvertex{16}{ucB06/0.210000}
-\FCvertex{17}{ucB07/0.210000}
-\FCvertex{18}{ucB13/0.210000}
-\FCvertex{19}{ucB12/0.210000}
-\FCvertex{20}{ucB14/0.210000}
-\FCvertex{21}{ucB15/0.210000}
-\FCvertex{22}{ucB16/0.210000}
-\FCvertex{23}{ucB11/0.210000}
-\FCvertex{24}{ucB10/0.210000}
-\FCvertex{25}{ucB05/0.210000}
-\FCvertex{26}{ucB16/1.110000,ucB15/1.050000,ucB14/0.990000,ucB13/0.930000,ucB12/0.870000,ucB11/0.810000,ucB10/0.750000,ucB09/0.690000,ucB08/0.630000,ucB07/0.570000,ucB06/0.510000,ucB05/0.450000,ucB04/0.390000,ucB03/0.330000,ucB02/0.270000,ucB01/0.210000}
+% The nonagon is the symmetric outline of Fig. 1(a) of the earlier paper.
+% Rotating by 120 degrees cycles the three coordinate directions.
+\def\YOR{5.4}
+\foreach \vertex/\angle in {1/70,3/110,11/150,7/190,9/230,10/270,4/310,6/350,13/30}{%
+  \coordinate (v\vertex) at (\angle:\YOR);
+}
+\coordinate (v12) at (0,0); % h_0: fixed by the threefold rotation
+% Three coordinate rays, exactly at the midpoints of the coordinate triads.
+\coordinate (v2) at ($(v1)!.5!(v3)$);
+\coordinate (v8) at ($(v7)!.5!(v9)$);
+\coordinate (v5) at ($(v4)!.5!(v6)$);
+% Six completion vertices on the outer nonagon.
+\foreach \vertex/\first/\last in {14/3/11,15/11/7,23/9/10,18/10/4,22/6/13,20/13/1}{%
+  \coordinate (v\vertex) at ($(v\first)!.5!(v\last)$);
+}
+% Three completions on the h_0 spokes.
+\foreach \vertex/\last in {25/3,16/9,17/6}{%
+  \coordinate (v\vertex) at ($(v12)!.52!(v\last)$);
+}
+% Three completions on the long chords: identical fractional positions.
+\foreach \vertex/\first/\last in {24/11/4,19/10/1,21/13/7}{%
+  \coordinate (v\vertex) at ($(v\first)!.75!(v\last)$);
+}
+
+% Dashed paths continue outward from terminal vertices, with exact tangency.
+\coordinate (v26) at (8.05,3.55);
+\coordinate (YOgrayBefore) at ($(v2)+(-1,0)$);
+\YOapexlink{1}{v2}{v1}{0.351939419}{1.326540885}{(5.550000,4.250000)}
+\YOapexlink{2}{v8}{v7}{0.351939419}{1.813841619}{(4.050000,6.550000)}
+\YOapexlink{3}{v5}{v6}{0.351939419}{1.326540885}{(6.650000,3.550000)}
+\YOapexlink{4}{YOgrayBefore}{v2}{0.650000000}{2.450000000}{(2.050000,2.050000)}
+\YOapexlink{5}{v25}{v12}{0.231481481}{2.368233618}{(5.550000,6.550000)}
+\YOapexlink{6}{v16}{v12}{0.231481481}{0.872507123}{(6.650000,2.050000)}
+\YOapexlink{7}{v17}{v12}{0.231481481}{1.655982906}{(0.050000,6.550000)}
+\YOapexlink{8}{v14}{v3}{0.351939419}{1.326540885}{(2.050000,6.550000)}
+\YOapexlink{9}{v15}{v11}{0.351939419}{1.813841619}{(5.550000,2.050000)}
+\YOapexlink{10}{v24}{v11}{0.081484852}{0.582930092}{(0.050000,8.550000)}
+\YOapexlink{11}{v23}{v10}{0.351939419}{2.517720456}{(2.050000,2.050000)}
+\YOapexvia{12}{v19}{v10}{0.081484852}{0.231918424}{(0.100000,-6.900000)}{(1.300000,-6.900000)}{(3.300000,-6.900000)}{(2.050000,2.050000)}
+\YOapexlink{13}{v18}{v4}{0.351939419}{3.600610974}{(4.050000,2.050000)}
+\YOapexlink{14}{v20}{v13}{0.351939419}{1.326540885}{(6.650000,2.850000)}
+\YOapexlink{15}{v21}{v13}{0.081484852}{0.307135210}{(6.650000,3.550000)}
+\YOapexlink{16}{v22}{v13}{0.351939419}{1.326540885}{(6.650000,4.250000)}
+
+% Context 4: one smooth, closed threefold curve through precisely v2,v8,v5.
+% Its three Bezier pieces are exact rotations of the same seed piece.
+\pgfmathsetmacro{\YObasisR}{\YOR*cos(20)}
+\foreach \rotation in {0,120,240}{%
+  \begin{scope}[rotate=\rotation]
+    \draw[YOtrace,YOctx4]
+      (0,\YObasisR)
+      .. controls ({-.5*\YObasisR},\YObasisR)
+      and ({-(sqrt(3)/2+.25)*\YObasisR},{(-.5+.25*sqrt(3))*\YObasisR})
+      .. ({-sqrt(3)/2*\YObasisR},{-.5*\YObasisR});
+  \end{scope}
+}
+% Each solid trace is completed by its same-colour dashed connection to 26.
+\YOline{1}{3}{2}{1}
+\YOline{2}{9}{8}{7}
+\YOline{3}{4}{5}{6}
+\YOline{5}{3}{25}{12}
+\YOline{6}{9}{16}{12}
+\YOline{7}{6}{17}{12}
+\YOline{8}{11}{14}{3}
+\YOline{9}{7}{15}{11}
+\YOline{10}{4}{24}{11}
+\YOline{11}{9}{23}{10}
+\YOline{12}{1}{19}{10}
+\YOline{13}{10}{18}{4}
+\YOline{14}{1}{20}{13}
+\YOline{15}{7}{21}{13}
+\YOline{16}{6}{22}{13}
+
+% Nested context-colour rings, drawn after all traces.
+\YOvertex{1}{1/.34,12/.29,14/.24}
+\YOvertex{2}{1/.29,4/.24}
+\YOvertex{3}{1/.34,5/.29,8/.24}
+\YOvertex{4}{3/.34,10/.29,13/.24}
+\YOvertex{5}{3/.29,4/.24}
+\YOvertex{6}{3/.34,7/.29,16/.24}
+\YOvertex{7}{2/.34,15/.29,9/.24}
+\YOvertex{8}{2/.29,4/.24}
+\YOvertex{9}{2/.34,6/.29,11/.24}
+\YOvertex{10}{11/.34,13/.29,12/.24}
+\YOvertex{11}{8/.34,9/.29,10/.24}
+\YOvertex{12}{5/.34,6/.29,7/.24}
+\YOvertex{13}{16/.34,14/.29,15/.24}
+\YOvertex{14}{8/.24}
+\YOvertex{15}{9/.24}
+\YOvertex{16}{6/.24}
+\YOvertex{17}{7/.24}
+\YOvertex{18}{13/.24}
+\YOvertex{19}{12/.24}
+\YOvertex{20}{14/.24}
+\YOvertex{21}{15/.24}
+\YOvertex{22}{16/.24}
+\YOvertex{23}{11/.24}
+\YOvertex{24}{10/.24}
+\YOvertex{25}{5/.24}
+
+% Traditional symbols are supplementary labels; all numbers match the main paper.
+\foreach \angle/\symbol in {70/{y_1^+},110/{y_1^-},190/{y_2^+},230/{y_2^-},310/{y_3^+},350/{y_3^-}}{%
+  \node[YOlabel] at (\angle:6.02) {$\symbol$};
+}
+\node[YOlabel,anchor=east] at ($(v11)+(-.45,-.22)$) {$h_1$};
+\node[YOlabel] at ($(v10)+(-.48,.60)$) {$h_2$};
+\node[YOlabel] at ($(v13)+(-.76,.12)$) {$h_3$};
+\foreach \angle/\symbol in {90/{z_1},210/{z_2},330/{z_3}}{%
+  \node[YOlabel] at (\angle:{\YObasisR-.58}) {$\symbol$};
+}
+\node[YOlabel] at (.16,.62) {$h_0$};
+
+% Common apex: dashed context continuations meet underneath these rings.
+\draw[draw=black!20,rounded corners=5pt] (6.35,1.50) rectangle (9.75,5.10);
+\node[font=\sffamily\small] at (8.05,4.72) {Four-dimensional lift};
+\foreach \context/\radius in {16/.88,15/.84,14/.80,13/.76,12/.72,11/.68,10/.64,9/.60,8/.56,7/.52,6/.48,5/.44,4/.40,3/.36,2/.32,1/.28}{%
+  \fill[YOctx\context] (v26) circle[radius=\radius cm];
+}
+\fill[white] (v26) circle[radius=.22cm];
+\node[YOnumber] at (v26) {26};
+\node[font=\small] at (8.05,2.28) {common apex};
+\node[font=\small] at (8.05,1.80) {$e_m^{(4)}=e_m\cup\{26\}$};
+% Use the visible curve extents, excluding distant Bezier control handles.
+\pgfresetboundingbox
+\path[use as bounding box] (-6.580000,-7.120032) rectangle (10.080000,6.480000);
 \end{tikzpicture}%
 }
-\caption{Four-uniform hypergraph diagram of the $26$-vertex, $16$-context non-linear warm-up apex suspension $H_{\YO}^{(4)}=(V_{26},E_{16}^{(4)})$ in $\R^4$ of Proposition~\ref{prop:warmup} ($26$ pairwise non-collinear integer vectors $v_1,\ldots,v_{26}\in\mathbb{Z}^4$ enumerated in Eq.~\eqref{eq:hyo4-vectors}, $16$ four-element contexts $e_1^{(4)},\ldots,e_{16}^{(4)}$ listed in Table~\ref{tab:app-hyo4-contexts}, and $73$ orthogonality edges). Every context $e_r^{(4)}=e_r\cup\{26\}$ ($r=1,\ldots,16$) is drawn as a circular arc of a distinct color passing through its four vertices. Each vertex number is surrounded by concentric filled disks of successive radii matching the colors of its incident context arcs, with a white-filled center behind the vertex label: the $12$ completion vertices $14,\ldots,25$ have $1$ colored disk, the $3$ coordinate vertices $2,5,8$ have $2$ nested disks, the $10$ vertices $1,3,4,6,7,9,10,11,12,13$ have $3$ nested disks, and the common apex vertex $26$ at the center is surrounded by $16$ nested colored disks corresponding to all $16$ contexts containing it. Unmarked arc crossings are not vertices.}\label{fig:hyo4}
+\caption{Four-uniform context diagram of the $26$-vertex, $16$-context apex suspension $H_{\YO}^{(4)}$ of Proposition~\ref{prop:warmup}. The basic $25$-vertex Yu--Oh layout is redrawn from Svozil~\cite[Fig.~1(a)]{svozil-2025-color}, based on the configuration of Yu and Oh~\cite{Yu-2012}; the vertex numbering is that of this paper. The base geometry and context colors retain the $120^\circ$ rotational symmetry. Each solid trace contains one three-element base context; its dashed continuation leaves a terminal vertex in the same straight direction and bends smoothly to the common apex $26$, completing the four-element context $e_m^{(4)}=e_m\cup\{26\}$. The gray coordinate context $\{2,5,8\}$ continues tangentially at vertex $2$. Colors distinguish six context orbits under the rotation, and concentric rings record incident context colors. The supplementary labels $z_i,y_i^\pm$ ($i=1,2,3$) and $h_j$ ($j=0,1,2,3$) are the conventional names of the original $13$ Yu--Oh rays. Unmarked crossings are not vertices. Coordinates and all $16$ contexts are given in Eq.~\eqref{eq:hyo4-vectors} and Table~\ref{tab:app-hyo4-contexts}.}\label{fig:hyo4}
 \end{figure*}
 
 \begin{figure*}[tbp]
@@ -708,7 +822,7 @@ This distinction also appears at the probability level. Let $q=(1,1,1,-1)^T$, th
 \begin{equation}\label{eq:core-projector-sum}
 \sum_{i=1}^{17}\Pi_i=4I_4+\Pi_q.
 \end{equation}
-Every two-valued state has exactly four active core vertices, so every convex mixture of such states gives total core probability $4$. By Eq.~\eqref{eq:core-projector-sum}, quantum preparation along $q$, represented by the unit vector $q/2$, gives total core probability $5$. The existence of separating two-valued states therefore does not imply a classical model for all quantum preparations.
+Every two-valued state has exactly four active core vertices, so every convex mixture of such states gives total core probability $4$. By Eq.~\eqref{eq:core-projector-sum}, quantum preparation along $q$, represented by the unit vector $q/2$, gives total core probability $5$. The existence of separating two-valued states therefore does not imply a classical model for all quantum preparations. Appendix~\ref{app:state-independence} gives the corresponding probability inequalities and an explicit noncontextual quantum state, clarifying the limits of state independence for the fixed four-dimensional realizations.
 
 \appendix
 
@@ -941,13 +1055,13 @@ A_{13}&=\{s_{11},s_{17},s_{21}\}.
 \end{aligned}
 \end{equation}
 Consequently, $\sum_{i=10}^{13}s(i)\le1$ holds for every $s\in\mathcal{S}(H_{\YO}^{(4)})$, and no two-valued state assigns $(1,1)$ to any of the $\binom{4}{2}=6$ non-orthogonal pairs $\{10,11\}$, $\{10,12\}$, $\{10,13\}$, $\{11,12\}$, $\{11,13\}$, $\{12,13\}$.
-\item \emph{Failure of order-determinacy:} Even though $A_i\ne A_j$ for all $i\ne j$, the state space $\mathcal{S}(H_{\YO}^{(4)})$ is not order-determining on atoms or compound propositions~\cite{svozil-tkadlec}. In particular, each triad atom $t\in\{10,11,12,13\}$ (\emph{weight $3$}) is strictly dominated across all $25$ states ($A_t\subsetneq A_w$, i.e., $s(t)\le s(w)$ for all $s\in\mathcal{S}(H_{\YO}^{(4)})$) by four non-orthogonal completion atoms $w\in\{14,\ldots,25\}$ (\emph{weight $13$}):
+\item \emph{Failure of order-determinacy:} Even though $A_i\ne A_j$ for all $i\ne j$, the state space $\mathcal{S}(H_{\YO}^{(4)})$ is not order-determining on atoms or compound propositions~\cite{svozil-tkadlec}. In particular, each triad atom $t\in\{10,11,12,13\}$ (\emph{weight $3$}) is strictly dominated across all $25$ states ($A_t\subsetneq A_w$, i.e., $s(t)\le s(w)$ for all $s\in\mathcal{S}(H_{\YO}^{(4)})$) by three non-orthogonal completion atoms $w\in\{14,\ldots,25\}$ (\emph{weight $13$}):
 \begin{equation}\label{eq:hyo4-inclusions}
 \begin{aligned}
-A_{10}&\subsetneq A_{16},\,A_{20},\,A_{24},\,A_{25},&
-A_{11}&\subsetneq A_{18},\,A_{21},\,A_{22},\,A_{25},\\
-A_{12}&\subsetneq A_{14},\,A_{22},\,A_{23},\,A_{24},&
-A_{13}&\subsetneq A_{15},\,A_{17},\,A_{19},\,A_{25},
+A_{10}&\subsetneq A_{16},\,A_{20},\,A_{24},&
+A_{11}&\subsetneq A_{18},\,A_{21},\,A_{25},\\
+A_{12}&\subsetneq A_{14},\,A_{22},\,A_{23},&
+A_{13}&\subsetneq A_{15},\,A_{17},\,A_{19},
 \end{aligned}
 \end{equation}
 together with compound-event inclusions such as $A_{12}\subsetneq A_3\mathbin{\dot\cup}A_{14}$, $A_{11}\subsetneq A_3\mathbin{\dot\cup}A_{25}$, and their unions with the apex set $A_{26}=\{s_{25}\}$.
@@ -1141,6 +1255,94 @@ $E_{24}:\,(64,65)$ & $14$ & $14$ & $114{,}688$ & $\{1,2,5,6,7,8,11,12,13,14,16,1
 \end{ruledtabular}
 \end{table*}
 
+
+
+\subsection{Yu--Oh-type inequalities and the limits of state independence}\label{app:state-independence}
+
+The state tables yield a direct argument similar to Yu--Oh's~\cite{Yu-2012}, provided that its dimensional scope is specified. For either configuration, write $\Pi_i=v_iv_i^T/\|v_i\|^2$ for its normalized ray projector, and let $p_i(\rho)=\operatorname{tr}(\rho\Pi_i)$ for a density operator $\rho\ge0$ with $\operatorname{tr}\rho=1$. A noncontextual probability assignment here is a convex mixture of the two-valued states respecting every listed context. An inequality is \emph{state-independent in dimension four} only if the same fixed projectors violate it for every four-dimensional density operator. This requirement is stronger than a chromatic or fractional-chromatic gap~\cite{cabello2015sic}.
+
+\paragraph*{The Yu--Oh sector and the apex suspension.}
+For the warm-up $H_{\YO}^{(4)}$, Eq.~\eqref{eq:hyo4-triad-disjoint} shows that at most one of vertices $10,11,12,13$ is assigned $1$. The apex state assigns $1$ only to vertex $26$, whereas all other states vanish at $26$. Thus every state, and every convex mixture, satisfies the tight inequality
+\begin{equation}\label{eq:hyo4-contextuality-bound}
+\mathcal{Y}=p_{26}+\sum_{i=10}^{13}p_i\le1.
+\end{equation}
+The four normalized triad projectors satisfy
+\begin{equation}\label{eq:hyo4-contextuality-operator}
+\sum_{i=10}^{13}\Pi_i=\frac43(I_4-\Pi_{26}),
+\end{equation}
+because their outer products have diagonal sum $4/3$ on the first three coordinates and cancel off-diagonally. Consequently, quantum theory gives
+\begin{equation}\label{eq:hyo4-contextuality-gap}
+\mathcal{Y}(\rho)=1+\frac{1-p_{26}(\rho)}{3}.
+\end{equation}
+For every state supported on the three-dimensional subspace orthogonal to the apex, this is the Yu--Oh value $4/3>1$, independent of the preparation within that sector. More generally, Eq.~\eqref{eq:hyo4-contextuality-bound} is violated whenever $p_{26}(\rho)<1$. The sole exceptional density operator is $\rho=\Pi_{26}$, whose probabilities reproduce the apex state exactly. Hence the suspension inherits the Yu--Oh argument on its three-dimensional sector, but is not a state-independent contextuality set in the full four-dimensional space. The apex obstruction is the same mechanism discussed in Ref.~\cite[Theorem~1]{cabello2015sic}.
+
+\paragraph*{A contextuality witness for the linear hypergraph.}
+For $H_{65}$, the independence bound gives
+\begin{equation}\label{eq:h65-contextuality-bound}
+\mathcal{C}=\sum_{i=1}^{17}p_i\le4.
+\end{equation}
+In fact, equality holds for every convex mixture of the $393{,}216$ hypergraph states, since each has exactly four active core vertices. With $q=(1,1,1,-1)^T$ and $Q=qq^T/4=\Pi_q$, Eq.~\eqref{eq:core-projector-sum} gives
+\begin{equation}\label{eq:h65-contextuality-gap}
+\mathcal{C}(\rho)=4+\operatorname{tr}(\rho Q).
+\end{equation}
+This violates Eq.~\eqref{eq:h65-contextuality-bound} for every state with nonzero weight along $q$, including the maximally mixed state $I_4/4$, for which the value is $17/4$. It does not yet establish a violation for states supported on $q^\perp$.
+
+\paragraph*{An explicit noncontextual quantum state for all 65 rays.}
+The failure of strict violation on $q^\perp$ cannot be repaired merely by choosing another inequality for the same measurements. To see this, consider
+\begin{equation}\label{eq:h65-noncontextual-density}
+\rho_\star=\frac{I_4-Q}{3}.
+\end{equation}
+Its core probabilities are
+\begin{equation}\label{eq:h65-noncontextual-core}
+p_i(\rho_\star)=
+\begin{cases}
+1/4,&1\le i\le8,\\
+1/3,&9\le i\le11,\\
+1/6,&12\le i\le17.
+\end{cases}
+\end{equation}
+These coincide with the uniform mixture of the $24$ core supports $S_\alpha$, as follows from the core branch weights in Table~\ref{tab:app-h65-vertex-profiles}. It remains to reproduce the $48$ completion probabilities, rather than only the core.
+
+For each completion context $E_m$, put $r_{m,j}=p_{w_{m,j}}(\rho_\star)$. Its two core endpoints have probabilities $1/4$ and $1/6$, so
+\begin{equation}\label{eq:h65-noncontextual-completion}
+r_{m,1}+r_{m,2}=\frac7{12},\qquad
+\tau_m=\frac{12}{7}r_{m,2}\in[0,1].
+\end{equation}
+Choose $\alpha$ uniformly from $\{1,\ldots,24\}$ and independently choose $\lambda$ uniformly from $[0,1]$. Use $S_\alpha$ on the core. On each free context $m\in\mathcal{F}_\alpha$, set $\varepsilon_m=1$ if $\lambda<\tau_m$ and $\varepsilon_m=0$ otherwise, and use Eq.~\eqref{eq:full-state-param}; on hit contexts both completion values remain zero. Every resulting assignment is therefore one of the already enumerated two-valued states. Since precisely $14$ branches miss any given bridge edge, the completion marginals are
+\begin{equation}\label{eq:h65-noncontextual-marginals}
+\begin{aligned}
+\mathbb{E}[s(w_{m,2})]&=\frac{14}{24}\tau_m=r_{m,2},\\
+\mathbb{E}[s(w_{m,1})]&=\frac{14}{24}(1-\tau_m)=r_{m,1}.
+\end{aligned}
+\end{equation}
+Together with Eq.~\eqref{eq:h65-noncontextual-core}, this constructs a noncontextual model for all $65$ quantum probabilities of $\rho_\star$. The probabilities for a complete context determine its full outcome distribution, so the model also reproduces every listed measurement context. The same holds for compatible subsets of the named ray projectors, since distinct orthogonal rank-one projectors have zero joint products.
+
+For the coordinates given here, $\tau_m$ takes only the four values $4/9$, $5/11$, $6/11$, and $5/9$. Partitioning $[0,1]$ at these thresholds expresses the model as a mixture of at most $5\times24=120$ of the states parametrized in Appendix~\ref{app:states-h65}. Thus $H_{65}$, with this fixed realization, also admits no fully state-independent contextuality inequality for the specified ray measurements. A preparation-dependent rotation of the projectors could make $\operatorname{tr}(\rho Q)>0$ for any given preparation, but would change the measurements with the preparation and would not be a state-independent test using a fixed set~\cite{cabello2015sic}.
+
+\paragraph*{A fixed enlargement giving a state-independent argument.}
+There is nevertheless a simple way to remove the exceptional subspace by enlarging the measurement family. Let
+\begin{equation}\label{eq:fixed-core-rotations}
+\begin{aligned}
+D_0&=I_4,&D_1&=\operatorname{diag}(1,1,-1,-1),\\
+D_2&=\operatorname{diag}(1,-1,1,-1),&
+D_3&=\operatorname{diag}(1,-1,-1,1),
+\end{aligned}
+\end{equation}
+and define $\Pi_i^{(a)}=D_a\Pi_iD_a^T$ for $1\le i\le17$ and $0\le a\le3$. The four vectors $D_aq/2$ form an orthonormal basis. Applying Eq.~\eqref{eq:core-projector-sum} to each copy therefore gives
+\begin{equation}\label{eq:symmetrized-core-operator}
+\sum_{a=0}^{3}\sum_{i=1}^{17}\Pi_i^{(a)}
+=16I_4+\sum_{a=0}^{3}D_aQD_a^T=17I_4.
+\end{equation}
+Any deterministic assignment respecting pairwise orthogonality restricts to an independent set of size at most $4$ on each rotated core. Hence every convex mixture of such assignments satisfies
+\begin{equation}\label{eq:symmetrized-core-inequality}
+\sum_{a=0}^{3}\sum_{i=1}^{17}p_i^{(a)}\le16,
+\qquad\text{whereas quantum theory gives }17
+\end{equation}
+for every density operator. Repeated projectors in this sum are the same measurement event and are counted with their multiplicity. The classical bound $16$ suffices for the argument; it is not claimed to be tight. All four rotations are fixed independently of the preparation.
+
+This construction introduces seven additional core rays: its distinct rays are exactly the $24$ Peres rays~\cite{peres-91}, namely the four coordinate rays, the twelve rays $e_j\pm e_k$ ($1\le j<k\le4$), and the eight rays $(1,\pm1,\pm1,\pm1)^T$. Including all their orthogonal bases recovers the Kochen--Specker obstruction of that configuration. Thus Eq.~\eqref{eq:symmetrized-core-inequality} supplies a state-independent argument for an enlarged family, not for the original $65$ fixed rays with their separating two-valued states.
+
+Both original hypergraphs consequently support Kochen--Specker-type probability inequalities while retaining their two-valued states. The warm-up supplies the state-independent Yu--Oh argument on its three-dimensional sector; a fully four-dimensional state-independent argument requires an enlargement such as the one above.
 
 \section{Reproducible completion rule and exact verification}\label{app:verification}
 
