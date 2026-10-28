@@ -1,0 +1,1950 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=25mm]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\newif\ifmarkrevisions
+\markrevisionsfalse
+\ifmarkrevisions
+  \newcommand{\rev}[1]{{\color{blue}#1}}
+  \newenvironment{revision}{\color{blue}}{}
+\else
+  \newcommand{\rev}[1]{{\color{black}#1}}
+  \newenvironment{revision}{\color{black}}{}
+\fi
+\newcommand{\ess}{\mathop{\mathrm{ess}}}
+\newcommand{\doi}[1]{\href{https://doi.org/#1}{\nolinkurl{doi:#1}}}
+\newcommand{\locmark}[1]{\label{#1}\linelabel{line:#1}}
+\setlength{\emergencystretch}{2em}
+
+\usepackage{amsfonts}
+\usepackage{amssymb,amsthm,amsmath}
+\usepackage{enumitem}
+\usepackage{multicol}
+
+
+\newcommand{\id}{\mathop{\mathrm{id}}}
+\newcommand{\stab}{\mathop{\mathrm{stab}}\nolimits}
+\newcommand{\supp}{\mathop{\mathrm{supp}}}
+\newcommand{\type}{\mathop{\mathrm{type}}}
+\newcommand{\Sym}{\mathop{\mathrm{Sym}}}
+
+\newtheorem{prop}{Proposition}
+\newtheorem{deft}[prop]{Definition}
+
+\usepackage{orcidlink}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\pdfstringdefDisableCommands{\def\rev#1{#1}}
+\usepackage[mathlines]{lineno}
+\renewcommand\linenumberfont{\normalfont\tiny\color{black}}
+\modulolinenumbers[5]
+
+
+\begin{document}
+\title{\rev{Irreducible Local Rules and Geometric Equivalence Classes of One-Dimensional Cellular Automata}}
+
+\author{
+    Martin Schaller\,\orcidlink{0009-0000-1939-8475}\thanks{martin.roman.schaller@gmail.com} \\
+    \small{Vienna, Austria}
+    \and
+    Karl Svozil\,\orcidlink{0000-0001-6554-2802}\thanks{karl.svozil@tuwien.ac.at, \url{http://tph.tuwien.ac.at/~svozil}} \\
+    \small{Institute for Theoretical Physics, TU Wien,} \\
+    \small{Wiedner Hauptstrasse 8-10/136, 1040 Vienna, Austria}
+}
+
+\date{27 October 2026}
+\maketitle
+\linenumbers
+
+\begin{revision}
+\begin{abstract}
+We count geometric equivalence classes of one-dimensional cellular automata
+by combining irreducible local rules with the geometry of their essential
+neighbourhoods. Using the standard uniqueness of minimal memory sets, we
+derive recurrences for the stabilizer types of irreducible binary rules and
+enumerate global maps under state permutations, reflection, and
+postcomposition by shifts. Asymmetric essential neighbourhoods require an
+additional orientation term in the counting formula. We define rational
+neighbourhood scaling intrinsically as a partial operation, prove that the
+resulting similarity relation is an equivalence relation, and describe integer
+scaling as conjugacy to a product of independent copies. For binary rules on
+three- and four-site intervals, the congruence counts are respectively
+85 and 16\,656; allowing scaling gives 81 and 16\,648. These counts are also
+verified by exhaustive enumeration. On the finite set of elementary cellular
+automata, the join of similarity and topological conjugacy has 76 classes.
+\end{abstract}
+
+\section{Introduction}
+\locmark{loc:introduction}
+One-dimensional cellular automata (CAs) update a bi-infinite configuration
+over a finite alphabet by applying the same local rule at every lattice site.
+The global map determines the dynamics, but its local description is not
+unique: a neighbourhood may contain sites that the rule does not use.
+For classification, this redundancy must be separated from changes in the
+position, orientation, and scale of the sites that are actually used.
+
+The Curtis--Hedlund--Lyndon theorem characterizes CA global maps as the
+continuous maps that commute with the shift
+\cite{DBLP:journals/mst/Hedlund69,Lind_Marcus_1995}.
+Every CA also has a unique minimal memory set
+\cite[Section~1.5]{CeccheriniCoornaert2010}. This set consists exactly of
+the essential coordinates of a local representation
+\cite[Proposition~1]{CastilloVeliz2024}.
+We call a local rule irreducible when it depends on every input coordinate.
+Minimal-memory uniqueness then gives a canonical pair consisting of an
+essential neighbourhood and an irreducible rule. We use this established
+result as a foundation for enumeration, and include a short proof for
+completeness.
+
+\locmark{loc:prior-work}
+Reflection and state relabeling give the familiar finite-group classification
+of local rules. For elementary cellular automata (ECAs), the 256 binary
+three-input rules form 88 classes
+\cite{wolfram-1986,Li1990TheSO}.
+Cattaneo et al.\ \cite{CATTANEO19971593} studied transformations of the
+one-dimensional rule space. Our earlier work
+\cite{SCHALLER2025100298} counted symmetry orbits for two- and three-state
+rules and refined them by stabilizer type. Its Section~3.7 already defined
+irreducibility and discussed shift-equivalence using global maps, while
+leaving the integration of shifts into the orbit-counting framework outside
+its scope. The present paper develops that integration and accounts for
+asymmetric essential supports.
+
+Shifting local rules and neighbourhoods has also been studied by
+Acerbi et al.\ \cite{10.1007/978-3-540-73001-9_1},
+Ruivo et al.\ \cite{RUIVO2018280}, and
+Garc{\'i}a-Morales \cite{GARCIAMORALES2013276}.
+More general algebraic settings are considered in
+\cite{CASTILLORAMIREZ2020104533,Castillo-Ramirez03072023}.
+Here a shift of the essential neighbourhood acts by
+\emph{postcomposition}, $\Phi\mapsto\sigma^a\Phi$.
+It is not conjugation by $\sigma^a$: shift commutation gives
+$\sigma^a\Phi\sigma^{-a}=\Phi$.
+Thus our geometric equivalences need not preserve the dynamical system up
+to topological conjugacy.
+
+\locmark{loc:contributions}
+We distinguish the established ingredients from the contributions developed
+here as follows.
+\begin{enumerate}
+\item Minimal-memory uniqueness and the elementary inclusion--exclusion
+count for irreducible rules are recalled in Section~\ref{sec:irr}.
+The unrestricted local-rule orbit counts and stabilizer counts are taken
+from \cite{SCHALLER2025100298}.
+\item Section~\ref{sec:loc} derives recurrences that extract the
+\emph{irreducible} stabilizer counts from those unrestricted counts
+(Proposition~\ref{prop:recurrences}).
+\item Section~\ref{sec:glob} combines these counts with neighbourhood
+geometry. Proposition~\ref{prop:global-eq} describes the orientation
+splitting for asymmetric supports, and
+Proposition~\ref{prop:global-shift} gives the resulting congruence count.
+An independent exhaustive enumeration verifies the small-arity results.
+\item Propositions~\ref{prop:scaling-domain} and
+\ref{prop:similarity} formulate rational scaling on its intrinsic domain
+and establish similarity as an equivalence relation.
+Proposition~\ref{prop:global-scaling} gives the corresponding count.
+For integer scaling, Proposition~\ref{prop:product} identifies the precise
+product dynamics.
+\end{enumerate}
+
+These results concern geometric rule classification. They complement
+dynamical classifications; see \cite{VISPOEL2022133074} for a survey.
+In particular, Epperlein's classification of ECAs up to topological
+conjugacy has 83 classes
+\cite{epperlein2015classification,epperlein2017}.
+We compare that partition with our 81 similarity classes and compute their
+join on the ECA set. Section~\ref{sec:extended} explains the distinctions
+between conjugacy, moving frames, product dynamics, and factor maps.
+\end{revision}
+
+\section{Cellular Automata}
+\label{sec:CA}
+
+If $A$ is any set, we denote the size (or cardinality) of $A$ by $|A|$.
+We write $\mathcal{P}(A)$ for the power set of $A$, the set of all subsets of $A$.
+\rev{Throughout, the alphabet $\mathcal{A}$ is finite and has $k\geq2$ symbols.}
+A word $w=x_1x_2\ldots x_{m}$ over the alphabet $\mathcal{A}$ is a finite sequence of symbols
+from $\mathcal{A}$ juxtaposed, and we write $|w|$ to \rev{denote the length} of the sequence,
+that is $|x_1x_2\ldots x_{m}| = m$
+(the notation $|.|$ denotes both the size of a set and the length of a word).
+We write $\mathcal{A}^m$ for the set of all words of length $m$ over the alphabet $\mathcal{A}$.
+We denote the integer interval $\{p, p+1, \ldots, q\}$ by $[p,q]$.
+If $q < p$, then $[p,q]$ is the empty set.
+A configuration $x$ is a bi-infinite sequence over
+the alphabet $\mathcal{A}$, formally defined as a map $\mathbb{Z} \to \mathcal{A}$.
+The \rev{$i$th} element, $i \in \mathbb{Z}$, of a configuration $x$ is denoted by $x_i$.
+
+
+\begin{deft}
+\label{def:CA}
+A one-dimensional CA $A$ is a triple $(\mathcal{A}, N, f)$, where \\
+\rev{$\mathcal{A}$ is a finite set of at least two states;} \\
+$N$ is the neighbourhood, a finite set of integers of size $n$; \\
+$f$ is the local rule, a function from $\mathcal{A}^n$ to $\mathcal{A}$. \\
+Let $N=\{j_1,j_2, \ldots,j_{n}\}$ such that $j_1 < j_2 < \cdots < j_{n}$.
+The neighbourhood $N$ and the local rule $f$ induce the global map
+$\Phi^A : \mathcal{A}^\mathbb{Z} \rightarrow \mathcal{A}^\mathbb{Z}$ on the set of configurations, defined by
+$\Phi^N_f(x)_{i} = f(x_{i+j_1}x_{i+j_{2}}\ldots x_{i+j_{n}})$.
+\end{deft}
+We will also use the notation $\Phi^N_f$ for the global map, if the state set $\mathcal{A}$ is given.
+If the CA is initialised with the configuration $x$, the CA computes in one step
+the configuration $\Phi^N_f(x)$.
+In case of $\mathcal{A} = \{0,1\}$, the CA, the local rule, and the global map, are all called binary.
+The shift map (or operator) on $\mathcal{A}^\mathbb{Z}$ maps a configuration $x$ to the configuration $\sigma(x)$
+whose $i$th coordinate is $\sigma(x)_i = x_{i+1}$.
+It follows from the definition of the CA, that the global map commutes with the shift operator, that is
+$\Phi^N_f(\sigma(x)) = \sigma(\Phi^N_f(x))$.
+
+\begin{revision}
+For distinct configurations $x,y\in\mathcal{A}^{\mathbb Z}$, put
+\[
+d(x,y)=2^{-\min\{|i|:x_i\ne y_i\}},\qquad d(x,x)=0.
+\]
+This metric induces the product topology on $\mathcal{A}^{\mathbb Z}$.
+The alphabet is equipped with the discrete topology.
+\end{revision}
+
+The following proposition, see \cite{DBLP:journals/mst/Hedlund69}, shows that CAs can also be defined by topological means.
+\begin{prop}[\rev{Curtis--Hedlund--Lyndon} Theorem]
+A map of $\mathcal{A}^\mathbb{Z}$ into $\mathcal{A}^\mathbb{Z}$ is the global map of a CA if and only if
+the map is continuous and commutes with the shift operator.
+\end{prop}
+\rev{A presentation of this theorem and symbolic dynamics is given
+in~\cite{Lind_Marcus_1995}.}
+\begin{revision}
+\locmark{loc:dynamical-definitions}
+For continuous maps $\Phi:X\to X$ and $\Psi:Y\to Y$, a continuous
+map $h:X\to Y$ satisfying $h\circ\Phi=\Psi\circ h$ is a
+homomorphism of dynamical systems \cite[p.~185]{Lind_Marcus_1995}.
+Terminology for semiconjugacy varies; here we use \emph{semiconjugacy},
+or \emph{factor map}, for a surjective homomorphism. A topological
+conjugacy is a homeomorphism satisfying the same intertwining identity.
+A topological conjugacy between CA dynamical systems is not required
+to commute with the spatial shift.
+\end{revision}
+We call the set $L_\mathcal{A}(n) = \{f \, | \, f : \mathcal{A}^n \to \mathcal{A} \}$ the local rule space of
+arity $n$ over the alphabet $\mathcal{A}$.
+If we set $k = |\mathcal{A}|$, the size of $L_{\mathcal{A}}(n)$ is $k^{k^n}$.
+The set $G_\mathcal{A}(N) = \{ \Phi^N_f \, | \, f \in L_\mathcal{A}(|N|) \}$ is called the global rule
+space on the neighbourhood $N$ over the alphabet $\mathcal{A}$.
+Wolfram~\cite{wolfram-1986} introduced a commonly used coding schema to enumerate the local rule space $L_{\{0,1\}}(n)$.
+Let $f \in L_{\{0,1\}}(n)$ be a binary local rule.
+The Wolfram code $c(f)$ of $f$ is the nonnegative integer
+\[
+c(f) = \sum_{a_1\ldots a_{n} \in \{0,1\}^n} f(a_1\ldots a_{n}) \times 2^{\sum_{i=1}^{n} a_i 2^{n-i}}.
+\]
+This summation uses the left-to-right most significant bit (MSB) convention.
+If $f: \{ 0, 1 \}^n \to \{ 0, 1 \} $ is a local rule,
+we define $W^n_{c(f)} = f$.
+We denote the constant functions $f() = 0$ and $g() = 1$, both of arity 0, by
+$W^0_0$ and $W^0_1$, respectively.
+If this coding schema is used in combination with a global map, the arity of $f$ can be derived
+from the neighbourhood, for instance, we can write
+$\Phi^{[-1,1]}_{W_{110}}$ instead of $\Phi^{[-1,1]}_{W^3_{110}}$.
+
+A global map of a CA can have different representations in terms of
+local rules and neighbourhoods.
+The binary identity map $\id: \{0,1\}^\mathbb{Z} \to \{0,1\}^\mathbb{Z}$,
+$\id(x) = x$ serves as a trivial example.
+For each neighbourhood $N$ that contains the integer 0,
+the map $\id$ has a different representation, so that for instance
+\[
+\id = \Phi^{\{0\}}_{W_2} = \Phi^{[0,1]}_{W_{12}} = \rev{\Phi^{[-1,1]}_{W_{204}}}.
+\]
+\rev{More generally, if $N_2 \subseteq N_1$} then $G_\mathcal{A}(N_2) \subseteq G_\mathcal{A}(N_1)$.
+\rev{In the next section} we will see that each global map of a CA
+has a unique canonical representation.
+
+\section{Irreducibility}
+\label{sec:irr}
+\begin{revision}
+\locmark{loc:minimal}
+The uniqueness of a minimal memory set is standard
+\cite[Section~1.5, Propositions~1.5.1--1.5.2]{CeccheriniCoornaert2010};
+see also \cite[Proposition~1]{CastilloVeliz2024} for its characterization by
+essential coordinates. Propositions~\ref{prop:uniqueness} and
+\ref{prop:eq-cont} recall this fact in the notation used here; they are
+background results, not an inverse or extension of the
+Curtis--Hedlund--Lyndon theorem.
+\end{revision}
+A local rule $f : \mathcal{A}^n \to \mathcal{A}$ is said to be dependent on index $j$, $1 \le j \le n$,
+if there is a word $a_1\ldots a_{j-1}a_{j+1}\ldots a_{n} \in \mathcal{A}^{n-1}$ and
+symbols $b, c \in \mathcal{A}$ such that
+$f(a_1\ldots a_{j-1}ba_{j+1}\ldots a_{n}) \ne f(a_1\ldots a_{j-1}ca_{j+1}\ldots a_{n})$,
+otherwise $f$ is said to be independent of the index $j$.
+The local rule $f: \mathcal{A}^n \to \mathcal{A}$ is said to be irreducible
+if $f$ depends on all its indices, otherwise
+$f$ is said to be reducible.
+A CA $(\mathcal{A}, N, f)$ is said to be irreducible or reducible, if its local rule $f$ is
+irreducible or reducible, respectively.
+Define
+ \[
+\supp(f) = \{ j \, | \, \mbox{$f$ depends on coordinate $j$} \}.
+\]
+Then the local rule $f: \mathcal{A}^n \to \mathcal{A}$ is irreducible if and only if
+$|\supp(f)| = n$.
+
+A map $h: \mathcal{A}^n \to \mathcal{A}^m$, $m \le n$, is called a projection if
+there are integers $p_1, \ldots, p_{m}$ with $1 \leq p_1 < \ldots < p_{m} \leq n$ such that
+$h(a_1\ldots a_{n}) = a_{p_1}\ldots a_{p_{m}}$ for all words $a_1\ldots a_{n} \in \mathcal{A}^n$.
+The set $\{p_1, \ldots, p_{m}\}$ is called the index set of the projection.
+The map $H$ associates a projection with its index set, that is $H(h) = \{p_1, \ldots, p_{m}\}$.
+The number of distinct projections $h : \mathcal{A}^n \to \mathcal{A}^m$ is given by
+the binomial coefficient $\binom{n}{m}$.
+If $f: \mathcal{A}^n \to \mathcal{A}$ is a local rule and $|\supp(f)| = m$,
+then there is an irreducible local rule $g: \mathcal{A}^m \to \mathcal{A}$ and a projection
+$h : \mathcal{A}^n \to \mathcal{A}^m$ such
+that $f = g \circ h$.
+This representation is unique.
+This means that if $f = g^\prime \circ h^\prime$, $g^\prime$ is irreducible, and $h^\prime$ is a projection,
+then $g = g^\prime$ and $h = h^\prime$.
+Define $\overline{L}_\mathcal{A}(n) = \{f \in L_\mathcal{A}(n) \, | \, \mbox{$f$ is irreducible}  \}$ and
+$\overline{G}_\mathcal{A}(N) = \{ \Phi_f^N \ | \ f \in \overline{L}_\mathcal{A}(|N|) \}$.
+\begin{prop}
+\label{prop:uniqueness}
+If $A=(\mathcal{A}, N_1, f_1)$ and $B=(\mathcal{A}, N_2, f_2)$ are two irreducible CAs,
+then $\Phi^A = \Phi^B$ if and only if $A=B$, that is if $N_1 = N_2$ and $f_1 = f_2$.
+\end{prop}
+\begin{proof}
+If $N_1 = N_2$, then $\Phi^A = \Phi^B$ implies $f_1 = f_2$.
+We therefore assume that $N_1 \neq N_2$.
+Consequently, $N_1 \setminus N_2$ is nonempty, or $N_2 \setminus N_1$ is nonempty.
+Without loss of generality, suppose that $N_1 \setminus N_2$ is nonempty.
+Let $N_1 = \{j_1, \ldots, j_{n} \}$ and suppose $j_r \in N_1 \setminus N_2$.
+The irreducibility of $f_1$ implies that there are words
+$w_1 = a_1 \ldots a_{r-1}ba_{r+1} \ldots a_{n}$ and
+$w_2 =a_1 \ldots a_{r-1}ca_{r+1} \ldots a_{n}$ in $\mathcal{A}^n$
+such that $f_1(w_1) \neq f_1(w_2)$.
+Construct two configurations $x$ and $y$ as follows.
+Fix a symbol $d \in \mathcal{A}$.
+If $i \not\in N_1$ set $x_i = y_i = d$.
+If $j_i \in N_1$ and $j_i \neq j_r$ set $x_{j_i} = y_{j_i} = a_i$.
+Set $x_{j_r} = b$ and $y_{j_r} = c$.
+From the construction of $x$ and $y$ follows that $\Phi^A(x)_0 = f_1(w_1) \neq f_1(w_2) = \Phi^A(y)_0$ and
+$\Phi^B(x)_0 = \Phi^B(y)_0$.
+Thus $\Phi^A(x) \neq \Phi^B(x)$ or $\Phi^A(y) \neq \Phi^B(y)$.
+\end{proof}
+\rev{Proposition~\ref{prop:uniqueness}, the irreducible factorization above, and the Curtis--Hedlund--Lyndon theorem imply the next proposition.}
+\begin{prop}
+\label{prop:eq-cont}
+If  $\Psi: \mathcal{A}^\mathbb{Z} \to \mathcal{A}^\mathbb{Z}$ is a continuous map that commutes with the shift operator $\sigma$,
+then there is exactly one irreducible CA $A$ such that $\Psi = \Phi^A$.
+\end{prop}
+\begin{revision}
+\locmark{loc:essential}
+Let $\mathcal C_{\mathcal A}$ be the set of continuous maps on
+$\mathcal A^{\mathbb Z}$ that commute with the shift, equivalently
+the set of all CA global maps over $\mathcal A$.
+By Proposition~\ref{prop:eq-cont}, it is in bijection with the irreducible
+CAs over that alphabet.
+For $\Phi\in\mathcal C_{\mathcal A}$, write $E(\Phi)$ for its unique
+essential neighbourhood and $f_\Phi$ for its irreducible local rule.
+If $\Phi=\Phi_f^N$ and $N=\{j_1<\cdots<j_n\}$, then
+\[
+E(\Phi)=\{j_i:i\in\supp(f)\}.
+\]
+
+\end{revision}
+
+\begin{prop}\label{prop:inclusion}
+If $k=|\mathcal{A}|$, the size of $\overline{L}_\mathcal{A}(n)$ is given by $\sum_{i=0}^n (-1)^{n-i} \binom{n}{i} k^{k^i}$.
+\end{prop}
+\begin{proof}
+Fix the alphabet $\mathcal{A}$ and put $k = |\mathcal{A}|$.
+Set $a_n = |L_\mathcal{A}(n)| = k^{k^n}$ and $b_n = |\overline{L}_\mathcal{A}(n)|$.
+Let $j \leq n$ and $f \in \overline{L}_\mathcal{A}(j)$.
+Then $f$ contributes $\binom{n}{j}$ times to $a_n$.
+We obtain the recurrence relation
+\[
+a_n = \sum_{j=0}^n \binom{n}{j} b_j.
+\]
+We plug the asserted equation
+\[
+b_j = \sum_{i=0}^j (-1)^{j-i} \binom{j}{i} a_i
+\] into this relation and get
+\begin{eqnarray*}
+a_n = \sum_{j=0}^n \binom{n}{j} \sum_{i=0}^j (-1)^{j-i} \binom{j}{i} a_i
+= \sum_{i=0}^n a_i \sum_{j=i}^n (-1)^{j-i} \binom{n}{j} \binom{j}{i}.
+\end{eqnarray*}
+The inner sum is known to satisfy the identity $\sum_{j=i}^n (-1)^{j-i} \binom{n}{j} \binom{j}{i} = \delta_{in}$, where $\delta_{in}$ is the Kronecker delta (equal to 1 if $i=n$, and 0 otherwise) \cite[p.~169]{Graham94}.
+Thus the right hand side collapses to $a_n$, verifying the formula.
+\end{proof}
+
+\begin{table}
+\begin{center}
+\caption{Number of binary local rules.}
+\label{tab:irr}
+\begin{tabular}{|l|c|c|c|c|c|c|} \hline
+$n$       & 0 & 1 & 2  & 3   & 4       & 5 \\ \hline
+$|\overline{L}_2(n)|$   & 2 & 2 & 10 & 218 & 64\,594 & 4\,294\,642\,034\\ \hline
+$|L_2(n)|$              & 2 & 4 & 16 & 256 & 65\,536 & 4\,294\,967\,296\\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The cardinalities of the binary local rule spaces for a small number of arguments are
+depicted in Table~\ref{tab:irr}.
+Let $H_\mathcal{A}(n, m)$ denote the set of projections $h : \mathcal{A}^n \to \mathcal{A}^m$.
+The definition of an irreducible function implies the first part of the following proposition,
+\rev{using $\mathcal A^0=\{\varepsilon\}$, the singleton containing the empty word; a nullary rule selects one symbol of $\mathcal A$.}
+The other two statements are simple conclusions from Proposition~\ref{prop:uniqueness}.
+\begin{prop}
+\label{prop:props}
+\rev{Let $n\geq0$ and let $N,N_1,N_2$ be finite subsets of $\mathbb Z$.}
+Then
+\begin{enumerate}[label=(\roman*)]
+\item
+$
+L_\mathcal{A}(n) = \bigcup_{0 \le m \le n} \{ g \circ h \ | \ g \in \overline{L}_\mathcal{A}(m), h \in H_\mathcal{A}(n,m) \};
+$
+\item
+$
+G_\mathcal{A}(N) = \bigcup_{M\subseteq N} \overline{G}_\mathcal{A}(M);
+$
+\item
+$
+G_\mathcal{A}(N_1) \cap G_\mathcal{A}(N_2) = G_\mathcal{A}(N_1 \cap N_2).
+$
+\end{enumerate}
+\end{prop}
+\section{Local Rules}
+\label{sec:loc}
+
+\subsection{Symmetry Transformations}
+\label{sec:loc-symm}
+
+We now describe two transformations on the local rule space, one is based
+on the permutation of the state set, the other one results from a reflection of a configuration.
+
+Let $S_\mathcal{A}$ be the symmetric group of degree $|\mathcal{A}|$,
+that is the set of all permutations of the set $\mathcal{A}$,
+and suppose $\nu \in S_\mathcal{A}$.
+If $a \in \mathcal{A}$ we write the image of $a$ under $\nu$ as product $\nu a$.
+The extension of $\nu$ to words is defined by elementwise application.
+If $w = a_1\ldots a_{n} \in \mathcal{A}^n$ is a word,
+set $\nu w  = (\nu a_1) \ldots (\nu a_{n})$.
+Suppose $f$ is a local rule from $\mathcal{A}^n$ to $\mathcal{A}$.
+The permutation operator $\hat{\nu}$ is
+defined by
+$\hat{\nu}f(w) = \nu f ( \nu^{-1} w)$ for all words $w \in \mathcal{A}^n$.
+Note that the  ``hat'' on the operator is necessary, because $\nu f$ and
+$\hat{\nu} f$ are distinct entities.
+The first one is the composite function $\nu \circ f$, whereas the second represents
+the composite function $\nu \circ f \circ \nu^{-1}$.
+
+If $w = a_1\ldots a_{n} \in \mathcal{A}^n$ is a word,
+define the reflection of $w$ by $rw  = a_{n} \ldots a_1$.
+Let $f$ be a local rule.
+The reflection operator $\hat{r}$ is defined by $\hat{r} f(w) = f(rw)$.
+Since $r$ is self-inverse ($r^{-1} = r$),
+and $ra = a$ for all symbols $a \in \mathcal{A}$, we can also write $\hat{r} f(w) = rf(r^{-1}w)$,
+which makes the notation consistent with that of the permutation operator.
+
+Both operators, the permutation and the reflection operator, transform the rule
+space $L_\mathcal{A}(n)$.
+Because both of the operators map an irreducible local rule to another irreducible rule,
+the operators can also be restricted to the rule space $\overline{L}_\mathcal{A}(n)$.
+The set $R = \{1, r\}$, is called the reflection group.
+The direct product of $R$ and $S_\mathcal{A}$, written as $RS_\mathcal{A}$, is the group that contains all permutations,
+the reflection and their products.
+We denote the group $RS_\mathcal{A}$ by  $\mathcal{S}_\mathcal{A}$.
+
+Suppose that $\alpha$ and $\beta$ are in $\mathcal{S}_\mathcal{A}$.
+Then
+\[
+\hat{\alpha} \hat{\beta} f (w)  = \alpha \hat{\beta} f(\alpha^{-1} w)
+= \alpha \beta f( \beta^{-1} \alpha^{-1} w) = \widehat{\alpha \beta} f(w).
+\]
+The operators form a group that is in general isomorphic to $\mathcal{S}_\mathcal{A}$,
+\rev{but for $n=0$ or $n=1$ the action is not faithful, since reflection acts trivially.}
+Note that the reflection operator commutes with all permutation operators.
+If $\alpha \in \mathcal{S}_\mathcal{A}$, and $f$ is a local rule such that $\hat{\alpha} f = f$,
+the local rule $f$ is said to be invariant under the symmetry transformation $\alpha$.
+
+A group action of a group $G$ on a set $A$ is a map of $G \times A$ into $A$
+satisfying the following properties, see e.g.~\cite{rotman2012introduction}:
+\begin{enumerate}[label=(\roman*)]
+\item $g_1(g_2a) = (g_1g_2)a$ for all $g_1,g_2 \in G$, $a \in A$, and
+\item $1a=a$, for all $a \in A$.
+\end{enumerate}
+
+The map $\mathcal{S}_\mathcal{A} \times L_\mathcal{A}(n) \to L_\mathcal{A}(n)$; \rev{$(\alpha, f) \mapsto \hat{\alpha} f$}
+fulfils the properties of a group action.
+The relation on $L_\mathcal{A}(n)$, defined by $f \sim g$ if and only if $f = \hat{\alpha} g$ for some
+$\alpha \in \mathcal{S}_\mathcal{A}$, is an equivalence relation.
+The equivalence classes $[f] = \{ \hat{\alpha}f \, | \, \alpha \in \mathcal{S}_\mathcal{A} \}$ form a partition
+of the rule space $L_\mathcal{A}(n)$.
+The set of all equivalence classes of $L_\mathcal{A}(n)$ is denoted by $L_\mathcal{A}(n) / \mathcal{S}_\mathcal{A}$.
+
+Let $U$ be a subgroup of $\mathcal{S}_\mathcal{A}$ (denoted $U \le \mathcal{S}_\mathcal{A}$).
+The conjugacy class of $U$ is the set of subgroups
+$[U] = \{ V \le \mathcal{S}_\mathcal{A} \, | \, \mbox{ $V = \alpha U \alpha^{-1}$ for some $\alpha \in \mathcal{S}_\mathcal{A}$} \}$.
+The stabilizer of a local rule $f \in L_\mathcal{A}(n)$ is the set
+$\stab(f) = \{ \alpha \in \mathcal{S}_\mathcal{A} \ | \rev{\hat{\alpha}f = f} \}$.
+An equivalence class $\rev{[f] \in L_\mathcal{A}(n) / \mathcal{S}_\mathcal{A}}$ is said to be of
+type $[U]$ if the stabilizer of some $g$ in $[f]$ belongs to $[U]$.
+
+If $\mathcal{A} = \{0,1\}$, we write $S_2$ for $S_{\{0,1\}}$, $L_2(n)$ for $L_{\{0,1\}}(n)$, and so on for the other notation
+we introduced so far.
+The group $S_2$ consists of the two elements $1$ and $c$, where $1$ is the identity, and $c = (01)$ is the transposition of
+0 and 1.
+The group $\mathcal{S}_2$ is Abelian, consists of the four elements $1$, $r$, $c$, and $rc$, and is isomorphic to the Klein four-group.
+\rev{For an Abelian group, conjugacy classes of subgroups are singletons, so an orbit type can be identified with its stabilizer subgroup.}
+Hence the types of $\mathcal{S}_2$ are the subgroups of $\mathcal{S}_2$ which are $\langle 1 \rangle$, $\langle r \rangle$, $\langle c \rangle$,
+$\langle rc \rangle$, and $\langle r, c \rangle = \mathcal{S}_2$.
+\begin{revision}
+The notation $\langle\alpha,\beta,\ldots\rangle$ denotes the subgroup generated by the displayed elements.
+\end{revision}
+
+Define
+\[
+t^U_n = \{ [f] \in L_2(n) / \mathcal{S}_2 \, | \, \stab(f) = U \}
+\]
+for $U \le \mathcal{S}_2$.
+The set $t^U_n$ consists of all equivalence classes of $L_2(n)$ that have type $U$.
+The sets $t^U_n$, $U \le \mathcal{S}_2$, \rev{form a partition of $L_2(n) / \mathcal{S}_2$}, so
+\[
+L_2(n) / \mathcal{S}_2 = \bigcup_{U \le \mathcal{S}_2} t^U_n.
+\]
+The calculation of the number of equivalence classes
+$|L_2(n) / \mathcal{S}_2|$ and of the numbers $|t^U_n|$, $U \le \mathcal{S}_2$,
+can be found in \cite{SCHALLER2025100298}, where groups, group actions, and related concepts in the context of CAs
+are also presented in more detail.
+
+
+\subsection{Irreducible Binary Rules}
+
+The restriction of the group action to
+$\mathcal{S}_2 \times \overline{L}_2(n) \to \overline{L}_2(n)$ is well-defined.
+The group action leads to the equivalence classes $\overline{L}_2(n) / \mathcal{S}_2$
+and the classification by types
+\[
+\overline{t}^U_n = \{ [f] \in \overline{L}_2(n) / \mathcal{S}_2 \, | \, \stab(f) = U \}
+\]
+ for $U \le \mathcal{S}_2$.
+We will now derive the number of equivalence classes of $\overline{L}_2(n) / \mathcal{S}_2$ and the numbers
+$|\overline{t}^U_n|$, $U \le \mathcal{S}_2$,
+from the numbers $|t^U_n|$, $U \le \mathcal{S}_2$.
+
+For any projection $h$, we define $\hat{r} h = r \circ h \circ r$.
+The projection $h$ is said to be reflection-invariant if $\hat{r}h = h$.
+Let $g \circ h$ be a local rule,  where $g$ is an irreducible local rule and $h$ is a projection.
+Then
+\[
+\hat{r}(g \circ h)  = g \circ h \circ  r  = g \circ r \circ r \circ h \circ r =
+\hat{r}g \circ \hat{r}h.
+\]
+We have adopted the convention that a unary function operator binds more strongly than function composition.
+It follows that if $f = g \circ h$, then $\hat{r} f = f$ if and only if $g = \hat{r}g$ and $h = \hat{r}h$.
+Suppose $h: \mathcal{A}^n \to \mathcal{A}^m$ is a projection and $H(h) = \{p_1, \ldots, p_m\}$.
+Then
+\begin{align*}
+\hat{r}h(a_1\ldots a_n) & = r \circ h \circ r(a_1\ldots a_n) =
+r \circ h(a_n \ldots a_1) \\
+& = r(a_{n+1-{p_1}} \ldots a_{n+1-{p_m}})
+= a_{n+1-{p_m}} \ldots a_{n+1-p_1}.
+\end{align*}
+We see that the index set of $\hat{r}h$ relates to the index set of $h$ by
+$H(\hat{r}h) = n + 1 - H(h)$.
+We need to know how many projections $h: \mathcal{A}^n \to \mathcal{A}^m$ are reflection-invariant.
+The question can be rephrased by asking how many ways there are to arrange $m$ balls symmetrically into
+$n$ slots, \rev{with each slot} holding at most one ball.
+\begin{prop}
+\label{prop:inv-h}
+Suppose there are $m$ balls and $n$ slots \rev{where $0\leq m\leq n$ and each slot can hold at most one ball.}
+Then there are $\alpha_{n,m}$ arrangements of balls in slots that are reflection-symmetrical,
+where $\alpha_{n,m}$ is defined by
+\[
+\alpha_{n,m} = \left\{
+\begin{array}{ll}
+0 & \mbox{if $n$ is even and $m$ is odd}, \\
+\binom{\lfloor \frac{n}{2} \rfloor }{\lfloor \frac{m}{2} \rfloor } & \mbox{otherwise;}
+\end{array}
+\right.
+\]
+and where $\lfloor.\rfloor : \mathbb{R} \to \mathbb{Z}$,
+$\lfloor x \rfloor = \mathrm{max}\{ p \in \mathbb{Z} \, | \, p \le x\}$, is the floor function.
+The number of arrangements that are not reflection-symmetrical is denoted by $\beta_{n,m}$ defined by
+\[
+\beta_{n,m} = \binom{n}{m} - \alpha_{n,m}.
+\]
+\end{prop}
+\begin{proof}
+We distinguish between four cases in which $m$ is even or odd and $n$ is even or odd.
+
+If $m$ and $n$ are even, there are $\binom{n/2}{m/2}$ ways to
+arrange $m/2$ balls on the left half of the slots.
+The arrangement of the balls on the right half of the slots follows from the reflection symmetry.
+
+If $m$ is even and $n$ is odd, the slot in the center must remain empty,
+so there are $\binom{(n-1)/2}{m/2}$ possibilities.
+
+If $m$ is odd and $n$ is odd, and if $m \ge 1$, one ball must go into the slot in the middle.
+Therefore, there are $\binom{(n-1)/2}{(m-1)/2}$ possibilities.
+
+If $m$ is odd and $n$ is even, the number of balls in the left half of the slots cannot be equal
+to the number of balls in the right half of the slots.
+Therefore, there is no arrangement.
+
+This proves the statement about $\alpha_{n,m}$.
+Since $\alpha_{n,m} + \beta_{n,m} = \binom{n}{m}$ the statement about $\beta_{n,m}$ follows.
+\end{proof}
+\begin{revision}
+\locmark{loc:stabilizer-proof}
+Fix an irreducible local orbit $[g]\in\overline t_m^U$, and write a
+padded rule as $f=g\circ h$, where $h$ is a projection from $n$ inputs
+onto $m$ inputs. State complementation preserves the selected
+coordinates, whereas reflection replaces $h$ by $\hat rh$. Uniqueness
+of the irreducible factorization therefore gives
+\begin{equation}\label{eq:projection-stabilizer}
+\stab(g\circ h)=
+\begin{cases}
+U,&h=\hat rh,\\
+U\cap\langle c\rangle,&h\ne\hat rh.
+\end{cases}
+\end{equation}
+Indeed, an element involving reflection can fix $g\circ h$ only if it
+fixes the projection's index set; once that set is fixed, it must also
+fix $g$. Elements involving only state complementation fix $h$
+automatically and fix $g\circ h$ exactly when they fix $g$.
+
+Each of the $\alpha_{n,m}$ reflection-invariant projections produces
+one padded orbit of type $U$. The remaining projections occur in
+$\beta_{n,m}/2$ distinct pairs $\{h,\hat rh\}$. For each such pair,
+the set
+\[
+\{g'\circ h,g'\circ\hat rh:g'\in[g]\}
+\]
+has $2|[g]|=8/|U|$ elements, all with stabilizer
+$U\cap\langle c\rangle$. By the orbit--stabilizer theorem and
+Lagrange's theorem, an orbit with stabilizer $V$ has size
+$[\mathcal S_2:V]=4/|V|$. Thus each padded orbit here has
+$4/|U\cap\langle c\rangle|$ elements, and the displayed set consists of
+$2|U\cap\langle c\rangle|/|U|$ padded orbits. The contributions
+of one irreducible orbit are thus as follows:
+\[
+\begin{array}{c|c|c}
+U&\text{symmetric projections}&\text{asymmetric projection pairs}\\\hline
+\langle1\rangle&\alpha_{n,m}\text{ of type }\langle1\rangle
+ &\beta_{n,m}\text{ of type }\langle1\rangle\\
+\langle c\rangle&\alpha_{n,m}\text{ of type }\langle c\rangle
+ &\beta_{n,m}\text{ of type }\langle c\rangle\\
+\langle r\rangle&\alpha_{n,m}\text{ of type }\langle r\rangle
+ &\beta_{n,m}/2\text{ of type }\langle1\rangle\\
+\langle rc\rangle&\alpha_{n,m}\text{ of type }\langle rc\rangle
+ &\beta_{n,m}/2\text{ of type }\langle1\rangle\\
+\mathcal S_2&\alpha_{n,m}\text{ of type }\mathcal S_2
+ &\beta_{n,m}/2\text{ of type }\langle c\rangle
+\end{array}
+\]
+Different irreducible orbits or different projection pairs give disjoint
+sets of padded rules, again by unique factorization. Multiplying each
+row by $|\overline t_m^U|$ and summing over $0\leq m\leq n$ gives
+the unrestricted type counts. Since $\alpha_{n,n}=1$ and
+$\beta_{n,n}=0$, isolating the term $m=n$ gives the following recurrences.
+\end{revision}
+
+\begin{prop}
+\rev{\label{prop:recurrences}\locmark{loc:recurrences}The numbers of equivalence classes of $\overline L_2(n)$ by type are given by}
+\begin{equation*}
+  \relax
+  \begin{aligned}
+|\overline{t}_n^{\mathcal{S}_2}| &= |t_n^{\mathcal{S}_2}| - \sum_{m=0}^{n-1} \alpha_{n,m} |\overline{t}_m^{\mathcal{S}_2}|; \\
+|\overline{t}_n^{\langle r \rangle}| &= |t_n^{\langle r \rangle}|
+        - \sum_{m=0}^{n-1} \alpha_{n,m} |\overline{t}_m^{\langle r \rangle}|; \\
+|\overline{t}_n^{\langle rc \rangle}| &= |t_n^{\langle rc \rangle}|
+        - \sum_{m=0}^{n-1} \alpha_{n,m} |\overline{t}_m^{\langle rc \rangle}|; \\
+|\overline{t}_n^{\langle c \rangle}| &= |t_n^{\langle c \rangle}|
+        - \sum_{m=0}^{n-1} \left[ \binom{n}{m} |\overline{t}_m^{\langle c \rangle}|
+        + \frac{1}{2} \beta_{n,m} |\overline{t}_m^{\mathcal{S}_2}| \right]; \\
+|\overline{t}_n^{\langle 1 \rangle}| &=  |t_n^{\langle 1 \rangle}|
+        - \sum_{m=0}^{n-1} \left[ \binom{n}{m} |\overline{t}_m^{\langle 1 \rangle}|
+        + \frac{1}{2} \beta_{n,m}  \left( |\overline{t}_m^{\langle r \rangle}|
+        + |\overline{t}_m^{\langle rc \rangle}| \right) \right].
+  \end{aligned}
+\end{equation*}
+\end{prop}
+
+\begin{table}
+\begin{center}
+\caption{Number of equivalence classes of irreducible local rules.}
+\label{tab:s2_fs}
+\begin{tabular}{|l|r|r|r|r|r|r|}
+\hline
+       & \multicolumn{6}{|c|}{\rev{$|\overline{t}^U_n|$}} \\ \hline
+\rev{$U$}    & $n=0$ & $n=1$ & $n=2$ & $n=3$ & $n=4$ & $n=5$ \\ \hline
+\rev{$\mathcal S_2$}                   & 0 & 2 & 0 &  6 &       0 & 1\,010 \\ \hline
+$\langle rc \rangle$                            & 0 & 0 & 0 &  4 &       0 & 32\,248 \\ \hline
+$\langle c \rangle$                             & 0 & 0 & 0 &  2 &     104 & \rev{31\,688} \\ \hline
+$\langle r \rangle$                             & 1 & 0 & 3 & 24 &     505 & 523\,216 \\ \hline
+$\langle 1 \rangle$                             & 0 & 0 & 1 & 38 & 15\,844 & 1\,073\,336\,680 \\ \hline
+$|\overline{L}_2(n)/\mathcal{S}_2|$     & 1 & 2 & 4 & 74 & 16\,453 & 1\,073\,954\,842 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The numbers \rev{$|\overline{t}^U_n|$} \rev{can now be calculated iteratively, starting at $n=0$.}
+Table~\ref{tab:s2_fs} depicts the results for a neighbourhood size $n=0, \ldots, 5$.
+The sets $\overline{t}^U_n$ form a partition of $\overline{L}_2(n) / \mathcal{S}_2$, so
+\[
+|\overline{L}_2(n) / \mathcal{S}_2| = \sum_{U \le \mathcal{S}_2} |\overline{t}^U_n|.
+\]
+
+
+\subsection{Small Neighbourhoods}
+
+We still limit ourselves to binary CAs.
+There are only seven equivalence classes for a neighbourhood size less than or equal to two, which we
+list below.
+
+\begin{enumerate}
+
+\item Cardinality Zero, $\overline{L}_2(0)$.
+These are the constant functions $W^0_0 = 0$ and $W^0_1 = \hat{c} W^0_0 = 1$.
+
+\item Cardinality One, $\overline{L}_2(1)$.
+One function is the identity $W^1_2 = \id$, $W^1_2(a_0) = a_0$ for $a_0 \in \{0,1\}$.
+The second function inverts the $\id$ function, $W^1_1(a_0) = ca_0$, $W^1_1 = c \id$.
+Note that $\hat{c} \id = c \circ \id \circ c = \id \ne c \circ \id$.
+
+\item Cardinality Two, $\overline{L}_2(2)$.
+
+Equivalence Class $\{W^2_1, W^2_7\}$.
+The two functions are $W^2_1$, given by
+\[
+W^2_1(a_0a_1) =
+\left\{
+\begin{array}{ll}
+1 & \mbox{if $a_0a_1 = 00$;} \\
+0 & \mbox{otherwise,}
+\end{array}
+\right.
+\]
+and $W^2_{7} = \hat{c}W^2_1$.
+
+Equivalence Class $\{W^2_6, W^2_9\}$.
+The two functions are
+$W^2_6$, given by
+\[
+W^2_6(a_0a_1) =
+\left\{
+\begin{array}{ll}
+1 & \mbox{if $a_0a_1 = 01$ or $a_0a_1 = 10$;} \\
+0 & \mbox{otherwise,}
+\end{array}
+\right.
+\]
+and $W^2_9 = \hat{c}W^2_6$.
+
+Equivalence Class $\{W^2_8, W^2_{14}\}$.
+The two functions are
+$W^2_8$, given by
+\[
+W^2_8(a_0a_1) =
+\left\{
+\begin{array}{ll}
+1 & \mbox{if $a_0a_1 = 11$;} \\
+0 & \mbox{otherwise,}
+\end{array}
+\right.
+\]
+and $W^2_{14} = \hat{c}W^2_8$.
+
+Equivalence Class
+$\{W^2_2,W^2_4,W^2_{11},W^2_{13}\}$.
+The first function is given by
+\[
+W^2_2(a_0a_1) =
+\left\{
+\begin{array}{ll}
+1 & \mbox{if $a_0a_1 = 01$;} \\
+0 & \mbox{otherwise\rev{.}}
+\end{array}
+\right.
+\]
+The other ones are $W^2_4 = \hat{r}W^2_2$, $W^2_{11} = \hat{c}W^2_2$, and
+$W^2_{13} = \widehat{rc} W^2_2$.
+
+
+\end{enumerate}
+
+\section{Global Maps}
+\label{sec:glob}
+
+\subsection{Symmetry Transformations}
+We now examine the symmetry transformations on global maps and link two of them to the
+symmetry transformations on local rules, see  Subsection \ref{sec:loc-symm}.
+
+First we consider the permutation operator.
+Let $S_\mathcal{A}$ be the symmetric group of degree $|\mathcal{A}|$
+and suppose $\nu \in S_\mathcal{A}$.
+The extension of $\nu$ to configurations is defined by elementwise application.
+If $x$ is a configuration, set $(\nu x)_i = \nu (x_i)$.
+If $\Phi^N_f$ is the induced global mapping of $f$, we define
+$\hat{\nu} \Phi^N_f$ by
+$\hat{\nu} \Phi^N_f (x) = \nu \Phi^N_f (\nu^{-1} x)$ for all configurations $x$.
+From
+\begin{eqnarray*}
+\left( \hat{\nu} \Phi^N_f(x) \right)_{i}
+& = & \left( \nu \Phi^N_f (\nu^{-1} x) \right)_{i}
+= \nu f \left(\nu^{-1}(x_{i+j_1} \ldots x_{i+j_{n}}) \right) \\
+& = & \hat{\nu} f(x_{i+j_1} \ldots x_{i+j_{n}})
+ =  \Phi^N_{\hat{\nu} f} (x)_{i}
+\end{eqnarray*}
+follows $\hat{\nu} \Phi^N_f =  \Phi^N_{\hat{\nu} f}$.
+Let $A = (\mathcal{A}, N, f)$ be a CA and put $B = (\mathcal{A}, N, \hat{\nu} f)$.
+By defining $\hat{\nu} A = B$, the permutation operator $\hat{\nu}$ maps the CA $A$ to the CA $B$.
+
+The two other transformations, reflection and shift, originate from isometric transformations on the set of integers.
+Isometric transformations, that is transformations that preserve the distance, form a group,
+the infinite dihedral group $D_\infty$, see e.g. \cite{armstrong1997groups}.
+By definition if $\varphi \in D_\infty$ and $i,j \in \mathbb{Z}$,
+then $|\varphi(i) - \varphi(j)| = |i - j|$.
+The group $D_\infty$ has the representation $\langle r, t \, | \, r^2=1, rtr = t^{-1} \rangle$,
+where $r$ and $t$ can be chosen to be $r(i) = -i$ and $t(i) = i+1$ for all $i \in \mathbb{Z}$.
+
+We extend these operations to sets of integers.
+If $N$ is any set of integers, put $-N = \{-i \, | \, i \in N \}$ and
+$j + N = \{ j + i \, | \, i \in N \}$ if $j$ is itself an integer.
+Two sets of integers $M$ and $N$ are called congruent, in symbols $M \cong N$,  if and only if
+there is an integer $j$ such that $N = j + M $ or $N = j - M$.
+The congruence relation is an equivalence relation.
+A set $N$ of integers is called reflection-symmetrical, if
+there is an integer $j$ such that $N = j - N$.
+Let $\Sym$ denote the set of all reflection-symmetrical subsets of integers.
+Then $N$ is reflection-symmetrical if and only if $N \in \Sym$.
+If $N \in \Sym$, then $[N] \subset \Sym$.
+
+The shift operator $\sigma$ plays a dual role.
+First, by the \rev{Curtis--Hedlund--Lyndon} Theorem the shift operator characterizes the continuous functions on $\mathcal{A}^\mathbb{Z}$
+that can be expressed as the global maps of a CA.
+Second it can be used to map a CA to another one.
+It is this second meaning that we now study.
+Let $A=(\mathcal{A},N,f)$ be a CA.
+Then
+\[
+(\sigma \Phi^N_f(x))_i = (\Phi^N_f(x))_{i+1}
+= f(x_{i+j_1+1} \ldots x_{i+j_{n}+1}) = ( \Phi^{1+N}_f(x))_i.
+\]
+Hence we also can see $\sigma$ as the operator that maps the CA $A = (\mathcal{A},N,f)$ to
+the CA $B = \sigma A = (\mathcal{A}, 1+N,f)$,
+expressed by
+\[
+\sigma \Phi^A = \Phi^{\sigma A} \ \ \ \mbox{or} \ \ \ \sigma \Phi^N_f = \Phi^{1+N}_f.
+\]
+
+The reflection operator is based on the reflections of configurations.
+If $x$ is a configuration, set $(rx)_i = x_{-i}$.
+The reflection operator $\hat{r}$ is formally defined by  \rev{$\hat{r}\Phi(x) = r\Phi(rx)$}.
+Let $A = (\mathcal{A},N,f)$ be a CA with the global mapping $\Phi^N_f$.
+Then
+\begin{align*}
+(\hat{r} \Phi^N_f(x))_i & =  (r\Phi^N_f(rx))_i
+        =  (\Phi^N_f(rx))_{-i} = f((rx)_{-i+j_1} \ldots (rx)_{-i+j_n}) \\
+& =  f(x_{i-j_1} \ldots x_{i-j_n}) = f(r(x_{i-j_n} \ldots x_{i-j_1})) \\
+& =  \hat{r} f(x_{i-j_n} \ldots x_{i-j_1}) = (\Phi^{-N}_{\hat{r}f}(x))_i.
+\end{align*}
+If we define $\hat{r}A = (\mathcal{A}, -N, \hat{r}f)$, we can express the relation above as
+$\hat{r} \Phi^A = \Phi^{\hat{r} A}$.
+Let $x$ be a configuration.
+From
+\[
+(\sigma r (x))_i = (r(x))_{i+1} = x_{-i-1} = (\sigma^{-1}(x))_{-i} = (r \sigma^{-1}(x))_i
+\]
+follows the commutator relation $\rev{\sigma r = r\sigma^{-1}}$.
+Then
+\[
+\sigma \hat{r} \Phi^N_f = \sigma r \Phi^N_f r = r \sigma^{-1} \Phi^N_f r = \hat{r} \sigma^{-1} \Phi^N_f
+\]
+also implies $\sigma \hat{r} = \hat{r} \sigma^{-1}$.
+
+
+In general, the reflection operator is not a transformation on the global rule space $G_\mathcal{A}(N)$ or
+$\overline{G}_\mathcal{A}(N)$,
+but a map $\hat{r}: G_\mathcal{A}(N) \to G_\mathcal{A}(-N)$ or $\hat{r}: \overline{G}_\mathcal{A}(N) \to
+\overline{G}_\mathcal{A}(-N)$.
+If $N = -N$, the map becomes a transformation.
+
+\begin{revision}
+\begin{prop}\label{prop:intrinsic-action}\locmark{loc:action}
+State relabeling, reflection, and translation of local representations
+induce well-defined bijections of $\mathcal C_{\mathcal A}$.
+Explicitly, if $\Phi_f^N=\Phi_g^M$, then for every
+$\nu\in S_{\mathcal A}$ and $a\in\mathbb Z$,
+\[
+\Phi_{\hat\nu f}^{N}=\Phi_{\hat\nu g}^{M},\qquad
+\Phi_{\hat r f}^{-N}=\Phi_{\hat r g}^{-M},\qquad
+\Phi_f^{a+N}=\Phi_g^{a+M}.
+\]
+These induced transformations are respectively
+$\hat\nu\Phi=\nu\Phi\nu^{-1}$, $\hat r\Phi=r\Phi r$, and
+$\Phi\mapsto\sigma^a\Phi$.
+For the essential pair $(E,q)$ of $\Phi$, their essential pairs are
+\[
+(E,\hat\nu q),\qquad (-E,\hat r q),\qquad (a+E,q).
+\]
+\end{prop}
+\begin{proof}
+The coordinate identities established above hold for every local
+representation, whether or not its rule is irreducible:
+\[
+\Phi_{\hat\nu f}^{N}=\nu\Phi_f^N\nu^{-1},\qquad
+\Phi_{\hat r f}^{-N}=r\Phi_f^N r,\qquad
+\Phi_f^{a+N}=\sigma^a\Phi_f^N.
+\]
+Replacing $\Phi_f^N$ on the right by any equal representation
+$\Phi_g^M$ proves the three claimed equalities. Thus the transformed
+global maps are independent of the chosen neighbourhood and local rule,
+even when the two representations have different arities.
+Applying the same identities to the essential pair gives the displayed
+transformed pairs. Relabeling and reversal preserve irreducibility,
+and translation leaves the local rule unchanged; hence these pairs
+are essential by Proposition~\ref{prop:uniqueness}. The argument also
+applies to nullary rules and the empty neighbourhood.
+The inverse operators are $\widehat{\nu^{-1}}$, $\hat r$, and
+postcomposition by $\sigma^{-a}$.
+\end{proof}
+In expressions such as $\sigma^a\hat r\Phi$, the shift acts by
+postcomposition on the global map. On rule space the identities are
+\[
+\hat r^2=1,\qquad
+\sigma^a\hat r=\hat r\sigma^{-a},\qquad
+\hat\nu\sigma^a=\sigma^a\hat\nu,
+\qquad \hat\nu\hat r=\hat r\hat\nu.
+\]
+These rule-space operations are distinct from the configuration maps used
+to define them.
+\end{revision}
+
+The products of all symmetry transformations form the infinite group
+\[
+\mathcal{T}_\mathcal{A} = \{ \sigma^i \hat{r}^j \hat{\nu} \, | \, i \in \mathbb{Z}; j=0,1; \nu \in S_\mathcal{A} \}.
+\]
+\rev{It acts as a group on} $\mathcal{C}_\mathcal{A}$, the set of all global maps induced by CAs over the
+alphabet $\mathcal{A}$.
+The group action partitions $\mathcal{C}_\mathcal{A}$ into the
+equivalence classes $\mathcal{C}_\mathcal{A} / \mathcal{T}_\mathcal{A}$.
+Suppose the global maps $\Phi^A$ and $\Phi^B$ are in $\mathcal{C}_\mathcal{A}$.
+We write $\Phi^A \cong \Phi^B$ if and only if there is an equivalence class
+$C \in  \mathcal{C}_\mathcal{A} / \mathcal{T}_\mathcal{A}$ such that
+both $\Phi^A$ and $\Phi^B$ are members of $C$.
+Being an equivalence relation, the restriction of the relation $\cong$ to
+any subset $\mathcal{D}$ of $\mathcal{C}_\mathcal{A}$ is still an equivalence relation.
+We then write $\mathcal{D} / {\cong}$ for the resulting equivalence classes.
+Before we study the general case, we examine the equivalence classes of global functions induced by
+a neighbourhood of size $n=0,1,2$.
+
+\begin{enumerate}
+
+\item Let $n=0$. Then $N=\emptyset$.
+\rev{The nullary rules have domain $\mathcal A^0=\{\varepsilon\}$ and are constant.}
+If $f$ is a constant local map, then the equivalence class of \rev{$\Phi_f^\emptyset$} is \rev{the set
+of all constant global maps on $\mathcal{A}^\mathbb{Z}$.}
+Thus $[\Phi^\emptyset_f] = \{ \Phi^\emptyset_g \, | \, g() \in \mathcal{A} \}$.
+There is one equivalence class and the size of this class is $k$.
+
+\item Let $n=1$, $\rev{N=\{0\}}$, and $f \in \overline{L}_\mathcal{A}(1)$.
+Then $[\rev{\Phi_f^{\{0\}}}] = \{ \rev{\Phi_g^{\{i\}}} \, | \, i \in \mathbb{Z}, g \in [f] \}$.
+There are \rev{$|\overline L_\mathcal{A}(1) / \mathcal{S}_{\mathcal A}|$} equivalence classes of the form $[\rev{\Phi_f^{\{0\}}}]$,
+and each equivalence class is countably infinite.
+
+\item \rev{\locmark{loc:two-site}Let $n=2$, $p>0$, $N=\{0,p\}$,} and $f \in \overline{L}_\mathcal{A}(2)$.
+From
+$\rev{\sigma^p}\hat{r}\Phi^{\{0,p\}}_f = \rev{\sigma^p}\Phi^{\{-p,0\}}_{\hat{r}f}
+= \Phi^{\{0,p\}}_{\hat{r}f}$
+follows $\Phi^{\{0,p\}}_{\hat{r}f} \in [\Phi^{\{0,p\}}_f]$.
+We conclude that $[\Phi^{\{0,p\}}_f] = \{ \Phi^{\{i,i+p\}}_g \, | \, i \in \mathbb{Z}, g \in [f] \}$.
+\rev{For each fixed $p>0$, there are $|\overline L_{\mathcal A}(2)/\mathcal S_{\mathcal A}|$ such classes, each countably infinite. Allowing $p$ to vary yields countably infinitely many classes.}
+
+\end{enumerate}
+
+We consider now the general case.
+Let $N$ be a finite set of integers and $f \in \overline{L}_\mathcal{A}(|N|)$.
+
+\begin{enumerate}
+
+\item Suppose $N \in \Sym$.
+Then $N = p -N$ \rev{for an integer $p$}, and consequently $\Phi^{N}_{\hat{r}f} \in [\Phi^{N}_f]$.
+Thus $[\Phi^N_f] = \{\Phi^{d+N}_g \, | \, d \in \mathbb{Z}, g \in [f] \}$.
+Since $N \in \Sym$, the equivalence class can also be written as
+$[\Phi^N_f] = \{\Phi^{M}_g \, | \, M \cong N, g \in [f] \}$.
+
+\item Suppose $N \not\in \Sym$ and suppose there is a $\nu \in S_\mathcal{A}$ such
+that $\widehat{r\nu}f = f$.
+Then $\widehat{r\nu} \Phi^N_f = \Phi^{-N}_f$.
+This implies as above that
+$[\Phi^N_f] = \{\Phi^{M}_g \, | \, M \cong N, g \in [f] \}$.
+
+\item Suppose $N \not\in \Sym$ and suppose there is no $\nu \in S_\mathcal{A}$
+such that $\widehat{r\nu}f =f$.
+Then $[\Phi^N_f] = \{ \Phi^{d+N}_{\hat{\nu}f},  \Phi^{d-N}_{\widehat{r\nu}f} \, | \, d \in \mathbb{Z},
+\nu \in S_\mathcal{A} \}$.
+Note that $\Phi^N_{\hat{r}f} \not\in [\Phi^N_f]$.
+
+\end{enumerate}
+By grouping the last two cases together, we obtain the following proposition.
+\begin{prop}
+\label{prop:global-eq}
+Let $N$ be a finite set of integers and $f \in \overline{L}_\mathcal{A}(|N|)$.
+\begin{enumerate}[label=(\roman*)]
+\item
+\label{prop:global-eq-1}
+If $N \in \Sym$ or $\widehat{r\nu}f = f$ for some $\nu \in S_\mathcal{A}$ then
+$N$ and $[f]$ induce the following equivalence class of $\mathcal{C}_\mathcal{A} / \mathcal{T}_\mathcal{A}$:
+\[
+[\Phi^N_f] = \{\Phi^{M}_g \, | \, M \cong N, g \in [f] \}.
+\]
+\item
+\label{prop:global-eq-2}
+Otherwise $N$ and $[f]$ induce the following two equivalence classes of $\mathcal{C}_\mathcal{A} / \mathcal{T}_\mathcal{A}$:
+\begin{align*}
+[\Phi^N_f] & = \{ \Phi^{d+N}_{\hat{\nu}f},  \Phi^{d-N}_{\widehat{r\nu}f} \, | \, d \in \mathbb{Z},
+\nu \in S_\mathcal{A} \}; \\
+[\Phi^N_{\hat{r}f}] & = \{ \Phi^{d+N}_{\widehat{r\nu}f},  \Phi^{d-N}_{\hat{\nu}f} \, | \, d \in \mathbb{Z},
+\nu \in S_\mathcal{A} \}.
+\end{align*}
+\end{enumerate}
+\end{prop}
+
+\subsection{Finite Intervals}
+
+This subsection deals with the equivalence classes of global maps or CAs whose neighbourhood
+is a subset of a given finite integer interval.
+We take a step back and first consider the equivalence relation based only on
+permutations of the alphabet and reflection of the configuration.
+Let $p$ be a nonnegative integer and consider the interval $N=[-p,p]$.
+The map
+\[
+\mathcal{S}_\mathcal{A}  \times L_\mathcal{A}(2p+1) \to L_\mathcal{A}(2p+1); \
+(\alpha, f) \mapsto \hat{\alpha}f
+\]
+is a group action, and so
+is the map
+\[
+\mathcal{S}_\mathcal{A} \times G_\mathcal{A}(N) \to G_\mathcal{A}(N); \
+(\alpha, \Phi^N_f) \mapsto \hat{\alpha} \Phi^N_f.
+\]
+We see that the map
+\[
+L_\mathcal{A}(2p+1) / \mathcal{S}_\mathcal{A} \to G_\mathcal{A}(N)/\mathcal{S}_\mathcal{A}; \
+[f] \mapsto [\Phi^N_f]
+\]
+ is a bijection.
+The same group acts both on the set of local maps and the set of global maps,
+and the equivalence classes associated with the group actions are in one-to-one correspondence.
+
+The size of $[-p,p]$ is always odd.
+To deal with all neighbourhood sizes we now investigate the intervals $N = [1,n]$.
+If $f \in L_\mathcal{A}(n)$ and $f$ is not constant, then
+\[
+\hat{r}\Phi^{N}_f = \Phi^{-N}_{\hat{r}f} \not \in G_\mathcal{A}(N).
+\]
+This means that we cannot use the same group action as above.
+We note however that
+\[
+\sigma^{n+1}\hat{r}\Phi^N_f = \Phi^{N}_{\hat{r}f} \in G_\mathcal{A}(N).
+\]
+Let us therefore define the group
+\[
+\hat{\mathcal{S}}_\mathcal{A}(n+1) = \rev{\langle \sigma^{n+1}\hat{r}, \hat{\nu} \, | \, \nu \in S_\mathcal{A} \rangle}.
+\]
+From $(\sigma^{n+1}\hat{r})^{-1} = \sigma^{n+1}\hat{r}$, we conclude that
+$\hat{\mathcal{S}}_\mathcal{A}(n+1)$ is isomorphic to $\mathcal{S}_\mathcal{A}$.
+It follows, that
+\[
+\hat{\mathcal{S}}_\mathcal{A}(n+1) \times G_\mathcal{A}(N) \to G_\mathcal{A}(N); \
+(\hat{\alpha}, \Phi^N_f) \mapsto \hat{\alpha} \Phi^N_f
+\]
+is a group action and we conclude that
+$L_\mathcal{A}(n) / \mathcal{S}_\mathcal{A}$
+and $G_\mathcal{A}(N)/\hat{\mathcal{S}}_\mathcal{A}(n+1)$ can be again put in one-to-one correspondence.
+
+Let us now include the shift operator and let us consider the group $\mathcal{T}_\mathcal{A}$
+of symmetry operators.
+Without loss of generality we now consider the intervals $[1,n]$;
+the counting is identical for the intervals of the form $[p, p+n-1]$.
+To start with, we present the following example.
+We ask which equivalence classes of $G_2([1,4])/{\cong}$ are induced
+by some of the local rules of $\overline{L}_2(3)$ and neighbourhoods that are subsets of the interval $[1,4]$.
+There are  four 3-element subsets of the integer interval $[1,4]$, which we denote by
+$A=[1,3]$, $B=[2,4]$, $C=\{1,2,4\}$, and $D=\{1,3,4\}$.
+Let us now consider the equivalence classes
+$[W_{54}]$, $[W_{57}]$, $[W_{110}] \in L_2(3) / \mathcal{S}_2$.
+The types of these equivalence classes are $\langle r \rangle$, $\langle rc \rangle$, and $\langle 1 \rangle$, respectively.
+Note that $\sigma^4 \hat{r} \Phi^A_f = \Phi^A_{\hat{r}f}$, $\sigma \Phi^A_f = \Phi^B_f$, and
+$\sigma^5 \hat{r} \Phi^C_f = \Phi^D_{\hat{r}f}$.
+\begin{revision}
+In the following display, brackets denote classes restricted to $G_2([1,4])$;
+the ambient classes also contain translates outside this interval.
+\end{revision}
+\begin{align*}
+[\Phi^{A}_{W_{54}}] & = \{ \Phi^{A}_{W_{54}}, \Phi^{A}_{\hat{c}W_{54}}, \Phi^{B}_{W_{54}},
+        \Phi^{B}_{\hat{c}W_{54}} \}; \\
+[\Phi^{A}_{W_{57}}] & = \{ \Phi^{A}_{W_{57}}, \rev{\Phi^{A}_{\hat{r}W_{57}}}, \Phi^{B}_{W_{57}},
+        \Phi^{B}_{\hat{r}W_{57}} \}; \\
+[\Phi^{A}_{W_{110}}] & = \{ \Phi^{A}_{W_{110}}, \Phi^{A}_{\hat{c}W_{110}}, \Phi^{A}_{\hat{r}W_{110}},
+        \Phi^{A}_{\widehat{rc}W_{110}},
+        \Phi^{B}_{W_{110}}, \Phi^{B}_{\hat{c}W_{110}}, \Phi^{B}_{\hat{r}W_{110}},
+        \Phi^{B}_{\widehat{rc}W_{110}}
+\}; \\
+[\Phi^{C}_{W_{54}}] & = \{ \Phi^{C}_{W_{54}}, \Phi^{C}_{\hat{c}W_{54}}, \Phi^{D}_{W_{54}},
+        \Phi^{D}_{\hat{c}W_{54}} \}; \\
+[\Phi^{C}_{W_{57}}] & = \{ \Phi^{C}_{W_{57}}, \Phi^{C}_{\hat{r}W_{57}}, \Phi^{D}_{W_{57}},
+        \Phi^{D}_{\hat{r}W_{57}} \}; \\
+[\Phi^{C}_{W_{110}}] & = \{ \Phi^{C}_{W_{110}}, \Phi^{C}_{\hat{c}W_{110}}, \Phi^{D}_{\hat{r}W_{110}},
+        \Phi^{D}_{\widehat{rc}W_{110}} \}; \\
+[\Phi^{C}_{\hat{r}W_{110}}] & = \{ \Phi^{C}_{\hat{r}W_{110}}, \Phi^{C}_{\widehat{rc}W_{110}},
+        \Phi^{D}_{W_{110}}, \Phi^{D}_{\hat{c}W_{110}} \}.
+\end{align*}
+The neighbourhood $A$ and each of the equivalence classes $[W_{110}]$, $[W_{54}]$, and $[W_{57}]$
+induce exactly one equivalence class of global maps in $G_2([1,4])/{\cong}$.
+The situation is different for the neighbourhood $C$.
+In this case, $C$ and each of $[W_{54}]$ and $[W_{57}]$ induce one equivalence class of global maps,
+but $C$ and $[W_{110}]$ induce two.
+We explain this by observing that $\hat{r}W_{110} \ne W_{110}$ and
+$\hat{r}W_{110} \ne \hat{c}W_{110}$.
+This example demonstrates that the equivalence classes of $G_2([1,4])/{\cong}$ can be determined by examining
+the equivalence classes of $\rev{\overline{L}_2(n)/\mathcal{S}_2}$, $0 \le n \le 4$, and the neighbourhoods contained
+in $[1,4]$, while taking into account the types of these equivalence classes.
+
+Earlier on, we defined the relation $\cong$ on the subsets of integers.
+We restrict this relation now to the power set of a given subset $N$ of integers, and denote the equivalence
+classes by $\mathcal{P}(N)/{\cong}$.
+Thus $\mathcal{P}(N)/{\cong}$ is the set $ \{ [M] \, | \, M \subseteq N \}$, where $[M]$ is the equivalence
+class $\{ M^\prime \subseteq N \, | \, M^\prime \cong M \}$.
+We are using this notation in the following proposition.
+\begin{revision}
+\begin{prop}\label{prop:global-shift}\locmark{loc:congruence-count}
+Let $N=[1,n]$. The number of congruence classes is
+\begin{equation}\label{eq:congruence-count}
+\begin{split}
+|G_2(N)/{\cong}|={}&
+\sum_{[M]\in\mathcal P(N)/{\cong}}
+  |\overline L_2(|M|)/\mathcal S_2|\\
+&+\sum_{\substack{[M]\in\mathcal P(N)/{\cong}\\ M\notin\Sym}}
+ \left(|\overline t_{|M|}^{\langle1\rangle}|
+       +|\overline t_{|M|}^{\langle c\rangle}|\right).
+\end{split}
+\end{equation}
+\end{prop}
+\begin{proof}
+Minimal-memory uniqueness gives the disjoint decomposition
+\[
+G_2(N)=\bigsqcup_{M\subseteq N}
+       \{\Phi_f^M:f\in\overline L_2(|M|)\}.
+\]
+Fix a congruence class of supports, with representative $M$ and $m=|M|$.
+If $M\in\Sym$, Proposition~\ref{prop:global-eq}(i) associates exactly
+one global congruence class to each local orbit in
+$\overline L_2(m)/\mathcal S_2$.
+If $M\notin\Sym$, the same is true for the local types
+$\langle r\rangle$, $\langle rc\rangle$, and $\mathcal S_2$.
+For the two remaining types, $\langle1\rangle$ and
+$\langle c\rangle$, Proposition~\ref{prop:global-eq}(ii) gives two
+distinct global classes. Both meet $G_2(N)$, because both $f$ and
+$\hat r f$ can be placed on $M$ itself. Thus an asymmetric support
+class contributes
+\[
+|\overline L_2(m)/\mathcal S_2|
++|\overline t_m^{\langle1\rangle}|
++|\overline t_m^{\langle c\rangle}|.
+\]
+Summing over the support classes proves the formula. Every stabilizer
+count here is a count of irreducible rules.
+\end{proof}
+\end{revision}
+
+The equivalence classes of $\mathcal{P}([1,n])/{\cong}$ for small values of $n$ are given by
+\begin{align*}
+\mathcal{P}([1,0]) & : [\emptyset] \\
+\mathcal{P}([1,1]) & : [\emptyset], [\{1\}];  \\
+\mathcal{P}([1,2]) & : [\emptyset], [\{1\}],  [\{1,2\}]; \\
+\mathcal{P}([1,3]) & : [\emptyset], [\{1\}],  [\{1,2\}], [\{1,3\}], [\{1,2,3\}]; \\
+\mathcal{P}([1,4]) & : [\emptyset], [\{1\}],  [\{1,2\}], [\{1,3\}], [\{1,4\}], [\{1,2,3\}], [\{1,2,4\}], [\{1,2,3,4\}]; \\
+\mathcal{P}([1,5]) & : [\emptyset], [\{1\}],  [\{1,2\}], [\{1,3\}], [\{1,4\}], [\{1,5\}], [\{1,2,3\}], [\{1,2,4\}], [\{1,2,5\}], \\
+        &  [\{1,3,5\}], [\{1,2,3,4\}], [\{1,2,3,5\}], [\{1,2,4,5\}], [\{1,2,3,4,5\}].
+\end{align*}
+From these equivalence classes, the following are not reflection-symmetrical: $[\{1,2,4\}]$, $[\{1,2,5\}]$, and $[\{1,2,3,5\}]$.
+Therefore by Proposition~\ref{prop:global-shift} and Table~\ref{tab:s2_fs}
+\begin{align}
+|G_2([1,0])/{\cong}| & = |\overline{L}_2(0) / \mathcal{S}_2| = 1; \notag \\
+|G_2([1,1])/{\cong}| & = |\overline{L}_2(0) / \mathcal{S}_2| + |\overline{L}_2(1) / \mathcal{S}_2| = 3; \notag \\
+|G_2([1,2])/{\cong}| & = |\overline{L}_2(0) / \mathcal{S}_2| + |\overline{L}_2(1) / \mathcal{S}_2|
++ |\overline{L}_2(2) / \mathcal{S}_2| = 7; \notag \\
+|G_2([1,3])/{\cong}| & = |\overline{L}_2(0) / \mathcal{S}_2| +  |\overline{L}_2(1) / \mathcal{S}_2|
++ 2 |\overline{L}_2(2) / \mathcal{S}_2|
+ + |\overline{L}_2(3) / \mathcal{S}_2| = 85; \label{eq:classes85}\\
+|G_2([1,4])/{\cong}| & = |\overline{L}_2(0) / \mathcal{S}_2| + |\overline{L}_2(1) / \mathcal{S}_2|
++ 3 |\overline{L}_2(2) / \mathcal{S}_2| + 2 |\overline{L}_2(3) / \mathcal{S}_2| \notag \\
+& + |\overline{t}^{\langle 1 \rangle}_3| + |\overline{t}^{\langle c \rangle}_3|
++ |\overline{L}_2(4) / \mathcal{S}_2| = 16\,656; \notag \\
+|G_2([1,5])/{\cong}| & = |\overline{L}_2(0) / \mathcal{S}_2| + |\overline{L}_2(1) / \mathcal{S}_2|
++ 4 |\overline{L}_2(2) / \mathcal{S}_2|+ 4 |\overline{L}_2(3) / \mathcal{S}_2| \notag \\
+& + 2|\overline{t}^{\langle 1 \rangle}_3| + 2|\overline{t}^{\langle c \rangle}_3|
++ 3 |\overline{L}_2(4) / \mathcal{S}_2| + |\overline{t}^{\langle 1 \rangle}_4| + |\overline{t}^{\langle c \rangle}_4| \notag \\
+& +  |\overline{L}_2(5) / \mathcal{S}_2| = 1\,074\,020\,544 \notag.
+\end{align}
+\begin{revision}
+\paragraph{Independent verification of the four-site count.}
+\locmark{loc:four-site}
+For $n=4$, the support classes represented after translation by
+\[
+\emptyset,\quad\{0\},\quad\{0,1\},\quad\{0,2\},\quad\{0,3\},
+\quad\{0,1,2\},\quad\{0,1,3\},\quad\{0,1,2,3\}
+\]
+contribute respectively
+\[
+1,\quad2,\quad4,\quad4,\quad4,\quad74,\quad114,\quad16\,453.
+\]
+The asymmetric three-site contribution is
+$114=74+38+2$, giving
+\begin{equation}\label{eq:four-site-audit}
+|G_2([1,4])/{\cong}|
+=1+2+3\cdot4+74+(74+38+2)+16\,453
+=16\,656.
+\end{equation}
+This value is independently obtained by enumerating all $65\,536$
+four-input Boolean truth tables and canonicalizing their essential pairs;
+Appendix~\ref{app:verification} specifies the algorithm.
+In particular, reflection must transform the support and the reduced rule
+together. Reflecting the rule alone on an asymmetric support would
+incorrectly merge distinct classes.
+
+\paragraph{Comparison with Ruivo et al.}
+\locmark{loc:ref16}
+Table~1 on p.~287 of \cite{RUIVO2018280} reports $16\,032$ extended
+dynamical equivalence classes (DECx) for the binary radius-$3/2$ space
+$\mathcal R_{(2,3/2)}$. Its four-site neighbourhood is $[-1,2]$, whose
+translation to $[1,4]$ does not change the count. Definitions~6 and~7 of
+that paper combine shifts, reversal, and state complementation and give
+the same relation as $\cong$ restricted to a fixed interval. In particular,
+any nonconstant rule whose translated essential support still lies in a
+four-site interval has shift displacement at most three, exactly their
+bound $2r=3$. Allowing ambient translates here therefore makes no extra
+identifications within that interval.
+
+The difference is a numerical error in that DECx table entry, not a
+difference between the two equivalence relations. Two checks make this
+conclusion independent of assumptions about the earlier implementation.
+First, fully essential four-input rules alone form $16\,453$ local
+symmetry classes. Such a support admits no nonzero translation within
+the four-site interval, so these classes remain distinct under DECx.
+Consequently $16\,032$ is already below the necessary lower bound.
+Second, the same published row gives $65\,282$ shift classes (SEC)
+among $65\,536$ rules and $16\,704$ ordinary dynamical classes (DEC).
+Joining the shift partition to any partition can reduce the number of
+classes by at most $65\,536-65\,282=254$: connect each shift class by
+a spanning tree and add its edges to the existing partition.
+Thus the published SEC and DEC counts imply
+\[
+\#\mathrm{DECx}\geq16\,704-254=16\,450>16\,032.
+\]
+
+A second exhaustive program implements the shifts of Definitions~6--7
+directly on the padded four-input truth tables, without reducing supports
+or using the counting formula. It reproduces the published SEC count
+$65\,282$ and DEC count $16\,704$, and obtains DECx $16\,656$.
+There are 46 mergers of two DEC classes and one merger of three, hence
+$16\,704-46-2=16\,656$.
+The program and the list of all these mergers are supplied with the
+verification package. These independent computations and the support
+decomposition \eqref{eq:four-site-audit} establish the corrected value;
+they do not determine whether the erroneous printed entry arose in
+calculation or transcription.
+\end{revision}
+
+
+\begin{revision}
+\subsection{Scaling}
+\label{sec:scaling}
+Scaling changes distances between essential sites while retaining the
+ordered local rule. Its definition must depend on the global map itself,
+rather than on a neighbourhood padded with unused sites.
+
+\begin{prop}[Intrinsic scaling]\label{prop:scaling-domain}
+\locmark{loc:scaling-domain}
+For $v\in\mathbb Q_{>0}$, define
+\[
+\mathcal D_v=\{\Phi\in\mathcal C_{\mathcal A}:vE(\Phi)\subseteq\mathbb Z\},
+\qquad
+\hat s_v\Phi=\Phi_{f_\Phi}^{\,vE(\Phi)}\quad(\Phi\in\mathcal D_v).
+\]
+Then $\hat s_v$ is a bijection from $\mathcal D_v$ to
+$\mathcal D_{1/v}$ with inverse $\hat s_{1/v}$.
+If $v=p/q$ in lowest terms, $\Phi\in\mathcal D_v$ precisely when
+$E(\Phi)\subseteq q\mathbb Z$.
+For any representation $\Phi=\Phi_f^N$ such that $vN\subseteq\mathbb Z$,
+\begin{equation}\label{eq:scaling-padded}
+\hat s_v\Phi_f^N=\Phi_f^{vN}.
+\end{equation}
+Moreover, whenever both successive operations are defined,
+\begin{equation}\label{eq:scaling-composition}
+\hat s_u(\hat s_v\Phi)=\hat s_{uv}\Phi.
+\end{equation}
+\end{prop}
+\begin{proof}
+The essential pair is unique. Since $v>0$, the order of its sites is
+unchanged, and the local rule remains irreducible after scaling. Therefore
+$E(\hat s_v\Phi)=vE(\Phi)$ and
+$f_{\hat s_v\Phi}=f_\Phi$. This proves the inverse and composition
+statements. The divisibility condition follows from $\gcd(p,q)=1$.
+For a padded representation, write $f=g\circ h$ with $g$ irreducible and
+$h$ the projection onto the essential coordinates. If
+$N=\{j_1<\cdots<j_n\}$, its essential subset is
+$E=\{j_i:i\in H(h)\}$. Scaling preserves that ordered selection, so
+$\Phi_f^{vN}=\Phi_g^{vE}$, proving
+\eqref{eq:scaling-padded}.
+\end{proof}
+The composition formula is an equality of values on the domain of the
+successive operations. It does not assert equality of their domains:
+for example, $\hat s_2\hat s_{1/2}$ is defined only on
+$\mathcal D_{1/2}$, whereas $\hat s_1$ is defined everywhere.
+An integer scaling $\hat s_p$ is defined on all global maps, but for
+$p>1$ its image is the proper subset $\mathcal D_{1/p}$.
+Nullary rules cause no exception: their essential support is empty and
+every scaling fixes them.
+
+\begin{prop}[Product dynamics]\label{prop:product}
+\locmark{loc:product}
+Put $X=\mathcal A^{\mathbb Z}$ and let $p\geq1$ be an integer.
+For $0\leq r<p$, define $\delta_r:X\to X$ by
+$(\delta_rx)_i=x_{pi+r}$, and define
+\[
+s_p:X\longrightarrow X^p,\qquad
+s_p(x)=(\delta_0x,\ldots,\delta_{p-1}x).
+\]
+Then $s_p$ is a homeomorphism and, for every CA global map $\Phi$,
+\begin{equation}\label{eq:product-conjugacy}
+s_p\circ\hat s_p\Phi=\Phi^{\times p}\circ s_p,
+\qquad
+\hat s_p\Phi=s_p^{-1}\circ\Phi^{\times p}\circ s_p,
+\end{equation}
+where $\Phi^{\times p}(x^{(0)},\ldots,x^{(p-1)})
+=(\Phi x^{(0)},\ldots,\Phi x^{(p-1)})$.
+Each $\delta_r$ is a continuous surjective factor map satisfying
+\begin{equation}\label{eq:decimation-factor}
+\delta_r\circ\hat s_p\Phi=\Phi\circ\delta_r.
+\end{equation}
+\end{prop}
+\begin{proof}
+Every integer has a unique form $pi+r$ with $0\leq r<p$.
+Thus the inverse of $s_p$ interleaves the $p$ configurations by
+$s_p^{-1}(x^{(0)},\ldots,x^{(p-1)})_{pi+r}=x_i^{(r)}$.
+Both maps are continuous in the product topology. If
+$\Phi=\Phi_f^E$ and $E=\{j_1<\cdots<j_m\}$, then
+\[
+(\delta_r\hat s_p\Phi(x))_i
+=f(x_{pi+r+pj_1}\cdots x_{pi+r+pj_m})
+=(\Phi(\delta_rx))_i.
+\]
+This proves both identities, including the nullary case. Surjectivity of
+$\delta_r$ follows by filling the other residue classes arbitrarily.
+\end{proof}
+Equation~\eqref{eq:product-conjugacy} relates the scaled CA to
+$p$ independent copies of the original CA. Conjugacy to one copy
+need not hold. For example,
+$\hat s_2\sigma=\sigma^2$, but $\sigma$ has $k$ fixed points and
+$\sigma^2$ has $k^2$, so they are not topologically conjugate for $k\geq2$.
+The joint map $s_p$ retains every coordinate. In contrast, each individual
+$\delta_r$ loses the other residue classes when $p>1$.
+
+\paragraph{Similarity of supports and global maps.}
+Two finite integer sets are called similar, $N\sim M$, if
+\[
+M=b+\epsilon vN
+\quad\text{for some }b\in\mathbb Q,\quad
+v\in\mathbb Q_{>0},\quad\epsilon\in\{1,-1\}.
+\]
+Both $N$ and $M$ are required to be subsets of $\mathbb Z$.
+For global maps, let $\Phi\sim\Psi$ mean that there are
+$\Phi'\cong\Phi$, $\Psi'\cong\Psi$ and $v>0$ rational such that
+$\Phi'\in\mathcal D_v$ and $\Psi'=\hat s_v\Phi'$.
+This agrees with allowing finite sequences of congruences and admissible
+scalings, as the following characterization proves.
+
+\begin{prop}[Similarity as an equivalence relation]
+\label{prop:similarity}\locmark{loc:similarity}
+Let $(N,f)$ and $(M,g)$ be the essential pairs of $\Phi$ and $\Psi$.
+Then $\Phi\sim\Psi$ if and only if there exist
+$b\in\mathbb Q$, $v\in\mathbb Q_{>0}$,
+$\epsilon\in\{1,-1\}$, and $\nu\in S_{\mathcal A}$ such that
+\begin{equation}\label{eq:affine-similarity}
+M=b+\epsilon vN,\qquad
+g=\hat\nu\hat r^{(1-\epsilon)/2}f.
+\end{equation}
+Consequently $\sim$ is reflexive, symmetric, and transitive on
+$\mathcal C_{\mathcal A}$, independently of any local representation.
+\end{prop}
+\begin{proof}
+Every congruence has the indicated form with $v=1$ and integer
+translation, and every admissible scaling has the form with $b=0$,
+$\epsilon=1$, and $\nu=1$.
+Their compositions have the form \eqref{eq:affine-similarity}; hence that
+form is necessary for both the stated relation and its finite-sequence
+version.
+
+Conversely, suppose \eqref{eq:affine-similarity} holds and $N\ne\emptyset$.
+Reflect and relabel $(N,f)$ to obtain $(K,g)$, where $K=\epsilon N$.
+Translate by $-\min K$, apply $\hat s_v$, and then translate by $\min M$.
+All operations are admissible, since
+\[
+v(K-\min K)=M-\min M\subseteq\mathbb Z.
+\]
+They give $(M,g)$ and use only one scaling between two congruences.
+This also covers singleton supports. If $N=\emptyset$, then $M=\emptyset$
+and state relabeling alone gives the required relation.
+
+The identity parameters establish reflexivity. Inverting the affine map
+and the rule transformation establishes symmetry. For transitivity,
+composing the affine maps with parameters $(b,v,\epsilon)$ and
+$(b',v',\epsilon')$ gives parameters
+\[
+(b'+\epsilon'v'b,\ v'v,\ \epsilon'\epsilon).
+\]
+State permutations commute with reversal, so the corresponding rule
+transformations compose as well. The characterization then gives
+transitivity. Representation independence follows from the uniqueness
+of the essential pairs.
+\end{proof}
+
+For example, the ECA rule $W^3_{90}$ has essential pair
+$(\{-1,1\},W^2_6)$, where $W^2_6(a_0a_1)=a_0\oplus a_1$.
+Its support is not an integer multiple $pM$ with $p>1$, but a translation
+makes the scaling apparent:
+\[
+\Phi^{[-1,1]}_{W^3_{90}}
+=\sigma^{-1}\hat s_2\Phi^{\{0,1\}}_{W^2_6}
+\sim\Phi^{\{0,1\}}_{W^2_6}
+=\Phi^{[-1,1]}_{W^3_{102}}.
+\]
+
+\begin{prop}\label{prop:global-scaling}\locmark{loc:similarity-count}
+For $N=[1,n]$, the number of similarity classes is
+\begin{equation}\label{eq:similarity-count}
+\begin{split}
+|G_2(N)/{\sim}|={}&
+\sum_{[M]\in\mathcal P(N)/{\sim}}
+ |\overline L_2(|M|)/\mathcal S_2|\\
+&+\sum_{\substack{[M]\in\mathcal P(N)/{\sim}\\M\notin\Sym}}
+ \left(|\overline t_{|M|}^{\langle1\rangle}|
+       +|\overline t_{|M|}^{\langle c\rangle}|\right).
+\end{split}
+\end{equation}
+\end{prop}
+\begin{proof}
+Similarity preserves cardinality and reflection symmetry of finite
+supports. For a support with at least two sites, an affine similarity
+mapping it onto itself has scale 1, by comparison of diameters. Its
+orientation-preserving part is the identity, and an
+orientation-reversing self-map exists precisely when it is
+reflection-symmetrical. Proposition~\ref{prop:similarity} therefore
+gives exactly the same local-orbit splitting as in
+Proposition~\ref{prop:global-shift}, now summed over similarity classes
+of supports. Empty and singleton supports have trivial local reversal
+and are already included in the first sum.
+\end{proof}
+The counts for $n=0,1,2$ remain $1,3,7$. For $n=3,4$, all two-site
+supports become similar, and these are the only additional support
+identifications. Therefore
+\begin{align}
+|G_2([1,3])/{\sim}|&=85-4=81,\label{eq:classes81}\\
+|G_2([1,4])/{\sim}|&=16\,656-2\cdot4=16\,648.
+\end{align}
+Exhaustive enumeration confirms both values. The recurrence computation
+for $n=5$ gives $1\,074\,020\,458$ similarity classes; it is not an
+exhaustive enumeration of all five-input rules.
+
+\begin{prop}\label{commutators}\locmark{loc:commutators}
+Let $v=p/q>0$ with positive integers $p,q$. On $\mathcal D_v$,
+\begin{equation}\label{eq:scaling-commutators}
+\hat\nu\hat s_v=\hat s_v\hat\nu,\qquad
+\hat r\hat s_v=\hat s_v\hat r,\qquad
+\sigma^p\hat s_v=\hat s_v\sigma^q.
+\end{equation}
+In each equality the two sides have the same domain.
+\end{prop}
+\begin{proof}
+State relabeling leaves the essential support unchanged, and reflection
+replaces $E$ by $-E$. These operations preserve $\mathcal D_v$ and
+commute with multiplication of the support by $v$.
+For the last equality,
+\[
+p+vE=v(q+E),\qquad
+v(q+E)\subseteq\mathbb Z\ \Longleftrightarrow\ vE\subseteq\mathbb Z.
+\]
+The two essential pairs are thus identical on exactly $\mathcal D_v$.
+This proof does not reorder partially defined inverse scalings and does
+not require the displayed fraction $p/q$ to be reduced.
+\end{proof}
+
+For a contiguous essential support $N=[1,n]$, a similarity from $N$ to
+itself induces only the usual state-permutation and reversal action on
+the local rule. Hence
+\[
+|\overline L_{\mathcal A}(n)/\mathcal S_{\mathcal A}|
+=|\overline G_{\mathcal A}(N)/{\cong}|
+=|\overline G_{\mathcal A}(N)/{\sim}|.
+\]
+For arbitrary (possibly reducible) rules on that interval,
+\[
+|\overline L_{\mathcal A}(n)/\mathcal S_{\mathcal A}|
+\leq|G_{\mathcal A}(N)/{\sim}|
+\leq|G_{\mathcal A}(N)/{\cong}|
+\leq|L_{\mathcal A}(n)/\mathcal S_{\mathcal A}|.
+\]
+\end{revision}
+
+\subsection{Elementary Cellular Automata}
+Recall that elementary CAs are precisely those binary CAs with the neighbourhood $N = [-1,1]$,
+and that their global rule space is denoted by $G_2(N)$.
+We set $\mathcal{E} = G_2(N)$.
+In this subsection we examine in more detail the partitions of $\mathcal{E}$ that arise from various equivalence relations.
+It is well-known that under reflection and permutation,  \rev{the set $\mathcal{E}$ decomposes} into 88 equivalence classes,
+in symbols, $|\mathcal{E} / \mathcal{S}_2| = 88$.
+All equivalence relations discussed here will be coarser than the partition $\mathcal{E} / \mathcal{S}_2$.
+In general, if $R$ and $S$ are equivalence relations on a set $A$, and $R$ is coarser than $S$,
+then each equivalence class $C$ of $A / R$ is either itself an equivalence class of $A / S$ or the union of
+two or more equivalence classes from $A / S$.
+We specify the members of equivalence classes using their Wolfram codes.
+Whenever a number $c$ appears in one of the equivalence classes below, it is to be interpreted as the global map $\Phi^{N}_{W^3_c}$.
+Every equivalence relation considered in what follows is obtained by merging two or more of the following equivalence classes of
+$\mathcal{E} / \mathcal{S}_2$ into larger ones.
+\begin{align*}
+& A_1 = \{3,17,63,119\}, & & A_2=\{5,95\}, & & A_3 = \{10,80,175,245\}, \\
+& A_4 = \{12,68,207,221\}, & & A_5=\{15,85\}, & & A_6=\{34,48,187,243\}, \\
+& A_7 = \{51\}, & & A_8=\{60,102,153,195\}, & & A_9 = \{90, 165\}, \\
+& A_{10} = \{136, 192, 238, 252\}, & & A_{11}=\{160,250\}, & & A_{12}=\{170,240\}, \\
+& A_{13}=\{204\}, & &  A_{14} = \{77\},  & & A_{15} = \{232 \}, \\
+& A_{16} = \{ 23 \}, & & A_{17} = \{178\}, & & A_{18}=\{105\}, \\
+& A_{19} = \{150\}. & & & &
+\end{align*}
+The first further equivalence relation that we will consider is the congruence relation $\cong$ that
+adds the shift operator to permutation and reflection.
+By Eq.~(\ref{eq:classes85}) this equivalence relation induces 85 equivalence classes.
+The equivalence classes of $\mathcal{E} / \mathcal{S}_2$ that are merged to obtain the coarser equivalence classes of
+$\mathcal{E} / {\cong}$ are the following, see also~\cite{RUIVO2018280}.
+\begin{align*}
+& B_1 = A_4 \cup A_6, & & B_2 = A_5 \cup A_7, & & B_3 = A_{12} \cup A_{13}.
+\end{align*}
+Next, we consider the equivalence relation $\sim$ on $\mathcal{E}$, which adds scaling to the set of
+symmetry operations.
+By Eq.~(\ref{eq:classes81}) the number of equivalence classes decreases to 81.
+The equivalence classes of $\mathcal{E} / {\sim}$ that do not coincide with the equivalence classes of
+$\mathcal{E} / \mathcal{S}_2$ are the following.
+\begin{align*}
+& C_1 = A_3 \cup A_4 \cup A_6, & & C_2=A_5 \cup A_7, & & C_3=A_8 \cup A_9,  \\
+& C_4 = A_{10} \cup A_{11}, & & C_5 = A_1 \cup A_2, & & C_6 = A_{12} \cup A_{13}.
+\end{align*}
+Epperlein \cite{epperlein2015classification, epperlein2017}
+classified the elementary CAs up to topological conjugacy.
+Permutation and reflection are general topological conjugacies and yield
+the well-known 88 equivalence classes.
+Epperlein demonstrated that, in addition, there exist further topological conjugacies between
+specific pairs of elementary CAs, and that apart from these there are no others.
+The pairs
+\begin{align*}
+& ([15], [170]), & & ([23], [178]), & & ([77],[232])
+\end{align*}
+of equivalence classes of $\mathcal{E} / \mathcal{S}_2$ \rev{are conjugate
+via}
+\[
+\vartheta: \{0,1\}^\mathbb{Z} \to \{0,1\}^\mathbb{Z},  \ \
+\vartheta(x)_i =
+\begin{cases}
+cx_i & \text{if $i$ is odd,} \\
+x_i & \text{if $i$ is even.}
+\end{cases}
+\]
+\rev{For the first pair, $\vartheta$ sends rule 15 to rule 240,
+which belongs to $[170]$; reflection sends rule 240 to rule 170.
+In particular, a conjugacy between these two named representatives
+is $r\circ\vartheta$.
+Rules 90, 105, and 150 are bipermutive radius-one CAs: fixing the
+other two inputs makes the local rule a permutation of either outer
+input. The bipermutive conjugacy theorem identifies each with the
+one-sided full shift on four symbols, so they are conjugate to one
+another \cite{Kurka2003TopologicalAS,epperlein2015classification}.}
+Let us denote the equivalence classes of the \rev{elementary CAs} that are obtained by taking
+all topological conjugacies into account by $\mathcal{E} / \mathrm{TC}$.
+Consequently, the equivalence classes of $\mathcal{E} / \mathrm{TC}$ that differ from equivalence classes of $\mathcal{E}/ \mathcal{S}_2$
+are the following.
+\begin{align*}
+& D_1 = A_5 \cup A_{12}, & & D_2 = A_{14} \cup A_{15}, & & D_3 = A_{16} \cup A_{17},
+& & D_4 = A_{9} \cup A_{18} \cup A_{19}.
+\end{align*}
+The partition $\mathcal{E}/\mathrm{TC}$ thus contains 83 equivalence classes.
+\begin{revision}
+Finally, put
+\locmark{loc:join}
+\[
+\Omega=(\sim\!\upharpoonright_{\mathcal E})\vee
+       (\mathrm{TC}\!\upharpoonright_{\mathcal E}),
+\]
+the join of the two equivalence relations on the finite set $\mathcal E$.
+Explicitly, $\Phi\,\Omega\,\Psi$ means that there is a finite sequence
+$\Phi=\Phi_0,\Phi_1,\ldots,\Phi_\ell=\Psi$ of maps in $\mathcal E$
+such that each successive pair is either similar or topologically
+conjugate. For example, rule 15 is topologically conjugate to rule 170,
+and rule 170 is similar to rule 204, so rules 15 and 204 lie in the
+same $\Omega$-class. All maps in the sequence must be elementary CAs;
+allowing intermediate maps outside $\mathcal E$ could in principle
+produce a different relation. We make no assertion about that
+ambient join. Let $\mathcal E/\Omega$ denote the resulting partition.
+\end{revision}
+
+Then the equivalence classes of $\mathcal{E}/ \Omega$ that are distinct from those of
+$\mathcal{E} / \mathcal{S}_2$ are the following.
+\begin{align*}
+& E_1 = A_3 \cup A_4 \cup A_6, & & E_2=A_5 \cup A_7 \cup A_{12} \cup A_{13}, & & E_3=A_8 \cup A_9 \cup A_{18} \cup A_{19}, \\
+& E_4 = A_{10} \cup A_{11}, & & E_5 = A_1 \cup A_2, & & E_6 = A_{14} \cup A_{15}, \\
+& E_7 = A_{16} \cup A_{17}. & & & &
+\end{align*}
+We see that 19 equivalence classes of $\mathcal{E} / \mathcal{S}_2$ are merged into
+7 equivalence classes of $\mathcal{E} / \Omega$.
+The other equivalence classes of $\mathcal{E} / \Omega$ are also equivalence classes of $\mathcal{E} / \mathcal{S}_2$.
+\rev{Consequently, $\mathcal{E} / \Omega$ contains $88 - 19 + 7 = 76$ equivalence classes.
+This calculation uses Epperlein's complete topological-conjugacy
+classification as input; our enumeration checks the resulting finite
+join, rather than independently proving that dynamical classification.}
+
+\begin{revision}
+\section{Dynamical Meaning and Scope}
+\label{sec:extended}\locmark{loc:dynamics}
+Our operators act on the space $\mathcal C_{\mathcal A}$ of global maps.
+They should be distinguished from maps acting on the configuration space
+$X=\mathcal A^{\mathbb Z}$.
+State relabeling $\nu:X\to X$ and reflection $r:X\to X$ are
+homeomorphisms; their induced operators on rule space are
+$\hat\nu\Phi=\nu\Phi\nu^{-1}$ and $\hat r\Phi=r\Phi r$.
+Both give topological conjugacies of the corresponding dynamical systems.
+The configuration map $\nu$ is itself a CA. Reflection is not a CA,
+because it satisfies $r\sigma=\sigma^{-1}r$ rather than commuting
+with the shift.
+
+Postcomposition by a shift is a different operation. Writing
+$T_a(\Phi)=\sigma^a\Phi$, shift commutation gives
+\begin{equation}\label{eq:moving-frame}
+(T_a(\Phi))^t=\sigma^{at}\Phi^t\qquad(t\geq0).
+\end{equation}
+Thus it describes a change of moving frame. Although $T_a$ is a bijection
+on rule space with inverse $T_{-a}$, it is generally not conjugation on
+configuration space or an automorphism of the monoid of CA global maps.
+Indeed, $T_a(\id)=\sigma^a$.
+In particular, the identity CA and the shift are congruent but are not
+topologically conjugate: the identity fixes every configuration, whereas
+the shift fixes only the constant configurations.
+
+For integer scaling, the exact dynamical statement is the product
+conjugacy \eqref{eq:product-conjugacy}. It preserves all information
+jointly through the interleaving homeomorphism $s_p$.
+Selecting one residue class instead gives the non-injective factor map
+\eqref{eq:decimation-factor} when $p>1$.
+More generally, a continuous surjection $h:X\to Y$ is a factor map
+from $(X,\Phi)$ to $(Y,\Psi)$ when $h\Phi=\Psi h$; without that
+intertwining identity, a projection alone need not define closed dynamics
+on $Y$. Coarse-graining often uses such non-injective projections.
+Our similarity relation is a geometric equivalence of essential rules
+and supports, not a claim of conjugacy to a single copy or of an
+information-losing coarse-graining of configurations.
+
+Topological conjugacy and similarity are incomparable even on ECAs.
+Rules 204 and 170 are congruent and hence similar, but represent the
+identity and the shift. Conversely, rules 15 and 170 are topologically
+conjugate by alternating complementation followed by reflection, as
+recalled above. Their
+irreducible unary rules are respectively complementation and identity,
+which no allowed state relabeling or geometric operation identifies.
+The 76-class relation $\Omega$ is specifically the join of these two
+relations on the ECA set.
+
+We do not claim an exhaustive classification of all transformations that
+send CAs to CAs. For example, when $\mathcal A=\mathbb Z/k\mathbb Z$,
+adding a fixed symbol $a$ to each rule output is postcomposition by the
+CA $D_a(x)_i=x_i+a$; it is distinct from conjugating by a state
+permutation. Likewise, inverse time evolution for reversible CAs and
+general block factors are outside the geometric equivalence studied here.
+
+\section{Conclusions}
+\label{sec:sum}
+The standard essential-neighbourhood representation makes it possible to
+combine local stabilizer counts with support geometry. The resulting
+recurrences enumerate irreducible binary rules, while the global counting
+formula records the extra orientation classes arising from asymmetric
+supports. On three- and four-site intervals this gives 85 and 16\,656
+congruence classes, with independent exhaustive verification.
+
+Rational scaling is well-defined on the intrinsic domain
+$\mathcal D_v$, and the affine characterization proves that the induced
+similarity relation is an equivalence relation. It gives 81 and 16\,648
+classes on the same two intervals. Scaling by an integer $p$ has the
+precise dynamical interpretation of $p$ independent copies; conjugacy
+to one copy need not hold. Combining similarity with the known topological
+conjugacies within the finite ECA set gives 76 classes. These counts
+describe the chosen geometric relations and their finite join; they do
+not constitute a general dynamical classification of cellular automata.
+\end{revision}
+
+\textbf{Credit authorship contribution statement:}
+Martin Schaller: Writing---original draft, Visualization, Software, Investigation, Formal analysis, Conceptualization. Karl Svozil: Methodology, Investigation, Conceptualization.
+
+\textbf{Declaration of competing interest:}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+\rev{\textbf{Data and code availability:} The supplementary verification package contains two independent exhaustive enumeration programs and their outputs for binary arities up to four, recurrence checks through $n=5$, and the complete list of four-site DEC-class mergers. No empirical data were used.}
+
+\textbf{Acknowledgements:}
+This research was funded in whole or in part by the Austrian Science Fund (FWF) [Grant DOI:10.55776/PIN5424624]. The authors acknowledge TU Wien Bibliothek for financial support through its Open Access Funding Programme.
+
+
+\begin{revision}
+\appendix
+\section{Reproducible Enumeration}
+\label{app:verification}\locmark{loc:verification}
+The supplementary program uses the Wolfram coding convention stated in
+Section~\ref{sec:CA}. For each arity $0\leq n\leq4$, it visits every
+integer truth table $0\leq F<2^{2^n}$ and performs the following steps.
+\begin{enumerate}
+\item A coordinate is essential precisely when some pair of input words
+differing only at that coordinate have different outputs. Select all
+essential coordinates and form the reduced truth table $f$ by setting
+the unused inputs to zero. Independence makes this choice immaterial.
+The support $E$ is recorded as a sorted subset of $[0,n-1]$.
+\item If $E$ is nonempty, normalize it to $E_0=E-\min E$.
+For similarity, and $|E|\geq2$, further divide by
+$d=\gcd\{e:e\in E_0\}$.
+The empty support stays empty and a singleton normalizes to $\{0\}$.
+\item With normalized support $P$ and its reflection
+$P^*=\max P-P$ (both empty when $P$ is empty), use the lexicographic
+minimum of the four pairs
+\[
+(P,f),\quad(P,\hat cf),\quad(P^*,\hat rf),\quad(P^*,\widehat{rc}f)
+\]
+as the canonical key. Count the distinct keys.
+\end{enumerate}
+For congruence this is a complete invariant by
+Proposition~\ref{prop:global-eq}. For similarity,
+Proposition~\ref{prop:similarity} applies: if $P$ and $Q$ are integer
+sets of minimum zero with gcd 1 and $Q=vP$ for positive rational $v$,
+then the denominator of $v$ divides every element of $P$, and applying
+the inverse argument forces $v=1$. Thus gcd normalization removes
+exactly the positive rational scale, with reflection still coupled to
+the rule. This proves the correctness of the canonical-key method.
+
+\begin{table}[htbp]
+\begin{revision}
+\centering
+\caption{Independent exhaustive counts. The local column uses
+reflection and state complementation on all $n$-input rules.}
+\label{tab:verification}
+\begin{tabular}{r|r|r|r|r}
+$n$ & Truth tables & Local classes & Congruence & Similarity\\\hline
+0 & 2 & 1 & 1 & 1\\
+1 & 4 & 3 & 3 & 3\\
+2 & 16 & 7 & 7 & 7\\
+3 & 256 & 88 & 85 & 81\\
+4 & 65\,536 & 16\,704 & 16\,656 & 16\,648
+\end{tabular}
+\par
+\end{revision}
+\end{table}
+The same enumeration records irreducible orbits and their stabilizers
+and agrees with every entry of Table~\ref{tab:s2_fs} through $n=4$.
+The $n=5$ entries use algebraic fixed-point counts and the recurrences,
+not exhaustive enumeration of the $2^{32}$ truth tables.
+
+\begin{samepage}
+For reproducibility, the unrestricted fixed-point counts used by the
+program are
+\[
+\begin{aligned}
+F_1&=2^{2^n}, &
+F_r&=2^{(2^n+2^{\lceil n/2\rceil})/2},\\
+F_c&=\begin{cases}0&n=0,\\2^{2^{n-1}}&n\geq1,\end{cases} &
+F_{rc}&=\begin{cases}F_c&n\text{ odd},\\0&n\text{ even},\end{cases}\\
+F_{\mathcal S_2}&=
+\begin{cases}2^{(2^n+2^{\lceil n/2\rceil})/4}&n\text{ odd},\\
+0&n\text{ even}.
+\end{cases}
+\end{aligned}
+\]
+\end{samepage}
+These are the unrestricted counts underlying
+\cite{SCHALLER2025100298}. The type counts follow by subtracting the
+rules with full stabilizer and dividing by the orbit size:
+\[
+|t_n^{\mathcal S_2}|=F_{\mathcal S_2},\qquad
+|t_n^{\langle a\rangle}|=(F_a-F_{\mathcal S_2})/2
+\quad(a=r,c,rc),
+\]
+\[
+|t_n^{\langle1\rangle}|
+=(F_1-F_r-F_c-F_{rc}+2F_{\mathcal S_2})/4.
+\]
+Applying Proposition~\ref{prop:recurrences} supplies an independent
+algebraic check on the direct stabilizer enumeration.
+The program also checks \eqref{eq:projection-stabilizer} for every
+truth table through arity four and verifies the explicit alternating
+complementation conjugacies on both site parities. The finite ECA join
+uses Epperlein's conjugacy identifications as input.
+
+\paragraph{Direct shift-graph check of Ref.\ \cite{RUIVO2018280}.}
+The second program visits padded $n$-input truth tables and constructs
+three partitions with a disjoint-set algorithm: shifts alone (SEC),
+reversal and state complementation (DEC), and all these operations (DECx).
+For a positive displacement $t<n$, a shift is admissible precisely when
+the last $t$ arguments are unused; for a negative displacement $-t$, the
+first $t$ arguments must be unused. The shifted truth table is evaluated
+by moving the input coordinates and filling out-of-range positions with
+zero. The independence check guarantees that the filling is irrelevant.
+The displacement zero adds no edge. This tests every admissible shift
+in Definition~6 of \cite{RUIVO2018280}; their Definition~7 supplies the
+other generators. The resulting counts are
+\[
+\begin{array}{c|rrr}
+n&\mathrm{SEC}&\mathrm{DEC}&\mathrm{DECx}\\\hline
+2&14&7&7\\
+3&242&88&85\\
+4&65\,282&16\,704&16\,656.
+\end{array}
+\]
+For $n=4$ the output records, for every merger, the minimum Wolfram code
+of each constituent DEC class. It contains 46 pairs and one triple,
+accounting for all 48 reductions from DEC to DECx.
+\end{revision}
+
+\begin{revision}
+\begin{thebibliography}{10}
+
+\bibitem{10.1007/978-3-540-73001-9_1}
+Luigi Acerbi, Alberto Dennunzio, and Enrico Formenti.
+\newblock Shifting and lifting of cellular automata.
+\newblock In S.~Barry Cooper, Benedikt L{\"o}we, and Andrea Sorbi, editors,
+  {\em Computation and Logic in the Real World}, pages 1--10, Berlin,
+  Heidelberg, 2007. Springer Berlin Heidelberg.
+\newblock \doi{10.1007/978-3-540-73001-9_1}.
+
+\bibitem{armstrong1997groups}
+M.A. Armstrong.
+\newblock {\em Groups and Symmetry}.
+\newblock Undergraduate Texts in Mathematics. Springer New York, 1997.
+
+\bibitem{Castillo-Ramirez03072023}
+A.~Castillo-Ramirez, M.~Sanchez-Alvarez, A.~Vazquez-Aceves, and
+  A.~Zaldivar-Corichi.
+\newblock A generalization of cellular automata over groups.
+\newblock {\em Communications in Algebra}, 51(7):3114--3123, 2023.
+\newblock \doi{10.1080/00927872.2023.2177663}.
+
+\bibitem{CASTILLORAMIREZ2020104533}
+Alonso Castillo-Ramirez and Maximilien Gadouleau.
+\newblock Elementary, finite and linear {vN}-regular cellular automata.
+\newblock {\em Information and Computation}, 274:104533, 2020.
+\newblock AUTOMATA 2017. \doi{10.1016/j.ic.2020.104533}.
+
+\bibitem{CastilloVeliz2024}
+Alonso Castillo-Ramirez and Eduardo Veliz-Quintero.
+\newblock On the minimal memory set of cellular automata.
+\newblock \url{https://arxiv.org/abs/2404.06394v2}, 2024.
+\newblock arXiv:2404.06394, version 2.
+
+\bibitem{CATTANEO19971593}
+G.~Cattaneo, E.~Formenti, L.~Margara, and G.~Mauri.
+\newblock Transformations of the one-dimensional cellular automata rule space.
+\newblock {\em Parallel Computing}, 23(11):1593--1611, 1997.
+\newblock Cellular automata. \doi{10.1016/S0167-8191(97)00076-8}.
+
+\bibitem{CeccheriniCoornaert2010}
+Tullio Ceccherini-Silberstein and Michel Coornaert.
+\newblock {\em Cellular Automata and Groups}.
+\newblock Springer Monographs in Mathematics. Springer, Berlin, Heidelberg,
+  2010.
+\newblock \doi{10.1007/978-3-642-14034-1}.
+
+\bibitem{epperlein2015classification}
+Jeremias Epperlein.
+\newblock Classification of elementary cellular automata up to topological
+  conjugacy.
+\newblock In Jarkko Kari, editor, {\em Cellular Automata and Discrete Complex
+  Systems}, volume 9099 of {\em Lecture Notes in Computer Science}, pages
+  99--112. Springer, 2015.
+\newblock \doi{10.1007/978-3-662-47221-7_8}.
+
+\bibitem{epperlein2017}
+Jeremias Epperlein.
+\newblock {\em Topological Conjugacies Between Cellular Automata}.
+\newblock PhD thesis, Technische Universit{\"a}t Dresden, 2017.
+
+\bibitem{GARCIAMORALES2013276}
+V.~García-Morales.
+\newblock Symmetry analysis of cellular automata.
+\newblock {\em Physics Letters A}, 377(3):276--285, 2013.
+\newblock \doi{10.1016/j.physleta.2012.11.052}.
+
+\bibitem{Graham94}
+Ronald~L. Graham, Donald~E. Knuth, and Oren Patashnik.
+\newblock {\em Concrete Mathematics: A Foundation for Computer Science}.
+\newblock Addison-Wesley Longman Publishing Co., Inc., USA, 2nd edition, 1994.
+
+\bibitem{DBLP:journals/mst/Hedlund69}
+G.~A. Hedlund.
+\newblock Endomorphisms and automorphisms of the shift dynamical systems.
+\newblock {\em Math. Syst. Theory}, 3(4):320--375, 1969.
+\newblock \doi{10.1007/BF01691062}.
+
+\bibitem{Kurka2003TopologicalAS}
+Petr K{\r u}rka.
+\newblock {\em Topological and Symbolic Dynamics}, volume~11 of {\em Cours
+  Sp{\'e}cialis{\'e}s}.
+\newblock Soci{\'e}t{\'e} Math{\'e}matique de France, Paris, 2003.
+
+\bibitem{Li1990TheSO}
+Wentian Li and Norman~H. Packard.
+\newblock The structure of the elementary cellular automata rule space.
+\newblock {\em Complex Systems}, 4:281--297, 1990.
+
+\bibitem{Lind_Marcus_1995}
+Douglas Lind and Brian Marcus.
+\newblock {\em An Introduction to Symbolic Dynamics and Coding}.
+\newblock Cambridge University Press, Cambridge, 1995.
+
+\bibitem{rotman2012introduction}
+J.~J. Rotman.
+\newblock {\em An Introduction to the Theory of Groups}.
+\newblock Graduate Texts in Mathematics. Springer, New York, NY, 2012.
+\newblock \doi{10.1007/978-1-4612-4176-8}.
+
+\bibitem{RUIVO2018280}
+Eurico L.~P. Ruivo, Pedro P.~B. {de Oliveira}, Fabiola Lobos, and Eric Goles.
+\newblock Shift-equivalence of k-ary, one-dimensional cellular automata rules.
+\newblock {\em Communications in Nonlinear Science and Numerical Simulation},
+  63:280--291, 2018.
+\newblock \doi{10.1016/j.cnsns.2018.03.017}.
+
+\bibitem{SCHALLER2025100298}
+Martin Schaller and Karl Svozil.
+\newblock Orbits of one-dimensional cellular automata induced by symmetry
+  transformations.
+\newblock {\em Physics Open}, 24:100298, 2025.
+\newblock \doi{10.1016/j.physo.2025.100298}.
+
+\bibitem{VISPOEL2022133074}
+Milan Vispoel, Aisling~J. Daly, and Jan~M. Baetens.
+\newblock Progress, gaps and obstacles in the classification of cellular
+  automata.
+\newblock {\em Physica D Nonlinear Phenomena}, 432:133074, 2022.
+\newblock \doi{10.1016/j.physd.2021.133074}.
+
+\bibitem{wolfram-1986}
+S.~Wolfram.
+\newblock {\em Theory and Applications of Cellular Automata: Including Selected
+  Papers, 1983-1986}.
+\newblock Advanced series on complex systems. World Scientific, 1986.
+
+\end{thebibliography}
+\end{revision}
+
+
+\end{document}
