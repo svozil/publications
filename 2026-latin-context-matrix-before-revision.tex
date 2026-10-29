@@ -1,0 +1,924 @@
+\documentclass[aps,pra,reprint,superscriptaddress,longbibliography,nofootinbib,floatfix,10pt]{revtex4-2}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,bm,graphicx,booktabs,longtable,tikz,placeins,needspace,microtype}
+\usetikzlibrary{calc,arrows.meta}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue,breaklinks=true]{hyperref}
+\usepackage{orcidlink}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\C}{\mathbb C}\newcommand{\R}{\mathbb R}\newcommand{\Q}{\mathbb Q}
+\newcommand{\F}{\mathbb F}\newcommand{\Z}{\mathbb Z}\newcommand{\PP}{\mathbb P}
+\newcommand{\Sc}{\mathcal S}\newcommand{\Cc}{\mathcal C}
+\newcommand{\YO}{\mathrm{YO}}\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\DeclareMathOperator{\spanop}{span}\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}\DeclareMathOperator{\Tr}{Tr}\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\supp}{supp}\DeclareMathOperator{\conv}{conv}
+
+\hypersetup{
+  pdftitle={From Latin and Graeco-Latin Squares to Context-Color Matrices: Combinatorial Schematics for Uniform Context Hypergraphs},
+  pdfauthor={Karl Svozil}
+}
+
+\begin{document}
+
+\title{From Latin and Graeco-Latin Squares to Context--Color Matrices: Combinatorial Schematics for Uniform Context Hypergraphs}
+
+\author{Karl Svozil\,\orcidlink{0000-0001-6554-2802}}
+\email{karl.svozil@tuwien.ac.at}
+\affiliation{Institute for Theoretical Physics, TU Wien, Wiedner Hauptstra{\ss}e 8-10/136, A-1040 Vienna, Austria}
+
+\date{\today}
+
+\begin{abstract}
+Strong $d$-colorings of $d$-uniform context hypergraphs test whether intertwined complete quantum experiments admit a globally consistent, context-independent nondegenerate spectrum. We develop a systematic combinatorial framework connecting this problem to Latin squares, Graeco-Latin squares (mutually orthogonal Latin squares), and a universal $n\times d$ Context--Color Matrix representation for hypergraphs with $n$ contexts of size $d$. For the canonical $d\times d$ row-column hypergraph, strong $d$-colorings are literally Latin squares of order $d$, two-valued states are permutation matrices ($1$-factors of $K_{d,d}$), and K\H{o}nig's line coloring theorem guarantees that every two-valued state extends to a strong $d$-coloring ($\mathcal{S}_{\mathrm{ext}}=\mathcal{S}$). Adding a third parallel class of contexts from a fixed Latin square $L$ yields a $d$-uniform $3$-net hypergraph $H_L$ in which states are transversals of $L$, strong $d$-colorings are orthogonal mates (Graeco-Latin squares), and the three principal contextual regimes—statelessness, chromatic gaps with surviving states, and nonextendable states—arise directly from classical Latin-square obstructions such as Euler's $36$ officers problem at $d=6$. We then show that when a hypergraph has $n\neq d$ contexts or non-grid intertwining topology, the strict $d\times d$ square gives way to an $n\times d$ Context--Color Matrix $M$ whose rows permute the $n$ contexts and whose columns form $d$ pairwise disjoint two-valued states; a strong $d$-coloring exists if and only if all intertwining vertices can be vertically aligned into dedicated columns of $M$. After working out elementary building blocks in full detail—the firefly lattice $L_{12}$, the triangle hypergraph $H_{6,3}$, open context chains $P_m^{(d)}$, closed even cycles $C_4^{(5)}$, and the $6$-vertex Pasch configuration $H_{\mathrm{Pasch}}$—we apply this matrix schematic across the full inventory of three- and four-dimensional configurations in recent chromatic contextuality studies, including the pentagon $P_5$, the Petersen family ($H_8,H_9,G_{32}$), faithful Yu--Oh restrictions ($H_{17,10},H_{21,13},H_{\mathrm{YO}}^+,H_{\mathrm{YO}}^{(4)}$), logical TIFS/TITS gadgets ($B_{13,7},D_{16,9},I_{16,9},T_{19,11},W_{11,5}^{(4)},W_{16,6}^{(4)},B_{14,7}^{(4)},L_{18,7}^{(4)},D_{17,9}^{(4)},L_{22,9}^{(4)}$), the $37$-ray complex Hesse hypergraph $H_{37}$, and the $65$-ray rational four-dimensional completion $H_{65}$.
+\end{abstract}
+
+\maketitle
+
+% ============================================================================
+\section{Introduction}\label{sec:intro}
+% ============================================================================
+
+In quantum mechanics, a complete projective measurement (context) in $d$-dimensional Hilbert space $\F^d$ ($\F\in\{\R,\C\}$) is represented by an orthonormal basis of $d$ rank-one projectors $\{P_i\}_{i\in e}$ summing to the identity $I_d$. Assigning $d$ distinct real eigenvalues $\Sigma=\{\lambda_0,\ldots,\lambda_{d-1}\}$ to the $d$ outcomes defines a maximal (nondegenerate) context observable $A_e=\sum_{i\in e}\lambda_{c(i)}P_i$, in terms of which every commuting self-adjoint operator is a function~\cite{v-neumann-31,halmos-vs}. When multiple contexts $e\in E$ are intertwined—sharing common rank-one projectors—a noncontextual spectral labeling demands a single map $c:V\to\{0,\ldots,d-1\}$ on the vertex set $V=\bigcup_{e\in E}e$ of the $d$-uniform context hypergraph $H=(V,E)$ such that every context $e\in E$ receives all $d$ colors bijectively~\cite{svozil-2020-c,svozil-2021-chroma,svozil-2025-color}.
+
+Such an exact-palette rainbow assignment is a \emph{strong $d$-coloring} of $H$, equivalent to a proper $d$-coloring of the two-section (orthogonality) graph $\Gamma(H)$ whose cliques of size $d$ include the contexts $e\in E$. Because each color class $S_a=\{v\in V:c(v)=a\}$ ($a\in\{0,\ldots,d-1\}$) intersects every context $e\in E$ in exactly one vertex, its indicator function $s_a(v)=\mathbf{1}_{\{c(v)=a\}}$ is a \emph{two-valued state} $s_a\in\Sc(H)$, satisfying $\sum_{v\in e}s_a(v)=1$ for all $e\in E$. Strong $d$-colorability ($\chi(H)=d$, denoted $\Cc_d(H)\neq\varnothing$) therefore decomposes the vertex set $V$ into $d$ pairwise disjoint two-valued states. Conversely, a two-valued state $s\in\Sc(H)$ belongs to the set of \emph{extendable states} $\Sc_{\mathrm{ext}}(H)$ (those occurring as a color class of some $c\in\Cc_d(H)$) if and only if deleting its support $\supp s=\{v\in V:s(v)=1\}$ leaves a $(d-1)$-colorable residual graph $\Gamma(H)[V\setminus\supp s]$~\cite{svozil-2025-color}.
+
+At the heart of combinatorics lies another celebrated exact-palette structure: the \emph{Latin square}~\cite{Euler60,hall-2015}. A Latin square of order $d$ is a $d\times d$ array filled with $d$ distinct symbols $\{0,\ldots,d-1\}$ such that each symbol occurs exactly once in every row and once in every column. Superimposing two Latin squares $L_1,L_2$ of order $d$ yields a \emph{Graeco-Latin square} (or pair of \emph{mutually orthogonal Latin squares}, MOLS) if every ordered pair of symbols $(L_1(i,j),L_2(i,j))\in\{0,\ldots,d-1\}^2$ occurs exactly once across the $d^2$ cells.
+
+The purpose of this paper is twofold:
+\begin{enumerate}
+\item \emph{To establish the exact mathematical dictionary—and the precise structural boundaries—between Latin and Graeco-Latin squares and strong $d$-colorings of $d$-uniform context hypergraphs.} We show how partial Latin squares, $k$-nets, and MOLS model vertex embeddings, state decompositions, chromatic separability, and nonextendable states. We then prove that when a $d$-uniform hypergraph has $n\neq d$ intertwining contexts or violates the incidence axioms of a $d\times d$ grid (for instance, in the $6$-vertex Pasch configuration $H_{\mathrm{Pasch}}$), the strict $d\times d$ square must be replaced by a universal \emph{$n\times d$ Context--Color Matrix} $M$ (and its companion $n\times d$ \emph{Context--`(Vertex, Color)` Array}). A strong $d$-coloring exists if and only if the entries of each row (context) of $M$ can be permuted so that every shared vertex is vertically aligned into a single dedicated column.
+\item \emph{To provide detailed, step-by-step pedagogical constructions for elementary hypergraphs and then apply this matrix schematic systematically to the three- and four-dimensional configurations analyzed in the companion study~\cite{svozil-2025-color,supplement}.} We first work through the $2$-context firefly lattice $L_{12}$, the $3$-context triangle $H_{6,3}$, open chains $P_m^{(d)}$ (such as the $3$-context $3$-uniform chain and the $4$-context $5$-uniform chain), the closed $4$-cycle $C_4^{(5)}$, and $H_{\mathrm{Pasch}}$. We then construct the explicit $n\times d$ Context--Color Matrices and analyze the Latin/MOLS skeletons for the pentagon $P_5$, the Petersen hierarchy ($H_8,H_9,G_{32}$), the faithful Yu--Oh restrictions ($H_{17,10},H_{21,13},H_{\YO}^+,H_{\YO}^{(4)}$), the logical TIFS and TITS gadgets ($B_{13,7},D_{16,9},I_{16,9},T_{19,11}$ in $d=3$ and $W_{11,5}^{(4)},W_{16,6}^{(4)},B_{14,7}^{(4)},L_{18,7}^{(4)},D_{17,9}^{(4)},L_{22,9}^{(4)}$ in $d=4$), the $37$-ray complex Hesse configuration $H_{37}$, and the $65$-ray rational four-dimensional hypergraph $H_{65}$ (along with its Cabello-type parents $C_{18,9},C_{36,18},C_{45,21}$).
+\end{enumerate}
+
+The paper is organized as follows. Section~\ref{sec:framework} develops the Latin-square dictionary, the $3$-net Graeco-Latin hypergraph $H_L$, the paradox of strict Graeco-Latin `(Vertex, Color)` pairs, the universal $n\times d$ Context--Color Matrix Theorem, and the four structural barriers to $d\times d$ square embeddability. Section~\ref{sec:elementary} presents lengthy, self-contained walkthroughs of the elementary building blocks ($L_{12}$, $H_{6,3}$, $P_3^{(3)}$, $P_4^{(5)}$, $C_4^{(5)}$, and $H_{\mathrm{Pasch}}$). Section~\ref{sec:exact-palette} applies the $n\times d$ matrix schematic to the chromatically complete ($\chi=d$) configurations and logical gadgets in dimensions $d=3$ and $d=4$. Section~\ref{sec:obstructions} applies the schematic to the chromatically incomplete ($\chi>d$) configurations ($H_9,G_{32},H_{\YO}^+,H_{37},H_{\YO}^{(4)},H_{65},C_{36,18},C_{45,21}$), showing how chromatic gaps manifest as unavoidable column collisions or Pigeonhole capacity overflows. Section~\ref{sec:conclusion} summarizes our findings.
+
+% ============================================================================
+\section{Latin Squares, Graeco-Latin Nets, and the Universal \texorpdfstring{$n\times d$}{n x d} Context--Color Matrix}\label{sec:framework}
+% ============================================================================
+
+\subsection{The Canonical Bridge: Row--Column Hypergraphs and K\H{o}nig's Theorem}\label{sec:row-col}
+
+Let $[d]=\{1,\ldots,d\}$ denote the index set of order $d\ge 2$, and let $\{0,\ldots,d-1\}$ denote the color palette. The \emph{canonical row-column hypergraph} $H_{d\times d}=(V_{d\times d},E_{d\times d})$ has $d^2$ vertices corresponding to the cells of a $d\times d$ grid,
+\begin{equation}\label{eq:grid-vertices}
+V_{d\times d}=[d]\times[d]=\{(i,j):1\le i,j\le d\},
+\end{equation}
+and $n=2d$ contexts of size $d$, partitioned into two parallel classes—the $d$ rows $R_i$ and the $d$ columns $C_j$:
+\begin{equation}\label{eq:grid-contexts}
+R_i=\{(i,j):j\in[d]\},\qquad C_j=\{(i,j):i\in[d]\}.
+\end{equation}
+The two-section graph $\Gamma(H_{d\times d})$ is the rook's graph $K_d\square K_d$, which is the line graph $L(K_{d,d})$ of the complete bipartite graph $K_{d,d}$.
+
+\begin{proposition}[Latin squares as strong colorings and states as permutation matrices]\label{prop:latin-bridge}
+For the $d$-uniform row-column hypergraph $H_{d\times d}$:
+\begin{enumerate}
+\item A map $c:V_{d\times d}\to\{0,\ldots,d-1\}$ is a strong $d$-coloring ($c\in\Cc_d(H_{d\times d})$) if and only if the array $L(i,j)=c(i,j)$ is a Latin square of order $d$. Thus $\chi(H_{d\times d})=d$.
+\item A function $s:V_{d\times d}\to\{0,1\}$ is a two-valued context state ($s\in\Sc(H_{d\times d})$) if and only if its support $\supp s$ is the graph of a permutation $\pi\in S_d$,
+\begin{equation}\label{eq:perm-state}
+S_\pi=\{(i,\pi(i)):i\in[d]\},
+\end{equation}
+corresponding to a $d\times d$ permutation matrix (or a perfect matching / $1$-factor of $K_{d,d}$). Hence $|\Sc(H_{d\times d})|=d!$.
+\item A strong $d$-coloring of $H_{d\times d}$ is equivalent to a decomposition of $V_{d\times d}$ into $d$ pairwise disjoint permutation matrices ($a$ $1$-factorization of $K_{d,d}$).
+\item Every two-valued state of $H_{d\times d}$ is extendable:
+\begin{equation}\label{eq:latin-all-extend}
+\Sc_{\mathrm{ext}}(H_{d\times d})=\Sc(H_{d\times d}).
+\end{equation}
+More generally, any $k$ pairwise disjoint states $s_1,\ldots,s_k\in\Sc(H_{d\times d})$ ($1\le k\le d-1$) extend to a strong $d$-coloring.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1)--(3) follow immediately from Eqs.~\eqref{eq:grid-vertices}--\eqref{eq:grid-contexts}: a state must select one cell per row and one cell per column, which defines a bijection $\pi:[d]\to[d]$, and a strong $d$-coloring partitions $[d]\times[d]$ into $d$ disjoint color classes $S_0,\ldots,S_{d-1}\in\Sc(H_{d\times d})$. For (4), deleting the support of $k$ pairwise disjoint permutation matrices removes $k$ edge-disjoint perfect matchings from $K_{d,d}$, leaving a $(d-k)$-regular bipartite graph. By K\H{o}nig's line coloring theorem (iterated Hall's marriage theorem)~\cite{hall-2015}, every regular bipartite graph of degree $d-k$ decomposes into $d-k$ perfect matchings, completing the Latin square.
+\end{proof}
+
+Proposition~\ref{prop:latin-bridge}(4) explains why the unmodified row-column hypergraph $H_{d\times d}$ is too regular to exhibit the strict inclusion $\Sc_{\mathrm{ext}}(H)\subsetneq\Sc(H)$ or chromatic gaps $\chi(H)>d$. To obtain those phenomena within Latin-square theory, one must either pass to \emph{partial} structures (sub-hypergraphs or pre-colored cells) or adjoin a \emph{third parallel class} of contexts (passing from a $2$-net to a $3$-net, i.e., to Graeco-Latin squares).
+
+\subsection{Graeco-Latin Squares, Chromatic Separability, and \texorpdfstring{$3$}{3}-Net Obstructions}\label{sec:graeco-latin}
+
+Recall from Ref.~\cite{svozil-2025-color} that two vertices $u,v\in V$ in a chromatically complete hypergraph $H$ are \emph{chromatically inseparable} ($u\sim_c v$) if $c(u)=c(v)$ for every $c\in\Cc_d(H)$. Conversely, a family of strong $d$-colorings $\{c_1,\ldots,c_r\}\subseteq\Cc_d(H)$ \emph{separates} all vertices of $H$ if the joint chromatic signature map
+\begin{equation}\label{eq:signature-map}
+\sigma:V\to\{0,\ldots,d-1\}^r,\qquad v\mapsto\bigl(c_1(v),\ldots,c_r(v)\bigr),
+\end{equation}
+is injective.
+
+For the $d\times d$ grid $H_{d\times d}$, $|V_{d\times d}|=d^2$. Consequently, the minimum number of $d$-colorings needed to separate all $d^2$ vertices is $r=2$. By the Pigeonhole Principle, a map $\sigma:V_{d\times d}\to\{0,\ldots,d-1\}^2$ between two finite sets of equal cardinality $d^2$ is \emph{injective} if and only if it is \emph{bijective}—which is precisely the definition of a pair of orthogonal Latin squares (a Graeco-Latin square)!
+
+\begin{proposition}[Graeco-Latin squares and two-coloring separability]\label{prop:graeco-sep}
+Two strong $d$-colorings $L_1,L_2\in\Cc_d(H_{d\times d})$ separate all $d^2$ vertices of $H_{d\times d}$ via $v\mapsto(L_1(v),L_2(v))$ if and only if $(L_1,L_2)$ is a Graeco-Latin square of order $d$. In particular:
+\begin{enumerate}
+\item For every $d\ge 3$ with $d\neq 6$, by the Bose--Shrikhande--Parker theorem, $H_{d\times d}$ admits a pair of strong $d$-colorings that separates all $d^2$ vertices. For prime-power $d=p^k$, linear forms over $\F_d$ such as $L_1(i,j)=i+j$ and $L_2(i,j)=i+\alpha j$ ($\alpha\in\F_d\setminus\{0,1\}$) provide explicit separating pairs.
+\item For $d=2$, only two Latin squares exist, $L_1=\bigl(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr)$ and $L_2=\bigl(\begin{smallmatrix}1&0\\0&1\end{smallmatrix}\bigr)$. No Graeco-Latin square of order $2$ exists, and diagonal cells are genuinely chromatically inseparable: $(1,1)\sim_c(2,2)$ and $(1,2)\sim_c(2,1)$.
+\item For $d=6$ (Euler's $36$ officers problem~\cite{Euler60}), Tarry's theorem proves that no Graeco-Latin square of order $6$ exists; thus \emph{no pair} of strong $6$-colorings separates all $36$ vertices of $H_{6\times 6}$. Nevertheless, $H_{6\times 6}$ is chromatically separating ($u\not\sim_c v$ for all $u\neq v$), as three Latin squares of order $6$ suffice to separate all $36$ cells.
+\end{enumerate}
+\end{proposition}
+
+Proposition~\ref{prop:graeco-sep} highlights a vital distinction: separation by a \emph{fixed pair} of colorings ($r=2$, requiring a Graeco-Latin square) is strictly stronger than separation by the \emph{full coloring space} $\Cc_d(H)$ (chromatic separability $\not\sim_c$).
+
+Even more importantly, Graeco-Latin squares allow us to construct $d$-uniform hypergraphs on $d^2$ vertices that directly exhibit all three contextual obstruction regimes of Ref.~\cite{svozil-2025-color}. Given any fixed Latin square $L$ of order $d$, define the \emph{$d$-uniform $3$-net hypergraph} $H_L=(V_{d\times d},E_L)$ by adjoining the $d$ symbol level-sets of $L$ as a third parallel class of contexts:
+\begin{equation}\label{eq:3net}
+E_L=\{R_1,\ldots,R_d\}\cup\{C_1,\ldots,C_d\}\cup\{S_0^L,\ldots,S_{d-1}^L\},
+\end{equation}
+where $S_k^L=\{(i,j)\in[d]^2:L(i,j)=k\}$. Every context in $E_L$ has size $d$, and any two contexts from different parallel classes intersect in a single cell ($|e\cap e'|\le 1$).
+
+\begin{theorem}[Contextual regimes in the $d$-uniform $3$-net hypergraph $H_L$]\label{thm:3net}
+Let $L$ be a Latin square of order $d$ and $H_L$ its $d$-uniform $3$-net hypergraph~\eqref{eq:3net} with $d^2$ vertices and $3d$ contexts:
+\begin{enumerate}
+\item A two-valued state $s\in\Sc(H_L)$ is a \emph{transversal} of $L$ (a subset of $d$ cells meeting every row, column, and symbol of $L$ once).
+\item A strong $d$-coloring $M\in\Cc_d(H_L)$ is an \emph{orthogonal mate} of $L$ (so $(L,M)$ forms a Graeco-Latin square of order $d$).
+\item As $L$ varies, $H_L$ realizes all three contextual regimes:
+\begin{enumerate}
+\item \emph{Kochen--Specker statelessness ($\Sc(H_L)=\varnothing$):} If $d=2m$ is even and $L(i,j)\equiv i+j\pmod{2m}$ is the cyclic Latin square of order $2m$, then $L$ has no transversals ($\sum_{(i,j)\in\supp s}(i+j-L(i,j))\equiv 0\not\equiv m\pmod{2m}$), so $\Sc(H_L)=\varnothing$ and $\chi(H_L)>d$.
+\item \emph{Chromatic gap with abundant separating states ($\Sc(H_L)\neq\varnothing$ and $\chi(H_L)>d$):} If $d=6$ and $L$ is any Latin square of order $6$ possessing a unital separating family of transversals, then $\Sc(H_L)$ is unital and separating, yet by Tarry's theorem $L$ has no orthogonal mate, so $\Cc_6(H_L)=\varnothing$, $\chi(H_L)>6$, and $\Sc_{\mathrm{ext}}(H_L)=\varnothing$.
+\item \emph{Nonextendable states in a chromatically complete hypergraph ($\chi(H_L)=d$ and $\Sc_{\mathrm{ext}}(H_L)\subsetneq\Sc(H_L)$):} If $L$ admits an orthogonal mate ($\chi(H_L)=d$) as well as a ``bachelor transversal'' $T$ that cannot be completed to a partition of $[d]^2$ into $d$ disjoint transversals, then $s_T=\mathbf{1}_T\in\Sc(H_L)\setminus\Sc_{\mathrm{ext}}(H_L)$.
+\end{enumerate}
+\end{enumerate}
+\end{theorem}
+
+\subsection{The Strict `(Vertex, Color)` Paradox and the Universal \texorpdfstring{$n\times d$}{n x d} Context--Color Matrix}\label{sec:nxd-matrix}
+
+Suppose now that we are given an arbitrary $d$-uniform context hypergraph $H=(V,E)$ with $n=|E|$ contexts $C_1,\ldots,C_n$ and $|V|$ vertices, some of which are shared (intertwining) hinges. Can we always represent a strong $d$-coloring of $H$ as a Graeco-Latin square in which each cell contains an ordered pair `(Vertex, Color)` $=(v,\alpha)$, with the first symbol being the vertex $v\in V$ and the second symbol being its color $\alpha=c(v)\in\{0,\ldots,d-1\}$?
+
+Analyzing this proposal exposes a fundamental structural dichotomy:
+\begin{itemize}
+\item \emph{The Strict Graeco-Latin Paradox:} In a strict $d\times d$ Graeco-Latin square, there are $d$ first-coordinate symbols and $d$ second-coordinate symbols, each appearing $d$ times (once per row and column), and \emph{no ordered pair $(v,\alpha)$ may repeat}. If the first symbol is a vertex $v$ that appears in multiple rows (contexts) and the second symbol is its color, then non-repetition of $(v,\alpha)$ forces $v$ to take a \emph{different color in every context in which it appears}: $(v,\alpha_1),(v,\alpha_2),\ldots,(v,\alpha_d)$. That is, strict Graeco-Latin orthogonality on `(Vertex, Color)` pairs describes a maximally \emph{contextual} (context-dependent) assignment!
+\item \emph{Noncontextual Consistency Requires Repeating `(Vertex, Color)` Pairs:} By contrast, in a noncontextual strong $d$-coloring $c:V\to\{0,\ldots,d-1\}$, each vertex $v\in V$ carries a \emph{single fixed color} $c(v)$. Whenever $v\in C_i\cap C_{i'}$ is an intertwining vertex shared by $\deg_H(v)\ge 2$ contexts, the pair $(v,c(v))$ \emph{must repeat} $\deg_H(v)$ times across those rows.
+\end{itemize}
+
+Furthermore, when the number of contexts $n=|E|$ is not equal to $d$ (or when contexts intersect in non-grid topologies), a strict $d\times d$ square cannot be maintained. Instead, arranging the $n$ contexts as rows and the $d$ colors as columns yields the universal **$n\times d$ Context--Color Matrix**.
+
+\begin{theorem}[Universal $n\times d$ Context--Color Matrix Criterion]\label{thm:nxd-matrix}
+Let $H=(V,E)$ be any finite $d$-uniform hypergraph with $n=|E|$ contexts $E=\{C_1,\ldots,C_n\}$. Then $H$ admits a strong $d$-coloring ($\chi(H)=d$) if and only if the elements of each context $C_i$ can be ordered into an $n\times d$ matrix
+\begin{equation}\label{eq:nxd-matrix}
+M=\begin{pmatrix}
+M_{1,0} & M_{1,1} & \cdots & M_{1,d-1}\\
+M_{2,0} & M_{2,1} & \cdots & M_{2,d-1}\\
+\vdots  & \vdots  & \ddots & \vdots\\
+M_{n,0} & M_{n,1} & \cdots & M_{n,d-1}
+\end{pmatrix}\in V^{n\times d},
+\end{equation}
+satisfying the following two conditions:
+\begin{enumerate}
+\item \emph{Row Bijectivity (Rainbow Contexts):} For each row $i\in\{1,\ldots,n\}$, the row entries $\{M_{i,0},M_{i,1},\ldots,M_{i,d-1}\}=C_i$ are a permutation of the $d$ distinct vertices of context $C_i$.
+\item \emph{Column Alignment (Noncontextual Intertwining Consistency):} Every vertex $v\in V$ appears in \emph{uniquely one column} of $M$:
+\begin{equation}\label{eq:col-alignment}
+M_{i,j}=M_{i',j'}=v \quad\Longrightarrow\quad j=j'.
+\end{equation}
+\end{enumerate}
+When Eqs.~\eqref{eq:nxd-matrix}--\eqref{eq:col-alignment} hold, setting $c(M_{i,j})=j$ defines a strong $d$-coloring $c\in\Cc_d(H)$, and the distinct vertices in each column $j\in\{0,\ldots,d-1\}$,
+\begin{equation}\label{eq:col-state}
+S_j=\{M_{i,j}:1\le i\le n\}\subseteq V,
+\end{equation}
+form $d$ pairwise disjoint two-valued state supports $s_j=\mathbf{1}_{S_j}\in\Sc_{\mathrm{ext}}(H)$ partitioning $V$. Moreover, the vertex degrees and column support sizes obey the exact conservation laws
+\begin{align}
+\sum_{v\in S_j}\deg_H(v) &= n \qquad (0\le j\le d-1),\label{eq:deg-conservation}\\
+\sum_{j=0}^{d-1}|S_j| &= |V|,\label{eq:size-conservation}\\
+|S_j| &= n - \sum_{v\in S_j}\bigl(\deg_H(v)-1\bigr).\label{eq:hinge-saving}
+\end{align}
+\end{theorem}
+\begin{proof}
+Given $c\in\Cc_d(H)$, each context $C_i$ contains a unique vertex $v\in C_i$ of color $c(v)=j$; setting $M_{i,j}=v$ satisfies Row Bijectivity, and since $c(v)$ is well-defined on $V$, $v$ appears only in column $j=c(v)$, establishing Eq.~\eqref{eq:col-alignment}. Conversely, given $M$ satisfying (1) and (2), Eq.~\eqref{eq:col-alignment} assigns a unique column index $c(v)=j$ to every $v\in V=\bigcup_{i=1}^n C_i$, and Row Bijectivity ensures that $c$ is injective on each $C_i$. Because column $j$ contains one entry from each of the $n$ rows and shares no vertices with any column $j'\neq j$, its underlying vertex set $S_j$ hits every context $C_i$ exactly once, so $\mathbf{1}_{S_j}\in\Sc_{\mathrm{ext}}(H)$. Each vertex $v\in S_j$ appears in $\deg_H(v)$ rows of column $j$, summing to $n$ entries in column $j$ [Eq.~\eqref{eq:deg-conservation}] and yielding Eq.~\eqref{eq:hinge-saving}; summing $|S_j|$ over the $d$ disjoint columns partitioning $V$ gives Eq.~\eqref{eq:size-conservation}.
+\end{proof}
+
+\begin{remark}[The Companion $n\times d$ `(Vertex, Color)` Latin Array]\label{rem:vertex-color-array}
+From any $n\times d$ Context--Color Matrix $M$, one can also form an $n\times d$ array of pairs $A_{i,k}=\bigl(v_{i,k},\,c(v_{i,k})\bigr)$ by applying a cyclic shift $\sigma_i(j)=(j+i)\bmod d$ to row $i$:
+\begin{equation}\label{eq:shifted-array}
+A_{i,k}=\bigl(M_{i,(k-i)\bmod d},\,(k-i)\bmod d\bigr).
+\end{equation}
+In Eq.~\eqref{eq:shifted-array}, the second coordinate (the color) forms a genuine Latin rectangle (or a $d\times d$ Latin square when $n=d$), while the first coordinate tracks the context vertices along each diagonal color stripe.
+\end{remark}
+
+In the language of Theorem~\ref{thm:nxd-matrix}, every chromatic phenomenon studied in Ref.~\cite{svozil-2025-color} acquires a transparent matrix interpretation:
+\begin{itemize}
+\item \emph{Chromatic Gap ($\chi(H)>d$):} No row permutations of $C_1,\ldots,C_n$ can align all shared vertices vertically; every arrangement forces at least one intertwining vertex $v$ to appear in two different columns $j\neq j'$.
+\item \emph{Chromatic Inseparability ($u\sim_c v$):} In \emph{every} valid column-aligned $n\times d$ matrix $M$, vertices $u$ and $v$ are forced to occupy the \emph{exact same column}.
+\item \emph{Chromatic TIFS ($c(u)\neq c(v)$):} In \emph{every} valid $n\times d$ matrix $M$, $u$ and $v$ are forced into \emph{different columns} (an implicit edge). If some nonextendable state $s\in\Sc(H)\setminus\Sc_{\mathrm{ext}}(H)$ satisfies $s(u)=s(v)=1$, then $\{u,v\}$ can be placed together into a single valid state column $S_0$, but the remaining $n\times(d-1)$ entries cannot be aligned into $d-1$ collision-free columns!
+\end{itemize}
+
+\subsection{The Four Barriers to Strict \texorpdfstring{$d\times d$}{d x d} Latin-Square Embedding}\label{sec:barriers}
+
+When can an abstract $d$-uniform hypergraph $H=(V,E)$ with $\chi(H)=d$ be embedded directly as a sub-hypergraph of the $d\times d$ Latin-square grid (using rows, columns, and MOLS transversals), and when is the rectangular $n\times d$ Context--Color Matrix $M$ strictly more general? Four barriers separate the two:
+
+\begin{enumerate}
+\item \emph{The Linearity Barrier ($|e\cap e'|\ge 2$):} Any two distinct rows, columns, or MOLS transversals in a $d\times d$ grid share at most one cell ($|e\cap e'|\in\{0,1\}$). Thus any non-linear hypergraph ($g(H)=2$), such as $H_{4,2}=\{\{1,2,3\},\{1,2,4\}\}$ or the $4$-dimensional common-apex lifts $W_{11,5}^{(4)},B_{14,7}^{(4)},D_{17,9}^{(4)}$, cannot embed as lines of a $d\times d$ Latin square, yet immediately admits an $n\times d$ Context--Color Matrix $M$ (with the shared pair $\{1,2\}$ occupying two fixed columns).
+\item \emph{The Grid-Capacity Barrier ($|V|>d^2$ or $|E|>d(d+1)$):} A $d\times d$ grid has only $d^2$ cells and at most $d+1$ parallel classes of $d$ lines (totaling $d(d+1)$ lines when an affine plane $AG(2,d)$ exists). Any strongly $d$-colorable hypergraph with $|V|>d^2$—such as an open chain of $n\ge 5$ triads in $d=3$ ($|V|=2n+1\ge 11>9$) or the Yu--Oh restrictions $H_{17,10}$ ($|V|=17>9$) and $H_{21,13}$ ($|V|=21>9$, $|E|=13>12$)—exceeds the capacity of a single $3\times 3$ Latin square, but is represented without loss by a $10\times 3$ or $13\times 3$ Context--Color Matrix.
+\item \emph{The Euler--MOLS Barrier ($d=6$):} If $H$ consists of $n=4$ contexts of size $d=6$ that pairwise intersect in a single vertex ($|C_a\cap C_b|=1$ for $1\le a<b\le 4$, with $|V|=\binom{4}{2}+4(6-3)=18\le 36$), then $\chi(H)=6$ because the $6$ shared vertices form the line graph $L(K_4)$, which is $3$-colorable ($\chi'(K_4)=3\le 6$). Thus $H$ has a valid $4\times 6$ Context--Color Matrix, yet cannot embed as lines of any $6\times 6$ Latin-square net because four mutually intersecting parallel classes in order $6$ would require a $6\times 6$ Graeco-Latin square, forbidden by Tarry's theorem.
+\item \emph{The Transversal-Closure Barrier (Forbidden Configurations at $n\le d^2$):} Even when $H$ is linear ($|e\cap e'|\le 1$), satisfies $|V|\le d^2$ and $|E|\le d(d+1)$, and $d=3$ (where MOLS exist), $H$ can fail to embed into any $3\times 3$ Latin square or $AG(2,3)$ because its contexts violate transversal closure. The minimal counterexample is the $6$-vertex, $4$-context \emph{Pasch configuration} $H_{\mathrm{Pasch}}$, analyzed in detail in Sec.~\ref{sec:pasch}.
+\end{enumerate}
+
+% ============================================================================
+\section{Elementary Building Blocks: Detailed Walkthroughs}\label{sec:elementary}
+% ============================================================================
+
+Before turning to the high-complexity quantum configurations of Ref.~\cite{svozil-2025-color}, we present complete, self-contained walkthroughs of the six foundational hypergraph motifs that govern all larger constructions. Table~\ref{tab:elementary-summary} summarizes their invariants.
+
+\begin{table*}[t]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\caption{Summary of elementary building blocks analyzed in Sec.~\ref{sec:elementary}, comparing their $d\times d$ Latin-grid embeddings and $n\times d$ Context--Color Matrix structures.}\label{tab:elementary-summary}
+\begin{tabular}{llrrrrrrp{.33\textwidth}}\toprule
+Motif & Contexts $E$ & $d$ & $n=|E|$ & $|V|$ & $N_c$ & $|\Sc|$ & $|\Sc_{\mathrm{ext}}|$ & Latin Grid vs.\ $n\times d$ Matrix Structure\\\midrule
+$L_{12}$ (Firefly) & $\{123,\,345\}$ & 3 & 2 & 5 & 2 & 5 & 5 & Corner L-hook $R_1\cup C_1$ of $3\times 3$ Latin square; $2\times 3$ matrix; bijects with all $12$ order-$3$ Latin squares.\\
+$P_3^{(3)}$ (3-Chain) & $\{123,\,345,\,567\}$ & 3 & 3 & 7 & 4 & 8 & 8 & $R_1\cup C_1\cup R_2$ of $3\times 3$ grid; $3\times 3$ matrix with state-size partition $2+2+3=7$.\\
+$H_{6,3}$ (Triangle) & $\{123,\,345,\,561\}$ & 3 & 3 & 6 & 1 & 4 & 3 & $R_1\cup C_1\cup S_2^L$ in $3$-net of cyclic $L$; $3\times 3$ matrix; $s_4=\{2,4,6\}$ nonextendable; $1\sim_c 4,2\sim_c 5,3\sim_c 6$.\\
+$H_{\mathrm{Pasch}}$ (Pasch) & $\{123,\,145,\,246,\,356\}$ & 3 & 4 & 6 & 1 & 3 & 3 & Unembeddable in any $3\times 3$ Latin square or $AG(2,3)$; clean $4\times 3$ matrix with columns $\{1,6\},\{2,5\},\{3,4\}$.\\
+$P_4^{(5)}$ (4-Chain) & $\{1..5,\,5..9,\,9..13,\,13..17\}$ & 5 & 4 & 17 & 13,824 & 185 & 185 & Staircase $R_1,C_1,R_2,C_2$ in $5\times 5$ grid (cell $(1,2)$ unpinned); $4\times 5$ matrix (Types I \& II).\\
+$C_4^{(5)}$ (4-Cycle) & $\{1..5,\,5..9,\,9..13,\,13..16,1\}$ & 5 & 4 & 16 & 2,808 & 119 & 119 & Exact $R_1,R_2,C_1,C_2$ in $5\times 5$ Latin square with $2\times 2$ hinge block; $4\times 5$ matrix (Types I, II, III).\\
+\bottomrule\end{tabular}
+\end{table*}
+
+\subsection{The \texorpdfstring{$L_{12}$}{L12} Firefly Lattice: Two Contexts Sharing One Hinge}\label{sec:L12}
+
+The orthomodular lattice $L_{12}$ ($12$ lattice elements: $0,1$, five atoms, and five coatoms, obtained by pasting two Boolean algebras $2^3$ at one common atom and its complement) has the $3$-uniform context hypergraph with $n=2$ contexts and $|V|=5$ vertices:
+\begin{equation}\label{eq:L12}
+C_1=\{1,2,\mathbf{3}\},\qquad C_2=\{\mathbf{3},4,5\},\qquad C_1\cap C_2=\{\mathbf{3}\}.
+\end{equation}
+
+\subsubsection{Embedding as the Corner Hook of a \texorpdfstring{$3\times 3$}{3x3} Latin Square}
+Because $C_1$ and $C_2$ intersect at the single hinge vertex $\mathbf{3}$, we assign $C_1$ to Row~1 ($R_1$) and $C_2$ to Column~1 ($C_1$) of a $3\times 3$ Latin square grid, placing the shared hinge $\mathbf{3}$ at the corner cell $(1,1)=R_1\cap C_1$:
+\begin{equation}\label{eq:L12-grid}
+\begin{array}{c|ccc}
+\text{Grid} & \text{Col 1 }(C_2) & \text{Col 2} & \text{Col 3}\\\hline
+\text{Row 1 }(C_1) & \mathbf{3}\text{ }(1,1) & 1\text{ }(1,2) & 2\text{ }(1,3)\\
+\text{Row 2} & 4\text{ }(2,1) & \cdot\text{ }(2,2) & \cdot\text{ }(2,3)\\
+\text{Row 3} & 5\text{ }(3,1) & \cdot\text{ }(3,2) & \cdot\text{ }(3,3)
+\end{array}
+\end{equation}
+Thus $L_{12}$ is literally the ``corner L-hook'' ($R_1\cup C_1$) of a $3\times 3$ Latin square.
+
+\subsubsection{Bijection Between Strong \texorpdfstring{$3$}{3}-Colorings of \texorpdfstring{$L_{12}$}{L12} and \texorpdfstring{$3\times 3$}{3x3} Latin Squares}
+To strongly $3$-color $L_{12}$ with palette $\{0,1,2\}$, we choose a color for the hinge $\mathbf{3}$ ($3$ choices), permute the remaining two colors on $\{1,2\}\subset C_1$ ($2!=2$ choices), and independently permute them on $\{4,5\}\subset C_2$ ($2!=2$ choices), yielding $3\times 2\times 2=12$ strong $3$-colorings (or $N_c=2$ normalized colorings fixing $(c(\mathbf{3}),c(1),c(2))=(0,1,2)$).
+
+Remarkably, at $d=3$, \emph{every strong $3$-coloring of $L_{12}$ extends to a unique $3\times 3$ Latin square}: once Row~1 has $(0,1,2)$ and Column~1 has $(0,a,b)$ with $\{a,b\}=\{1,2\}$, cell $(2,3)$ lies in Row~2 (containing $a$) and Column~3 (containing $2$), and cell $(3,2)$ lies in Row~3 (containing $b$) and Column~2 (containing $1$). Row and column uniqueness deterministically force all four remaining cells:
+\begin{equation}\label{eq:L12-completions}
+L_{\mathrm{A}}=\begin{pmatrix}
+\mathbf{0} & \mathbf{1} & \mathbf{2}\\
+\mathbf{1} & 2 & 0\\
+\mathbf{2} & 0 & 1
+\end{pmatrix},\qquad
+L_{\mathrm{B}}=\begin{pmatrix}
+\mathbf{0} & \mathbf{1} & \mathbf{2}\\
+\mathbf{2} & 0 & 1\\
+\mathbf{1} & 2 & 0
+\end{pmatrix}.
+\end{equation}
+Hence the $12$ strong $3$-colorings of $L_{12}$ stand in exact one-to-one correspondence with the $12$ Latin squares of order $3$. Moreover, superimposing the two normalized extensions $L_{\mathrm{A}}$ and $L_{\mathrm{B}}$ in Eq.~\eqref{eq:L12-completions} produces a $3\times 3$ Graeco-Latin square $(L_{\mathrm{A}},L_{\mathrm{B}})$ in which all nine color pairs $(a,b)\in\{0,1,2\}^2$ occur once!
+
+\subsubsection{Two-Valued States and the \texorpdfstring{$2\times 3$}{2x3} Context--Color Matrices}
+A two-valued state $s\in\Sc(L_{12})$ must satisfy $s(1)+s(2)+s(\mathbf{3})=1$ and $s(\mathbf{3})+s(4)+s(5)=1$:
+\begin{itemize}
+\item \emph{Case 1 ($s(\mathbf{3})=1$):} Setting the hinge $\mathbf{3}$ to $1$ satisfies both $C_1$ and $C_2$ simultaneously (``$2$-for-$1$''), forcing $s(1)=s(2)=s(4)=s(5)=0$. This gives one state of size $|S_1|=2-(2-1)=1$:
+\[
+s_1=\{\mathbf{3}\},
+\]
+which is the restriction to $R_1\cup C_1$ of the two $3\times 3$ permutation matrices passing through $(1,1)$.
+\item \emph{Case 2 ($s(\mathbf{3})=0$):} Avoiding the hinge requires choosing one of $\{1,2\}$ in $C_1$ ($2$ choices) and one of $\{4,5\}$ in $C_2$ ($2$ choices), giving $2\times 2=4$ states of size $|S|=2$:
+\[
+s_2=\{1,4\},\quad s_3=\{2,5\},\quad s_4=\{1,5\},\quad s_5=\{2,4\},
+\]
+each of which uniquely forces a third cell in $[3]\times[3]\setminus(R_1\cup C_1)$ to form one of the four $3\times 3$ permutation matrices missing $(1,1)$.
+\end{itemize}
+In Theorem~\ref{thm:nxd-matrix}, the two normalized strong $3$-colorings of $L_{12}$ are represented by the two $2\times 3$ Context--Color Matrices $M_{\mathrm{A}},M_{\mathrm{B}}$ (with $|S_0|+|S_1|+|S_2|=1+2+2=5=|V|$):
+\begin{equation}\label{eq:L12-matrices}
+M_{\mathrm{A}}=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2\\\hline
+\mathbf{3} & 1 & 2\\
+\mathbf{3} & 4 & 5
+\end{pmatrix},\qquad
+M_{\mathrm{B}}=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2\\\hline
+\mathbf{3} & 1 & 2\\
+\mathbf{3} & 5 & 4
+\end{pmatrix}.
+\end{equation}
+Every one of the $5$ states appears as a column in $M_{\mathrm{A}}$ or $M_{\mathrm{B}}$, so $\Sc_{\mathrm{ext}}(L_{12})=\Sc(L_{12})$, and no two vertices are chromatically inseparable because $\{1,4\}$ share column $\mathbf{c}_1$ in $M_{\mathrm{A}}$ but sit in different columns in $M_{\mathrm{B}}$.
+
+\subsection{The Three-Context Open Chain \texorpdfstring{$P_3^{(3)}$}{P3(3)}}\label{sec:P3}
+
+Adjoining a third triad $C_3=\{\mathbf{5},6,7\}$ to $L_{12}$ at vertex $\mathbf{5}$ gives the $3$-context open chain $P_3^{(3)}$ ($d=3,n=3,|V|=7$):
+\begin{equation}\label{eq:P3}
+C_1=\{1,2,\mathbf{3}\},\qquad C_2=\{\mathbf{3},4,\mathbf{5}\},\qquad C_3=\{\mathbf{5},6,7\}.
+\end{equation}
+Because $C_1$ and $C_3$ are disjoint while $C_2$ intersects both, the context intersection graph $C_1-C_2-C_3$ is bipartite. In the $3\times 3$ Latin square grid, we assign $C_1=\text{Row 1}$, $C_3=\text{Row 2}$, and $C_2=\text{Column 1}$, placing the two hinges at $\mathbf{3}=(1,1)$ and $\mathbf{5}=(2,1)$:
+\begin{equation}\label{eq:P3-grid}
+\begin{array}{c|ccc}
+\text{Grid} & \text{Col 1 }(C_2) & \text{Col 2} & \text{Col 3}\\\hline
+\text{Row 1 }(C_1) & \mathbf{3}\text{ }(1,1) & 1\text{ }(1,2) & 2\text{ }(1,3)\\
+\text{Row 2 }(C_3) & \mathbf{5}\text{ }(2,1) & 6\text{ }(2,2) & 7\text{ }(2,3)\\
+\text{Row 3} & 4\text{ }(3,1) & \cdot\text{ }(3,2) & \cdot\text{ }(3,3)
+\end{array}
+\end{equation}
+
+Every two-valued state $s\in\Sc(P_3^{(3)})$ selects exactly one vertex from the middle context $C_2=\{\mathbf{3},4,\mathbf{5}\}$:
+\begin{itemize}
+\item \emph{Case A ($s(\mathbf{3})=1$):} Satisfies $C_1,C_2$; $C_3$ picks $6$ or $7$, yielding $2$ states of size $2$: $s_1=\{\mathbf{3},6\}$, $s_2=\{\mathbf{3},7\}$.
+\item \emph{Case B ($s(\mathbf{5})=1$):} Satisfies $C_2,C_3$; $C_1$ picks $1$ or $2$, yielding $2$ states of size $2$: $s_3=\{1,\mathbf{5}\}$, $s_4=\{2,\mathbf{5}\}$.
+\item \emph{Case C ($s(4)=1$, so $s(\mathbf{3})=s(\mathbf{5})=0$):} Satisfies only $C_2$; $C_1$ picks from $\{1,2\}$ and $C_3$ picks from $\{6,7\}$ independently, yielding $2\times 2=4$ states of size $3$: $s_5=\{1,4,6\}$, $s_6=\{1,4,7\}$, $s_7=\{2,4,6\}$, and $s_8=\{2,4,7\}$.
+\end{itemize}
+In any $3\times 3$ Context--Color Matrix $M$, the three vertices $\{\mathbf{3},\mathbf{5},4\}$ of $C_2$ must occupy distinct columns $\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2$. Thus every strong $3$-coloring uses one Case~A state (size $2$), one Case~B state (size $2$), and one Case~C state (size $3$), obeying Eq.~\eqref{eq:size-conservation}: $2+2+3=7=|V|$. Fixing Row~2 ($C_2$) as $(\mathbf{3},\mathbf{5},4)$ yields $2\times 2=4$ normalized $3\times 3$ Context--Color Matrices:
+\begin{equation}\label{eq:P3-matrices}
+\begin{aligned}
+M_1&=\begin{pmatrix}\mathbf{3}&2&1\\\mathbf{3}&\mathbf{5}&4\\6&\mathbf{5}&7\end{pmatrix},&
+M_2&=\begin{pmatrix}\mathbf{3}&1&2\\\mathbf{3}&\mathbf{5}&4\\7&\mathbf{5}&6\end{pmatrix},\\[4pt]
+M_3&=\begin{pmatrix}\mathbf{3}&1&2\\\mathbf{3}&\mathbf{5}&4\\6&\mathbf{5}&7\end{pmatrix},&
+M_4&=\begin{pmatrix}\mathbf{3}&2&1\\\mathbf{3}&\mathbf{5}&4\\7&\mathbf{5}&6\end{pmatrix}.
+\end{aligned}
+\end{equation}
+All $8$ states occur as columns in Eq.~\eqref{eq:P3-matrices}, so $\Sc_{\mathrm{ext}}(P_3^{(3)})=\Sc(P_3^{(3)})$. Notice that $M_1$ and $M_2$ respect the inactive grid columns Col~2 and Col~3 in Eq.~\eqref{eq:P3-grid} ($c(1)\neq c(6)$ and $c(2)\neq c(7)$) and extend directly to full $3\times 3$ Latin squares, whereas $M_3$ and $M_4$ assign the same color to $(1,6)$ or $(2,7)$ because Col~2 and Col~3 are not active contexts in $P_3^{(3)}$ (they become Latin squares upon swapping cells $6\leftrightarrow 7$ in Row~2).
+
+\subsection{The Triangle Hypergraph \texorpdfstring{$H_{6,3}$}{H6,3} and the Cyclic Latin Square \texorpdfstring{$\{\{1,2,3\},\{3,1,2\},\{2,3,1\}\}$}{{{1,2,3},{3,1,2},{2,3,1}}}}\label{sec:triangle}
+
+If we identify vertex $7$ with vertex $1$ in the open chain $P_3^{(3)}$, the chain closes into the $6$-vertex, $3$-context \emph{triangle hypergraph} $H_{6,3}$ (Proposition~7 of Ref.~\cite{svozil-2025-color}):
+\begin{equation}\label{eq:H63}
+C_1=\{\mathbf{1},2,\mathbf{3}\},\qquad C_2=\{\mathbf{3},4,\mathbf{5}\},\qquad C_3=\{\mathbf{5},6,\mathbf{1}\},
+\end{equation}
+with three degree-$2$ corner hinges $\{\mathbf{1},\mathbf{3},\mathbf{5}\}$ and three degree-$1$ midpoints $\{2,4,6\}$.
+
+\subsubsection{Embedding into the \texorpdfstring{$3$}{3}-Net of the Cyclic Latin Square}
+Because $C_1,C_2,C_3$ form an \emph{odd} cycle of contexts ($|C_1\cap C_2|=|C_2\cap C_3|=|C_3\cap C_1|=1$), they cannot be embedded using only rows and columns of a Latin square (whose context intersection graph $K_{d,d}$ is bipartite). By Sec.~\ref{sec:graeco-latin}, $H_{6,3}$ requires \emph{three parallel classes}—one Row, one Column, and one Symbol transversal of a base $3\times 3$ Latin square $L$!
+
+Specifically, take the right-cyclic Latin square $L=\{\{1,2,3\},\{3,1,2\},\{2,3,1\}\}$:
+\begin{equation}\label{eq:cyclic-L3}
+L=\begin{pmatrix}
+1 & \mathbf{2} & 3\\
+3 & 1 & \mathbf{2}\\
+\mathbf{2} & 3 & 1
+\end{pmatrix},
+\end{equation}
+and select the three contexts from the $3$-net $H_L$:
+\begin{itemize}
+\item $C_1=\text{Row 1}=\{(1,1),(1,3),(1,2)\}$,
+\item $C_2=\text{Column 1}=\{(1,1),(2,1),(3,1)\}$,
+\item $C_3=\text{Symbol-}\mathbf{2}\text{ transversal of }L=\{(1,2),(2,3),(3,1)\}$.
+\end{itemize}
+Their pairwise intersections are the three corners $\mathbf{1}=(1,1)=C_1\cap C_2$, $\mathbf{3}=(1,2)=C_1\cap C_3$, and $\mathbf{5}=(3,1)=C_2\cap C_3$, while the three midpoints are $2=(1,3)\in C_1$, $4=(2,1)\in C_2$, and $6=(2,3)\in C_3$.
+
+\subsubsection{States, the Nonextendable Midpoint State, and the Unique \texorpdfstring{$3\times 3$}{3x3} Matrix}
+In $H_{6,3}$, no two corner hinges can both be $1$ because $\{1,3,5\}$ is a $K_3$ clique in $\Gamma(H_{6,3})$:
+\begin{itemize}
+\item \emph{One corner is $1$ ($3$ states of size $2$):} Setting one corner to $1$ covers two sides of the triangle and forces the opposite midpoint to $1$, yielding
+\[
+s_1=\{\mathbf{1},4\},\qquad s_2=\{2,\mathbf{5}\},\qquad s_3=\{\mathbf{3},6\}.
+\]
+\item \emph{All three corners are $0$ ($1$ state of size $3$):} Setting $s(\mathbf{1})=s(\mathbf{3})=s(\mathbf{5})=0$ forces all three midpoints to $1$, yielding
+\[
+s_4=\{2,4,6\}.
+\]
+\end{itemize}
+Now apply Theorem~\ref{thm:nxd-matrix} to construct a $3\times 3$ Context--Color Matrix $M$ for $H_{6,3}$:
+\begin{enumerate}
+\item By the size conservation law~\eqref{eq:size-conservation}, the three column state sizes must sum to $|V|=6$. Since the available state sizes are $\{2,2,2,3\}$, the \emph{only} way three state sizes can sum to $6$ is
+\[
+2+2+2=6,
+\]
+using $s_1=\{\mathbf{1},4\}$, $s_2=\{2,\mathbf{5}\}$, and $s_3=\{\mathbf{3},6\}$!
+\item If we instead try to use $s_4=\{2,4,6\}$ (size $3$) as Column~0 of $M$, the remaining $6-3=3$ vertices $\{\mathbf{1},\mathbf{3},\mathbf{5}\}$ must be placed into the $d-1=2$ remaining columns $\mathbf{c}_1,\mathbf{c}_2$; since $\mathbf{1},\mathbf{3},\mathbf{5}$ pairwise share rows ($C_1,C_2,C_3$), no two can share a column—an immediate Pigeonhole contradiction ($\chi(\Gamma(H_{6,3})[\{1,3,5\}])=3>2$). Thus $s_4\in\Sc(H_{6,3})\setminus\Sc_{\mathrm{ext}}(H_{6,3})$.
+\end{enumerate}
+
+Up to column permutation, $H_{6,3}$ therefore admits a \emph{unique} normalized $3\times 3$ Context--Color Matrix $M_{\triangle}$ (and companion cyclically shifted `(Vertex, Color)` square $A_{\triangle}$ via Remark~\ref{rem:vertex-color-array}):
+\begin{equation}\label{eq:triangle-matrix}
+M_{\triangle}=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2\\\hline
+\mathbf{1} & 2 & \mathbf{3}\\
+4 & \mathbf{5} & \mathbf{3}\\
+\mathbf{1} & \mathbf{5} & 6
+\end{pmatrix},\qquad
+A_{\triangle}=\begin{pmatrix}
+(\mathbf{1},0) & (2,1) & (\mathbf{3},2)\\
+(\mathbf{3},2) & (4,0) & (\mathbf{5},1)\\
+(\mathbf{5},1) & (6,2) & (\mathbf{1},0)
+\end{pmatrix}.
+\end{equation}
+In $M_{\triangle}$, the columns lock $\mathbf{1}\sim_c 4$, $2\sim_c\mathbf{5}$, and $\mathbf{3}\sim_c 6$, forcing the unique normalized orthogonal mate $M$ of the cyclic Latin square $L$ in Eq.~\eqref{eq:cyclic-L3}!
+
+\subsection{General \texorpdfstring{$d$}{d}-Uniform Chains \texorpdfstring{$P_m^{(d)}$}{Pm(d)} and the Closed Four-Cycle \texorpdfstring{$C_4^{(5)}$}{C4(5)}}\label{sec:chains-cycles}
+
+Consider now the $5$-uniform $4$-context open chain $P_4^{(5)}$ ($d=5,n=4,|V|=17$):
+\begin{equation}\label{eq:P4-5}
+\begin{aligned}
+C_1&=\{1,2,3,4,\mathbf{5}\},& C_2&=\{\mathbf{5},6,7,8,\mathbf{9}\},\\
+C_3&=\{\mathbf{9},10,11,12,\mathbf{13}\},& C_4&=\{\mathbf{13},14,15,16,17\},
+\end{aligned}
+\end{equation}
+and the $16$-vertex closed $4$-cycle $C_4^{(5)}$ obtained by identifying $17\equiv\mathbf{1}$ so that $C_4=\{\mathbf{13},14,15,16,\mathbf{1}\}$ shares hinge $\mathbf{1}$ with $C_1$.
+
+In the $5\times 5$ Latin square grid, assigning $C_1=\text{Row 1}$, $C_3=\text{Row 2}$, $C_2=\text{Col 1}$, and $C_4=\text{Col 2}$ embeds $C_4^{(5)}$ faithfully with the four hinges forming the top-left $2\times 2$ submatrix $\bigl(\begin{smallmatrix}\mathbf{5}&\mathbf{1}\\\mathbf{9}&\mathbf{13}\end{smallmatrix}\bigr)$ at cells $\{(1,1),(1,2),(2,1),(2,2)\}$ (whereas in the open chain $P_4^{(5)}$, cell $(1,2)$ is unpinned into horizontal vertex $1\in C_1$ and vertical vertex $17\in C_4$).
+
+Using Theorem~\ref{thm:nxd-matrix}:
+\begin{itemize}
+\item \emph{For the open chain $P_4^{(5)}$ ($|V|=17$):} The $3$ hinges $\{\mathbf{5},\mathbf{9},\mathbf{13}\}$ form a path $5-9-13$. Valid state columns pick an independent set of hinges ($k\in\{0,1,2\}$ active hinges), giving state size $|S|=4-k$:
+\begin{enumerate}
+\item $k=2$ ($\{\mathbf{5},\mathbf{13}\}$, size $2$): $1$ state;
+\item $k=1$ ($\{\mathbf{5}\}$ or $\{\mathbf{13}\}$ with $3\times 4=12$ states each, or $\{\mathbf{9}\}$ with $4\times 4=16$ states; size $3$): $40$ states;
+\item $k=0$ ($\varnothing$, size $4$): $4\times 3\times 3\times 4=144$ states;
+\end{enumerate}
+totaling $|\Sc(P_4^{(5)})|=1+40+144=185$ states. Every $4\times 5$ Context--Color Matrix $M$ distributes the $3$ hinges across the $5$ columns in one of two ways:
+\begin{equation}\label{eq:P4-5-matrices}
+\begin{aligned}
+M_{\mathrm{I}}&=\begin{pmatrix}
+\mathbf{5} & 1 & 2 & 3 & 4\\
+\mathbf{5} & \mathbf{9} & 6 & 7 & 8\\
+\mathbf{13} & \mathbf{9} & 10 & 11 & 12\\
+\mathbf{13} & 14 & 15 & 16 & 17
+\end{pmatrix}\quad (2+3+4+4+4=17),\\[4pt]
+M_{\mathrm{II}}&=\begin{pmatrix}
+\mathbf{5} & 1 & 2 & 3 & 4\\
+\mathbf{5} & \mathbf{9} & 6 & 7 & 8\\
+10 & \mathbf{9} & \mathbf{13} & 11 & 12\\
+14 & 15 & \mathbf{13} & 16 & 17
+\end{pmatrix}\quad (3+3+3+4+4=17).
+\end{aligned}
+\end{equation}
+All $185$ states extend ($\Sc_{\mathrm{ext}}=\Sc$), with $N_c=(4!)^3=13{,}824$ normalized $4\times 5$ matrices.
+\item \emph{For the closed $4$-cycle $C_4^{(5)}$ ($|V|=16$):} The $4$ hinges $\{\mathbf{5},\mathbf{1},\mathbf{9},\mathbf{13}\}$ form a $4$-cycle (the $2\times 2$ Latin corner block), allowing $k=2$ diagonal hinges ($2$ states $\{\mathbf{5},\mathbf{13}\}$ and $\{\mathbf{1},\mathbf{9}\}$ of size $2$), $k=1$ hinge ($4\times 3^2=36$ states of size $3$), or $k=0$ hinges ($3^4=81$ states of size $4$), totaling $|\Sc(C_4^{(5)})|=2+36+81=119$ states. Here the $4\times 5$ Context--Color Matrix has three column-size partitions summing to $16$—Type~I ($2+2+4+4+4=16$, both diagonals monochromatic in the $2\times 2$ block, $1\times(3!)^3=216$ matrices), Type~II ($2+3+3+4+4=16$, one diagonal monochromatic, $6\times(3!)^3=1{,}296$ matrices), and Type~III ($3+3+3+3+4=16$, all four hinges in distinct columns, $6\times(3!)^3=1{,}296$ matrices)—totaling $N_c=13\times 6^3=2{,}808$ normalized matrices, again with $\Sc_{\mathrm{ext}}=\Sc$ by K\H{o}nig's theorem because the $4$-cycle is bipartite!
+\end{itemize}
+
+\subsection{The Six-Vertex Pasch Configuration \texorpdfstring{$H_{\mathrm{Pasch}}$}{HPasch}: A \texorpdfstring{$4\times 3$}{4x3} Matrix With No \texorpdfstring{$3\times 3$}{3x3} Latin Square}\label{sec:pasch}
+
+Consider the linear $3$-uniform Pasch hypergraph $H_{\mathrm{Pasch}}$ with $n=4$ contexts and $|V|=6$ degree-$2$ vertices:
+\begin{equation}\label{eq:Pasch}
+\begin{aligned}
+C_1&=\{1,2,3\},\qquad C_2=\{1,4,5\},\\
+C_3&=\{2,4,6\},\qquad C_4=\{3,5,6\}.
+\end{aligned}
+\end{equation}
+Every pair of contexts shares a unique vertex. Placing $C_1=\text{Row 1}=\{(1,1),(1,2),(1,3)\}$ and $C_2=\text{Col 1}=\{(1,1),(2,1),(3,1)\}$ in a $3\times 3$ grid fixes $1=(1,1),2=(1,2),3=(1,3),4=(2,1),5=(3,1)$. For $C_3=\{2,4,6\}$ to be a Latin-square transversal through $(1,2)$ and $(2,1)$, its third cell $6$ is forced to be $(3,3)$. Then $C_4=\{3,5,6\}=\{(1,3),(3,1),(3,3)\}$ contains two cells in Row~3 and two cells in Column~3, violating the Latin-square rules! Thus $H_{\mathrm{Pasch}}$ \emph{cannot be embedded into any $3\times 3$ Latin square or $AG(2,3)$}.
+
+Yet in Theorem~\ref{thm:nxd-matrix}, $H_{\mathrm{Pasch}}$ has a unique normalized $4\times 3$ Context--Color Matrix (with $|S_0|+|S_1|+|S_2|=2+2+2=6$ and $\sum_{v\in S_j}\deg(v)=2+2=4=n$):
+\begin{equation}\label{eq:Pasch-matrix}
+M_{\mathrm{Pasch}}=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2\\\hline
+1 & 2 & 3\\
+1 & 5 & 4\\
+6 & 2 & 4\\
+6 & 5 & 3
+\end{pmatrix}\begin{array}{l}
+\leftarrow C_1\\
+\leftarrow C_2\\
+\leftarrow C_3\\
+\leftarrow C_4
+\end{array},
+\end{equation}
+whose three columns display the three disjoint states $S_0=\{1,6\}$, $S_1=\{2,5\}$, $S_2=\{3,4\}$ and prove at a glance the forced chromatic identities $1\sim_c 6$, $2\sim_c 5$, and $3\sim_c 4$.
+
+% ============================================================================
+\section{Application to Chromatically Complete Configurations and Logical Gadgets (\texorpdfstring{$\chi(H)=d$}{chi(H)=d})}\label{sec:exact-palette}
+% ============================================================================
+
+We now apply the $n\times d$ Context--Color Matrix construction systematically to the chromatically complete ($\chi(H)=d$) three- and four-dimensional configurations and logical gadgets of Ref.~\cite{svozil-2025-color} (listed in Tables~I and~II of Ref.~\cite{svozil-2025-color}).
+
+\subsection{The Pentagon \texorpdfstring{$P_5$}{P5} (\texorpdfstring{$5\times 3$}{5x3} Matrix and Purely Chromatic Ternary Exclusion)}\label{sec:P5}
+
+The pentagon hypergraph $P_5$ ($d=3,n=5$ contexts, $|V|=10$, Berge girth $g=5$, real FOR in $\R^3$) has contexts
+\begin{equation}\label{eq:P5-contexts}
+\begin{aligned}
+C_1&=\{1,6,2\},\quad C_2=\{2,7,3\},\quad C_3=\{3,8,4\},\\
+C_4&=\{4,9,5\},\quad C_5=\{5,10,1\},
+\end{aligned}
+\end{equation}
+with $5$ degree-$2$ cycle hinges $\{1,2,3,4,5\}$ and $5$ degree-$1$ midpoint vertices $\{6,7,8,9,10\}$.
+
+In a $5\times 3$ Context--Color Matrix $M\in V^{5\times 3}$, each hinge $h\in\{1,2,3,4,5\}$ has $\deg(h)=2$ and saves $1$ vertex when placed in a column [Eq.~\eqref{eq:hinge-saving}]. Because the $5$ hinges form an odd $5$-cycle, at most $\lfloor 5/2\rfloor=2$ nonadjacent hinges can share a single column!
+\begin{itemize}
+\item \emph{Why $s_{11}=\{6,7,8,9,10\}$ is nonextendable:} The state $s_{11}$ uses $k=0$ hinges (size $|S|=5$). If $s_{11}$ is placed in Column~$\mathbf{c}_0$, the remaining $5$ hinges $\{1,2,3,4,5\}$ must be distributed between only $2$ columns ($\mathbf{c}_1,\mathbf{c}_2$). Since each column can hold at most $2$ hinges, two columns can hold at most $2+2=4<5$ hinges—an immediate Pigeonhole obstruction!
+\item \emph{Why all other $10$ states extend ($5$ normalized $5\times 3$ matrices):} Every valid $5\times 3$ matrix $M$ must distribute the $5$ hinges across the $3$ columns as $2+2+1=5$ hinges, yielding column support sizes $(5-2)+(5-2)+(5-1)=3+3+4=10=|V|$.
+Fixing the anchor context $C_1=(1,6,2)$ in Row~1 as $(\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2)=(0,1,2)$ gives the $N_c=5$ normalized $5\times 3$ Context--Color Matrices (corresponding to the $5$ ways to choose which column receives a single hinge):
+\end{itemize}
+\begin{equation}\label{eq:P5-matrices}
+\begin{aligned}
+M_1^{(P_5)}&=\begin{pmatrix}
+\mathbf{1}&6&\mathbf{2}\\
+\mathbf{3}&7&\mathbf{2}\\
+\mathbf{3}&\mathbf{4}&8\\
+9&\mathbf{4}&\mathbf{5}\\
+\mathbf{1}&10&\mathbf{5}
+\end{pmatrix},&
+M_2^{(P_5)}&=\begin{pmatrix}
+\mathbf{1}&6&\mathbf{2}\\
+\mathbf{3}&7&\mathbf{2}\\
+\mathbf{3}&8&\mathbf{4}\\
+9&\mathbf{5}&\mathbf{4}\\
+\mathbf{1}&\mathbf{5}&10
+\end{pmatrix},\\[4pt]
+M_3^{(P_5)}&=\begin{pmatrix}
+\mathbf{1}&6&\mathbf{2}\\
+7&\mathbf{3}&\mathbf{2}\\
+\mathbf{4}&\mathbf{3}&8\\
+\mathbf{4}&\mathbf{5}&9\\
+\mathbf{1}&\mathbf{5}&10
+\end{pmatrix},&
+M_4^{(P_5)}&=\begin{pmatrix}
+\mathbf{1}&6&\mathbf{2}\\
+7&\mathbf{3}&\mathbf{2}\\
+\mathbf{4}&\mathbf{3}&8\\
+\mathbf{4}&9&\mathbf{5}\\
+\mathbf{1}&10&\mathbf{5}
+\end{pmatrix},\\[4pt]
+M_5^{(P_5)}&=\begin{pmatrix}
+\mathbf{1}&6&\mathbf{2}\\
+7&\mathbf{3}&\mathbf{2}\\
+8&\mathbf{3}&\mathbf{4}\\
+9&\mathbf{5}&\mathbf{4}\\
+\mathbf{1}&\mathbf{5}&10
+\end{pmatrix}.
+\end{aligned}
+\end{equation}
+Inspection of Eq.~\eqref{eq:P5-matrices} immediately proves the \emph{purely chromatic ternary exclusion} $\neg(c(6)=c(7)=c(9))$: in any $5\times 3$ matrix where $6,7,9$ all sit in Column~$\mathbf{c}_1$, rows $C_1,C_2,C_4$ force the five hinges $\{1,2,3,4,5\}$ entirely into the two remaining columns $\mathbf{c}_0$ and $\mathbf{c}_2$, which can hold at most $4$ hinges!
+
+\subsection{The Eight-Context Petersen Restriction \texorpdfstring{$H_8$}{H8} (\texorpdfstring{$8\times 3$}{8x3} Matrix)}\label{sec:H8}
+
+Deleting $\{8,2,15\}$ and $\{13,14,15\}$ from Greechie's $G_{32}$~\cite{greechie:71} yields the $14$-vertex, $8$-context hypergraph $H_8$:
+\begin{equation}\label{eq:H8-contexts}
+\begin{aligned}
+C_1&=\{1,2,3\},\ C_2=\{3,4,5\},\ C_3=\{5,6,7\},\\
+C_4&=\{7,8,9\},\ C_5=\{9,10,11\},\ C_6=\{11,12,1\},\\
+C_7&=\{4,10,13\},\ C_8=\{6,12,14\}.
+\end{aligned}
+\end{equation}
+Here $10$ vertices $\{1,3,4,5,6,7,9,10,11,12\}$ have degree~$2$ and $4$ vertices $\{2,8,13,14\}$ have degree~$1$ ($\sum_{v\in V}\deg(v)=24=8\times 3$).
+
+Anchoring Row~1 ($C_1$) as $(1,2,3)$ across Columns $(\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2)$, $H_8$ admits exactly $N_c=3$ normalized $8\times 3$ Context--Color Matrices (corresponding to $c_1,c_2,c_3$ in Supplemental Table~S39 of Ref.~\cite{supplement}):
+\begin{equation}\label{eq:H8-matrices}
+\begin{aligned}
+M_1^{(H_8)}&=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+\mathbf{1}&\mathbf{2}&\mathbf{3}\\
+\mathbf{4}&5&\mathbf{3}\\
+\mathbf{6}&5&\mathbf{7}\\
+\mathbf{9}&\mathbf{8}&\mathbf{7}\\
+\mathbf{9}&\mathbf{10}&11\\
+\mathbf{1}&\mathbf{12}&11\\
+\mathbf{4}&\mathbf{10}&\mathbf{13}\\
+\mathbf{6}&\mathbf{12}&\mathbf{14}
+\end{pmatrix},&
+M_2^{(H_8)}&=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+\mathbf{1}&\mathbf{2}&\mathbf{3}\\
+\mathbf{4}&5&\mathbf{3}\\
+\mathbf{6}&5&\mathbf{7}\\
+\mathbf{9}&\mathbf{8}&\mathbf{7}\\
+\mathbf{9}&11&\mathbf{10}\\
+\mathbf{1}&11&\mathbf{12}\\
+\mathbf{4}&\mathbf{13}&\mathbf{10}\\
+\mathbf{6}&\mathbf{14}&\mathbf{12}
+\end{pmatrix},\\[4pt]
+M_3^{(H_8)}&=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+\mathbf{1}&\mathbf{2}&\mathbf{3}\\
+5&\mathbf{4}&\mathbf{3}\\
+5&\mathbf{6}&\mathbf{7}\\
+\mathbf{9}&\mathbf{8}&\mathbf{7}\\
+\mathbf{9}&11&\mathbf{10}\\
+\mathbf{1}&11&\mathbf{12}\\
+\mathbf{13}&\mathbf{4}&\mathbf{10}\\
+\mathbf{14}&\mathbf{6}&\mathbf{12}
+\end{pmatrix}.
+\end{aligned}
+\end{equation}
+Looking down the columns of $M_1^{(H_8)},M_2^{(H_8)},M_3^{(H_8)}$ makes the six chromatically inseparable pairs of Theorem~9(2) of Ref.~\cite{svozil-2025-color} visually immediate: in all three matrices,
+\begin{itemize}
+\item $\{1,9\}$ always co-occur in Column~$\mathbf{c}_0$,
+\item $\{2,8\}$ always co-occur in Column~$\mathbf{c}_1$,
+\item $\{3,7\}$ always co-occur in Column~$\mathbf{c}_2$,
+\item $\{4,6\}$ always share a column ($\mathbf{c}_0$ in $M_1,M_2$; $\mathbf{c}_1$ in $M_3$),
+\item $\{10,12\}$ always share a column ($\mathbf{c}_1$ in $M_1$; $\mathbf{c}_2$ in $M_2,M_3$),
+\item $\{13,14\}$ always share a column ($\mathbf{c}_2$ in $M_1$; $\mathbf{c}_1$ in $M_2$; $\mathbf{c}_0$ in $M_3$).
+\end{itemize}
+Across the three matrices, $7$ distinct state supports appear as columns ($\{1,4,6,9\}$ has size $4$; $\{3,7,10,12\}$ has size $4$; $\{2,5,8,10,12\}$, $\{1,5,9,13,14\}$, $\{2,4,6,8,11\}$, $\{3,7,11,13,14\}$ have size $5$; and $\{2,5,8,11,13,14\}$ has size $6$, satisfying $4+5+5=14$ in $M_1,M_3$ and $4+6+4=14$ in $M_2$). The remaining $4$ states of $\Sc(H_8)$ (such as $\{1,5,8,10,14\}$) leave a $5$-cycle in $\Gamma(H_8)[V\setminus S]$ and therefore cannot be completed to an $8\times 3$ matrix.
+
+\subsection{Faithful Yu--Oh Restrictions \texorpdfstring{$H_{17,10}$ and $H_{21,13}$}{H17,10 and H21,13} and the Graeco-Latin Signature Table}\label{sec:H17-H21}
+
+The $17$-ray, $10$-context hypergraph $H_{17,10}$ retains the four base contexts $C_1=\{1,2,3\}$, $C_2=\{7,8,9\}$, $C_3=\{4,5,6\}$, $C_4=\{2,8,5\}$ of completed Yu--Oh $H_{\YO}^+$ together with the six contexts of diagonal sectors $h_1=11$ and $h_2=10$:
+\begin{equation}\label{eq:H17-sectors}
+\begin{aligned}
+\mathcal{E}_{11}&=\bigl\{\{3,11,14\},\{7,11,15\},\{4,11,24\}\bigr\},\\
+\mathcal{E}_{10}&=\bigl\{\{9,10,23\},\{1,10,19\},\{4,10,18\}\bigr\}.
+\end{aligned}
+\end{equation}
+Fixing the anchor row $C_4=(2,8,5)$ across columns $(\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2)$, $H_{17,10}$ admits $N_c=4$ normalized $10\times 3$ Context--Color Matrices (Table~S41 of Ref.~\cite{supplement}), shown here for $c_1$ and $c_2$:
+\begin{equation}\label{eq:H17-matrices}
+\setlength{\arraycolsep}{2.2pt}
+M_1^{(H_{17,10})}=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+2&1&3\\
+9&8&7\\
+4&6&5\\
+2&8&5\\\hline
+14&\mathbf{11}&3\\
+15&\mathbf{11}&7\\
+4&\mathbf{11}&\mathbf{24}\\\hline
+9&23&\mathbf{10}\\
+19&1&\mathbf{10}\\
+4&\mathbf{18}&\mathbf{10}
+\end{pmatrix},\ 
+M_2^{(H_{17,10})}=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+2&1&3\\
+9&8&7\\
+6&4&5\\
+2&8&5\\\hline
+\mathbf{11}&14&3\\
+\mathbf{11}&15&7\\
+\mathbf{11}&4&\mathbf{24}\\\hline
+9&23&\mathbf{10}\\
+19&1&\mathbf{10}\\
+\mathbf{18}&4&\mathbf{10}
+\end{pmatrix}.
+\end{equation}
+Look at Rows~7 and~10 ($\{4,11,24\}$ and $\{4,10,18\}$) in Eq.~\eqref{eq:H17-matrices}: because the sector constraints on $N(11)=\{3,7,4\}$ and $N(10)=\{1,9,4\}$ force $4,10,11$ into two columns with $c(10)=c(11)\neq c(4)$ (as in $M_3,M_4$) or into three distinct columns (as in $M_1$, where $4\in\mathbf{c}_0,11\in\mathbf{c}_1,10\in\mathbf{c}_2$, and $M_2$, where $11\in\mathbf{c}_0,4\in\mathbf{c}_1,10\in\mathbf{c}_2$), in \emph{every} case the third entry of $\{4,11,24\}$ must occupy the column of $10$, and the third entry of $\{4,10,18\}$ must occupy the column of $11$! Thus $10\sim_c 24$ and $11\sim_c 18$ are locked into identical columns across all four $10\times 3$ matrices.
+
+Adjoining the third diagonal sector $\mathcal{E}_{13}=\{\{1,13,20\},\{7,13,21\},\{6,13,22\}\}$ yields $H_{21,13}$ ($n=13$ contexts, $|V|=21$). Only two normalized $13\times 3$ Context--Color Matrices survive ($M_1^{(H_{21,13})}$ and $M_2^{(H_{21,13})}$, corresponding to the antipodal base patterns $101$ and $010$):
+\begin{equation}\label{eq:H21-matrices}
+\setlength{\arraycolsep}{2.2pt}
+M_1^{(H_{21,13})}=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+2&1&3\\
+9&8&7\\
+4&6&5\\
+2&8&5\\\hline
+14&11&3\\
+15&11&7\\
+4&11&24\\\hline
+9&23&10\\
+19&1&10\\
+4&18&10\\\hline
+13&1&20\\
+13&21&7\\
+13&6&22
+\end{pmatrix},\ 
+M_2^{(H_{21,13})}=\begin{pmatrix}
+\mathbf{c}_0&\mathbf{c}_1&\mathbf{c}_2\\\hline
+2&3&1\\
+7&8&9\\
+6&4&5\\
+2&8&5\\\hline
+14&3&11\\
+7&15&11\\
+24&4&11\\\hline
+10&23&9\\
+10&19&1\\
+10&4&18\\\hline
+20&13&1\\
+7&13&21\\
+6&13&22
+\end{pmatrix}.
+\end{equation}
+
+Here the Graeco-Latin separability criterion of Sec.~\ref{sec:graeco-latin} shines: each vertex $v\in V(H_{21,13})$ receives a $2$-tuple chromatic signature $\sigma(v)=(c_1(v),c_2(v))\in\{0,1,2\}^2$ recording its column index in $M_1^{(H_{21,13})}$ and $M_2^{(H_{21,13})}$. Placing the $21$ vertices into the $3\times 3$ signature grid $\{0,1,2\}\times\{0,1,2\}$ yields the $9$ chromatic equivalence classes:
+\begin{equation}\label{eq:H21-signature-grid}
+\begin{array}{c|ccc}
+c_2\backslash c_1 & \mathbf{c}_0=0 & \mathbf{c}_1=1 & \mathbf{c}_2=2\\\hline
+0 & \{2,14\} & \{6\} & \{7,10,20,24\}\\
+1 & \{4,13,15,19\} & \{8,23\} & \{3\}\\
+2 & \{9\} & \{1,11,18,21\} & \{5,22\}
+\end{array}
+\end{equation}
+Whereas a $3\times 3$ Graeco-Latin square has $9$ vertices and places \emph{one} vertex in each of the $9$ cells of Eq.~\eqref{eq:H21-signature-grid}, $H_{21,13}$ has $21$ vertices and only two normalized colorings, forcing multiple vertices to collide in six of the nine cells and producing the $3\binom{4}{2}+3\binom{2}{2}=21$ chromatically inseparable pairs!
+
+\subsection{Three-Dimensional Logical Gadgets \texorpdfstring{$B_{13,7},D_{16,9},I_{16,9},T_{19,11}$}{B13,7, D16,9, I16,9, T19,11}}\label{sec:3d-gadgets}
+
+The remaining three-dimensional gadgets of Fig.~2 and Table~II of Ref.~\cite{svozil-2025-color} are sub-hypergraphs or roof extensions of $H_{17,10}$, and their $n\times 3$ Context--Color Matrices directly exhibit how TIFS and TITS constraints operate:
+
+\begin{enumerate}
+\item \emph{Completed Specker Bug $B_{13,7}$ ($7\times 3$ matrix, $N_c=6$):} Deleting $C_3=\{4,5,6\}$, $\{4,11,24\}$, and $\{4,10,18\}$ from $H_{17,10}$ leaves the $7$ contexts of $B_{13,7}$:
+\[
+\begin{aligned}
+&\{1,2,3\},\ \{7,8,9\},\ \{2,8,5\},\ \{3,11,14\},\\
+&\{7,11,15\},\ \{9,10,23\},\ \{1,10,19\}.
+\end{aligned}
+\]
+In any $7\times 3$ Context--Color Matrix with Row~3 fixed as $(2,8,5)$: if hubs $10$ and $11$ were placed in the \emph{same} column (say $\mathbf{c}_2$), then $\{3,7\}\subset\mathbf{c}_0\cup\mathbf{c}_1$ and $\{1,9\}\subset\mathbf{c}_0\cup\mathbf{c}_1$; since $2\in\mathbf{c}_0$ and $8\in\mathbf{c}_1$, Row~1 ($\{1,2,3\}$) forces $1,3\in\mathbf{c}_1\cup\mathbf{c}_2$, hence $1,3\in\mathbf{c}_1$—a collision in Row~1! Thus $10$ and $11$ can never share a column ($c(10)\neq c(11)$).
+\item \emph{Completed $\Gamma_1$ Gadget $I_{16,9}$ ($9\times 3$ matrix, $N_c=6$):} Re-adjoining the two roof contexts $\{4,11,24\}$ and $\{4,10,18\}$ to $B_{13,7}$ (without $\{4,5,6\}$) appends two rows to each of the $6$ matrices of $B_{13,7}$. Since $10$ and $11$ always occupy distinct columns in $B_{13,7}$, the apex $4$ is forced into the third column, locking $24$ into the column of $10$ ($10\sim_c 24$) and $18$ into the column of $11$ ($11\sim_c 18$).
+\item \emph{Purely Chromatic Binary TIFS $D_{16,9}$ ($9\times 3$ matrix, $N_c=7$) and Two-Way TITS $T_{19,11}$ ($11\times 3$ matrix, $N_c=7$):} Deleting $\{1,10,19\}$ from $H_{17,10}$ yields $D_{16,9}$. While the nonextendable state $s=\{1,5,7,14,18,23,24\}\in\Sc(D_{16,9})$ contains both $14$ and $18$, no $9\times 3$ Context--Color Matrix can place $14$ and $18$ in the same column: if $14,18\in\mathbf{c}_0$, then $\{3,11,14\},\{4,11,24\},\{4,10,18\}$ force $3,4$ into one column (say $\mathbf{c}_1$) and $10,11$ into $\mathbf{c}_2$, which forces $7,9\notin\mathbf{c}_2\implies 8\in\mathbf{c}_2$, and $2,5\notin\mathbf{c}_1\implies 2,5\in\mathbf{c}_0$, colliding in Row~4 ($\{2,8,5\}$)! Adjoining the two roof contexts $\{14,26,27\}$ and $\{18,26,28\}$ in $T_{19,11}$ appends two rows to the $7$ normalized $9\times 3$ matrices of $D_{16,9}$; since $14$ and $18$ always sit in distinct columns, their common neighbor $26$ must occupy the third column, locking $28$ into the column of $14$ ($14\sim_c 28$) and $27$ into the column of $18$ ($18\sim_c 27$).
+\end{enumerate}
+
+\subsection{Four-Dimensional Apex Lifts and Strictly Linear Gadgets (\texorpdfstring{$n\times 4$}{n x 4} Matrices)}\label{sec:4d-gadgets}
+
+In dimension $d=4$, the $n\times 4$ Context--Color Matrix separates into two distinct structural classes (Fig.~3 of Ref.~\cite{svozil-2025-color}):
+
+\subsubsection{Non-Linear Common-Apex Lifts \texorpdfstring{$W_{11,5}^{(4)}$, $B_{14,7}^{(4)}$, and $D_{17,9}^{(4)}$}{W11,5(4), B14,7(4), and D17,9(4)}}
+Each common-apex lift adjoins a single apex vertex $0$ to every $3$-element context $C_i$ of a $3$-dimensional gadget $H$, forming $C_i^{(4)}=\{0\}\cup C_i$. In Theorem~\ref{thm:nxd-matrix}, since $0\in\bigcap_{i=1}^n C_i^{(4)}$ has degree $\deg(0)=n$, Eq.~\eqref{eq:hinge-saving} gives $|S_0|=n-(n-1)=1$. Thus \emph{every} $n\times 4$ Context--Color Matrix $M^{(4)}$ of an apex lift is obtained by prepending a constant Column~$\mathbf{c}_0=(0,0,\ldots,0)^T$ to a valid $n\times 3$ Context--Color Matrix $M^{(3)}$ of $H$:
+\begin{equation}\label{eq:apex-matrix}
+M^{(4)}=\left(\begin{array}{c|ccc}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2 & \mathbf{c}_3\\\hline
+0 & & & \\
+0 & & M^{(3)} & \\
+\vdots & & & \\
+0 & & &
+\end{array}\right)\in V^{n\times 4}.
+\end{equation}
+Equation~\eqref{eq:apex-matrix} provides a one-line matrix proof of Proposition~13 of Ref.~\cite{svozil-2025-color}: the normalized coloring count $N_c$ is unchanged, the singleton column $S_0=\{0\}$ is always an extendable state, and the remaining three columns $\mathbf{c}_1,\mathbf{c}_2,\mathbf{c}_3$ are identical to those of $M^{(3)}$.
+
+\subsubsection{Strictly Linear Four-Dimensional Gadgets \texorpdfstring{$W_{16,6}^{(4)}$, $L_{18,7}^{(4)}$, and $L_{22,9}^{(4)}$}{W16,6(4), L18,7(4), and L22,9(4)}}
+To restore linearity ($|e\cap e'|\le 1$, so $g(H)\ge 3$), Ref.~\cite{svozil-2025-color} constructs three faithful linear $4$-uniform gadgets in $\R^4$:
+\begin{itemize}
+\item \emph{Linear $5$-Wheel $W_{16,6}^{(4)}$ ($6\times 4$ matrix, $N_c=80$):} The $6$ contexts are
+\[
+\begin{aligned}
+C_1&=\{2,0,6,1\},\quad C_2=\{2,7,13,3\},\\
+C_3&=\{3,0,8,4\},\quad C_4=\{4,9,14,5\},\\
+C_5&=\{5,10,15,1\},\quad C_6=\{0,11,12,5\}.
+\end{aligned}
+\]
+Here vertex $0$ lies in only three contexts ($C_1,C_3,C_6$). In any $6\times 4$ matrix $M$, placing $0$ in Column~$\mathbf{c}_3$ covers $0$ in Rows~$1,3,6$. If the three terminals $6,8,11$ were all placed in Column~$\mathbf{c}_0$, then in Rows~$1,3,6$ the outer cycle vertices $\{1,2,3,4,5\}$ would be barred from both $\mathbf{c}_0$ and $\mathbf{c}_3$! Thus $\{1,2,3,4,5\}$ would have to be distributed across only two columns ($\mathbf{c}_1,\mathbf{c}_2$) while pairwise sharing rows around the $5$-cycle $C_1-C_2-C_3-C_4-C_5$, which is impossible. Representative $6\times 4$ matrices (such as coloring~1 from Table~S65 of Ref.~\cite{supplement}) are:
+\begin{equation}\label{eq:W16-matrix}
+M_1^{(W_{16,6}^{(4)})}=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2 & \mathbf{c}_3\\\hline
+2 & \mathbf{0} & \mathbf{6} & 1\\
+2 & 7 & 3 & 13\\
+\mathbf{8} & \mathbf{0} & 3 & 4\\
+5 & 9 & 14 & 4\\
+5 & 10 & 15 & 1\\
+5 & \mathbf{0} & \mathbf{11} & 12
+\end{pmatrix}.
+\end{equation}
+\item \emph{Linear Quaternion TIFS $L_{18,7}^{(4)}$ ($7\times 4$ matrix, $N_c=144$, $\Sc_{\mathrm{ext}}=\Sc=68$) and Linear TITS $L_{22,9}^{(4)}$ ($9\times 4$ matrix, $N_c=216$):} In $L_{18,7}^{(4)}$, the $7$ contexts are
+\[
+\begin{aligned}
+C_1&=\{1,2,4,3\},\ C_2=\{5,8,7,6\},\ C_3=\{4,9,10,8\},\\
+C_4&=\{11,1,12,5\},\ C_5=\{11,14,13,2\},\\
+C_6&=\{15,3,16,7\},\ C_7=\{15,17,18,6\}.
+\end{aligned}
+\]
+Why can $11$ and $15$ never share a column in a $7\times 4$ matrix (or even a single state column)? If $11,15\in\mathbf{c}_0$, then Rows~$4,5,6,7$ bar $\{1,2,3\}$ and $\{5,6,7\}$ from $\mathbf{c}_0$; then Row~1 ($\{1,2,4,3\}$) forces $4\in\mathbf{c}_0$ and Row~2 ($\{5,8,7,6\}$) forces $8\in\mathbf{c}_0$, so $4$ and $8$ collide in Column~$\mathbf{c}_0$ of Row~3 ($\{4,9,10,8\}$)! In $L_{22,9}^{(4)}$, adjoining $C_8=\{11,21,22,19\}$ and $C_9=\{13,20,15,19\}$ with the additional geometric orthogonality $13\perp 15$ ensures that $\{11,13,15,19\}$ occupy all four distinct columns, locking $20\in C_9$ into the column of $11$ ($11\sim_c 20$). An explicit $9\times 4$ Context--Color Matrix (coloring~1 from Table~S69 of Ref.~\cite{supplement}) is:
+\begin{equation}\label{eq:L22-matrix}
+M_1^{(L_{22,9}^{(4)})}=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2 & \mathbf{c}_3\\\hline
+1 & 2 & 3 & 4\\
+7 & 5 & 6 & 8\\
+9 & 10 & 8 & 4\\
+1 & 5 & \mathbf{11} & 12\\
+13 & 2 & \mathbf{11} & 14\\
+16 & 15 & 7 & 3\\
+17 & 15 & 6 & 18\\
+21 & 22 & \mathbf{11} & 19\\
+13 & 15 & \mathbf{20} & 19
+\end{pmatrix}.
+\end{equation}
+Notice how Column~$\mathbf{c}_2$ in Eq.~\eqref{eq:L22-matrix} locks $\mathbf{11}$ (in Rows~$4,5,8$) and $\mathbf{20}$ (in Row~$9$) into the same state column $S_2=\{3,6,7,8,11,20\}$.
+\end{itemize}
+
+% ============================================================================
+\section{Application to Chromatically Incomplete Configurations (\texorpdfstring{$\chi(H)>d$}{chi(H)>d}): Column Collisions and Latin Skeletons}\label{sec:obstructions}
+% ============================================================================
+
+We now turn to Regime~I of Ref.~\cite{svozil-2025-color}—the chromatically incomplete hypergraphs ($\chi(H)>d$, $\Cc_d(H)=\varnothing$)—and show how the $n\times d$ Context--Color Matrix and Latin-square theory explain their obstructions.
+
+\subsection{\texorpdfstring{$H_9$}{H9} and Greechie's Petersen Hypergraph \texorpdfstring{$G_{32}$}{G32} (\texorpdfstring{$9\times 3$ and $10\times 3$}{9x3 and 10x3} Column Collisions)}\label{sec:G32}
+
+Recall from Sec.~\ref{sec:H8} that in \emph{every} valid $8\times 3$ Context--Color Matrix of $H_8$ [Eq.~\eqref{eq:H8-matrices}], vertices $2$ and $8$ are locked into the \emph{exact same column} ($2\sim_c 8$), and vertices $13$ and $14$ are locked into the \emph{exact same column} ($13\sim_c 14$).
+\begin{itemize}
+\item \emph{Why $\chi(H_9)=4$:} $H_9$ adjoins a $9$th row $C_9=\{8,2,15\}$ to $H_8$. By Row Bijectivity, $2$ and $8$ must be placed in \emph{different} columns of Row~9, whereas Rows~1--8 force $2$ and $8$ into the \emph{same} column—an immediate column collision!
+\item \emph{Why $\chi(G_{32})=4$ from state intersection:} $G_{32}$ further adjoins Row~10, $C_{10}=\{13,14,15\}$ (producing a second collision $13\sim_c 14$). From the column-state perspective of Theorem~\ref{thm:nxd-matrix}, each vertex in $G_{32}$ has $\deg(v)=2$, so by Eq.~\eqref{eq:deg-conservation} any state column $S_j$ in a $10\times 3$ matrix must have size $|S_j|=10/2=5$. However, the $|\Sc(G_{32})|=6$ state supports of size $5$ pairwise intersect in one vertex ($|S_\alpha\cap S_\beta|=1$ for $\alpha\neq\beta$)~\cite{svozil-2025-color}, so not even \emph{two} disjoint columns exist! To avoid column collisions, a fourth column $\mathbf{c}_3$ is required, giving a $10\times 4$ Context--Color Matrix.
+\end{itemize}
+
+\subsection{Completed Yu--Oh \texorpdfstring{$H_{\YO}^+$}{HYO+} (\texorpdfstring{$16\times 3$}{16x3} Obstruction) and \texorpdfstring{$H_{\YO}^{(4)}$}{HYO(4)}}\label{sec:HYO}
+
+Completed Yu--Oh $H_{\YO}^+$ has $n=16$ contexts of size $d=3$ on $|V|=25$ vertices: the $4\times 3$ base block $E_{\mathrm{base}}=\{\{1,2,3\},\{7,8,9\},\{4,5,6\},\{2,8,5\}\}$ and four $3\times 3$ diagonal sector blocks $\mathcal{E}_{h}$ ($h\in\{10,11,12,13\}$), where each $\mathcal{E}_h$ consists of three rows $\{x,h,w_{xh}\}$ for $x\in N(h)$.
+
+In a $16\times 3$ Context--Color Matrix $M$:
+\begin{enumerate}
+\item In each $3\times 3$ sector block $\mathcal{E}_h$, the hub $h$ appears in all three rows and must therefore occupy a \emph{single column} $j_h\in\{\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2\}$.
+\item By Row Bijectivity, none of the three neighbors $x\in N(h)$ can occupy column $j_h$! That is, the three neighbors $N(h)\subset\{1,3,4,6,7,9\}$ are restricted to the \emph{two remaining columns} $\{0,1,2\}\setminus\{j_h\}$.
+\item However, in the $4\times 3$ base block (fixing Row~4 as $(2,8,5)$), there are only $2^3=8$ ways to order the pairs $\{1,3\},\{7,9\},\{4,6\}$ across the two available columns in Rows~1, 2, and 3:
+\begin{equation}\label{eq:YO-base-matrix}
+M_{\mathrm{base}}(b_1,b_2,b_3)=\begin{pmatrix}
+\mathbf{c}_0 & \mathbf{c}_1 & \mathbf{c}_2\\\hline
+2 & 1\text{ or }3 & 3\text{ or }1\\
+9\text{ or }7 & 8 & 7\text{ or }9\\
+6\text{ or }4 & 4\text{ or }6 & 5\\
+2 & 8 & 5
+\end{pmatrix}.
+\end{equation}
+As shown in Theorem~11 of Ref.~\cite{svozil-2025-color}, each of the $8$ choices of $(b_1,b_2,b_3)\in\{0,1\}^3$ places one of the four triples $N(10)=\{1,9,4\}$, $N(11)=\{3,7,4\}$, $N(12)=\{3,9,6\}$, or $N(13)=\{1,7,6\}$ across \emph{all three columns} $\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2$—leaving \emph{zero} available columns for the corresponding hub $h_j$!
+\end{enumerate}
+Consequently, no $16\times 3$ Context--Color Matrix exists ($\chi(H_{\YO}^+)=4$). Appending the common apex $26$ in $H_{\YO}^{(4)}$ prepends the singleton column $\mathbf{c}_0=(26,\ldots,26)^T$ as in Eq.~\eqref{eq:apex-matrix}, shifting the exact same obstruction to $16\times 4$ ($\chi(H_{\YO}^{(4)})=5$).
+
+\subsection{The \texorpdfstring{$37$}{37}-Ray Complex Hesse Hypergraph \texorpdfstring{$H_{37}$}{H37}: An Affine-Plane / MOLS Obstruction}\label{sec:H37}
+
+The $37$-ray, $24$-context complex Hesse hypergraph $H_{37}$ in $\C^3$ (Sec.~V.A of Ref.~\cite{svozil-2025-color}) is the premier example of a context hypergraph built directly on a finite-geometry Latin-square / MOLS skeleton.
+
+Consider the $9$ core vertices $M_{ak}$ ($a,k\in\Z_3$), arranged as a $3\times 3$ grid:
+\begin{equation}\label{eq:H37-grid}
+\begin{array}{c|ccc}
+M_{ak} & k=0 & k=1 & k=2\\\hline
+a=0\ (\mathcal{M}_0) & M_{00}\ (2) & M_{01}\ (3) & M_{02}\ (4)\\
+a=1\ (\mathcal{M}_1) & M_{10}\ (5) & M_{11}\ (6) & M_{12}\ (7)\\
+a=2\ (\mathcal{M}_2) & M_{20}\ (8) & M_{21}\ (9) & M_{22}\ (10)
+\end{array}
+\end{equation}
+Look at how the $24$ contexts of $H_{37}$ [Eq.~(19) of Ref.~\cite{svozil-2025-color}] act on this $3\times 3$ grid in a putative $24\times 3$ Context--Color Matrix:
+\begin{enumerate}
+\item \emph{Rows of the $3\times 3$ Grid ($\mathcal{M}_a=\{M_{a0},M_{a1},M_{a2}\}$):} The first $3$ contexts $\mathcal{M}_0,\mathcal{M}_1,\mathcal{M}_2$ are the \emph{rows} of Eq.~\eqref{eq:H37-grid}, forcing each row of Eq.~\eqref{eq:H37-grid} to contain all three colors $\{\mathbf{c}_0,\mathbf{c}_1,\mathbf{c}_2\}$.
+\item \emph{Columns of the $3\times 3$ Grid ($\mathcal{B}_{ak}=\{M_{ak},P_k,B_{ak}\}$):} For each fixed $k\in\Z_3$, vertex $P_k$ appears in $\mathcal{B}_{0k},\mathcal{B}_{1k},\mathcal{B}_{2k}$ alongside the $k$th \emph{column} $N(P_k)=\{M_{0k},M_{1k},M_{2k}\}$ of Eq.~\eqref{eq:H37-grid}. Thus column $k$ of the grid~\eqref{eq:H37-grid} must omit the color $c(P_k)$!
+\item \emph{Cyclic Latin-Square Transversals ($\mathcal{C}_{ak}=\{M_{a,a+k},Q_k,C_{ak}\}$):} For each fixed $k\in\Z_3$, vertex $Q_k$ appears alongside the diagonal transversal
+\[
+N(Q_k)=\{M_{0,k},\,M_{1,k+1},\,M_{2,k+2}\},
+\]
+which is the $k$th symbol class of the cyclic Latin square $L(a,\ell)=\ell-a\pmod 3$! Thus each cyclic diagonal $N(Q_k)$ must omit the color $c(Q_k)$.
+\item \emph{The Apex Constraint ($\mathcal{A}_k=\{z,P_k,A_k\}$):} Fix $z$ in Column~$\mathbf{c}_0$ ($c(z)=0$). Then the three rows $\mathcal{A}_0,\mathcal{A}_1,\mathcal{A}_2$ bar $P_0,P_1,P_2$ from Column~$\mathbf{c}_0$, so $c(P_k)\in\{1,2\}$.
+\end{enumerate}
+
+Now watch how the Latin-square structure produces the contradiction $\chi(H_{37})=4$:
+\begin{itemize}
+\item If $P_0,P_1,P_2$ all had the same color (say $1$), then by (2) no entry $M_{ak}$ in any column of Eq.~\eqref{eq:H37-grid} could have color $1$, contradicting (1) that every row $\mathcal{M}_a$ contains all three colors!
+\item Hence $\{c(P_0),c(P_1),c(P_2)\}=\{1,2\}$. Up to permuting columns $k\in\Z_3$ and colors $\{1,2\}$, set $(c(P_0),c(P_1),c(P_2))=(2,1,1)$.
+\item Since Column~$0$ of Eq.~\eqref{eq:H37-grid} omits color $2$, and Columns~$1$ and~$2$ omit color $1$, the unique color-$1$ entry in each row $\mathcal{M}_a$ \emph{must sit in Column~$0$} ($c(M_{a0})=1$ for all $a\in\Z_3$), while the remaining two entries $(M_{a1},M_{a2})$ in each row must be a permutation $(x_a,2-x_a)$ of $\{0,2\}$:
+\begin{equation}\label{eq:H37-forced-grid}
+c(M)=\begin{pmatrix}
+1 & x_0 & 2-x_0\\
+1 & x_1 & 2-x_1\\
+1 & x_2 & 2-x_2
+\end{pmatrix},\qquad x_a\in\{0,2\}.
+\end{equation}
+\item Now read off the three cyclic Latin-square transversals $N(Q_k)$ from Eq.~\eqref{eq:H37-forced-grid}:
+\[
+\begin{aligned}
+c(N(Q_0))&=\{1,\,x_1,\,2-x_2\},\\
+c(N(Q_1))&=\{x_0,\,2-x_1,\,1\},\\
+c(N(Q_2))&=\{2-x_0,\,1,\,x_2\}.
+\end{aligned}
+\]
+By (3), none of these three transversals can be rainbow ($\{0,1,2\}$), so the two non-$1$ entries in each transversal must be equal:
+\[
+x_1=2-x_2,\qquad x_0=2-x_1,\qquad x_2=2-x_0,
+\]
+which requires $x_0=2-x_1=2-(2-x_2)=x_2=2-x_0\implies x_0=1\notin\{0,2\}$, a contradiction!
+\end{itemize}
+Thus no $24\times 3$ Context--Color Matrix exists ($\chi(H_{37})=4$), whereas adding a fourth column $\mathbf{c}_3$ immediately accommodates $P_k,Q_k\in\mathbf{c}_3$ while coloring the $3\times 3$ grid $M_{ak}$ by its column index $c(M_{ak})=k\in\{0,1,2\}$.
+
+\subsection{Four-Dimensional Completions \texorpdfstring{$H_{65}$, $C_{36,18}$, and $C_{45,21}$}{H65, C36,18, and C45,21} (\texorpdfstring{$29\times 4$}{29x4} Pigeonhole Overflow)}\label{sec:H65}
+
+Finally, consider the canonical linear $4$-uniform hypergraph $H_{65}$ in $\R^4$ ($|V|=65,n=29$ contexts, Sec.~V.B of Ref.~\cite{svozil-2025-color}), built from the $17$-ray core $V_{\mathrm{core}}=\{1,\ldots,17\}$ with $5$ core contexts
+\begin{equation}\label{eq:H65-core}
+\begin{aligned}
+C_1&=\{1,2,3,4\},\ C_2=\{5,6,7,8\},\ C_3=\{9,10,12,13\},\\
+C_4&=\{9,11,14,15\},\ C_5=\{10,11,16,17\},
+\end{aligned}
+\end{equation}
+and $24$ completed bridge contexts $E_m=\{u_m,v_m,2m+16,2m+17\}$ ($1\le m\le 24$).
+
+In the $29\times 4$ Context--Color Matrix picture of Theorem~\ref{thm:nxd-matrix}, the non-4-colorability $\chi(H_{65})=5$ (despite $H_{65}$ having $|\Sc(H_{65})|=393{,}216$ two-valued states!) has a one-line Pigeonhole proof:
+\begin{enumerate}
+\item Every state column $S_j$ in a $29\times 4$ Context--Color Matrix must be an independent set of $\Gamma(H_{65})$.
+\item On the $17$-vertex core $V_{\mathrm{core}}$, the independence number is $\alpha(G_{\mathrm{core}})=4$: every state $s\in\Sc(H_{65})$ selects \emph{at most $4$ core vertices} ($|S_j\cap V_{\mathrm{core}}|=4$: one from $C_1$, one from $C_2$, one hub from $\{9,10,11\}$, and one bridge ray from $B_1\cup B_2\cup B_3$).
+\item Therefore, four disjoint state columns $S_0,S_1,S_2,S_3$ can cover at most
+\begin{equation}\label{eq:H65-pigeonhole}
+\sum_{j=0}^{3}\bigl|S_j\cap V_{\mathrm{core}}\bigr|\le 4\times 4=16 < 17=\bigl|V_{\mathrm{core}}\bigr|
+\end{equation}
+core vertices! At least one of the $17$ core vertices is left without a column, forcing a fifth column $\mathbf{c}_4$ ($\chi(H_{65})=5$).
+\end{enumerate}
+
+Similarly, in the transverse chromatic-to-stateless extension $T(H)$ (Proposition~19 of Ref.~\cite{svozil-2025-color}), taking $d-1$ disjoint copies $H^{(1)},\ldots,H^{(d-1)}$ linked by transverse contexts $T_v=\{v^{(1)},\ldots,v^{(d-1)},w_v\}$ directly materializes the first $d-1$ columns $\mathbf{c}_0,\ldots,\mathbf{c}_{d-2}$ of the $n\times d$ Context--Color Matrix as the state supports on $H^{(1)},\ldots,H^{(d-1)}$, while the fresh vertices $w_v$ encode the $d$th column $\mathbf{c}_{d-1}$ via $s(w_v)=1-\sum_{k=1}^{d-1}s(v^{(k)})$.
+
+% ============================================================================
+\section{Summary and Conclusion}\label{sec:conclusion}
+% ============================================================================
+
+Table~\ref{tab:master-matrix-synthesis} synthesizes the Latin-square and $n\times d$ Context--Color Matrix properties across all configurations analyzed in this paper and in Ref.~\cite{svozil-2025-color}.
+
+\begin{table*}[t]
+\centering\footnotesize\setlength{\tabcolsep}{2.5pt}
+\caption{Synthesis of the $n\times d$ Context--Color Matrix and Latin-square / MOLS structures across the elementary motifs and the principal three- and four-dimensional configurations of Ref.~\cite{svozil-2025-color}.}\label{tab:master-matrix-synthesis}
+\begin{tabular}{llrrrrp{.39\textwidth}}\toprule
+Configuration & $d$ & $n\times d$ & $|V|$ & $N_c$ & $|\Sc_{\mathrm{ext}}|/|\Sc|$ & Matrix Mechanism and Latin / MOLS Interpretation\\\midrule
+$H_{d\times d}$ (Grid) & $d$ & $2d\times d$ & $d^2$ & $L_d/d!$ & $d!/d!$ & Folds into $d\times d$ Latin square; columns are permutation matrices; K\H{o}nig's theorem ensures $\Sc_{\mathrm{ext}}=\Sc$.\\
+$H_L$ ($3$-Net) & $d$ & $3d\times d$ & $d^2$ & Mates & Transv. & States are transversals of $L$; colorings are orthogonal mates (Graeco-Latin squares); realizes all $3$ contextual regimes.\\
+$L_{12}$ (Firefly) & 3 & $2\times 3$ & 5 & 2 & $5/5$ & Corner L-hook $R_1\cup C_1$; column sizes $1+2+2=5$; bijects with the $12$ Latin squares of order $3$.\\
+$P_3^{(3)}$ (3-Chain) & 3 & $3\times 3$ & 7 & 4 & $8/8$ & $R_1\cup C_1\cup R_2$; column sizes $2+2+3=7$; $2$ matrices are partial Latin squares, $2$ swap free column cells.\\
+$H_{6,3}$ (Triangle) & 3 & $3\times 3$ & 6 & 1 & $3/4$ & $R_1\cup C_1\cup S_2^L$ in cyclic $3$-net; $2+2+2=6$; midpoint state $\{2,4,6\}$ leaves $K_3$; locks $1\sim_c 4,2\sim_c 5,3\sim_c 6$.\\
+$H_{\mathrm{Pasch}}$ (Pasch) & 3 & $4\times 3$ & 6 & 1 & $3/3$ & Fails transversal closure in any $3\times 3$ Latin square; unique $4\times 3$ matrix with columns $\{1,6\},\{2,5\},\{3,4\}$.\\
+$P_4^{(5)}$ / $C_4^{(5)}$ & 5 & $4\times 5$ & $17/16$ & $13{,}824/2{,}808$ & $185,\,119$ & Staircase / $2\times 2$-hinge block in $5\times 5$ Latin square; bipartite context graph ensures $\Sc_{\mathrm{ext}}=\Sc$.\\
+$P_5$ (Pentagon) & 3 & $5\times 3$ & 10 & 5 & $10/11$ & Column sizes $3+3+4=10$; midpoint state $\{6..10\}$ leaves $C_5$; ternary exclusion $\neg(c(6)=c(7)=c(9))$.\\
+$H_8$ (Petersen$-2$) & 3 & $8\times 3$ & 14 & 3 & $7/11$ & Column sizes $4+5+5$ or $4+6+4$; locks $6$ pairs including $2\sim_c 8$ and $13\sim_c 14$ across all $3$ matrices.\\
+$H_9$ / $G_{32}$ & 3 & $9/10\times 3$ & 15 & 0 & $0/8,\,0/6$ & Row $\{8,2,15\}$ collides with column-locked $2\sim_c 8$ of $H_8$; $G_{32}$ states of size $5$ pairwise intersect ($\chi=4$).\\
+$B_{13,7}$ / $I_{16,9}$ & 3 & $7/9\times 3$ & $13/16$ & 6 & $12/14,\,12/22$ & $10$ and $11$ never share a column in $B_{13,7}$, forcing $4$ into third column and locking $10\sim_c 24,11\sim_c 18$ in $I_{16,9}$.\\
+$D_{16,9}$ / $T_{19,11}$ & 3 & $9/11\times 3$ & $16/19$ & 7 & $14/21,\,14/25$ & Purely chromatic $c(14)\neq c(18)$ in $D_{16,9}$ forces roof apex $26$ into third column, locking $14\sim_c 28,18\sim_c 27$.\\
+$H_{17,10}$ & 3 & $10\times 3$ & 17 & 4 & $10/18$ & Locks $10\sim_c 24,11\sim_c 18$; Born vector $p_{24}=1\neq 8/9=p_{10}$ forces $\eta=1/9$ non-column state weight.\\
+$H_{21,13}$ & 3 & $13\times 3$ & 21 & 2 & $6/21$ & Pair of $13\times 3$ matrices induces $3\times 3$ Graeco-Latin signature grid with $21$ colliding pairs ($15$ two-way).\\
+$H_{\YO}^+$ / $H_{\YO}^{(4)}$ & $3/4$ & $16\times 3/4$ & $25/26$ & 0 & $0/24,\,0/25$ & Each of $8$ base-block alignments makes one $N(h_j)$ span all $3$ columns, blocking $h_j$ ($\chi=d+1$).\\
+$W_{11,5}^{(4)},B_{14,7}^{(4)},D_{17,9}^{(4)}$ & 4 & $n\times 4$ & $11/14/17$ & $5/6/7$ & $11/12,13/15,15/22$ & Common-apex lifts prepend constant singleton column $\mathbf{c}_0=(0,\ldots,0)^T$ to $M^{(3)}$.\\
+$W_{16,6}^{(4)},L_{18,7}^{(4)},L_{22,9}^{(4)}$ & 4 & $6/7/9\times 4$ & $16/18/22$ & $80/144/216$ & $56/72,68/68,92/158$ & Linear $4$D gadgets; $L_{18,7}^{(4)}$ has $\Sc_{\mathrm{ext}}=\Sc$; $L_{22,9}^{(4)}$ locks $11\sim_c 20$ in one column.\\
+$H_{37}$ (Hesse) & 3 & $24\times 3$ & 37 & 0 & $0/153$ & Core $M_{ak}$ forms $3$-net (rows $\mathcal{M}_a$, cols $N(P_k)$, cyclic Latin transversals $N(Q_k)$); parity loop forces $\chi=4$.\\
+$H_{65}$ ($4$D Linear) & 4 & $29\times 4$ & 65 & 0 & $0/393{,}216$ & Core independence $\alpha(G_{\mathrm{core}})=4$ limits $4$ columns to $4\times 4=16<17$ core vertices ($\chi=5$).\\
+\bottomrule\end{tabular}
+\end{table*}
+
+By tracing the progression from classical $d\times d$ Latin and Graeco-Latin squares to the universal $n\times d$ Context--Color Matrix $M\in V^{n\times d}$, we obtain a unified combinatorial picture of strong hypergraph coloring:
+\begin{enumerate}
+\item Whenever a context hypergraph embeds into the row-column grid $H_{d\times d}$ without odd context cycles, K\H{o}nig's theorem guarantees that every two-valued state extends to a strong $d$-coloring.
+\item Closing contexts into odd cycles (beginning with the triangle $H_{6,3}$ inside a $3$-net $H_L$) introduces non-bipartite residual graphs, nonextendable states ($\Sc_{\mathrm{ext}}\subsetneq\Sc$), and forced chromatic identities ($u\sim_c v$).
+\item For general hypergraphs with $n\neq d$ contexts or non-grid incidence (such as $H_{\mathrm{Pasch}}$ and the $3$- and $4$-dimensional quantum configurations of Ref.~\cite{svozil-2025-color}), the $n\times d$ Context--Color Matrix Theorem~\ref{thm:nxd-matrix} provides an exact equivalence: rows represent rainbow contexts, columns represent pairwise disjoint extendable states, shared hinges act as vertical column ties, chromatic inseparability is column co-occurrence, and chromatic gaps ($\chi>d$) are unavoidable column collisions or Pigeonhole capacity overflows.
+\end{enumerate}
+
+\begin{acknowledgments}
+This research was funded in part by the Austrian Science Fund (FWF), Grant DOI \href{https://doi.org/10.55776/PIN5424624}{10.55776/PIN5424624}.
+\end{acknowledgments}
+
+\bibliographystyle{apsrev4-2}
+\bibliography{svozil}
+
+\end{document}
