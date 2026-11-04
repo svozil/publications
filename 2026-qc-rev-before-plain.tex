@@ -1,0 +1,1082 @@
+\documentclass[
+  aps,
+  pra,
+  reprint,
+  nofootinbib
+]{revtex4-2}
+
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{braket}
+\usepackage{hyperref}
+\usepackage{orcidlink}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdftitle={Answer Partitions, Oracle Response Spectra, and Exact Quantum Query Advantage},
+  pdfauthor={Karl Svozil}
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+\begin{document}
+
+\title{Answer Partitions, Oracle Response Spectra, and Exact Quantum Query Advantage}
+
+\author{Karl Svozil \orcidlink{0000-0001-6554-2802}}
+\email{karl.svozil@tuwien.ac.at}
+\affiliation{Institute for Theoretical Physics, TU Wien,
+Wiedner Hauptstra{\ss}e 8--10/136, 1040 Vienna, Austria}
+
+\date{\today}
+
+\begin{abstract}
+An oracle problem pairs an answer partition, which says which hidden instances
+share an output, with an access model, which says what a query returns. We show
+that the access model changes exact quantum query complexity in ways that
+classical point values cannot detect. Exact one-query resolution is block
+discrimination of the oracle family, and we state the criterion together with a
+dual certificate. For point access through a response unitary \(V\), one query
+resolves a dictator exactly if and only if \(0\) lies in the convex hull of the
+spectrum of \(V\), and a two-bit parity---including Deutsch's problem---if and
+only if \(-1\) is an eigenvalue of \(V\); no other total Boolean function is
+one-query exact. Two
+reversible completions of the same blank-register table, a qutrit
+transposition and a cyclic shift, therefore have exact costs one and two, and a
+phase-dressed shift restores cost one; with bounded error the shift still
+succeeds with the optimal probability \(7/8\) after one query. A sign oracle
+cannot resolve any partition that separates a truth table from its complement,
+and an inaccessible witness of \(k\) address bits raises the quantum cost of
+Bernstein--Vazirani identification from one query to \(\min\{k+1,n\}\) while
+leaving every classical value intact. Holding the standard point oracle fixed,
+we reorganize the known exact complexities of the 35 balanced three-bit
+partitions and classify all 6435 balanced four-bit partitions exactly; rational
+dual certificates settle the 6040 four-bit cases that previously had only
+numerical support.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Deciding whether a one-bit function is constant or balanced takes one quantum
+query to the standard XOR oracle, against two classical
+queries~\cite{deutsch,deutsch:92,cleve:98}. A qutrit oracle that returns
+exactly the same classical values, the cyclic shift \(y\mapsto y+b_x\bmod 3\),
+needs two quantum queries for an exact answer, whereas a qutrit transposition
+that agrees with it on a blank register needs only one
+(Sec.~\ref{sec:spectrum}). What decides the difference is the spectrum of the
+oracle's response, which no classical query can see.
+
+Such examples are instances of a general fact. A query problem consists of an
+answer partition, which groups the hidden instances into cells whose members
+share the required answer, and an access model, which says what each query
+returns, classically or quantum mechanically; query complexity, and with it
+any quantum speedup, is a property of this task--oracle pair. That it depends
+on the access model is known in general: simulating an in-place oracle for a permutation of \(N\) points can
+require \(\Theta(\sqrt N)\) uses of the standard oracle for the same
+function~\cite{KashefiKentVedralBanaszek2002}; the comparison of quantum and
+classical oracle power depends on how the oracle is
+represented~\cite{WojcikChhajlany2006};
+a richer classical oracle solves Deutsch's problem with one
+query~\cite{Calude2006Dequantising}; and a faulty oracle removes Grover's
+speedup~\cite{RegevSchiff2008}.
+
+Earlier work, including the author's, formulated quantum decision problems as
+partitions or identifications of prepared quantum
+states~\cite{DonSvo01,svozil-2002-statepart-prl,svozil-2003-garda,svozil-2005-ko,2007-tkadlec-svozil-springer,svozil-2016-vector}.
+In the query model the partition lives instead on black-box transformations,
+and it must first be translated into orthogonal output sectors by the oracle
+and the protocol. This paper asks which features of the access, beyond the
+classical values it returns, decide the exact quantum cost of that translation.
+
+The translation proceeds in four steps, used throughout the paper and listed
+in Sec.~\ref{sec:discussion}. First, the task fixes the answer partition:
+instances with the same correct answer share a cell, and only the cell must be
+learned. Second, the access model fixes what one oracle call does. Third, an
+instance-independent probe, typically a superposition fanned out from a single
+basis state, is sent through the oracle, which turns it into an output state
+that depends on the hidden instance. Fourth, one call solves the task exactly
+if and only if some probe makes the output states of different cells
+orthogonal; overlaps within a cell do no harm. In the example above, this
+orthogonality needs a relative factor \(-1\) between interfering branches,
+which the flip and the transposition supply and the cyclic shift does not.
+
+The main new result is a spectral criterion. For point access through a
+response unitary \(V\), one query resolves a dictator exactly if and only if
+\(0\) lies in the convex hull of the spectrum of \(V\), and a two-bit
+parity---including Deutsch's problem---if and only if \(-1\) is an eigenvalue
+of \(V\); no other total Boolean function is one-query exact
+(Theorem~\ref{thm:spectrum} and
+Proposition~\ref{prop:oneclass}). For the XOR
+oracle this reduces to the characterization of Chen, Ye, and
+Li~\cite{ChenYeLi2020}. Its consequences are that two reversible completions of
+the same blank-register table have different exact costs, that a phase
+invisible to basis queries can restore the advantage, and that an odd cyclic
+response keeps a bounded-error advantage although it loses the exact one
+(Sec.~\ref{sec:spectrum}). The second new result is an exact classification of
+all balanced four-bit tasks under the standard point oracle: rational dual
+certificates prove the two-query lower bounds that were previously supported
+only numerically~\cite{MontanaroJozsaMitchison2015} (Sec.~\ref{sec:census}).
+The remaining sections supply the framework---a block form of standard
+discrimination conditions, together with its dual (Sec.~\ref{sec:criterion})---and
+a decohered-access example in which an inaccessible address witness changes
+Bernstein--Vazirani costs while leaving every classical value intact
+(Sec.~\ref{sec:witness}). Table~\ref{tab:prior} separates prior results from
+the present additions.
+
+\begin{table*}[t]
+\caption{Relation to prior work. ``Known'' lists results available before
+this paper; ``This work'' lists what is added here.}
+\label{tab:prior}
+\begin{ruledtabular}
+\begin{tabular}{p{0.2\textwidth}p{0.36\textwidth}p{0.36\textwidth}}
+Topic & Known & This work\\
+\hline
+Exact one-query criterion &
+Perfect discrimination of unitaries~\cite{Acin2001UnitaryDiscrimination,DuanFengYing2009} &
+Block form for answer partitions and its dual certificate
+(Props.~\ref{prop:block} and \ref{prop:dual}); standard convex duality,
+stated for use below\\
+One-query exact class &
+XOR oracle: dictators and two-bit parities~\cite{ChenYeLi2020};
+partial functions~\cite{YeLi2020partial} &
+Every response unitary \(V\): dictators iff
+\(0\in\operatorname{conv}(\operatorname{spec}V)\), two-bit parities iff
+\(-1\in\operatorname{spec}V\), no other total Boolean functions
+(Thm.~\ref{thm:spectrum},
+Prop.~\ref{prop:oneclass})\\
+Dependence on the oracle model &
+Oracle representation~\cite{WojcikChhajlany2006}; in-place versus standard
+oracles~\cite{KashefiKentVedralBanaszek2002}; de-quantised Deutsch
+oracle~\cite{Calude2006Dequantising}; faulty
+oracles~\cite{RegevSchiff2008} &
+Classically invisible spectrum decides exact cost: two completions of one
+blank-register table, phase-dressed shift (Cor.~\ref{cor:completions});
+elementary complement obstruction for sign oracles (Prop.~\ref{prop:sign})\\
+Bounded error, odd cyclic response &
+--- &
+Optimal unambiguous one-query solution, worst-case success
+\((3+\cos\frac{\pi}{d})/4\) (Prop.~\ref{prop:bounded})\\
+Parity &
+\(Q_E(\operatorname{Par}_N)=\lceil N/2\rceil\)~\cite{bbcmw-01,Farhi-98} &
+Degree bound for every response; open qutrit question
+(Sec.~\ref{sec:spectrum})\\
+Three-bit functions &
+Explicit optimal exact algorithms for all
+functions~\cite{MontanaroJozsaMitchison2015} &
+No new values; reorganization as balanced partitions
+(Table~\ref{tab:n3})\\
+Four-bit functions &
+Numerical SDP values for all functions~\cite{MontanaroJozsaMitchison2015},
+used in structural work~\cite{YeYangHuang2024} &
+Exact rational dual certificates for all 6435 balanced partitions
+(Table~\ref{tab:n4})\\
+Decohered access &
+Which-way information~\cite{Englert1996}; coherence in
+Bernstein--Vazirani~\cite{NaseriEtAl2022} &
+Exact costs with an inaccessible witness: surviving partition in one query
+versus \(n-k\); identification in exactly \(\min\{k+1,n\}\) queries
+(Prop.~\ref{prop:witness})\\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+
+These results also sharpen the usual intuition about quantum parallelism: the
+resource that matters for the separations below is the structure of the oracle
+response---its phases, spectrum, accessible registers, and
+environment---rather than the number of branches in a superposition.
+
+\section{Answer partitions and exact one-query resolution}
+\label{sec:criterion}
+
+Let \(\Omega\) be a finite instance set and let \(g:\Omega\rightarrow J\)
+specify the required answer. The task induces the \emph{answer partition}
+\begin{equation}
+ \Pi_g=\{C_j:j\in g(\Omega)\},\qquad C_j=g^{-1}(j).
+ \label{eq:task-partition}
+\end{equation}
+This partition is indispensable bookkeeping, but it is not yet an access model
+or a complexity statement. In the query model the hidden instance labels a
+black-box transformation; the algorithm is not handed a state \(\ket a\) on
+which the answer partition is a pre-existing observable. The operational
+question is whether the specified oracle and a fixed protocol can transfer the
+cell label to an accessible output.
+
+Let \(\rho_a^{(T)}\) be the state of the registers available to the final
+measurement, produced from instance \(a\) after \(T\) queries. Exact resolution
+means that there is one instance-independent measurement \(\{P_j\}\) with
+\begin{equation}
+ P_jP_\ell=\delta_{j\ell}P_j,\quad
+ \sum_jP_j=I,\quad
+ \operatorname{Tr}(P_{g(a)}\rho_a^{(T)})=1.
+ \label{eq:output-sectors}
+\end{equation}
+Supports belonging to different cells are then orthogonal; no orthogonality is
+required within a cell. The \(C_j\) remain sets of classical instances. They
+are not subspaces, and the answer sectors \(P_j\mathcal H_{\rm out}\) arise
+only after an oracle and a protocol have encoded them. The partition therefore
+specifies a required zero pattern in the output distinguishability matrix
+rather than a ready-made physical observable.
+
+We write \(Q_\epsilon(\Pi;\mathcal U)\) and \(R_\epsilon(\Pi;\mathcal U_{\rm
+cl})\) for the optimal quantum and classical worst-case numbers of calls needed
+with worst-case error at most \(\epsilon\), under explicitly matched access
+conventions, \(Q_E\equiv Q_0\) for exact quantum complexity, and \(D\) for the
+depth of an optimal deterministic decision tree (the worst-case number of
+classical queries of an exact classical algorithm). In the worst-case
+convention used here \(D=R_0\): fixing the random string of a zero-error
+randomized protocol that never exceeds \(T\) queries leaves a deterministic
+protocol that is correct on every instance with at most \(T\) queries. (If
+zero-error cost is instead measured in expectation, as is common, it can be
+smaller than \(D\).) Classically, a
+deterministic protocol partitions \(\Omega\) by its possible transcripts and
+succeeds exactly only when that transcript partition refines \(\Pi_g\). A
+quantum protocol need not create such an intermediate classical transcript; it
+changes the overlaps among the hypothesis states and measures only after the
+required cells have separated. A speedup is a gap between the quantum and the
+classical cost for the same task and the same interface.
+
+All Hilbert spaces in this paper are finite dimensional. For a family of
+unitary oracles \(\{U_a:a\in\Omega\}\), an arbitrary one-query protocol
+prepares a pure state \(\ket\Psi\) of the query system \(Q\) and a
+reference \(R\), applies \(U_a\otimes I_R\), and then uses an
+instance-independent channel and measurement. Write
+\begin{equation}
+ \ket{\Psi_a}=(U_a\otimes I_R)\ket\Psi,
+ \qquad
+ \sigma=\operatorname{Tr}_R\ket\Psi\!\bra\Psi .
+\end{equation}
+The output Gram matrix before the final processing is
+\begin{equation}
+ G_{aa'}=\braket{\Psi_a|\Psi_{a'}}
+ =\operatorname{Tr}\!\left(\sigma U_a^\dagger U_{a'}\right).
+ \label{eq:gram}
+\end{equation}
+
+\begin{proposition}[Block discrimination]\label{prop:block}
+The partition \(\Pi_g\) is exactly resolvable with at most one use of
+\(\{U_a\}\), allowing an arbitrary reference, if and only if there is a density
+operator \(\sigma\) such that
+\begin{equation}
+ \operatorname{Tr}\!\left(\sigma U_a^\dagger U_{a'}\right)=0
+ \quad\text{whenever}\quad g(a)\ne g(a').
+ \label{eq:criterion}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Exact discrimination requires the spans of the output states associated with
+different cells to be orthogonal, which is equivalent to the vanishing of the
+indicated pairwise inner products; no instance-independent channel can make
+nonorthogonal states perfectly distinguishable. Conversely, orthogonal cell
+spans can be measured by their support projectors. Purification shows that
+optimizing over \(\sigma\) already includes mixed probes and arbitrary
+ancillary systems.
+\end{proof}
+
+Equation~\eqref{eq:criterion}, with \(\sigma\succeq0\) and
+\(\operatorname{Tr}\sigma=1\), is the block form of the standard conditions for
+perfect discrimination of unitaries
+\cite{Acin2001UnitaryDiscrimination,DuanFengYing2009}; it is not a new general
+channel-discrimination theorem. Its role here is to connect an answer
+partition to a specified oracle family. The Gram matrix need only be block
+diagonal according to \(\Pi_g\); states within one cell may overlap or
+coincide. Complete identification is the singleton-cell special case, where
+\(G\) must be diagonal. For every nontrivial partition, zero queries cannot
+resolve the task, so Eq.~\eqref{eq:criterion} characterizes
+\(Q_E(\Pi_g;\mathcal U)=1\). For bounded error, orthogonality is replaced by a
+common POVM with the required success probability. Multiquery lower bounds
+come from adversary methods~\cite{Ambainis2002Adversary}, whose generalized
+form characterizes state conversion and function
+evaluation~\cite{LeeEtAl2011StateConversion,Reichardt2014SpanPrograms}.
+
+When Eq.~\eqref{eq:criterion} fails, a finite certificate says so.
+
+\begin{proposition}[Dual certificate]\label{prop:dual}
+Let \(X=\{(a,a'):g(a)\neq g(a')\}\). Exactly one of the following holds:
+(i) a density operator \(\sigma\) satisfies Eq.~\eqref{eq:criterion};
+(ii) there is a complex matrix \(\Gamma\), supported on \(X\) and satisfying
+\(\Gamma_{a'a}=\Gamma_{aa'}^*\), such that
+\begin{equation}
+ Z(\Gamma)=\sum_{(a,a')\in X}\Gamma_{aa'}\,U_a^\dagger U_{a'}\succ0 .
+ \label{eq:dual-witness}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+\(Z(\Gamma)\) is Hermitian because \((U_a^\dagger U_{a'})^\dagger=
+U_{a'}^\dagger U_a\). If (i) and (ii) both held, then
+\(\operatorname{Tr}[\sigma Z(\Gamma)]=0\), contradicting \(Z(\Gamma)\succ0\).
+If (ii) fails, the real subspace \(\{Z(\Gamma)\}\) of Hermitian operators misses
+the open convex cone of positive definite operators, so a separating
+hyperplane gives a nonzero \(\sigma\) with \(\operatorname{Tr}(\sigma P)\ge0\)
+for all \(P\succ0\), that is \(\sigma\succeq0\), and
+\(\operatorname{Tr}[\sigma Z(\Gamma)]=0\) for all admissible \(\Gamma\). Taking
+\(\Gamma\) supported on a single pair \((a,a')\) and its transpose, with real
+and with imaginary entries, gives
+\(\operatorname{Tr}(\sigma U_a^\dagger U_{a'})=0\); normalizing \(\sigma\) gives
+(i).
+\end{proof}
+
+The matrix \(\Gamma\) weights only cross-cell pairs, as an adversary matrix
+does. After \(t\) queries the same weights define the progress measure
+\(\sum_{(a,a')\in X}\Gamma_{aa'}\braket{\psi_a^{(t)}|\psi_{a'}^{(t)}}\) of the
+adversary method~\cite{Ambainis2002Adversary}, and the query cost measures how
+fast such weighted cross-cell overlaps can be driven to zero. This is the
+precise sense in which a quantum query algorithm ``separates'' answer cells.
+When all \(U_a^\dagger U_{a'}\) commute---as for every point oracle below, which
+is diagonal in the eigenbasis of its response---only the diagonal of \(\sigma\)
+in a common eigenbasis enters Eq.~\eqref{eq:criterion}, and the criterion
+becomes a linear feasibility problem for a probability vector.
+
+The criterion also distinguishes a change of representation from a change of
+access. If
+\begin{equation}
+ V_a=A U_a B
+ \label{eq:fixed-equivalence}
+\end{equation}
+for instance-independent unitaries \(A,B\), then
+\(V_a^\dagger V_{a'}=B^\dagger U_a^\dagger U_{a'}B\); as the probe varies, the
+attainable Gram matrices are unchanged. More generally, families that exactly
+simulate one another with \(O(1)\) oracle calls have quantum query
+complexities equal up to constant factors; an approximate simulation must also
+charge its conversion error to \(\epsilon\). Preservation of a claimed
+quantum--classical gap additionally requires corresponding constant-query
+classical simulations. Exact one-query behavior can nevertheless change when
+the response representation is not of the form of
+Eq.~\eqref{eq:fixed-equivalence}, as the next section shows.
+
+\section{The response spectrum decides exact one-query power}
+\label{sec:spectrum}
+
+\subsection{Deutsch's problem and the sign oracle}
+
+Let \(b=(b_0,b_1)\) be the truth table of a Boolean function and use
+\begin{equation}
+ O_b\ket{x,y}=\ket{x,y\oplus b_x}.
+ \label{eq:xor-oracle}
+\end{equation}
+With the answer qubit in \(\ket-\), phase kickback gives, up to the common
+answer factor, the output states on the address register
+\begin{equation}
+ \ket{\psi_{00}} = -\ket{\psi_{11}} = \ket{+},\quad
+ \ket{\psi_{01}} = -\ket{\psi_{10}} = \ket{-}.
+ \label{eq:deutsch-rays}
+\end{equation}
+The constant and balanced cells occupy orthogonal rays, while the two instances
+inside either cell are not distinguished. This is a block-diagonal, but not
+diagonal, Gram matrix and gives the familiar one-versus-two exact-query
+separation~\cite{deutsch,deutsch:92,cleve:98}.
+
+Hadamard conjugation of the answer qubit turns Eq.~\eqref{eq:xor-oracle} into
+the controlled-phase action \(\ket{x,z}\mapsto(-1)^{z b_x}\ket{x,z}\), so the
+two forms are exactly equivalent in the sense of
+Eq.~\eqref{eq:fixed-equivalence}. The restricted sign oracle
+\(P_b\ket x=(-1)^{b_x}\ket x\), without the control qubit \(z\), is weaker:
+\(P_{\bar b}=-P_b\) for the complemented truth table \(\bar b\), so
+complementary truth tables differ only by a global phase.
+
+\begin{proposition}[Complement obstruction]\label{prop:sign}
+With access to \(\{P_b\}\) alone (arbitrary ancillas, but no control on
+\(P_b\)), a partition in which some \(b\) and its complement \(\bar b\) lie in
+different cells cannot be resolved with any number of queries, even with
+error \(\epsilon<1/2\).
+\end{proposition}
+
+\begin{proof}
+Each use of \(P_{\bar b}\otimes I\) equals \(-(P_b\otimes I)\), and every branch
+of an adaptive protocol picks up the same sign. The final density operators for
+\(b\) and \(\bar b\) are therefore identical, and so are the output
+distributions.
+\end{proof}
+
+Deutsch's constant--balanced partition is closed under complement and remains
+one-query resolvable with \(P_b\). Three-bit majority, parity of an odd number
+of bits, and every other self-dual function are not resolvable at all.
+Among the balanced partitions studied in Sec.~\ref{sec:census}, only 3 of the
+35 three-bit partitions (the two-bit parities) and 35 of the 6435 four-bit
+partitions are closed under complement; the sign oracle cannot resolve any of
+the others, whereas the XOR oracle resolves all of them with at most two
+(\(N=3\)) or three (\(N=4\)) queries. Supplying a coherent control for \(P_b\)
+restores the missing relative phase, but coherent control is additional
+black-box access rather than an automatic operation on an unknown
+unitary~\cite{AraujoFeixCostaBrukner2014}.
+
+\subsection{Response unitaries}
+
+Let \(V\) be any unitary and consider the controlled-response family indexed by
+the same four Boolean truth tables,
+\begin{equation}
+ U_b^{(V)}
+ =\sum_{x=0}^1\ket x\!\bra x\otimes V^{b_x}.
+ \label{eq:response-oracle}
+\end{equation}
+\emph{Access conventions.} The family \(\{U_b^{(V)}\}\) is specified, and
+\(V\) is known. Between queries the algorithm may apply any
+instance-independent operation, including the preparation of eigenvectors of
+\(V\), at no query cost; it may not control, invert, or otherwise modify the
+oracle unless such access is specified separately. The phase of \(V\) is part
+of the specification. Because \(V^{b_x}\) acts only on the branch selected by
+the address, replacing \(V\) by \(e^{i\theta}V\) multiplies
+Eq.~\eqref{eq:response-oracle} by the instance-dependent phase
+\(e^{i\theta b_x}\), which is relative between address sectors and therefore
+observable; it can change the spectral condition below
+(Corollary~\ref{cor:completions}). This differs from access to an unspecified
+unitary or channel known only up to a global phase.
+
+\begin{theorem}[Response spectrum]\label{thm:spectrum}
+The Deutsch constant--balanced partition is exactly one-query resolvable
+through the family \(\{U_b^{(V)}\}\), with arbitrary probes and references, if
+and only if
+\(-1\) is an eigenvalue of \(V\).
+\end{theorem}
+
+\begin{proof}
+If \(V\ket w=-\ket w\), the probe \(\ket+\ket w\) gives ordinary phase kickback
+and Eq.~\eqref{eq:deutsch-rays}. Conversely, give weight \(\Gamma=1\) to the
+four cross-cell pairs (and their transposes) in
+Proposition~\ref{prop:dual}. The pairs \((00,01)\), \((00,10)\), \((11,01)\),
+and \((11,10)\) contribute
+\(I\oplus V\), \(V\oplus I\), \(V^\dagger\oplus I\), and \(I\oplus V^\dagger\)
+on the address blocks \(x=0,1\), so
+\begin{equation}
+ Z=2\,I_2\otimes\bigl(2I+V+V^\dagger\bigr)
+ =2\,I_2\otimes(I+V)(I+V)^\dagger .
+ \label{eq:deutsch-witness}
+\end{equation}
+\(Z\) is positive definite unless \(I+V\) is singular, that is, unless \(-1\) is
+an eigenvalue of \(V\).
+\end{proof}
+
+Geometrically, the probe weights on the two address blocks define points of
+the numerical range \(\operatorname{conv}(\operatorname{spec}V)\), and
+cross-cell orthogonality forces both points to \(-1\). Because \(-1\) is an
+extreme point of the unit disk, it lies in the numerical range only if it is an
+eigenvalue. Related qudit versions of Deutsch--Jozsa use higher-dimensional
+address and response systems~\cite{Cereceda2004QuditDeutsch,deutsch:92,cleve:98}.
+Theorem~\ref{thm:spectrum} instead holds the four Deutsch instances fixed and
+varies the response unitary. It is also distinct from prior-distribution
+``useless-query'' bounds, which infer quantum lower bounds from classical
+queries that reveal no information about a property~\cite{MeyerPommersheim2011}.
+
+\begin{corollary}[Reversible completions]\label{cor:completions}
+On a qutrit, let \(T\) be the transposition \(\ket0\leftrightarrow\ket1\) that
+fixes \(\ket2\), let \(X_3\ket y=\ket{y+1\bmod 3}\) be the cyclic shift, and let
+\(X_3'=e^{i\pi/3}X_3\). All three map the blank register \(\ket0\) to \(\ket1\)
+up to a phase (\(X_3'\ket0=e^{i\pi/3}\ket1\)), so a measurement of a blank
+target returns the point value \(b_x\) in each case; \(X_3\) and \(X_3'\)
+moreover agree on every computational-basis input up to a phase. Their
+spectra are \(\{1,1,-1\}\), \(\{1,e^{2\pi i/3},e^{4\pi i/3}\}\), and
+\(\{e^{i\pi/3},-1,e^{-i\pi/3}\}\), so the exact quantum cost of Deutsch's
+problem is \(Q_E=1\), \(2\), and \(1\), respectively, while \(D=2\) in all three
+cases. More generally, for \(X_d\ket y=\ket{y+1\bmod d}\) with \(d\ge2\),
+\begin{equation}
+ Q_E^{(d)}=
+ \begin{cases}1,&d\ \text{even},\\2,&d\ \text{odd},\end{cases}
+ \qquad D^{(d)}=2.
+ \label{eq:cyclic-response-cost}
+\end{equation}
+\end{corollary}
+
+An oracle specified classically by its reversible action on a blank target,
+\(\ket{x}\ket{0}\mapsto\ket{x}\ket{b_x}\), fixes only one column of each
+\(V^{b_x}\). The completion---transposition or cyclic shift---decides whether
+Deutsch's exact advantage exists, and so does a phase that no computational
+basis query can see: the factor \(e^{i\pi b_x/3}\) in \(X_3'^{\,b_x}\) is a
+branch-relative phase, that is, a phase oracle composed with the shift. Thus
+classical point values, and even the full action on computational basis states
+up to phases, do not determine \(Q_E\). This is a constant-factor effect, not an
+asymptotic separation.
+
+\subsection{All point oracles with a response unitary}
+
+The same argument applies to any number of bits. Let \(f:\{0,1\}^N\to\{0,1\}\)
+be nonconstant and accessed through
+\(U_b^{(V)}=\sum_{i=1}^N\ket i\!\bra i\otimes V^{b_i}\).
+
+\begin{proposition}[One-query class]\label{prop:oneclass}
+A nonconstant \(f\) is exactly one-query resolvable through
+\(\{U_b^{(V)}\}\) if and only if, up to negation, either \(f=b_i\) and
+\(0\in\operatorname{conv}(\operatorname{spec}V)\), or \(f=b_i\oplus b_j\) and
+\(-1\in\operatorname{spec}V\). The dictator condition holds in particular
+whenever \(V\ket y\perp\ket y\) for some basis state \(\ket y\).
+\end{proposition}
+
+\begin{proof}
+Let \(\rho_i\succeq0\) be the diagonal block of \(\sigma\) at address \(i\) and
+\(p_i=\operatorname{Tr}\rho_i\), so \(\sum_ip_i=1\). Since
+\(U_b^\dagger U_{b'}=\sum_i\ket i\!\bra i\otimes V^{b'_i-b_i}\), only the
+\(\rho_i\) enter Eq.~\eqref{eq:criterion}. If \(f\) depends on \(b_i\), some
+\(b\) has \(f(b)\neq f(b\oplus e_i)\), and Eq.~\eqref{eq:criterion} reads
+\(1-p_i+\operatorname{Tr}(\rho_iV^{\pm1})=0\). Since
+\(|\operatorname{Tr}(\rho_iV^{\pm1})|\le p_i\), this forces \(p_i\ge1/2\), so
+\(f\) depends on at most two bits. If it depends on two, \(i\) and \(j\), then
+\(p_i=p_j=1/2\) and \(\operatorname{Tr}(\rho_iV^{\pm1})=-p_i\), which places
+\(\rho_i\) and \(\rho_j\) in the \(-1\) eigenspace of \(V\). The overlap of the
+outputs for \(b\) and \(b\oplus e_i\oplus e_j\) is then \(-1\neq0\), so these
+instances share a cell, \(f(b)=f(b\oplus e_i\oplus e_j)\), and \(f\) is
+\(b_i\oplus b_j\) or its negation. A \(-1\) eigenvector gives the Deutsch
+construction on addresses \(i,j\). For a dictator \(b_i\), the cross-cell
+pairs \((0^N,e_i)\) and \((0^N,e_i\oplus e_j)\), \(j\neq i\), give
+\(\operatorname{Tr}(\rho_iV)+\sum_{j\neq i}p_j=0\) and
+\(\operatorname{Tr}(\rho_jV)=p_j\), so the density operator
+\(\tau=\sum_j\rho_j\) has \(\operatorname{Tr}(\tau V)=0\), that is,
+\(0\in\operatorname{conv}(\operatorname{spec}V)\). Conversely, the probe
+\(\ket i\ket w\) with \(\braket{w|V|w}=0\) makes every cross-cell overlap
+vanish. With an additional null address, on which the oracle acts as the
+identity (as in the phase form used in Sec.~\ref{sec:census}), the same
+argument holds with \(\operatorname{spec}V\) replaced by
+\(\operatorname{spec}V\cup\{1\}\) in the dictator condition.
+\end{proof}
+
+For \(V=-I\), the family is the sign oracle of Proposition~\ref{prop:sign}:
+two-bit parities are one-query resolvable, whereas dictators are not
+resolvable at all.
+
+For the XOR oracle, \(V=X\), Proposition~\ref{prop:oneclass} reproduces the
+characterization of exact one-query algorithms by Chen, Ye, and
+Li~\cite{ChenYeLi2020}. Proposition~\ref{prop:oneclass} concerns total
+functions; under a promise more tasks can be one-query exact, the
+Deutsch--Jozsa problem~\cite{deutsch:92} being the standard example, and
+partial functions are treated in Ref.~\cite{YeLi2020partial}. For an odd cyclic response \(X_d\) the one-query
+class shrinks to the dictators, which a single basis query already resolves
+classically.
+
+\subsection{Bounded error for odd cyclic responses}
+
+Corollary~\ref{cor:completions} concerns exact resolution. With bounded error
+the odd cyclic response keeps a quantum advantage. As a referee pointed out,
+a single eigenvector of \(X_3\) with eigenvalue \(e^{2\pi i/3}\), the address in \(\ket+\), and a
+measurement of the address in \(\{\ket+,\ket-\}\) already give success 1 on
+constant and \(3/4\) on balanced instances, whereas one classical point query
+cannot exceed worst-case success \(1/2\). Spreading the probe over the two
+eigenvalues adjacent to \(-1\) raises the worst case further and makes every
+conclusive answer correct.
+
+\begin{proposition}[Optimal one-query solution]\label{prop:bounded}
+For odd \(d\ge3\), one query to \(\{U_b^{(X_d)}\}\) solves Deutsch's problem
+with zero error and a conclusive answer with probability
+\((1+\cos\frac{\pi}{d})/2\) on every instance. Guessing on the inconclusive
+outcome gives worst-case success \((3+\cos\frac{\pi}{d})/4\), that is \(3/4\)
+conclusive and \(7/8\) overall for \(d=3\), and no one-query protocol does
+better. One classical query never gives a conclusive zero-error answer and has
+worst-case success \(1/2\).
+\end{proposition}
+
+\begin{proof}
+Let \(\ket{v_\pm}\) be eigenvectors of \(X_d\) with the eigenvalues
+\(\lambda_\pm=-e^{\pm i\pi/d}\) adjacent to \(-1\), and use the probe
+\(\frac12\sum_{x=0}^1\sum_\pm\ket x\ket{v_\pm}\). Writing
+\(\gamma=\cos\frac{\pi}{d}\) and using
+\((\lambda_+^{k}+\lambda_-^{k})/2=-\gamma\) for \(k=\pm1\), the output Gram
+matrix is \(G_{bb'}=\frac12\sum_x c_x\) with \(c_x=1\) if \(b_x=b'_x\) and
+\(c_x=-\gamma\) otherwise. Hence
+\(\ket{\psi_{00}}+\ket{\psi_{11}}=\ket{\psi_{01}}+\ket{\psi_{10}}\), with squared
+norm \(2(1-\gamma)\), while \(\ket{\psi_{00}}-\ket{\psi_{11}}\) and
+\(\ket{\psi_{01}}-\ket{\psi_{10}}\) are orthogonal to each other and to that
+common vector, each with squared norm \(2(1+\gamma)\). Projecting onto these
+three directions returns ``constant,'' ``balanced,'' or ``inconclusive''; each
+instance gives the correct conclusive outcome with probability
+\((1+\gamma)/2\) and never the wrong one.
+
+For optimality, write any pure probe, including a reference, as
+\(\ket0\ket A+\ket1\ket B\) with \(\lVert A\rVert^2+\lVert B\rVert^2=1\), and
+put \(W=V\otimes I_R\) with \(V=X_d\). Let \(\rho_C\) and \(\rho_B\) be the
+outputs averaged uniformly over the constant and over the balanced instances.
+Their diagonal address blocks coincide, and their off-diagonal blocks differ
+by \(\frac12\ket{(I-W)A}\!\bra{(I-W)B}\), so
+\(\lVert\rho_C-\rho_B\rVert_1=\lVert(I-W)A\rVert\,\lVert(I-W)B\rVert
+\le\frac12\lVert I-V\rVert^2\). Worst-case success cannot exceed success under
+this prior, which by the Helstrom bound is at most
+\(\frac12+\frac18\lVert I-V\rVert^2\). For odd \(d\),
+\(\lVert I-X_d\rVert^2=2+2\cos\frac{\pi}{d}\), which gives
+\((3+\cos\frac{\pi}{d})/4\). Classically, one query reveals one bit \(b_x\),
+and both cells remain consistent with every transcript.
+\end{proof}
+
+The bound also makes the construction optimal among unambiguous protocols. If
+every instance gave a conclusive answer with probability at least \(p\),
+guessing on the inconclusive outcome would give worst-case success at least
+\((1+p)/2\); hence \(p\le(1+\cos\frac{\pi}{d})/2\), which the construction
+attains.
+
+The bound \(\frac12+\frac18\lVert I-V\rVert^2\) holds for every response \(V\)
+and reaches 1 only if \(\lVert I-V\rVert=2\), that is, only if \(-1\) is an
+eigenvalue; this is a second proof of the necessity part of
+Theorem~\ref{thm:spectrum}. The construction parallels
+Deutsch's original algorithm, which also answered conclusively only part of
+the time~\cite{deutsch}; here the inconclusive probability
+\((1-\cos\frac{\pi}{d})/2\) is set by the distance of the spectrum from \(-1\)
+and vanishes as \(d\to\infty\).
+
+\subsection{Parity}
+
+Proposition~\ref{prop:oneclass} shows that one query resolves the parity of
+\(N\) bits only for \(N\le2\). Proposition~\ref{prop:dual} gives an explicit
+witness for the XOR oracle: with \(\Gamma=1\) on the pairs \((0^N,e_i)\),
+\begin{equation}
+ Z=\sum_{i=1}^N\bigl(O_{e_i}+O_{e_i}^\dagger\bigr)=2N\,I-4\Pi_-,
+ \label{eq:parity-witness}
+\end{equation}
+where \(\Pi_-=\sum_{i}\ket i\!\bra i\otimes\ket-\!\bra-\); \(Z\) is positive
+definite exactly when \(N>2\). For more queries, note that
+\(U_b^{(V)}=\sum_i\ket i\!\bra i\otimes[I+b_i(V-I)]\) is affine in \(b\) for
+every response \(V\). The amplitudes after \(T\) queries are therefore
+polynomials of degree at most \(T\) in the input bits, the acceptance
+probability has degree at most \(2T\), and parity has exact degree \(N\). Thus
+\(T\ge N/2\) for every response, and for the XOR oracle applying the Deutsch
+construction to disjoint pairs gives the matching algorithm, so
+\begin{equation}
+ Q_E(\operatorname{Par}_N)=\lceil N/2\rceil,
+ \qquad D(\operatorname{Par}_N)=N
+ \label{eq:parity-complexity}
+\end{equation}
+for point-value access~\cite{bbcmw-01,Farhi-98}. For the qutrit shift \(X_3\),
+Theorem~\ref{thm:spectrum} forbids the pair construction, and
+\(\lceil N/2\rceil\le Q_E(\operatorname{Par}_N;X_3)\le N\). Whether the upper
+bound is attained is open; if it is, two oracles with identical classical point
+values would differ by a factor of two for all \(N\).
+
+If instead one declares \(\widetilde O_b\ket y=\ket{y\oplus\operatorname{Par}(b)}\)
+to be a single oracle call, parity becomes one-query resolvable classically as
+well as quantum mechanically. That does not contradict
+Eq.~\eqref{eq:parity-complexity}; it replaces point access by an oracle that
+already aggregates the desired answer.
+
+\section{Exact census of balanced point-oracle tasks}
+\label{sec:census}
+
+The preceding examples vary the access while holding the task fixed. We now
+hold the standard point oracle fixed and vary the task. Let the hidden instance
+be \(b\in\{0,1\}^N\), accessed through Eq.~\eqref{eq:xor-oracle} with the
+address range enlarged to \(N\), and consider every binary answer map with
+\(2^{N-1}\) instances in each cell. Exchanging the answer labels gives the same
+unlabeled partition, so their number is
+\begin{equation}
+ M_N=\frac12\binom{2^N}{2^{N-1}}.
+ \label{eq:balanced-count}
+\end{equation}
+Coordinate permutations, independent complements of coordinates, and answer
+exchange preserve both \(D\) and \(Q_E\). They reduce the \(M_3=35\) partitions
+to 6 orbits and the \(M_4=6435\) partitions to 58. Orbit sizes are restored
+when reporting the counts below.
+
+\emph{Methods.} The decision-tree depth \(D\) was computed exactly by dynamic
+programming over subcubes. By Proposition~\ref{prop:oneclass}
+(Ref.~\cite{ChenYeLi2020}), \(Q_E=1\) holds exactly for dictators and two-bit
+parities. Upper bounds on \(Q_E\) come from adaptive trees whose nodes read
+either one bit or the parity of two bits, each costing one query; such trees
+are exact upper certificates but not a general characterization of exact
+quantum algorithms~\cite{MontanaroJozsaMitchison2015}. Lower bounds
+\(Q_E\ge3\) come from the two-query semidefinite program of Barnum, Saks, and
+Szegedy~\cite{BarnumSaksSzegedy2003}. We use its bounded-error form, which is
+better conditioned than an exact feasibility test. In the phase form of the
+point oracle, \(\ket i\mapsto(-1)^{b_i}\ket i\) with a null address \(i=0\) and
+\(b_0=0\), put \(D_i=\operatorname{diag}_b\bigl((-1)^{b_i}\bigr)\) (so
+\(D_0=I\)). A two-query algorithm with worst-case success \(p\) yields
+positive semidefinite \(2^N\times2^N\) matrices with
+\(\sum_iA_i=J\) (the all-ones matrix), \(\sum_iD_iA_iD_i=\sum_iB_i\),
+\(\sum_iD_iB_iD_i=\Gamma_0+\Gamma_1\), and \((\Gamma_{f(b)})_{bb}\ge p\). If
+real symmetric \(Y_1,Y_2,Y_3\) and a probability vector \(\lambda\) satisfy
+\begin{equation}
+\begin{aligned}
+ &Y_1\succeq D_iY_2D_i,\quad Y_2\succeq D_iY_3D_i\quad(i=0,\dots,N),\\
+ &Y_3\succeq\Lambda_j\quad(j=0,1),
+\end{aligned}
+ \label{eq:sdp-dual}
+\end{equation}
+with \(\Lambda_j=\operatorname{diag}_b\bigl(\lambda_b[f(b)=j]\bigr)\), then
+\begin{equation}
+\begin{aligned}
+ \mathbf 1^{\mathsf T}Y_1\mathbf 1&=\textstyle\sum_i\langle Y_1,A_i\rangle
+ \ge\langle Y_2,\textstyle\sum_iB_i\rangle
+ \ge\textstyle\sum_j\langle Y_3,\Gamma_j\rangle\\
+ &\ge\textstyle\sum_b\lambda_b(\Gamma_{f(b)})_{bb}\ge p ,
+\end{aligned}
+ \label{eq:weak-duality}
+\end{equation}
+so \(\mathbf 1^{\mathsf T}Y_1\mathbf 1<1\) proves \(Q_E\ge3\). We solved
+Eq.~\eqref{eq:sdp-dual} numerically with a barrier method, added
+\(3\varepsilon\), \(2\varepsilon\), and \(\varepsilon\) times the identity to
+\(Y_1\), \(Y_2\), and \(Y_3\) with \(\varepsilon=2^{-20}\), which raises every
+constraint matrix in Eq.~\eqref{eq:sdp-dual} by \(\varepsilon I\), rounded
+every entry to a dyadic rational with denominator \(2^{40}\), and verified all
+twelve matrix inequalities and \(\lambda\ge0\), \(\sum_b\lambda_b=1\) in exact
+integer arithmetic (positive pivots in Gaussian
+elimination). Each certificate is a list of integers, given in the
+Supplemental Material, and can be checked independently of the solver.
+
+\emph{Use of AI tools.} The census code and the Lean formalization were
+written with an OpenAI Codex assistant, and the dual-certificate solver and
+the exact verifier with Anthropic's Claude (versions are given in the
+Acknowledgments). No
+reported result rests on these tools alone: the census counts were reproduced
+by two independently written programs and agree with
+Ref.~\cite{MontanaroJozsaMitchison2015}, the Lean audits reproduce the finite
+census, and every certificate is checked by a verifier that uses only exact
+integer arithmetic and does not depend on the solver.
+
+\begin{table}[t]
+\caption{Balanced three-bit tasks up to coordinate permutations, input
+complements, and answer exchange. The orbit sizes sum to 35. Here
+\(\mathrm{Sel}(c,u,v)=u\) for \(c=0\) and \(v\) for \(c=1\). The values of
+\(Q_E\) are not new: Ref.~\cite{MontanaroJozsaMitchison2015} gives explicit
+optimal exact algorithms for every function on up to three bits.}
+\label{tab:n3}
+\begin{ruledtabular}
+\begin{tabular}{lrrr}
+Representative & Orbit & \(D\) & \(Q_E\)\\
+\hline
+\(b_1\) & 3 & 1 & 1\\
+\(b_1\mathbin\oplus b_2\) & 3 & 2 & 1\\
+\(\operatorname{Par}_3\) & 1 & 3 & 2\\
+\(\operatorname{Maj}_3\) & 4 & 3 & 2\\
+\(b_1\mathbin\oplus b_2b_3\) & 12 & 3 & 2\\
+\(\mathrm{Sel}(b_1,b_2,b_3)\) & 12 & 2 & 2\\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\begin{table*}[t]
+\caption{Balanced four-bit tasks grouped by \((D,Q_E)\). Orbits are taken up
+to coordinate permutations, input complements, and answer exchange; the
+columns sum to 58 orbits and 6435 partitions. The last column names the source
+of the lower bound on \(Q_E\): Proposition~\ref{prop:oneclass} excludes one
+query, and the rational dual certificates of Eq.~\eqref{eq:sdp-dual} exclude
+two.}
+\label{tab:n4}
+\begin{ruledtabular}
+\begin{tabular}{crrll}
+\((D,Q_E)\) & Orbits & Partitions & Representative & Lower bound\\
+\hline
+\((1,1)\) & 1 & 4 & \(b_1\) & ---\\
+\((2,1)\) & 1 & 6 & \(b_1\oplus b_2\) & ---\\
+\((2,2)\) & 1 & 48 & \(\mathrm{Sel}(b_1,b_2,b_3)\) & Prop.~\ref{prop:oneclass}\\
+\((3,2)\) & 8 & 248 & \(\operatorname{Maj}(b_1,b_2,b_3)\) & Prop.~\ref{prop:oneclass}\\
+\((4,2)\) & 4 & 89 & \(\operatorname{Par}_4\) & Prop.~\ref{prop:oneclass}\\
+\((3,3)\) & 10 & 1536 & \(\mathrm{Sel}(b_1,b_2b_3,b_2\lor b_4)\) & certificate\\
+\((4,3)\) & 33 & 4504 & \(b_1\oplus b_2\oplus b_3b_4\) & certificate\\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+
+\emph{Three bits.} For \(N=3\) the one-query class and explicit trees meet for
+every task (Table~\ref{tab:n3}). These exact values are known: Montanaro,
+Jozsa, and Mitchison give optimal exact algorithms for every three-bit
+function~\cite{MontanaroJozsaMitchison2015}, and the contribution here is only
+their organization as balanced partitions. Thus 20 of the 35 balanced tasks
+admit an exact advantage: three by a factor of two and seventeen by a factor of
+\(3/2\). The trees display the conditional structure hidden by the bare
+partition. Three-bit majority is decided by first obtaining \(b_1\oplus b_2\);
+if it is zero one reads \(b_1\), and if it is one one reads \(b_3\); this is the
+algorithm of Ref.~\cite{MontanaroJozsaMitchison2015}, Sec.~6.2. Likewise,
+\(F=b_1\oplus b_2b_3\) is decided by first reading \(b_2\), followed by \(b_1\)
+when \(b_2=0\) and by the Deutsch parity \(b_1\oplus b_3\) when \(b_2=1\).
+
+\emph{Four bits.} For \(N=4\) the one-query class and explicit two-query trees
+settle 15 orbits covering 395 partitions. For each of the remaining 43 orbit
+representatives, covering 6040 partitions, explicit trees give \(Q_E\le3\) and
+the exact rational certificates bound the optimal two-query worst-case success
+by values between 0.9001 and 0.9862, hence \(Q_E=3\). The classification of Table~\ref{tab:n4} is
+therefore exact: 4847 balanced four-bit partitions have an exact quantum
+advantage (6 by a factor of two at \((2,1)\), 89 by a factor of two at
+\((4,2)\), 248 by a factor of \(3/2\), and 4504 by a factor of \(4/3\)) and
+1588 have none. The polynomial method could not have supplied the lower bounds
+for the 43 orbits: their real degrees are 3 (2144 partitions) or 4 (3896
+partitions), so it yields only \(Q_E\ge2\).
+
+Numerical SDP values for all Boolean functions through four bits were reported
+in Ref.~\cite{MontanaroJozsaMitchison2015}, whose authors note that such values
+do not by themselves certify exactness; subsequent structural work on exact
+two-query algorithms uses that four-bit classification
+\cite{YeYangHuang2024}. We cross-validated our orbit representatives against
+the published NPN (negation--permutation--negation) identifiers of
+Ref.~\cite{MontanaroJozsaMitchison2015}. After removing dummy variables, its
+one- and two-query entries agree with all 15 representatives settled by trees,
+and for the 43 remaining representatives its optimal two-query success
+probabilities, between 0.900 and 0.986, agree with the optimal values
+0.9000--0.9861 of our dual solutions. The certificates turn that numerical
+agreement into exact lower bounds, and the 15 orbits settled by trees give
+dual optimal value one, as they must.
+
+\emph{Machine-checked companion.} The Supplemental Material includes a
+Lean~4/mathlib formalization of the exact algebraic and finite core. Three
+\texttt{native\_decide} audits reproduce the 35-task and 6435-task
+deterministic and restricted-tree censuses, including the 395 cases settled by
+trees; \texttt{native\_decide} additionally trusts Lean's compiler and native
+evaluator through an extra axiom, which \texttt{\#print axioms} reports. The
+43 dual certificates are checked by a separate exact-arithmetic verifier, not
+yet in Lean. Density-operator semantics, unrestricted query semantics, and the
+general parity lower bound remain unformalized.
+
+The contribution of the census is to organize balanced functions as unlabeled
+answer partitions, quotient only by symmetries that preserve point access, and
+attach a short exact certificate to every class. The observed proportions are
+finite-model facts, not an asymptotic speedup criterion.
+
+\section{Decohered access: Bernstein--Vazirani with an inaccessible witness}
+\label{sec:witness}
+
+For \(a,x\in\mathbb F_2^n\), let \(f_a(x)=a\cdot x \pmod2\) and
+\(O_a\ket{x,y}=\ket{x,y\oplus a\cdot x}\). With ordinary phase access, the
+corresponding character states are orthogonal, so the singleton partition is
+resolved in one query~\cite{be-va}. We now add an inaccessible address record
+while preserving every computational-basis value returned by the oracle.
+
+Choose \(S\subseteq\{1,\ldots,n\}\), \(|S|=k\), let \(x_S\) denote the
+corresponding substring, and let \(\bar S\) be the complement of \(S\).
+Consider the unitary dilation
+\begin{equation}
+ W_a^S\ket{x,y,e}
+ =\ket{x,y\oplus a\cdot x,e\oplus x_S}.
+ \label{eq:witness-unitary}
+\end{equation}
+Each call receives a fresh witness in \(\ket{0^k}\), which is discarded
+afterward. The accessible oracle is consequently the channel
+\begin{equation}
+ \Phi_a^S(\rho)=\operatorname{Tr}_E\!\left[
+ W_a^S(\rho\otimes\ket{0^k}\!\bra{0^k})(W_a^S)^\dagger
+ \right]
+ =O_a\,\Delta_S(\rho)\,O_a^\dagger ,
+ \label{eq:witness-channel}
+\end{equation}
+where \(\Delta_S(\rho)=\sum_s\Pi_s\rho\Pi_s\) dephases the address register in
+the coordinates \(S\) (\(\Pi_s\) projects onto \(x_S=s\)); the second form
+holds because copying \(x_S\) into a discarded register is dephasing, and
+\(O_a\) commutes with every \(\Pi_s\). Basis queries still return \(a\cdot x\)
+exactly, while the witness removes coherences between sectors with different
+\(x_S\), as in standard which-way interference~\cite{Englert1996} and in the
+coherence analysis of the Bernstein--Vazirani
+algorithm~\cite{NaseriEtAl2022}.
+
+\emph{Surviving partition.} Define
+\begin{equation}
+ \Pi_S=\{C_u:u\in\mathbb F_2^{n-k}\},\qquad
+ C_u=\{a:a_{\bar S}=u\}.
+ \label{eq:surviving-partition}
+\end{equation}
+For the classical comparison, let \(\mathcal O^{\mathrm{val}}=\{O_a^{\mathrm{val}}:a\in
+\mathbb F_2^n\}\) denote the value-oracle family induced by
+computational-basis preparation and readout of \(\Phi_a^S\): a query chooses
+\(x\) and returns \(a\cdot x\). For \(k<n\) and worst-case error
+\(\epsilon<1/2\), these interfaces give
+\begin{equation}
+ Q_\epsilon^{\Phi}(\Pi_S)=1,\qquad
+ R_\epsilon(\Pi_S;\mathcal O^{\mathrm{val}})=n-k.
+ \label{eq:partition-speedup}
+\end{equation}
+For the quantum part, the usual Bernstein--Vazirani input and phase kickback,
+followed by Eq.~\eqref{eq:witness-channel}, leave on the \(n\)-qubit address
+register (after factoring out the answer qubit, which stays in \(\ket-\)) the
+state
+\begin{equation}
+ \rho_a^S=2^{-n}\!\sum_{x,x':\,x_S=x'_S}
+ (-1)^{a\cdot(x\oplus x')}\ket x\!\bra{x'}.
+ \label{eq:reduced-bv}
+\end{equation}
+Character orthogonality after the final Hadamards gives, up to a fixed
+reordering of coordinates,
+\begin{equation}
+\begin{aligned}
+ H^{\otimes n}\rho_a^S H^{\otimes n}
+ &=\ket{a_{\bar S}}\!\bra{a_{\bar S}}\otimes\frac{I_S}{2^k},\\
+ \Pr(z|a)&=2^{-k}\,\mathbf 1[z_{\bar S}=a_{\bar S}].
+\end{aligned}
+ \label{eq:leaky-distribution}
+\end{equation}
+Thus one query exactly resolves \(\Pi_S\); zero queries cannot, because the
+output would be independent of the cell label. The classical upper bound uses
+the basis queries outside \(S\). For the lower bound, impose the favorable
+promise \(a_S=0\). Under the uniform distribution on \(a_{\bar S}\), fewer than
+\(n-k\) returned linear equations leave an affine solution space of positive
+dimension, so even a decoder given the complete transcript succeeds with
+probability at most \(1/2\). The same average bound holds after including the
+protocol's internal randomness, and therefore some input has success at most
+\(1/2\).
+
+\emph{Original task.} The same channel also changes the cost of the original
+singleton task, identification of \(a\).
+
+\begin{proposition}[Witness cost of identification]\label{prop:witness}
+For \(0\le k\le n\), with \(S\) known to the algorithm, the exact quantum cost
+of identifying \(a\) through \(\{\Phi_a^S\}\) is
+\(Q_E^{\Phi}(\Pi_{\rm single})=\min\{k+1,n\}\); classically,
+\(R_\epsilon(\Pi_{\rm single};\mathcal O^{\mathrm{val}})=n\) for
+\(\epsilon<1/2\).
+\end{proposition}
+
+\begin{proof}
+Upper bound: one Bernstein--Vazirani query with \(x_S=0\) returns
+\(a_{\bar S}\), and \(k\) basis queries \(x=e_i\), \(i\in S\), return
+\(a_S\); alternatively, \(n\) basis queries return \(a\). At \(k=0\) this is
+the ordinary one-query algorithm. Lower bound for \(k\ge1\): record each
+dephasing in Eq.~\eqref{eq:witness-channel} in an inaccessible environment
+register. For a record \(\vec s=(s_1,\ldots,s_T)\), \(s_t\in\mathbb F_2^k\), let
+\(\ket{\phi_a(\vec s)}\) be the conditional unnormalized output, so that
+\(\rho_a=\sum_{\vec s}\ket{\phi_a(\vec s)}\!\bra{\phi_a(\vec s)}\). Because the
+records are inaccessible, exact identification requires
+\(\braket{\phi_a(\vec s)|\phi_{a'}(\vec s')}=0\) for all \(a\neq a'\) and all
+records \(\vec s,\vec s'\). In the answer qubit's \(X\) basis, the \(t\)th query
+multiplies the component at address \((s_t,z)\) either by 1 or by
+\((-1)^{a\cdot(s_t,z)}\). Hence \(\phi_a(\vec s)\) is a linear combination of
+characters \((-1)^{a\cdot f}\) whose frequencies are \(f=0\) or
+\(f=\sum_{t\in F}(s_t,z_t)\) for nonempty subsets \(F\) of the queries.
+(i) If \(s_1,\ldots,s_T\) do not span \(\mathbb F_2^k\), choose \(h\neq0\)
+orthogonal to all \(s_t\). Every such character is then invariant under
+\(a\mapsto a+(h,0)\), so \(\phi_{a+(h,0)}(\vec s)=\phi_a(\vec s)\), and
+orthogonality forces \(\phi_a(\vec s)=0\). Hence \(T\ge k\), and only records
+whose \(s_t\) span \(\mathbb F_2^k\) contribute. (ii) Let \(T=k<n\). In every
+contributing record the \(s_t\) are linearly independent, so every frequency
+with \(F\neq\emptyset\) has a nonzero \(S\) part, and for \(u\neq0\) the sum
+\(\sum_a(-1)^{u\cdot a_{\bar S}}\phi_a(\vec s)\) vanishes. Since the
+\(\phi_a(\vec s)\) are pairwise orthogonal, the squared norm of this sum is
+\(\sum_a\lVert\phi_a(\vec s)\rVert^2\), so \(\phi_a(\vec s)=0\) for every
+contributing record, contradicting normalization. Hence \(T\ge k+1\) for
+\(k<n\). The classical bound is the singleton case of the argument above.
+\end{proof}
+
+At \(k=0\), no address coordinate is recorded and
+Eq.~\eqref{eq:leaky-distribution} is the ordinary Bernstein--Vazirani output,
+giving the \(n\)-versus-one identification gap. Each recorded address bit adds
+exactly one query until the cost reaches the classical value \(n\); from
+\(k=n-1\) on, the quantum advantage for identification is gone, although
+ordinary basis queries still recover \(a\). If the witness were coherently available, the
+fixed coupling \(\ket{x,e}\mapsto\ket{x,e\oplus x_S}\) could be undone without
+another oracle call, restoring the ordinary output. The accessible oracle here
+is a channel rather than the globally unitary dilation: as with in-place versus
+standard oracles~\cite{KashefiKentVedralBanaszek2002} and faulty
+oracles~\cite{RegevSchiff2008}, whether the oracle leaves an inaccessible
+record is part of the problem specification.
+
+\section{Discussion}
+\label{sec:discussion}
+
+All results of this paper follow one strategy, which can be stated in four
+steps; the physics enters in the middle two.
+
+\begin{itemize}
+\item
+\emph{Answer partition \(\Pi_g\)} [Eq.~\eqref{eq:task-partition}]:
+Put two hidden instances in the same cell whenever the task has the same
+correct answer for both. The cells \(C_j\) are sets of classical instances,
+not subspaces. The algorithm must learn the cell, and only the cell: in
+Deutsch's problem the four possible functions fall into two cells,
+constant and balanced, and the algorithm never has to find out which
+function within a cell it faces.
+
+\item
+\emph{Oracle access} (Secs.~\ref{sec:spectrum} and~\ref{sec:witness}):
+Fix what one oracle call does. The partition fixes the correct answers to
+the question; the access model fixes how that answer can be obtained by
+quantum state discrimination.
+
+\item
+\emph{Probe and one quantum oracle call} (Sec.~\ref{sec:criterion}):
+Choose an instance-independent probe state, for instance a uniform
+superposition obtained by ``fanning out'' a single basis state with
+Hadamard gates. One oracle call turns the probe into the output state
+\(\ket{\Psi_a}\) of the hidden instance \(a\).
+
+\item
+\emph{Orthogonality across cells} (Proposition~\ref{prop:block}):
+Ask whether some probe makes \(\braket{\Psi_a|\Psi_{a'}}=0\) whenever
+\(g(a)\ne g(a')\) [Eq.~\eqref{eq:criterion}]. A negative answer needs no
+search over the infinitely many probes: a single matrix, a dual certificate
+(Proposition~\ref{prop:dual}), proves that none works. Only orthogonal
+states can be told apart with certainty, so exactness requires
+orthogonality, but only between cells. Within a cell, states may overlap or
+even coincide: the measurement reads the cell label, not the instance, as a
+post office sorts letters by postal code without reading the street.
+\end{itemize}
+
+Two equally weighted branches of a quantum state cancel, that is, interfere
+destructively, only if one carries an extra factor \(-1\) relative to the
+other. In the examples of the Introduction, the standard flip on a qubit
+and the transposition on a qutrit both have the eigenvalue \(-1\) and
+separate constant from balanced functions in one call; the qutrit cyclic
+shift, whose eigenvalues are the cube roots of unity, cannot
+(Theorem~\ref{thm:spectrum} and Corollary~\ref{cor:completions}). With
+more than two branches, other phases can cancel, for instance
+\(1+\omega+\omega^2=0\) for \(\omega=e^{2\pi i/3}\); this is the interference
+used by the quantum Fourier transform and Shor's algorithm. Deutsch's
+problem, however, compares only two address branches, and therefore needs
+\(-1\). With more calls, the same orthogonality is required of the final states, with
+instance-independent operations between the calls (Sec.~\ref{sec:census});
+with bounded error, it is relaxed to a required success probability
+(Proposition~\ref{prop:bounded}).
+
+The separations found here need not cross the stabilizer boundary. The standard Boolean
+Deutsch and linear Bernstein--Vazirani protocols, including their XOR oracles,
+use only Clifford operations, and the witness coupling in
+Eq.~\eqref{eq:witness-unitary} is Clifford before the witness is discarded.
+They are therefore efficiently simulable when a full classical circuit
+description is supplied~\cite{GottesmanKnill,AaronsonGottesman2004}. In the
+query model, however, such a description would reveal hidden oracle data and
+is stronger than matched black-box value access. For these examples,
+nonstabilizer resources (``magic''~\cite{Veitch2014}) are not needed for a
+query advantage. General point oracles with a binary-encoded address require
+multiply controlled gates and are not Clifford, so this remark is specific to
+Deutsch and Bernstein--Vazirani.
+
+The results vary these steps one at a time. Corollary~\ref{cor:completions}
+and Proposition~\ref{prop:witness} change the access (the second step) while
+holding the task and its classical point values fixed, and the exact cost
+changes; Proposition~\ref{prop:bounded} shows what survives with bounded
+error. Theorem~\ref{thm:spectrum} and Proposition~\ref{prop:oneclass} give the
+rule for every response unitary. The sign oracle of
+Proposition~\ref{prop:sign} is a deliberately weaker interface, whose point
+values are invisible to basis queries. The census holds the point oracle fixed and varies the
+balanced task (the first step), and the cost changes again, with every class certified exactly for
+\(N\le4\). Shor's and Grover's algorithms~\cite{shor:94,grover} fit the same
+perspective: each exploits structure in the oracle family that is matched to a
+specific coherent access.
+
+Partitions are therefore indispensable as specifications but insufficient as
+complexity criteria, and so are classical point values. A quantum advantage
+occurs when structure-matched interference separates the required answer cells
+in fewer calls than any classical transcript under the same interface.
+Superlinear exact separations for total Boolean functions are
+known~\cite{Ambainis2016SuperlinearExact}, but establishing any asymptotic
+speedup requires a structured family of task--oracle pairs; percentages from a
+finite census cannot substitute for that analysis. Within the present
+framework, the parity question for the qutrit shift in Sec.~\ref{sec:spectrum}
+is a natural test of whether a response-spectrum effect persists uniformly in
+\(N\).
+
+\begin{acknowledgments}
+The author thanks Noson S. Yanofsky for discussions that motivated this
+work. Two AI assistants were used. OpenAI Codex ChatGPT
+Astra ultra
+supported structural editing, consistency checks, the implementation of the
+census code, and the Lean~4 formalization. Claude Opus~5.5 (Anthropic) was
+used in the revision to review the manuscript and the literature, to draft
+revised text---including the statements and proofs of
+Propositions~\ref{prop:dual}--\ref{prop:witness} and the new proof of
+Theorem~\ref{thm:spectrum}---and to carry out the bounded-error and
+dual-certificate computations of Secs.~\ref{sec:spectrum} and~\ref{sec:census}.
+The author directed both tools, checked the mathematical arguments, and
+verified the computations as described in Sec.~\ref{sec:census}; the author
+accepts full responsibility for the content and code. This research
+was funded in whole or in part by the Austrian Science Fund (FWF), grant
+\href{https://doi.org/10.55776/PIN5424624}{PIN5424624}. The author
+acknowledges TU Wien Bibliothek for support through its Open Access Funding
+Programme.
+\end{acknowledgments}
+
+\noindent\textit{Data and code availability.---}See Supplemental Material at
+[URL will be inserted by publisher] for the Python and Lean~4 sources, the
+proof report, the 43 rational dual certificates with an exact verifier, the
+census tables and witness files, and the cross-validation against the
+published NPN data of Ref.~\cite{MontanaroJozsaMitchison2015}.
+
+\bibliography{svozil}
+
+\end{document}
