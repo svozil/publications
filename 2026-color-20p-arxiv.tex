@@ -3,7 +3,7 @@
 % Edit this file directly; the former modular folders are retained only as provenance.
 % Companion reference numbers are embedded, so no companion AUX file is required.
 % Run the package build.py after changing labels or numbering in either manuscript.
-\documentclass[aps,pra,reprint,superscriptaddress,longbibliography,nofootinbib,floatfix,10pt]{revtex4-2}
+\documentclass[aip,jmp,reprint,onecolumn,superscriptaddress,longbibliography,nofootinbib,floatfix,10pt]{revtex4-2}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,bm,graphicx,booktabs,longtable,tikz,placeins,needspace,microtype}
 \usetikzlibrary{calc,arrows.meta}
@@ -68,11 +68,22 @@
   \definecolor{YOctx15}{HTML}{743F00}
   \definecolor{YOctx16}{HTML}{FF0035}
 \fi
+% Figure size knob: vertex disks, vertex numbers and labels scale with \CSf
+% (default 1; set per figure, e.g. \renewcommand{\CSf}{1.9}).
+% \CSf scales vertex numbers and white disks, \CSg the context rings around them,
+% \CSn the text labels; \CSg and \CSn follow \CSf unless set separately.
+\providecommand{\CSf}{1}
+\providecommand{\CSg}{\CSf}
+\providecommand{\CSn}{\CSf}
+\providecommand{\CSy}{1}% vertical stretch, used by Fig. 2(d)-(f)
+\newcommand{\CSscaledfont}[1]{\pgfmathsetmacro\CSfsz{#1*\CSf}\fontsize{\CSfsz}{\CSfsz}\selectfont}
+\newcommand{\CSnotefont}[1]{\pgfmathsetmacro\CSfsz{#1*\CSn}\fontsize{\CSfsz}{\CSfsz}\selectfont}
 \tikzset{
+  CSgrow/.style={outer sep={(\CSf-1)*0.18cm+(\CSg-1)*0.27cm}},
   YOtrace/.style={line width=1.85pt,line cap=round,line join=round},
   YOapex/.style={line width=.68pt,line cap=round,draw opacity=.65},
-  YOlabel/.style={font=\small,inner sep=1.2pt,fill=white},
-  YOnumber/.style={font=\sffamily\bfseries\fontsize{8}{8}\selectfont,inner sep=0pt},
+  YOlabel/.style={font=\CSnotefont{9},inner sep=1.2pt,fill=white,CSgrow},
+  YOnumber/.style={font=\sffamily\bfseries\CSscaledfont{8},inner sep=0pt},
 }
 \newcommand{\YOline}[4]{\draw[YOtrace,YOctx#1] (v#2)--(v#3)--(v#4);}
 \newcommand{\YOapexlink}[6]{%
@@ -88,9 +99,9 @@
 }
 \newcommand{\YOvertex}[2]{%
   \foreach \context/\radius in {#2}{%
-    \fill[YOctx\context] (v#1) circle[radius=\radius cm];%
+    \fill[YOctx\context] (v#1) circle[radius={\CSf*.18cm+\CSg*(\radius-.18)*1cm}];%
   }%
-  \fill[white] (v#1) circle[radius=.18cm];%
+  \fill[white] (v#1) circle[radius={\CSf*.18cm}];%
   \node[YOnumber] at (v#1) {#1};%
 }
 % END INLINED FILE: figures/yu-oh-styles.tex
@@ -127,9 +138,9 @@
 \tikzset{
  sg/context/.style={line width=1.15pt,line cap=round,line join=round,draw=sggray},
  sg/base/.style={line width=1.7pt,line cap=round,line join=round},
- sg/label/.style={font=\sffamily\small,text=sgink,fill=white,inner sep=1pt},
+ sg/label/.style={font=\sffamily\CSnotefont{9},text=sgink,fill=white,inner sep=1pt},
  sg/number/.style={inner sep=0pt,outer sep=0pt,text=black,
-   font=\sffamily\fontsize{8}{8}\selectfont},
+   font=\sffamily\CSscaledfont{8}},
 }
 \newcommand{\HesseFCvertex}[2]{%
   \foreach \diskcolor/\diskradius in {#2}{%
@@ -276,11 +287,11 @@
       \node[YOlabel,below=3pt] at ($(v8)+(0,-.45)$) {$z_2$};
       \node[YOlabel,right=3pt] at ($(v5)+(.40,0)$) {$z_3$};
     \else
-      \node[YOlabel,left=3pt] at ($(v4)+(-.28,-.10)$) {$y_3^+$};
+      \node[YOlabel,below=3pt] at ($(v4)+(0,-.55)$) {$y_3^+$};
       \node[YOlabel,right=3pt] at ($(v6)+(.28,.10)$) {$y_3^-$};
-      \node[YOlabel,left=3pt] at ($(v2)+(-.30,0)$) {$z_1$};
-      \node[YOlabel,right=3pt] at ($(v8)+(.30,0)$) {$z_2$};
-      \node[YOlabel,right=3pt] at ($(v5)+(.28,-.30)$) {$z_3$};
+      \node[YOlabel,above left=1pt] at ($(v2)+(-.42,.30)$) {$z_1$};
+      \node[YOlabel,below=3pt] at ($(v8)+(0,-.45)$) {$z_2$};
+      \node[YOlabel,above left=1pt] at ($(v5)+(-.30,.22)$) {$z_3$};
     \fi
     \ifnum#1=21\relax
       \node[YOlabel,above=4pt] at ($(v13)+(0,.40)$) {$h_3$};
@@ -297,8 +308,8 @@
 \tikzset{
   CSexcl/.style={draw=YOdiagonal,line width=1.6pt,densely dashed,{Latex[length=2.4mm]}-{Latex[length=2.4mm]}},
   CSident/.style={draw=YOtriad,line width=1.6pt,densely dotted,{Latex[length=2.4mm]}-{Latex[length=2.4mm]}},
-  CSnote/.style={font=\sffamily\footnotesize,fill=white,inner sep=1.5pt,rounded corners=1pt},
-  CSvec/.style={font=\scriptsize,text=black!75,inner sep=1pt},
+  CSnote/.style={font=\sffamily\CSnotefont{8},fill=white,inner sep=1.5pt,rounded corners=1pt},
+  CSvec/.style={font=\CSnotefont{7},text=black!75,inner sep=1pt,CSgrow},
 }
 
 % (a) Pentagon P_5: 3-ary purely chromatic TIFS on {6,7,9} with integer FOR in R^3
@@ -405,14 +416,14 @@
   \begin{tikzpicture}[x=1cm,y=1cm]
     \coordinate (v11) at (-4.20, 0.00);
     \coordinate (v10) at ( 4.20, 0.00);
-    \coordinate (v3)  at (-2.10, 2.60);
-    \coordinate (v1)  at (-1.05, 2.60);
+    \coordinate (v3)  at (-2.25, 2.60);
+    \coordinate (v1)  at (-1.12, 2.60);
     \coordinate (v2)  at ( 0.00, 2.60);
     \coordinate (v4)  at ( 2.10, 2.60);
     \coordinate (v7)  at (-2.10,-2.60);
     \coordinate (v8)  at ( 0.00,-2.60);
     \coordinate (v9)  at ( 2.10,-2.60);
-    \coordinate (v5)  at ( 0.00, 0.00);
+    \coordinate (v5)  at ( 0.00,-0.70);
     \coordinate (v6)  at ($(v5)!.5!(v4)$);
     \coordinate (v14) at ($(v11)!.5!(v3)$);
     \coordinate (v15) at ($(v11)!.5!(v7)$);
@@ -429,7 +440,7 @@
     \draw[YOtrace,YOctx11] (v9)--(v23)--(v10);
     \draw[YOtrace,YOctx13] (v10)--(v18)--(v4);
     \draw[YOtrace,YOctx10] (v11)--(v24)--(v4);
-    \draw[CSexcl] (v14) to[bend right=24] node[CSnote,pos=.50] {$c(14)\ne c(18)$} (v18);
+    \draw[CSexcl] (v14) to[bend right=36] node[CSnote,pos=.50] {$c(14)\ne c(18)$} (v18);
     \YOvertex{1}{1/.27}
     \YOvertex{2}{1/.36,4/.27}
     \YOvertex{3}{1/.36,8/.27}
@@ -449,7 +460,7 @@
     \node[YOlabel,left=4pt]  at ($(v11)+(-.45,0)$) {$h_1$};
     \node[YOlabel,right=4pt] at ($(v10)+(.36,0)$)  {$h_2$};
     \node[YOlabel,above=4pt] at ($(v4)+(.22,.36)$) {$y_3^+$};
-    \node[YOlabel,right=3pt] at ($(v6)+(.26,-.12)$) {$y_3^-$};
+    \node[YOlabel,right=3pt] at ($(v6)+(.26,.02)$) {$y_3^-$};
     \pgfresetboundingbox
     \path[use as bounding box] (-6.52,-5.2) rectangle (6.52,5.6);
   \end{tikzpicture}%
@@ -457,7 +468,7 @@
 
 % (d) Completed Kochen--Specker TITS H_{16,9}^{TITS}: all 9 contexts as pure straight lines on the Specker bug hexagon
 \newcommand{\CSdrawCompletedKSTITS}{%
-  \begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{tikzpicture}[x=1cm,y=\CSy cm]
     \coordinate (v11) at (-4.20, 0.00);
     \coordinate (v10) at ( 4.20, 0.00);
     \coordinate (v3)  at (-1.60, 1.55);
@@ -516,18 +527,18 @@
 
 % (e) Two-way purely chromatic TITS H_{19,11}^{TITS}: all 11 contexts as pure straight lines on the Specker bug hexagon
 \newcommand{\CSdrawPureChromTITS}{%
-  \begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{tikzpicture}[x=1cm,y=\CSy cm]
     \coordinate (v11) at (-4.20, 0.00);
     \coordinate (v10) at ( 4.20, 0.00);
-    \coordinate (v3)  at (-1.60, 1.85);
-    \coordinate (v1)  at (-0.80, 1.85);
+    \coordinate (v3)  at (-1.90, 1.85);
+    \coordinate (v1)  at (-0.95, 1.85);
     \coordinate (v2)  at ( 0.00, 1.85);
     \coordinate (v4)  at ( 1.60, 1.85);
     \coordinate (v7)  at (-2.10,-2.60);
     \coordinate (v8)  at ( 0.00,-2.60);
     \coordinate (v9)  at ( 2.10,-2.60);
-    \coordinate (v5)  at ( 0.00,-0.40);
-    \coordinate (v6)  at ($(v5)!.5!(v4)$);
+    \coordinate (v5)  at ( 0.00,-1.00);
+    \coordinate (v6)  at ($(v5)!.62!(v4)$);
     \coordinate (v14) at ($(v11)!.5!(v3)$);
     \coordinate (v15) at ($(v11)!.5!(v7)$);
     \coordinate (v18) at ($(v10)!.5!(v4)$);
@@ -549,11 +560,11 @@
     \draw[YOtrace,YOctx10] (v11)--(v24)--(v4);
     \draw[YOtrace,YOctx5]  (v14)--(v27)--(v26);
     \draw[YOtrace,YOctx16] (v18)--(v28)--(v26);
-    \draw[CSexcl]  (v14) to[bend right=24] node[CSnote,pos=.50] {$c(14)\ne c(18)$} (v18);
+    \draw[CSexcl]  (v14) to[bend right=36] node[CSnote,pos=.50] {$c(14)\ne c(18)$} (v18);
     \draw[CSident] (v14) to[bend left=16]  (v28);
     \draw[CSident] (v18) to[bend right=16] (v27);
-    \node[CSnote,anchor=east] at (-0.42, 2.62) {$18\sim_c 27$};
-    \node[CSnote,anchor=west] at ( 0.42, 2.62) {$14\sim_c 28$};
+    \node[CSnote,anchor=east] at ($(v27)+(-.62,.12)$) {$18\sim_c 27$};
+    \node[CSnote,anchor=west] at ($(v28)+(.62,.12)$) {$14\sim_c 28$};
     \YOvertex{1}{1/.27}
     \YOvertex{2}{1/.36,4/.27}
     \YOvertex{3}{1/.36,8/.27}
@@ -582,31 +593,31 @@
 
 % (f) Three-sector Yu-Oh H_{21,13}: ALL 13 contexts drawn as pure straight lines on the conventional Specker bug hexagon
 \newcommand{\CSdrawHtwentyoneTITS}{%
-  \begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{tikzpicture}[x=1cm,y=\CSy cm]
     % Conventional Specker bug hexagon (7 straight lines):
     \coordinate (v11) at (-4.40, 0.00);
     \coordinate (v10) at ( 4.40, 0.00);
     \coordinate (v3)  at (-2.10, 2.30);
     \coordinate (v2)  at ( 0.00, 2.30);
-    \coordinate (v1)  at ( 2.10, 2.30);
+    \coordinate (v1)  at ( 3.15, 2.30);
     \coordinate (v7)  at (-2.10,-2.60);
     \coordinate (v8)  at ( 0.00,-2.60);
     \coordinate (v9)  at ( 2.10,-2.60);
-    \coordinate (v5)  at ( 0.00, 0.00);
+    \coordinate (v5)  at ( 0.00,-0.50);
     \coordinate (v14) at ($(v11)!.5!(v3)$);
     \coordinate (v15) at ($(v11)!.5!(v7)$);
     \coordinate (v19) at ($(v1)!.5!(v10)$);
     \coordinate (v23) at ($(v9)!.5!(v10)$);
-    % Context {4,5,6} as a straight line through v5=(0,0), plus straight lines {11,24,4} and {10,18,4}:
-    \coordinate (v4)  at (-1.50,-0.90);
-    \coordinate (v6)  at ( 1.35, 0.81);
+    % Context {4,5,6} as a straight line through v5=(0,-0.5), plus straight lines {11,24,4} and {10,18,4}:
+    \coordinate (v4)  at (-0.90,-1.30);
+    \coordinate (v6)  at ( 1.215, 0.58);
     \coordinate (v24) at ($(v11)!.52!(v4)$);
     \coordinate (v18) at ($(v10)!.42!(v4)$);
     % Third hub v13=(0,4.85) at the top apex with 3 straight lines {13,20,1}, {13,22,6}, {13,21,7}:
     \coordinate (v13) at ( 0.00, 4.85);
-    \coordinate (v20) at ($(v13)!.45!(v1)$);
-    \coordinate (v22) at ($(v13)!.38!(v6)$);
-    \coordinate (v21) at ($(v13)!.27!(v7)$);
+    \coordinate (v20) at ($(v13)!.40!(v1)$);
+    \coordinate (v22) at ($(v13)!.40!(v6)$);
+    \coordinate (v21) at ($(v13)!.19!(v7)$);
     % All 13 contexts are pure straight lines:
     \draw[YOtrace,YOctx1]  (v3)--(v2)--(v1);
     \draw[YOtrace,YOctx2]  (v7)--(v8)--(v9);
@@ -625,11 +636,11 @@
     \draw[CSident] (v2) to[bend left=16]  node[CSnote,pos=.55,below=1pt] {$2\sim_c 14$} (v14);
     \draw[CSident] (v8) to[bend left=18]  node[CSnote,pos=.52,above=1pt] {$8\sim_c 23$} (v23);
     \draw[CSident] (v5) to[bend right=20] node[CSnote,pos=.48,right=2pt] {$5\sim_c 22$} (v22);
-    \draw[CSexcl]  (v14) to[bend right=12] node[CSnote,pos=.42,above=1pt] {$c(14)\ne c(18)$} (v18);
+    \draw[CSexcl]  (v14) to[bend left=4] node[CSnote,pos=.22,below=1pt] {$c(14)\ne c(18)$} (v18);
     \CSHtwentyonevertices
     \node[YOlabel,left=4pt]  at ($(v11)+(-.45,0)$) {$h_1$};
     \node[YOlabel,right=4pt] at ($(v10)+(.45,0)$)  {$h_2$};
-    \node[YOlabel,above=4pt] at ($(v13)+(0,.45)$)  {$h_3$};
+    \node[YOlabel,left=4pt] at ($(v13)+(-.62,0)$)  {$h_3$};
     \node[YOlabel,above=3pt] at ($(v3)+(-.20,.32)$) {$y_1^-$};
     \node[YOlabel,above=3pt] at ($(v1)+(.25,.32)$)  {$y_1^+$};
     \node[YOlabel,below=3pt] at ($(v7)+(0,-.36)$)   {$y_2^+$};
@@ -645,8 +656,8 @@
 \tikzset{
   CSexcl/.style={draw=YOdiagonal,line width=1.6pt,densely dashed,{Latex[length=2.4mm]}-{Latex[length=2.4mm]}},
   CSident/.style={draw=YOtriad,line width=1.6pt,densely dotted,{Latex[length=2.4mm]}-{Latex[length=2.4mm]}},
-  CSnote/.style={font=\sffamily\footnotesize,fill=white,inner sep=1.5pt,rounded corners=1pt},
-  CSvec/.style={font=\scriptsize,text=black!75,inner sep=1pt},
+  CSnote/.style={font=\sffamily\CSnotefont{8},fill=white,inner sep=1.5pt,rounded corners=1pt},
+  CSvec/.style={font=\CSnotefont{7},text=black!75,inner sep=1pt,CSgrow},
 }
 
 % Helper macro for continuous solid 4-vertex hyperedges extending smoothly
@@ -726,7 +737,7 @@
     \draw[YOtrace,YOctx12] (v0)--(v11)--(v12)--(v5);
     % Highlight 3-ary purely chromatic TIFS on {6,8,11}
     \draw[CSexcl,-] (v6) -- (v8) -- (v11) -- cycle;
-    \node[CSnote,text=YOdiagonal] at (1.35,-0.95) {$\neg\bigl(c(6){=}c(8){=}c(11)\bigr)$};
+    \node[CSnote,text=YOdiagonal] at (0.90,-4.15) {$\neg\bigl(c(6){=}c(8){=}c(11)\bigr)$};
     \YOvertex{0}{1/.45,10/.36,12/.27}
     \YOvertex{1}{1/.36,8/.27}
     \YOvertex{2}{1/.36,9/.27}
@@ -872,16 +883,16 @@
   \begin{tikzpicture}[x=1cm,y=1cm]
     \coordinate (v11) at (-3.65, 0.00);
     \coordinate (v10) at ( 3.65, 0.00);
-    \coordinate (v3)  at (-1.82, 2.45);
-    \coordinate (v1)  at (-0.91, 2.45);
+    \coordinate (v3)  at (-1.98, 2.45);
+    \coordinate (v1)  at (-0.99, 2.45);
     \coordinate (v2)  at ( 0.00, 2.45);
     \coordinate (v4)  at ( 1.82, 2.45);
     \coordinate (v7)  at (-1.82,-2.45);
     \coordinate (v8)  at ( 0.00,-2.45);
     \coordinate (v9)  at ( 1.82,-2.45);
-    \coordinate (v5)  at ( 0.00, 0.00);
+    \coordinate (v5)  at ( 0.00,-0.55);
     \coordinate (v0)  at ( 0.00,-4.85);
-    \coordinate (v6)  at ($(v5)!.5!(v4)$);
+    \coordinate (v6)  at ($(v5)!.55!(v4)$);
     \coordinate (v14) at ($(v11)!.5!(v3)$);
     \coordinate (v15) at ($(v11)!.5!(v7)$);
     \coordinate (v18) at ($(v10)!.5!(v4)$);
@@ -914,7 +925,7 @@
       .. controls ( 3.15, 3.05) and ( 4.85, 1.55) .. ( 4.75,-0.55)
       .. controls ( 4.65,-2.65) and ( 3.65,-4.85) .. (v0);
 
-    \draw[CSexcl] (v14) to[bend right=24] node[CSnote,pos=.50] {$c(14)\ne c(18)$} (v18);
+    \draw[CSexcl] (v14) to[bend right=36] node[CSnote,pos=.50] {$c(14)\ne c(18)$} (v18);
 
     \YOvertex{0}{1/.99,2/.90,3/.81,4/.72,8/.63,9/.54,10/.45,11/.36,13/.27}
     \YOvertex{1}{1/.27}
@@ -1052,7 +1063,7 @@ whose converse fails even when $\mathcal S(H)$ is unital and separates every pai
 
 These two regimes are governed by a shared structural mechanism. Lemma~\ref{lem:disjoint-states} ($\chi(H)=d$ if and only if $H$ admits $d-1$ pairwise disjoint states) is the global unanchored form of Theorem~\ref{thm:completion}. Likewise, the eight normalized $3$-colorings of the four base contexts of completed Yu--Oh $H_{\YO}^+$ partition into four antipodal pairs that each make one of the four diagonal neighborhoods rainbow (Theorem~\ref{m:thm:yo-criticality}): retaining all four diagonal sectors forces $\chi(H_{\YO}^+)=4$ (Regime~I), whereas retaining two or three sectors leaves four or two normalized $3$-colorings and forces two or $21$ chromatically inseparable pairs in $H_{17,10}$ and $H_{21,13}$ (Regime~II), which our exhaustive $65{,}535$-subset inventory classification (Proposition~\ref{prop:search}) proves minimal within $H_{\YO}^+$.
 
-We further connect these combinatorial and geometric layers to orthomodular event representations and quantum probability polytopes $\mathcal P_{\mathrm{ext}}(H)\subseteq\mathcal P(H)=\conv\mathcal S(H)$, where $\mathcal P_{\mathrm{ext}}(H)$ collects the probability vectors of hidden-variable models that choose a noncontextual eigenvalue assignment and one of its $d$ eigenvalues. On $H_{17,10}$, an explicit quantum ray preparation lies in $\mathcal P(H_{17,10})\setminus\mathcal P_{\mathrm{ext}}(H_{17,10})$ and requires nonextendable state weight exactly $1/9$; the preparation along the coordinate ray $z_3$ requires exactly $1/3$, the largest weight that a single chromatic identity of $H_{17,10}$ can certify (Theorem~\ref{thm:quantum}). In complex dimension three, the $37$-ray Hesse restriction $H_{37}$~\cite{svozil-2025-MYOCHS} has no injective $\R^3$ realization, pastes into a $76$-event orthomodular lattice with exact minimum state-family sizes $6$, $7$, and $18$ for vertex separation, event separation, and order determination (Theorem~\ref{h:thm:main}), and demonstrates that exact event-order determination does not guarantee classical mixtures for all Born preparations (Corollary~\ref{cor:order-probabilities}). In real dimension four, our two-plane completion lemma (Lemma~\ref{d:lem:plane-completion}) produces the canonical linear $65$-ray hypergraph $H_{65}$ completing the $17$-ray core of Haynes \emph{et al.}~\cite{haynes2010orthogonal} with $\chi=5$, $\chi_f=17/4$, and $393{,}216$ states that fail atom-order determination and collapse a ray with a plane (Theorem~\ref{d:thm:h65}). Finally, we formulate and prove the existence form of the KS ancestry hypothesis (Proposition~\ref{prop:ks-ancestry}), give an abstract transverse chromatic-to-stateless construction (Proposition~\ref{prop:transverse}), establish exact inclusions into specified KS parents (Bub's $49$-ray set~\cite{bub}, the $165$-ray MUB inventory, Peres's $24$-ray geometry, and $68$-ray extensions containing the $18$-ray parity proof $C_{18,9}$ of Cabello \emph{et al.}~\cite{cabello-96} and a copy $C_{20,11}$ of Kernaghan's $20$-ray parity proof~\cite{Kernaghan-1994}), and contrast abstract context states $\mathcal S_{\mathrm{ctx}}$ with geometric states $\mathcal S_{\mathrm{geom}}$ on the $36$-ray completion and $45$-ray vertex deletion of $C_{18,9}$. Complete vector, state, and coloring enumerations and finite verification certificates are provided in the Supplemental Material~\cite{supplement}, which includes Refs.~\cite{silva2019orthogonal,brinkmann2015snarks,schrag1988petersen}.
+We further connect these combinatorial and geometric layers to orthomodular event representations and quantum probability polytopes $\mathcal P_{\mathrm{ext}}(H)\subseteq\mathcal P(H)=\conv\mathcal S(H)$, where $\mathcal P_{\mathrm{ext}}(H)$ collects the probability vectors of hidden-variable models that choose a noncontextual eigenvalue assignment and one of its $d$ eigenvalues. On $H_{17,10}$, an explicit quantum ray preparation lies in $\mathcal P(H_{17,10})\setminus\mathcal P_{\mathrm{ext}}(H_{17,10})$ and requires nonextendable state weight exactly $1/9$; the preparation along the coordinate ray $z_3$ requires exactly $1/3$, the largest weight that a single chromatic identity of $H_{17,10}$ can certify (Theorem~\ref{thm:quantum}). In complex dimension three, the $37$-ray Hesse restriction $H_{37}$~\cite{svozil-2025-MYOCHS} has no injective $\R^3$ realization, pastes into a $76$-event orthomodular lattice with exact minimum state-family sizes $6$, $7$, and $18$ for vertex separation, event separation, and order determination (Theorem~\ref{h:thm:main}), and demonstrates that exact event-order determination does not guarantee classical mixtures for all Born preparations (Corollary~\ref{cor:order-probabilities}). In real dimension four, our two-plane completion lemma (Lemma~\ref{d:lem:plane-completion}) produces the canonical linear $65$-ray hypergraph $H_{65}$ completing the $17$-ray core of Haynes \emph{et al.}~\cite{haynes2010orthogonal} with $\chi=5$, $\chi_f=17/4$, and $393{,}216$ states that fail atom-order determination and collapse a ray with a plane (Theorem~\ref{d:thm:h65}). Finally, we formulate and prove the existence form of the KS ancestry hypothesis (Proposition~\ref{prop:ks-ancestry}), give an abstract transverse chromatic-to-stateless construction (Proposition~\ref{prop:transverse}), establish exact inclusions into specified KS parents (Bub's $49$-ray set~\cite{bub}, the $165$-ray MUB inventory, Peres's $24$-ray geometry, and $68$-ray extensions containing the $18$-ray parity proof $C_{18,9}$ of Cabello \emph{et al.}~\cite{cabello-96} and a copy $C_{20,11}$ of Kernaghan's $20$-ray parity proof~\cite{Kernaghan-1994}), and contrast abstract context states $\mathcal S_{\mathrm{ctx}}$ with geometric states $\mathcal S_{\mathrm{geom}}$ on the $36$-ray completion and $45$-ray vertex deletion of $C_{18,9}$. Complete vector, state, and coloring enumerations and finite verification certificates are provided in the supplementary material, which additionally cites Refs.~\cite{silva2019orthogonal,brinkmann2015snarks,schrag1988petersen}.
 % END INLINED FILE: sections/01-introduction.tex
 
 % BEGIN INLINED FILE: sections/02-framework.tex
@@ -1130,7 +1141,7 @@ The indicator states $s_a(v)=\mathbf 1_{\{c(v)=a\}}$ over all $c\in\Cc_d(H)$ and
 Let $H$ be chromatically complete.
 \begin{enumerate}
 \item The relation $\sim_c$ is an equivalence relation with no two equivalent vertices in a common context. The quotient $\overline H=(V/{\sim_c},\overline E)$ is $d$-uniform and chromatically separating, and pullback along $V\to V/{\sim_c}$ induces a bijection $\Cc_d(\overline H)\to\Cc_d(H)$.
-\item For $u\ne v$, adjoining one context $\{u,v,w_1,\ldots,w_{d-2}\}$ with fresh vertices $w_i$ yields chromatic number $d+1$ if and only if $u\sim_c v$, and $d$ otherwise. Consequently, the \emph{separable chromatic number}~\cite{svozil-2020-c} of any nontrivial graph satisfies $\chi_{\mathrm{sep}}\in\{\chi,\chi+1\}$.
+\item For $u\ne v$, adjoining one context $\{u,v,w_1,\ldots,w_{d-2}\}$ with fresh vertices $w_i$ yields chromatic number $d+1$ if and only if $u\sim_c v$, and $d$ otherwise. Since recoloring one vertex with a new color separates any pair, the \emph{separable chromatic number} $\chi_{\mathrm{sep}}$ of a finite graph, the least $t$ for which some set of proper colorings with at most $t$ colors separates every pair of distinct vertices~\cite{svozil-2020-c}, satisfies $\chi_{\mathrm{sep}}\in\{\chi,\chi+1\}$.
 \end{enumerate}
 \end{proposition}
 \begin{proof}
@@ -1229,7 +1240,7 @@ For any three vertices $u,v,w\in K$, pairwise adjacency gives contexts $e_1\sups
 \begin{proposition}[Logical independence of coloring and coordinatization]\label{m:prop:independence}
 For finite $3$-uniform context hypergraphs, all four combinations of chromatic completeness ($\chi(H)=3$) and injective coordinatizability in $\C^3$ occur even within the orthomodular-lattice admissible class of linear hypergraphs of Berge girth $g(H)\ge5$~\cite{greechie:71,svozil-tkadlec} with unital separating state spaces:
 \begin{enumerate}
-\item $\chi=3$, injectively realizable in $\R^3$: a single context $C_1=\{\{1,2,3\}\}$ (or $P_5,H_{17,10},H_{21,13}$);
+\item $\chi=3$, injectively realizable in $\R^3$: a single context $C_1=\{\{1,2,3\}\}$ (or $P_5$, $H_{17,10}$, $H_{21,13}$);
 \item $\chi=3$, not injectively realizable in $\C^3$: the $8$-context Petersen restriction $H_8$ (Theorem~\ref{m:thm:multipole});
 \item $\chi=4$, edge-faithfully realizable in $\R^3$: completed Yu--Oh $H_{\YO}^{+}$ (Theorem~\ref{m:thm:yo-criticality});
 \item $\chi=4$, admitting no orthogonal ray assignment in $\C^3$: Greechie's $G_{32}$ and $H_9$ (Theorem~\ref{m:thm:multipole}).
@@ -1285,7 +1296,7 @@ Thus $\ip{v_2}{v_4}=0$ or $\ip{v_{12}}{v_2}=0$. If $\ip{v_2}{v_4}=0$, set $(v_1,
 
 (2) In $H_8$, fixing $(c(1),c(2),c(3))=(0,1,2)$ leaves $16$ choices along $345,567,789,9\,10\,11$, of which $13$ fail on $11\,12\,1,4\,10\,13,6\,12\,14$, leaving $c_1,c_2,c_3$ in Table~\ref{S-tab:h8-colors}. Equal columns identify the $6$ pairs.
 
-(3) Both $H_9$ (hence $G_{32}$) and $\Gamma_0$ add the orthogonality $v_2\perp v_8$ to $H_8$, contradicting $[v_2]=[v_8]$. For minimality, deleting $\{8,2,15\}$ from $H_9$ leaves $H_8$ ($\chi=3$); deleting $\{4,10,13\}$ or $\{6,12,14\}$ is isomorphic by $D_6$ symmetry to deleting $\{8,2,15\}$; and deleting any ring context (say $\{1,2,3\}$) allows the $3$-coloring $(c(1),\ldots,c(15))=(2,1,2,0,1,0,2,0,1,2,0,1,1,2,2)$. On $\Gamma_0$, the following deletions cover all $21$ edges up to $D_6$ symmetry: $\{1,2\}$ (colored by $001020120121$), $\{2,3\}$ ($011020120121$), $\{1,3\}$ ($010120102012$), and $\{4,10\}$ ($012010201021$), each yielding a standard-basis $\R^3$ assignment $i\mapsto[e_{c(i)+1}]$. Quantitative robustness bounds $1/14400<\Delta_3<0.927496$ are proved in Supplement Sec.~S3.
+(3) Both $H_9$ (hence $G_{32}$) and $\Gamma_0$ add the orthogonality $v_2\perp v_8$ to $H_8$, contradicting $[v_2]=[v_8]$. For minimality, deleting $\{8,2,15\}$ from $H_9$ leaves $H_8$ ($\chi=3$); deleting $\{4,10,13\}$ or $\{6,12,14\}$ is isomorphic by $D_6$ symmetry to deleting $\{8,2,15\}$; and deleting any ring context (say $\{1,2,3\}$) allows the $3$-coloring $(c(1),\ldots,c(15))=(2,1,2,0,1,0,2,0,1,2,0,1,1,2,2)$. On $\Gamma_0$, the following deletions cover all $21$ edges up to $D_6$ symmetry: $\{1,2\}$ (colored by $001020120121$), $\{2,3\}$ ($011020120121$), $\{1,3\}$ ($010120102012$), and $\{4,10\}$ ($012010201021$), each yielding a standard-basis $\R^3$ assignment $i\mapsto[e_{c(i)+1}]$. Quantitative robustness bounds $1/14400<\Delta_3<0.927496$ are proved in Sec.~S3 of the supplementary material.
 \end{proof}
 
 The complete normalized coloring lists for $H_8$ and $H_{17,10}$ are in the supplement.
@@ -1332,7 +1343,11 @@ Each antipodal pair of $(b_1,b_2,b_3)$ makes the neighborhood $N(h_j)$ of \emph{
 \end{enumerate}
 \end{theorem}
 \begin{proof}
-Direct check of Eqs.~\eqref{m:eq:yo-base-colorings}--\eqref{m:eq:yo-antipodal-pairs} shows that every base $3$-coloring blocks one $h_j$, so $\chi(H_{\YO}^{+})\ge4$, matched by the four-coloring $(c(1),\ldots,c(25))=(2,0,1,1,2,0,2,1,0,3,0,2,1,2,1,1,1,0,0,0,0,2,1,2,0)$, in which only $h_2=10$ receives the fourth color. Deleting a sector context $\{x,h_j,w\}$ frees $h_j$ in its antipodal base colorings by setting $c(h_j)=c(x)$; deleting $\{2,8,5\}$ allows $c(2)=c(8)=c(5)=0$; deleting $\{1,2,3\}$ allows $(c(1),c(2),c(3))=(0,0,1)$, $(c(7),c(8),c(9))=(2,1,0)$, $(c(4),c(5),c(6))=(1,2,0)$, and $(c(10),c(11),c(12),c(13))=(2,0,2,1)$; the cases $\{7,8,9\}$ and $\{4,5,6\}$ follow by the threefold cyclic coordinate symmetry of the Yu--Oh set. For $\chi_f$, weight $1/2$ on the $6$ states of $G_{32}$ gives $\chi_f(G_{32})=3$, while Proposition~\ref{prop:completion} preserves the $13$-ray value $\chi_f=35/11$~\cite{cabello2015sic}.
+Direct check of Eqs.~\eqref{m:eq:yo-base-colorings}--\eqref{m:eq:yo-antipodal-pairs} shows that every base $3$-coloring blocks one $h_j$, so $\chi(H_{\YO}^{+})\ge4$, matched by the four-coloring
+\[
+(c(1),\ldots,c(25))=(2,0,1,1,2,0,2,1,0,3,0,2,1,2,1,1,1,0,0,0,0,2,1,2,0),
+\]
+in which only $h_2=10$ receives the fourth color. Deleting a sector context $\{x,h_j,w\}$ frees $h_j$ in its antipodal base colorings by setting $c(h_j)=c(x)$; deleting $\{2,8,5\}$ allows $c(2)=c(8)=c(5)=0$; deleting $\{1,2,3\}$ allows $(c(1),c(2),c(3))=(0,0,1)$, $(c(7),c(8),c(9))=(2,1,0)$, $(c(4),c(5),c(6))=(1,2,0)$, and $(c(10),c(11),c(12),c(13))=(2,0,2,1)$; the cases $\{7,8,9\}$ and $\{4,5,6\}$ follow by the threefold cyclic coordinate symmetry of the Yu--Oh set. For $\chi_f$, weight $1/2$ on the $6$ states of $G_{32}$ gives $\chi_f(G_{32})=3$, while Proposition~\ref{prop:completion} preserves the $13$-ray value $\chi_f=35/11$~\cite{cabello2015sic}.
 \end{proof}
 % END INLINED FILE: sections/03-independence-petersen.tex
 
@@ -1345,8 +1360,8 @@ From now on we assume that noncontextual assignments of $d$ eigenvalues exist ($
 
 Three historical Kochen--Specker constructions clarify the hierarchy of logical gadgets:
 \begin{enumerate}
-\item \emph{1965 abstract TIFS precursor:} Identifying repeated labels $v_1$ and $v_2$ in Kochen and Specker's 1965 Fig.~1~\cite[p.~182]{kochen2} yields an $11$-vertex, $7$-context hypergraph $\{134,325,2\,9\,11,11\,1\,10,479,5\,8\,10,678\}$ implementing $s(1)=1\implies s(2)=0$. It has only four states ($\{1,5,6,9\}$, $\{2,4,6,10\}$, $\{3,6,9,10\}$, $\{4,5,6,11\}$), all with $s(6)=1$ and $s(7)=s(8)=0$, so $\chi>3$; moreover, $1$ and $9$ are both orthogonal to $4$ and $11$, forcing $[v_1]=[v_9]$ in $\C^3$ (Supplement Sec.~S3).
-\item \emph{1967 directed TITS $\Gamma_1$:} The $10$-vertex graph $\Gamma_1$ of Lemma~1 in Ref.~\cite[pp.~68, 70]{kochen1} implements the one-way implication $s(a_0)=1\implies s(a_9)=1$. Completing its six uncompleted edges by fresh rays $23,19,18,15,14,5$ yields the $16$-ray, $9$-context configuration $I_{16,9}$ in Fig.~\ref{fig:3dgadgets}(d) (explicit label map in Supplement Sec.~S3).
+\item \emph{1965 abstract TIFS precursor:} Identifying repeated labels $v_1$ and $v_2$ in Kochen and Specker's 1965 Fig.~1~\cite[p.~182]{kochen2} yields an $11$-vertex, $7$-context hypergraph $\{134,325,2\,9\,11,11\,1\,10,479,5\,8\,10,678\}$ implementing $s(1)=1\implies s(2)=0$. It has only four states ($\{1,5,6,9\}$, $\{2,4,6,10\}$, $\{3,6,9,10\}$, $\{4,5,6,11\}$), all with $s(6)=1$ and $s(7)=s(8)=0$, so $\chi>3$; moreover, $1$ and $9$ are both orthogonal to $4$ and $11$, forcing $[v_1]=[v_9]$ in $\C^3$ (Sec.~S3 of the supplementary material).
+\item \emph{1967 directed TITS $\Gamma_1$:} The $10$-vertex graph $\Gamma_1$ of Lemma~1 in Ref.~\cite[pp.~68, 70]{kochen1} implements the one-way implication $s(a_0)=1\implies s(a_9)=1$. Completing its six uncompleted edges by fresh rays $23,19,18,15,14,5$ yields the $16$-ray, $9$-context configuration $I_{16,9}$ in Fig.~\ref{fig:3dgadgets}(d) (explicit label map in Sec.~S3 of the supplementary material).
 \item \emph{1967 state-inseparable $\Gamma_3$:} In Ref.~\cite[p.~70]{kochen1}, $\Gamma_3$ forces $s(a)=s(b)$ in \emph{every} two-valued state ($a,b$ are nonseparated by $\Sc(H)$). By contrast, our chromatically inseparable examples below have $\Sc(H)$ separating all vertices, with $c(u)=c(v)$ forced only on $\Sc_{\mathrm{ext}}(H)$.
 \end{enumerate}
 
@@ -1367,6 +1382,7 @@ The base-coloring partition of $H_{\YO}^{+}$ in Theorem~\ref{m:thm:yo-criticalit
 
 \begin{figure*}[t]
 \centering
+\renewcommand{\CSf}{1.35}\renewcommand{\CSg}{1.2}\renewcommand{\CSn}{1.5}% figure size knob
 \begin{minipage}[t]{.48\linewidth}\centering
 \textbf{(a)} $H_{17,10}$ ($17$ rays, $10$ contexts, $2$ inseparable pairs)\\[1mm]
 \resizebox{\linewidth}{!}{\CSdrawcontextdiagram{17}}
@@ -1401,7 +1417,7 @@ each with a false converse. This classification exhausts all $21$ pairs; no dist
 \end{enumerate}
 \end{theorem}
 \begin{proof}
-By Theorem~\ref{m:thm:yo-criticality}(1), among the $8$ base colorings in Eq.~\eqref{m:eq:yo-base-colorings}, sector $11$ excludes $(1,1,0)$, $(0,0,1)$ and sector $10$ excludes $(0,0,0)$, $(1,1,1)$. The $4$ surviving $(b_1,b_2,b_3)$ extend uniquely to $H_{17,10}$ (Table~\ref{S-tab:h17-colors}): in each, $N(10)=\{1,9,4\}$ and $N(11)=\{3,7,4\}$ are $2$-colored with $c(10)\ne c(4)$ and $c(11)\ne c(4)$, forcing $c(24)=c(10)$ in $\{4,11,24\}$ and $c(18)=c(11)$ in $\{4,10,18\}$. Adding sector $13$ in $H_{21,13}$ additionally excludes $(0,1,1)$, $(1,0,0)$, leaving only $(1,0,1)$ and $(0,1,0)$, whose column signatures are listed in Table~\ref{S-tab:chromatic-signatures}. Each retained diagonal adds $3$ states to the $12$ base states, giving $12+2\times3=18$ and $12+3\times3=21$ states (Supplement Sec.~S2). Testing both directed truth patterns on these $21$ states gives the exhaustive $15$-versus-$6$ classification; Supplemental Table~\ref{S-tab:pure-witnesses} supplies witnesses for all $15$ two-way pairs, together with a reproducible enumeration procedure.
+By Theorem~\ref{m:thm:yo-criticality}(1), among the $8$ base colorings in Eq.~\eqref{m:eq:yo-base-colorings}, sector $11$ excludes $(1,1,0)$, $(0,0,1)$ and sector $10$ excludes $(0,0,0)$, $(1,1,1)$. The $4$ surviving $(b_1,b_2,b_3)$ extend uniquely to $H_{17,10}$ (Table~\ref{S-tab:h17-colors}): in each, $N(10)=\{1,9,4\}$ and $N(11)=\{3,7,4\}$ are $2$-colored with $c(10)\ne c(4)$ and $c(11)\ne c(4)$, forcing $c(24)=c(10)$ in $\{4,11,24\}$ and $c(18)=c(11)$ in $\{4,10,18\}$. Adding sector $13$ in $H_{21,13}$ additionally excludes $(0,1,1)$, $(1,0,0)$, leaving only $(1,0,1)$ and $(0,1,0)$, whose column signatures are listed in Table~\ref{S-tab:chromatic-signatures}. Each retained diagonal adds $3$ states to the $12$ base states, giving $12+2\times3=18$ and $12+3\times3=21$ states (Sec.~S2 of the supplementary material). Testing both directed truth patterns on these $21$ states gives the exhaustive $15$-versus-$6$ classification; Table~\ref{S-tab:pure-witnesses} of the supplementary material supplies witnesses for all $15$ two-way pairs, together with a reproducible enumeration procedure.
 \end{proof}
 
 The full chromatic signatures and both-direction truth witnesses are in the supplement. The witnesses are generated from the complete state families and checked against every context.
@@ -1419,6 +1435,7 @@ The ten retained-sector cases and binary search masks are enumerated in the supp
 
 \begin{figure*}[t]
 \centering
+\renewcommand{\CSf}{1.75}\renewcommand{\CSg}{1.15}\renewcommand{\CSn}{1.8}% figure size knob
 \begin{minipage}[t]{.32\linewidth}\centering
 \textbf{(a)} $P_5$ ($10$ rays, $5$ contexts)\\[1mm]
 \resizebox{\linewidth}{!}{\CSdrawPfive}
@@ -1432,6 +1449,7 @@ The ten retained-sector cases and binary search masks are enumerated in the supp
 \resizebox{\linewidth}{!}{\CSdrawPureChromTIFS}
 \end{minipage}
 \par\vspace{2mm}
+\renewcommand{\CSy}{1.3}% vertical stretch of panels (d)-(f)
 \begin{minipage}[t]{.32\linewidth}\centering
 \textbf{(d)} $I_{16,9}$ ($16$ rays, $9$ contexts)\\[1mm]
 \resizebox{\linewidth}{!}{\CSdrawCompletedKSTITS}
@@ -1449,7 +1467,7 @@ The ten retained-sector cases and binary search masks are enumerated in the supp
 
 \subsection{Faithful three-dimensional TIFS, TITS, and purely chromatic gadgets}\label{sec:3dgadgets}
 
-Figure~\ref{fig:3dgadgets} and Table~\ref{tab:gadget-summary-combined} synthesize our faithful real $3$-dimensional gadgets (coordinates and state/coloring tables in Supplement Secs.~S1--S2):
+Figure~\ref{fig:3dgadgets} and Table~\ref{tab:gadget-summary-combined} synthesize our faithful real $3$-dimensional gadgets (coordinates and state/coloring tables in Secs.~S1--S2 of the supplementary material):
 \begin{itemize}
 \item \emph{Pentagon $P_5$ [Fig.~\ref{fig:3dgadgets}(a)]:} Contexts $\{1,6,2\}$, $\{2,7,3\}$, $\{3,8,4\}$, $\{4,9,5\}$, $\{5,10,1\}$ have $5$ normalized $3$-colorings, $11$ states, and $10$ extendable states, separating all vertex pairs (showing that chromatic separation does not require $\Sc_{\mathrm{ext}}=\Sc$). Its degree-one vertices obey the purely chromatic ternary exclusion $\neg(c(6)=c(7)=c(9))$: assigning color $0$ to $6,7,9$ forces $1,2,3,4,5$ into $\{1,2\}$ with $c(1)=c(3)$ and $c(4)=c(5)$, contradicting $\{4,9,5\}$, whereas the nonextendable state $\{6,7,8,9,10\}$ (whose complement is the $5$-cycle $12345$) assigns $1$ to all three terminals.
 \item \emph{Specker bug $B_{13,7}$ and completed $\Gamma_1$ $I_{16,9}$ [Fig.~\ref{fig:3dgadgets}(b),(d)]:} $B_{13,7}$ is an ordinary and chromatic TIFS ($c(10)\ne c(11)$, overlap $1/9$). Adjoining $\{4,11,24\}$ and $\{4,10,18\}$ gives $I_{16,9}$ (deleting $\{4,5,6\}$ from $H_{17,10}$ with refitted faithful coordinates), where $c(10)\ne c(11)$ forces $c(4)$ to be the third color, so $c(24)=c(10)$ and $c(18)=c(11)$ via the one-way ordinary TITS $s(10)=1\implies s(24)=1$ (overlap $25/27$).
@@ -1492,6 +1510,7 @@ $L_{22,9}^{(4)}$ & 4 & 22/9 & 216 & 158 & 92 & Linear identity $11\sim_c20$ from
 
 \begin{figure*}[t]
 \centering
+\renewcommand{\CSf}{1.75}\renewcommand{\CSg}{1.15}\renewcommand{\CSn}{1.8}% figure size knob
 \begin{minipage}[t]{.32\linewidth}\centering
 \textbf{(a)} $W_{11,5}^{(4)}$ ($11/5$)\\[1mm]
 \resizebox{\linewidth}{!}{\CSdrawWfiveFour}
@@ -1723,7 +1742,7 @@ To exclude any injective representation in $\R^3$, suppose unit $z\in\R^3$ and r
 \text{Two equal entries} & 18 & (1,1) & 3\times 2=6
 \end{array}
 \end{equation}
-and hence $|\Sc(H_{37})|=3\cdot5+3\cdot8+3\cdot2+18\cdot6=153$. Since $2^5-1=31<37$ and $2^6=64<76$, the explicit families $\Omega_6$ and $\Omega_7$ given in the supplement prove the minima $6$ and $7$. For order determination ($a_i\le a_j^\perp\iff i\sim j$), the $15$ nonorthogonal pairs in $D=\{P_0,P_1,P_2,Q_0,Q_1,Q_2\}$ require $15$ disjoint joint-one witnesses in $T\subset\Sc(H_{37})$ ($|T|=27$), and the $9$ pairs $\{z,C_{ak}\}$ require at least $2$ states outside $T$. Exhaustive bit-set verification over all $4{,}096\times 132=540{,}672$ candidate $17$-state families shows each meets at most $75$ of the $81$ minimal witness sets $W_{xy}$, whereas the $18$-state family $\Omega_{18}$ in the supplement meets all $81$ (Supplement Sec.~S3).
+and hence $|\Sc(H_{37})|=3\cdot5+3\cdot8+3\cdot2+18\cdot6=153$. Since $2^5-1=31<37$ and $2^6=64<76$, the explicit families $\Omega_6$ and $\Omega_7$ given in the supplement prove the minima $6$ and $7$. For order determination ($a_i\le a_j^\perp\iff i\sim j$), the $15$ nonorthogonal pairs in $D=\{P_0,P_1,P_2,Q_0,Q_1,Q_2\}$ require $15$ disjoint joint-one witnesses in $T\subset\Sc(H_{37})$ ($|T|=27$), and the $9$ pairs $\{z,C_{ak}\}$ require at least $2$ states outside $T$. Exhaustive bit-set verification over all $4{,}096\times 132=540{,}672$ candidate $17$-state families shows each meets at most $75$ of the $81$ minimal witness sets $W_{xy}$, whereas the $18$-state family $\Omega_{18}$ in the supplement meets all $81$ (Sec.~S3 of the supplementary material).
 \end{proof}
 
 Theorem~\ref{h:thm:main}(2) is not the first finite separation of complex from real three-dimensional orthogonality: Harding and Salinas Schmeis~\cite[Thm.~2.6]{harding2025remarksIJTP} construct, from mutually unbiased bases, a two-gadget configuration that is realizable in $\C^3$ but not in $\R^3$ ($48$ rays, $32$ bases, $189$ context states, and $180$ geometric states). $H_{37}$ is smaller, linear of Berge girth five, and edge-faithful in $\C^3$, and its real obstruction already resides in the $13$-ray subgraph on $z,P_k,M_{ak}$.
@@ -1738,6 +1757,7 @@ Appending a single apex $v_{26}=(0,0,0,1)^T\in\R^4$ to $H_{\YO}^{+}$ gives the $
 
 \begin{figure*}[t]
 \centering
+\renewcommand{\CSf}{1.2}\renewcommand{\CSg}{1.1}\renewcommand{\CSn}{1.25}% figure size knob
 \resizebox{.68\linewidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
 \def\YOR{5.4}
@@ -1773,10 +1793,10 @@ Appending a single apex $v_{26}=(0,0,0,1)^T\in\R^4$ to $H_{\YO}^{+}$ gives the $
 \foreach \angle/\symbol in {90/{z_1},210/{z_2},330/{z_3}}{\node[YOlabel] at (\angle:{\YObasisR-.58}) {$\symbol$};}
 \node[YOlabel] at (.16,.62) {$h_0$};
 \draw[draw=black!20,rounded corners=5pt] (6.35,1.50) rectangle (9.75,5.10);
-\node[font=\sffamily\small] at (8.05,4.72) {Four-dimensional lift};
+\node[font=\sffamily\CSscaledfont{9}] at (8.05,4.72) {Four-dimensional lift};
 \foreach \context/\radius in {16/.88,15/.84,14/.80,13/.76,12/.72,11/.68,10/.64,9/.60,8/.56,7/.52,6/.48,5/.44,4/.40,3/.36,2/.32,1/.28}{\fill[YOctx\context] (v26) circle[radius=\radius cm];}
-\fill[white] (v26) circle[radius=.22cm];\node[YOnumber] at (v26) {26};
-\node[font=\small] at (8.05,2.28) {common apex};\node[font=\small] at (8.05,1.80) {$e_m^{(4)}=e_m\cup\{26\}$};
+\fill[white] (v26) circle[radius={\CSf*.22cm}];\node[YOnumber] at (v26) {26};
+\node[font=\CSscaledfont{9}] at (8.05,2.28) {common apex};\node[font=\CSscaledfont{9}] at (8.05,1.80) {$e_m^{(4)}=e_m\cup\{26\}$};
 \pgfresetboundingbox\path[use as bounding box] (-6.58,-7.12) rectangle (10.08,6.48);
 \end{tikzpicture}}
 \caption{The completed $25$-ray, $16$-context Yu--Oh hypergraph $H_{\YO}^{+}$ in $\R^3$ ($\omega=3,\chi=4$) and its non-linear $26$-ray, $16$-context apex suspension $H_{\YO}^{(4)}$ in $\R^4$ ($\omega=4,\chi=5,g=2$) obtained by adjoining the common orthogonal apex $v_{26}=(0,0,0,1)^T$ to every context.}\label{d:fig:hyo4}
@@ -1809,10 +1829,11 @@ If $v_z\in L_m$ then $P_m\subset v_z^\perp$, and if $P_\ell=L_m$ then $P_\ell\pe
 
 % Styles for H65 diagram
 \definecolor{ucA25}{HTML}{AA005F}\definecolor{ucA26}{HTML}{AA15FF}\definecolor{ucA27}{HTML}{35AAC9}\definecolor{ucA28}{HTML}{7F3F55}\definecolor{ucA29}{HTML}{0035E9}
-\providecommand{\FCvertex}[2]{\foreach \diskcolor/\diskradius in {#2}{\fill[\diskcolor] (v#1) circle[radius=\diskradius cm];}\fill[white] (v#1) circle[radius=.160cm];\node[sg/number] at (v#1) {#1};}
+\providecommand{\FCvertex}[2]{\foreach \diskcolor/\diskradius in {#2}{\fill[\diskcolor] (v#1) circle[radius={\CSf*.16cm+\CSg*(\diskradius-.16)*1cm}];}\fill[white] (v#1) circle[radius={\CSf*.160cm}];\node[sg/number] at (v#1) {#1};}
 
 \begin{figure*}[t]
 \centering
+\renewcommand{\CSf}{1.15}\renewcommand{\CSg}{1.05}\renewcommand{\CSn}{1.25}% figure size knob
 \resizebox{.86\linewidth}{!}{%
 \begin{tikzpicture}[x=1cm,y=1cm]
 \coordinate (v1) at (-2,-2);\coordinate (v2) at (-5,5);\coordinate (v3) at (5,-5);\coordinate (v4) at (2,2);
@@ -1859,7 +1880,7 @@ T=\frac12\begin{pmatrix}
 1&1&1&-1\\1&1&-1&1\\1&-1&1&1\\1&-1&-1&-1
 \end{pmatrix},\qquad T^TT=I_4.
 \end{equation}
-The core consists of the coordinate basis $C_1$, an even-parity Hadamard basis $C_2$, three odd-parity hub rays $9,10,11$, and the three binary bridge pairs $B_1=\{12,13\}$, $B_2=\{14,15\}$, $B_3=\{16,17\}$. The remaining base contexts are $C_3=\{9,10,12,13\}$, $C_4=\{9,11,14,15\}$ and $C_5=\{10,11,16,17\}$. Complete coordinates and all compatible supports are in Supplemental Tables~\ref{S-d:tab:app-h65-vectors}--\ref{S-d:tab:app-h65-contexts} and~\ref{S-d:tab:app-h65-state-branches}. Completing its $24$ uncovered bridge edges $e_m\in(C_1\cup C_2)\times(B_1\cup B_2\cup B_3)$ by fresh integer pairs $\{2m+16,2m+17\}\subset\{18,\ldots,65\}$ via Lemma~\ref{d:lem:plane-completion} yields $H_{65}=(V_{65},E_{29})$ (Fig.~\ref{d:fig:h65-hypergraph}; Supplemental Tables~\ref{S-d:tab:app-h65-vectors}--\ref{S-d:tab:app-h65-contexts}):
+The core consists of the coordinate basis $C_1$, an even-parity Hadamard basis $C_2$, three odd-parity hub rays $9,10,11$, and the three binary bridge pairs $B_1=\{12,13\}$, $B_2=\{14,15\}$, $B_3=\{16,17\}$. The remaining base contexts are $C_3=\{9,10,12,13\}$, $C_4=\{9,11,14,15\}$ and $C_5=\{10,11,16,17\}$. Complete coordinates and all compatible supports are in Tables~\ref{S-d:tab:app-h65-vectors}--\ref{S-d:tab:app-h65-contexts} and~\ref{S-d:tab:app-h65-state-branches} of the supplementary material. Completing its $24$ uncovered bridge edges $e_m\in(C_1\cup C_2)\times(B_1\cup B_2\cup B_3)$ by fresh integer pairs $\{2m+16,2m+17\}\subset\{18,\ldots,65\}$ via Lemma~\ref{d:lem:plane-completion} yields $H_{65}=(V_{65},E_{29})$ (Fig.~\ref{d:fig:h65-hypergraph}; Tables~\ref{S-d:tab:app-h65-vectors}--\ref{S-d:tab:app-h65-contexts} of the supplementary material):
 \begin{equation}\label{d:eq:h65-contexts}
 \begin{aligned}
 E_{29}&=\{C_1,\ldots,C_5\}\cup\{E_m:1\le m\le24\},\\
@@ -1920,7 +1941,7 @@ Every $s\in\Sc_{\mathrm{ext}}(H)$ satisfies $s(u)-s(v)=0$, while every $s\notin\
 \end{proof}
 
 \begin{theorem}[Quantum preparations in $\mathcal P(H_{17,10})\setminus\mathcal P_{\mathrm{ext}}(H_{17,10})$]\label{thm:quantum}
-In the real FOR of $H_{17,10}$ (Supplemental Table~\ref{S-tab:vectors}):
+In the real FOR of $H_{17,10}$ (Table~\ref{S-tab:vectors} of the supplementary material):
 \begin{enumerate}
 \item The pure quantum preparation along $r_{24}=(1,-1,2)^T$,
 \begin{equation}\label{eq:rho}
@@ -1929,7 +1950,7 @@ In the real FOR of $H_{17,10}$ (Supplemental Table~\ref{S-tab:vectors}):
 p_i&=\Tr(\rho_\star P_i)=\frac{(r_{24}\cdot r_i)^2}{6\|r_i\|^2},
 \end{aligned}
 \end{equation}
-belongs to $\mathcal P(H_{17,10})$ via the exact five-state convex combination (state indices in Supplemental Table~\ref{S-tab:h17-states}; see also Tables~\ref{S-tab:quantum}--\ref{S-tab:quantum-probabilities})
+belongs to $\mathcal P(H_{17,10})$ via the exact five-state convex combination (state indices in Table~\ref{S-tab:h17-states} of the supplementary material; see also Tables~\ref{S-tab:quantum}--\ref{S-tab:quantum-probabilities})
 \begin{equation}\label{eq:mixture}
 p=\frac{1}{12}s_4+\frac{5}{36}s_9+\frac{1}{36}s_{10}+\frac{7}{12}s_{14}+\frac{1}{6}s_{17},
 \end{equation}
@@ -2019,15 +2040,15 @@ For any finite $d$-uniform hypergraph $H=(V,E)$ ($d\ge3$), let $T(H)$ take $d-1$
 A state $s\in\Sc(T(H))$ restricts to $d-1$ states on $H^{(k)}$ that are pairwise disjoint by $T_v$ (forcing $s(w_v)=1-\sum_{k=1}^{d-1}s(v^{(k)})$), which by Lemma~\ref{lem:disjoint-states} is equivalent to a strong $d$-coloring of $H$.
 \end{proof}
 
-In dimension $d=3$, any edge $u\sim v$ of $H$ creates a Berge $4$-loop $(u^{(1)},v^{(1)},u^{(2)},v^{(2)})$ in $T(H)$, excluding an injective realization in $\C^3$ by the common orthogonal-complement argument; thus $T(H)$ is an abstract construction. For $H_9$, $T(H_9)$ ($45$ vertices, $33$ contexts) is context-critical for statelessness on all $33$ contexts; for $H_{\YO}^{+}$, $T(H_{\YO}^{+})$ ($75$ vertices, $57$ contexts) is critical on all $32$ horizontal contexts and $12$ transverse contexts $v\in\{14,\ldots,25\}$, but remains stateless upon deleting $T_v$ for $v\in\{1,\ldots,13\}$ (Supplement Sec.~S3).
+In dimension $d=3$, any edge $u\sim v$ of $H$ creates a Berge $4$-loop $(u^{(1)},v^{(1)},u^{(2)},v^{(2)})$ in $T(H)$, excluding an injective realization in $\C^3$ by the common orthogonal-complement argument; thus $T(H)$ is an abstract construction. For $H_9$, $T(H_9)$ ($45$ vertices, $33$ contexts) is context-critical for statelessness on all $33$ contexts; for $H_{\YO}^{+}$, $T(H_{\YO}^{+})$ ($75$ vertices, $57$ contexts) is critical on all $32$ horizontal contexts and $12$ transverse contexts $v\in\{14,\ldots,25\}$, but remains stateless upon deleting $T_v$ for $v\in\{1,\ldots,13\}$ (Sec.~S3 of the supplementary material).
 
 \subsection{Explicit inclusions in known KS parents and Cabello completions}\label{h:sec:comparison}
 
-Beyond unrestricted existence, the following explicit unions use known KS components; the unions are not asserted to be previously named, smallest, or critical parents (explicit coordinate dictionaries and certificates in Supplement Secs.~S1--S3):
+Beyond unrestricted existence, the following explicit unions use known KS components; the unions are not asserted to be previously named, smallest, or critical parents (explicit coordinate dictionaries and certificates in Secs.~S1--S3 of the supplementary material):
 \begin{enumerate}
 \item \emph{Bub's $49$-ray context-critical real parent of $H_{\YO}^{+}$:}
 \begin{proposition}[Context-critical real parent of $H_{\YO}^{+}$]\label{prop:yo-real-parent}
-Adjoining to $H_{\YO}^{+}$ the eight rays $(0,1,\pm2)$, $(0,2,\pm1)$, $(1,\pm2,0)$, $(2,\pm1,0)$ yields $33$ rays with $20$ bases and $16$ uncovered orthogonal pairs that eliminate all $24$ states of $H_{\YO}^{+}$. Completing those $16$ pairs yields the $49$-ray, $36$-context full-context Sch\"utte--Bub KS configuration~\cite{bub,Pavicic-2005}, containing $H_{\YO}^{+}$ as an induced restriction, in which \emph{every} one of the $36$ contexts is critical for $\Sc_{\mathrm{ctx}}=\varnothing$ (Supplemental Table~\ref{S-tab:parent-criticality}). If the orthogonalities of a deleted context are retained as geometric exclusions, only the $20$ bases of the $33$-ray stage remain critical; deleting any of the $16$ completion contexts leaves $\Sc_{\mathrm{geom}}=\varnothing$.
+Adjoining to $H_{\YO}^{+}$ the eight rays $(0,1,\pm2)$, $(0,2,\pm1)$, $(1,\pm2,0)$, $(2,\pm1,0)$ yields $33$ rays with $20$ bases and $16$ uncovered orthogonal pairs that eliminate all $24$ states of $H_{\YO}^{+}$. Completing those $16$ pairs yields the $49$-ray, $36$-context full-context Sch\"utte--Bub KS configuration~\cite{bub,Pavicic-2005}, containing $H_{\YO}^{+}$ as an induced restriction, in which \emph{every} one of the $36$ contexts is critical for $\Sc_{\mathrm{ctx}}=\varnothing$ (Table~\ref{S-tab:parent-criticality} of the supplementary material). If the orthogonalities of a deleted context are retained as geometric exclusions, only the $20$ bases of the $33$-ray stage remain critical; deleting any of the $16$ completion contexts leaves $\Sc_{\mathrm{geom}}=\varnothing$.
 \end{proposition}
 \item \emph{MUB-inventory parents of $H_{37}$:} In the $165$-ray, $130$-context MUB inventory~\cite{svozil-2025-MYOCHS} formed by three $69$-ray, $50$-context KS lineages $L_0,L_1,L_2$ (where each $L_a$ completes the $36$ uncovered pairs of Cabello's $33$-ray, $14$-basis KS set~\cite{Cabello2025}; Pavi\v{c}i\'c~\cite{Pavicic-2025-simplest} points out that this $33$-ray set already occurs as a subset of a $69$-ray, $50$-basis set in Ref.~\cite{Pavicic_2023}), $H_{37}$ embeds as an induced restriction via the seed-index matrix $j(a,k)=\bigl(\begin{smallmatrix}1&2&3\\4&5&6\\7&9&8\end{smallmatrix}\bigr)$ mapping $z\leftrightarrow a_{1,1}$, $M_{ak}\leftrightarrow u_{j(a,k)}$, $P_k\leftrightarrow c_{1,k+1}$, $Q_k\leftrightarrow c_{2,k+1}$, $A_k\leftrightarrow b_{1,k+1}$, $B_{ak}\leftrightarrow d_{1,j(a,k)}$, $C_{ak}\leftrightarrow d_{2,j(a,a+k)}$. It lies in the $57$-ray, $40$-context intermediate spoke hypergraph ($297$ states) and in each $87$-ray, $64$-context KS union $H_{37}\cup L_a$.
 \item \emph{Four-dimensional Peres and Cabello parents of $H_{\YO}^{(4)}$ and $H_{65}$:} Taking the union with Peres's $24$-ray set $P_{24}$~\cite{peres-91} gives a $40$-ray, $36$-context KS parent of $H_{\YO}^{(4)}$ ($|H_{\YO}^{(4)}\cap P_{24}|=10$; note that a single-apex lift of a $3$-dimensional KS set always retains the unique apex-one state) and a $72$-ray, $48$-context KS parent of $H_{65}$ ($|H_{65}\cap P_{24}|=17$). More economically:
@@ -2035,7 +2056,7 @@ Adjoining to $H_{\YO}^{+}$ the eight rays $(0,1,\pm2)$, $(0,2,\pm1)$, $(1,\pm2,0
 Adjoining $a=(1,0,0,1),b=(0,1,0,1),c=(0,0,1,1)$ to $H_{65}$ yields a $68$-ray, $35$-basis KS parent containing $H_{65}$ as an induced restriction and Cabello's $18$-ray, $9$-context parity proof $C_{18,9}$~\cite{cabello-96} ($C_3,C_4,C_5$ plus $D_1=\{2,3,12,a\},D_2=\{1,3,15,b\},D_3=\{1,2,17,c\},D_4=\{6,7,13,a\},D_5=\{6,8,14,b\},D_6=\{7,8,16,c\}$). Adjoining $(0,1,-1,0)$, $(1,0,-1,0)$, $(1,-1,0,0)$ instead yields a $68$-ray, $35$-basis KS parent containing a ray-critical $20$-ray, $11$-context parity proof $C_{20,11}$ ($11=4s(4)+4s(5)+2\sum_{i\ne4,5}s(i)$). All $20$ rays of $C_{20,11}$ belong to Peres's $24$-ray set, and $C_{20,11}$ is one of its $96$ critical $20$-ray KS subsets, which are mutually isomorphic and include Kernaghan's set~\cite{Kernaghan-1994,cabello-96}.
 \end{proposition}
 \begin{proof}
-In $C_{18,9}$, summing $s$ over $C_3,C_4,C_5$ gives $3=2(s(9)+s(10)+s(11))+\sum_{k=12}^{17}s(k)$, so $s(12)+\cdots+s(17)$ is odd, whereas $D_1\oplus D_4,D_2\oplus D_5,D_3\oplus D_6$ give $s(12)+s(13)\equiv s(2)+s(3)+s(6)+s(7)$, $s(14)+s(15)\equiv s(1)+s(3)+s(6)+s(8)$, $s(16)+s(17)\equiv s(1)+s(2)+s(7)+s(8)\pmod 2$, summing to $0\pmod 2$. In $C_{20,11}$ (comprising $C_1,\ldots,C_5$ and six contexts on $\{1,\ldots,8,12,\ldots,17\}$ with $(0,1,-1,0)$, $(1,0,-1,0)$, $(1,-1,0,0)$), vertices $4,5$ have degree $4$ and the other $18$ vertices have degree $2$, so $11=4s(4)+4s(5)+2\sum_{i\ne4,5}s(i)$, an odd-equals-even contradiction; explicit states after deleting any single ray are certified in Supplement Sec.~S3.
+In $C_{18,9}$, summing $s$ over $C_3,C_4,C_5$ gives $3=2(s(9)+s(10)+s(11))+\sum_{k=12}^{17}s(k)$, so $s(12)+\cdots+s(17)$ is odd, whereas $D_1\oplus D_4,D_2\oplus D_5,D_3\oplus D_6$ give $s(12)+s(13)\equiv s(2)+s(3)+s(6)+s(7)$, $s(14)+s(15)\equiv s(1)+s(3)+s(6)+s(8)$, $s(16)+s(17)\equiv s(1)+s(2)+s(7)+s(8)\pmod 2$, summing to $0\pmod 2$. In $C_{20,11}$ (comprising $C_1,\ldots,C_5$ and six contexts on $\{1,\ldots,8,12,\ldots,17\}$ with $(0,1,-1,0)$, $(1,0,-1,0)$, $(1,-1,0,0)$), vertices $4,5$ have degree $4$ and the other $18$ vertices have degree $2$, so $11=4s(4)+4s(5)+2\sum_{i\ne4,5}s(i)$, an odd-equals-even contradiction; explicit states after deleting any single ray are certified in Sec.~S3 of the supplementary material.
 \end{proof}
 Both 68-ray presentations have 35 bases covering 192 of 195 geometric orthogonal pairs and context intersections of size up to two. They are not edge-faithful in the listed bases. The 72-ray Peres union covers all pairs; no size minimum or criticality of either full parent is asserted.
 
@@ -2044,7 +2065,7 @@ Both 68-ray presentations have 35 bases covering 192 of 195 geometric orthogonal
 The $9$ uncovered orthogonal pairs of $C_{18,9}$ satisfy Eq.~\eqref{d:eq:span-condition}, so Lemma~\ref{d:lem:plane-completion} yields a linear edge-faithful $36$-ray, $18$-context KS hypergraph $C_{36,18}$ in $\R^4$ with $\omega=4,\chi=5$, and $\Sc=\varnothing$. Deleting one vertex (say $c$) and its two contexts from $C_{18,9}$ leaves $17$ rays, $7$ bases, $14$ uncovered pairs, and $12$ core states whose abstract completion $C_{45,21}$ has $\chi=5$ and $|\Sc_{\mathrm{ctx}}(C_{45,21})|=3{,}584$ unital separating context states ($24$ canonical). However, $v_{16}\in\spanop(v_1,v_2)$ and $v_{17}\in\spanop(v_7,v_8)$ violate Eq.~\eqref{d:eq:span-condition}, forcing four extra orthogonalities that reduce the geometric state space to $|\Sc_{\mathrm{geom}}(C_{45,21})|=2{,}048$ with $s(9)=s(16)=s(17)=0$, destroying unitality and separation (Table~\ref{tab:cabello-state-comparison}).
 \end{corollary}
 \begin{proof}
-For $C_{18,9}$, the $9$ uncovered pairs are the $6$ core bridges $\{1,13\}$, $\{2,14\}$, $\{3,16\}$, $\{6,17\}$, $\{7,15\}$, $\{8,12\}$ from $H_{65}$ plus $\{11,a\}$, $\{10,b\}$, $\{9,c\}$. They satisfy Eq.~\eqref{d:eq:span-condition} and are completed in Supplemental Tables~\ref{S-tab:cabello36-vectors}--\ref{S-tab:cabello36-contexts}. Deleting $c,D_3,D_6$ leaves $12$ core supports: $10$ miss $8$ of the $14$ uncovered pairs and $2$ miss $9$ (Table~\ref{S-tab:cabello45-core-states}), giving $10\cdot 2^8+2\cdot 2^9=3{,}584$ context states. Since $v_{16}=v_1+v_2$ and $v_{17}=\frac12(v_7-v_8)$, completing $\{1,2\}$ by $\{21,22\}$ and $\{7,8\}$ by $\{35,36\}$ forces $v_{16}\perp v_{21},v_{22}$ and $v_{17}\perp v_{35},v_{36}$ in the local labels of Tables~\ref{S-tab:cabello45-vectors}--\ref{S-tab:cabello45-contexts}. If $s(16)=1$, neither $1$ nor $2$ is selected in any admissible core support, so $s(21)+s(22)=1$, contradicting geometric exclusion; the same argument gives $s(17)=0$. The retained hub bases then force $s(9)=0$. Exactly $8$ core supports satisfy $s(9)=s(16)=s(17)=0$, each missing $8$ uncovered pairs. All their fresh-pair choices obey the four extra exclusions, yielding $8\cdot 2^8=2{,}048$ geometric states.
+For $C_{18,9}$, the $9$ uncovered pairs are the $6$ core bridges $\{1,13\}$, $\{2,14\}$, $\{3,16\}$, $\{6,17\}$, $\{7,15\}$, $\{8,12\}$ from $H_{65}$ plus $\{11,a\}$, $\{10,b\}$, $\{9,c\}$. They satisfy Eq.~\eqref{d:eq:span-condition} and are completed in Tables~\ref{S-tab:cabello36-vectors}--\ref{S-tab:cabello36-contexts} of the supplementary material. Deleting $c,D_3,D_6$ leaves $12$ core supports: $10$ miss $8$ of the $14$ uncovered pairs and $2$ miss $9$ (Table~\ref{S-tab:cabello45-core-states}), giving $10\cdot 2^8+2\cdot 2^9=3{,}584$ context states. Since $v_{16}=v_1+v_2$ and $v_{17}=\frac12(v_7-v_8)$, completing $\{1,2\}$ by $\{21,22\}$ and $\{7,8\}$ by $\{35,36\}$ forces $v_{16}\perp v_{21},v_{22}$ and $v_{17}\perp v_{35},v_{36}$ in the local labels of Tables~\ref{S-tab:cabello45-vectors}--\ref{S-tab:cabello45-contexts}. If $s(16)=1$, neither $1$ nor $2$ is selected in any admissible core support, so $s(21)+s(22)=1$, contradicting geometric exclusion; the same argument gives $s(17)=0$. The retained hub bases then force $s(9)=0$. Exactly $8$ core supports satisfy $s(9)=s(16)=s(17)=0$, each missing $8$ uncovered pairs. All their fresh-pair choices obey the four extra exclusions, yielding $8\cdot 2^8=2{,}048$ geometric states.
 \end{proof}
 \end{enumerate}
 
@@ -2101,19 +2122,30 @@ By unifying these common-spectrum chromatic obstructions ($\chi(H)>d$) with exac
 The common thread is that a classical account of quantum outcomes can succeed at the level of truth values and still fail at the level of eigenvalues. For the preparation along $z_3$, the quantum predictions on $H_{17,10}$ admit noncontextual truth-assignment models, but every such model must place at least one third of its weight on truth assignments that no noncontextual eigenvalue assignment produces.
 % END INLINED FILE: sections/06-probabilities-and-ancestry.tex
 
+\section*{Supplementary Material}
+See the supplementary material for the explicit vector and context inventories, the complete two-valued state and coloring enumerations, the odd-cycle and separation-profile certificates, and the supplementary proofs and verification reductions.
+
 \begin{acknowledgments}
-I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This research was funded in part by the Austrian Science Fund (FWF), Grant DOI \href{https://doi.org/10.55776/PIN5424624}{10.55776/PIN5424624}. The author acknowledges FWF and TU Wien Bibliothek for support through the Open Access Funding Programme. AI tools assisted with editorial work and computational checks. The author retains responsibility.
+I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This research was funded in part by the Austrian Science Fund (FWF), Grant DOI \href{https://doi.org/10.55776/PIN5424624}{10.55776/PIN5424624}. The author acknowledges FWF and TU Wien Bibliothek for support through the Open Access Funding Programme. Generative AI tools were used for editorial work, including language editing and the LaTeX layout of figures and tables, and for independent checks of finite computations. The author reviewed all such output and takes full responsibility for the content of this article.
 \end{acknowledgments}
 
-%apsrev4-2.bst 2019-01-14 (MD) hand-edited version of apsrev4-1.bst
+\section*{Author Declarations}
+\subsection*{Conflict of Interest}
+The author has no conflicts to disclose.
+
+\section*{Data Availability}
+The data that support the findings of this study are available within the article and its supplementary material. The verification programs and machine-readable certificates are available from the author upon reasonable request.
+
+
+%aipnum4-2.bst 2019-01-14 (MD) hand-edited version of apsrev4-1.bst
 %Control: key (0)
-%Control: author (72) initials jnrlst
+%Control: author (8) initials jnrlst
 %Control: editor formatted (1) identically to author
 %Control: production of article title (-1) disabled
 %Control: page (0) single
 %Control: year (1) truncated
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{35}%
+\begin{thebibliography}{34}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -2171,8 +2203,8 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
   {\bibinfo {title} {Finite-Dimensional Vector Spaces}}},\ Undergraduate Texts
   in Mathematics\ (\bibinfo  {publisher} {Springer},\ \bibinfo {address} {New
   York},\ \bibinfo {year} {1974})\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Einstein}\ \emph {et~al.}(1935)\citenamefont
-  {Einstein}, \citenamefont {Podolsky},\ and\ \citenamefont {Rosen}}]{epr}%
+\bibitem [{\citenamefont {Einstein}, \citenamefont {Podolsky},\ and\
+  \citenamefont {Rosen}(1935)}]{epr}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Einstein}}, \bibinfo {author} {\bibfnamefont {B.}~\bibnamefont {Podolsky}},\
@@ -2233,19 +2265,20 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
 \bibitem [{\citenamefont {Martin~H.}(2009)}]{martin2009}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~A.}\ \bibnamefont
-  {Martin~H.}},\ }\href {https://doi.org/10.48550/arXiv.0901.1255} {\bibinfo
-  {title} {Graph-chromatic implicit relations}} (\bibinfo {year} {2009}),\
-  \Eprint {https://arxiv.org/abs/0901.1255} {arXiv:0901.1255 [math.CO]}
-  \BibitemShut {NoStop}%
+  {Martin~H.}},\ }\href {https://doi.org/10.48550/arXiv.0901.1255} {\enquote
+  {\bibinfo {title} {Graph-chromatic implicit relations},}\ } (\bibinfo {year}
+  {2009}),\ \Eprint {https://arxiv.org/abs/0901.1255} {arXiv:0901.1255
+  [math.CO]} \BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Navara}\ and\ \citenamefont
   {Svozil}(2025)}]{svozil-2025-MYOCHS}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
   {Navara}}\ and\ \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
-  {Svozil}},\ }\href {https://doi.org/10.48550/arXiv.2509.08636} {\bibinfo
-  {title} {Construction of {K}ochen-{S}pecker sets from mutually unbiased
-  bases}} (\bibinfo {year} {2025}),\ \Eprint {https://arxiv.org/abs/2509.08636}
-  {arXiv:2509.08636 [quant-ph]} \BibitemShut {NoStop}%
+  {Svozil}},\ }\href {https://doi.org/10.48550/arXiv.2509.08636} {\enquote
+  {\bibinfo {title} {Construction of {K}ochen-{S}pecker sets from mutually
+  unbiased bases},}\ } (\bibinfo {year} {2025}),\ \Eprint
+  {https://arxiv.org/abs/2509.08636} {arXiv:2509.08636 [quant-ph]} \BibitemShut
+  {NoStop}%
 \bibitem [{\citenamefont {Haynes}\ \emph {et~al.}(2010)\citenamefont {Haynes},
   \citenamefont {Park}, \citenamefont {Schaeffer}, \citenamefont {Webster},\
   and\ \citenamefont {Mitchell}}]{haynes2010orthogonal}%
@@ -2266,9 +2299,8 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
   {\bibinfo  {journal} {Foundations of Physics}\ }\textbf {\bibinfo {volume}
   {26}},\ \bibinfo {pages} {787} (\bibinfo {year} {1996})}\BibitemShut
   {NoStop}%
-\bibitem [{\citenamefont {Cabello}\ \emph {et~al.}(1996)\citenamefont
-  {Cabello}, \citenamefont {Estebaranz},\ and\ \citenamefont
-  {Garc{\'{i}}a-Alcaine}}]{cabello-96}%
+\bibitem [{\citenamefont {Cabello}, \citenamefont {Estebaranz},\ and\
+  \citenamefont {Garc{\'{i}}a-Alcaine}(1996)}]{cabello-96}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Cabello}}, \bibinfo {author} {\bibfnamefont {J.~M.}\ \bibnamefont
@@ -2286,28 +2318,17 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
   {\bibfield  {journal} {\bibinfo  {journal} {Journal of Physics A:
   Mathematical and General}\ }\textbf {\bibinfo {volume} {27}},\ \bibinfo
   {pages} {L829} (\bibinfo {year} {1994})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Svozil}(2026)}]{supplement}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
-  {Svozil}},\ }\href@noop {} {\bibinfo {title} {Supplemental material for
-  ``{Strong Colorings of Orthogonality Hypergraphs as Noncontextual Eigenvalue
-  Assignments}''}} (\bibinfo {year} {2026}),\ \bibinfo {note} {contains all
-  explicit unnormalized vector and context inventories, complete two-valued
-  state and coloring enumerations, odd-cycle and separation profile
-  certificates, and supplementary proofs and verification
-  reductions}\BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Silva}\ and\ \citenamefont
   {Ibiapina}(2019)}]{silva2019orthogonal}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Silva}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Ibiapina}},\ }\href {https://doi.org/10.48550/arXiv.1909.01918} {\bibinfo
-  {title} {On orthogonal vector edge coloring}} (\bibinfo {year} {2019}),\
-  \Eprint {https://arxiv.org/abs/1909.01918} {arXiv:1909.01918 [cs.DM]}
-  \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Brinkmann}\ \emph {et~al.}(2015)\citenamefont
-  {Brinkmann}, \citenamefont {Preissmann},\ and\ \citenamefont
-  {Sasaki}}]{brinkmann2015snarks}%
+  {Ibiapina}},\ }\href {https://doi.org/10.48550/arXiv.1909.01918} {\enquote
+  {\bibinfo {title} {On orthogonal vector edge coloring},}\ } (\bibinfo {year}
+  {2019}),\ \Eprint {https://arxiv.org/abs/1909.01918} {arXiv:1909.01918
+  [cs.DM]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Brinkmann}, \citenamefont {Preissmann},\ and\
+  \citenamefont {Sasaki}(2015)}]{brinkmann2015snarks}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
   {Brinkmann}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
@@ -2375,9 +2396,8 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
   {\bibfield  {journal} {\bibinfo  {journal} {Entropy}\ }\textbf {\bibinfo
   {volume} {21}},\ \bibinfo {pages} {1107} (\bibinfo {year}
   {2019})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Cabello}\ \emph {et~al.}(2015)\citenamefont
-  {Cabello}, \citenamefont {Kleinmann},\ and\ \citenamefont
-  {Budroni}}]{cabello2015sic}%
+\bibitem [{\citenamefont {Cabello}, \citenamefont {Kleinmann},\ and\
+  \citenamefont {Budroni}(2015)}]{cabello2015sic}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Cabello}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Kleinmann}},\
@@ -2430,9 +2450,8 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
   {journal} {\bibinfo  {journal} {Journal of Physics A: Mathematical and
   General}\ }\textbf {\bibinfo {volume} {24}},\ \bibinfo {pages} {L175}
   (\bibinfo {year} {1991})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Cabello}\ \emph {et~al.}(2005)\citenamefont
-  {Cabello}, \citenamefont {Estebaranz},\ and\ \citenamefont
-  {Garc{\'i}a-Alcaine}}]{cabello2005recursive}%
+\bibitem [{\citenamefont {Cabello}, \citenamefont {Estebaranz},\ and\
+  \citenamefont {Garc{\'i}a-Alcaine}(2005)}]{cabello2005recursive}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Cabello}}, \bibinfo {author} {\bibfnamefont {J.~M.}\ \bibnamefont
@@ -2468,9 +2487,9 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
   {Pavi{\v{c}}i{\'{c}}}},\ }\href {https://doi.org/10.48550/arXiv.2512.10483}
-  {\bibinfo {title} {On simplest {K}ochen-{S}pecker sets}} (\bibinfo {year}
-  {2025}),\ \Eprint {https://arxiv.org/abs/2512.10483} {arXiv:2512.10483
-  [quant-ph]} \BibitemShut {NoStop}%
+  {\enquote {\bibinfo {title} {On simplest {K}ochen-{S}pecker sets},}\ }
+  (\bibinfo {year} {2025}),\ \Eprint {https://arxiv.org/abs/2512.10483}
+  {arXiv:2512.10483 [quant-ph]} \BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Pavi{\v{c}}i{\'c}}(2023)}]{Pavicic_2023}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
@@ -2482,7 +2501,7 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
 
 
 % ======================================================================
-% SUPPLEMENTAL MATERIAL
+% SUPPLEMENTARY MATERIAL
 % ======================================================================
 \clearpage
 \onecolumngrid
@@ -2511,10 +2530,10 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
 \renewcommand{\theHequation}{S\arabic{equation}}
 \renewcommand{\theHfigure}{S\arabic{figure}}
 \renewcommand{\theHtheorem}{S\arabic{theorem}}
-\pdfbookmark[0]{Supplemental Material}{supplemental-material}
+\pdfbookmark[0]{Supplementary Material}{supplementary-material}
 
 \begin{center}
-{\large\bfseries Supplemental Material for ``Strong Colorings of Orthogonality Hypergraphs as Noncontextual Eigenvalue Assignments''\par}
+{\large\bfseries Supplementary Material for ``Strong Colorings of Orthogonality Hypergraphs as Noncontextual Eigenvalue Assignments''\par}
 \vspace{1.5ex}
 {\normalsize Karl Svozil\,\orcidlink{0000-0001-6554-2802}\par}
 \vspace{0.5ex}
@@ -2526,7 +2545,7 @@ I thank Mohammad Hadi Shekarriz for valuable comments and suggestions. This rese
 \begingroup
 \makeatletter\frontmatter@abstractfont\makeatother
 \noindent
-This Supplemental Material provides the complete vector and context enumerations, two-valued state tables, normalized strong coloring tables, odd-cycle nonextendability certificates, chromatic signature and separation profile tables, parent-embedding dictionaries, and supplementary proofs and finite verification certificates supporting the main text. Section~\ref{S-app:all-vectors} lists the explicit unnormalized coordinates and context tables for the completed Yu--Oh hypergraph $H_{\YO}^{+}$ and its faithful restrictions $H_{17,10}$ and $H_{21,13}$, the three- and four-dimensional logical gadgets, the $37$-ray complex Hesse hypergraph $H_{37}$, the $26$-ray suspension $H_{\YO}^{(4)}$ and $65$-ray canonical linear completion $H_{65}$, the Cabello completions $C_{36,18}$ and $C_{45,21}$, and the specified finite KS parents ($49$-ray Sch\"utte--Bub, $87$-ray MUB-inventory union, $40$- and $72$-ray Peres unions, and $68$-ray three-ray extensions). Section~\ref{S-app:all-states} gives the complete two-valued state tables, extendable-state classifications, normalized coloring tables, odd-cycle certificates, and separation profiles across both regimes. Section~\ref{S-app:supplementary} presents the supplementary proofs and exact reductions, including Isaacs dot-product snarks and quantitative $\Delta_3$ robustness bounds for $G_{32}$, the $540{,}672$-candidate reduction for the minimum $18$-state order-determining family on $L(H_{37})$, the canonical completion selection rule for $H_{65}$, the forced-zero and ray-criticality certificates for the four-dimensional Cabello completions, transverse criticality deletion colorings, and historical Kochen--Specker gadget certificates.\par
+This supplementary material provides the complete vector and context enumerations, two-valued state tables, normalized strong coloring tables, odd-cycle nonextendability certificates, chromatic signature and separation profile tables, parent-embedding dictionaries, and supplementary proofs and finite verification certificates supporting the main text. Section~\ref{S-app:all-vectors} lists the explicit unnormalized coordinates and context tables for the completed Yu--Oh hypergraph $H_{\YO}^{+}$ and its faithful restrictions $H_{17,10}$ and $H_{21,13}$, the three- and four-dimensional logical gadgets, the $37$-ray complex Hesse hypergraph $H_{37}$, the $26$-ray suspension $H_{\YO}^{(4)}$ and $65$-ray canonical linear completion $H_{65}$, the Cabello completions $C_{36,18}$ and $C_{45,21}$, and the specified finite KS parents ($49$-ray Sch\"utte--Bub, $87$-ray MUB-inventory union, $40$- and $72$-ray Peres unions, and $68$-ray three-ray extensions). Section~\ref{S-app:all-states} gives the complete two-valued state tables, extendable-state classifications, normalized coloring tables, odd-cycle certificates, and separation profiles across both regimes. Section~\ref{S-app:supplementary} presents the supplementary proofs and exact reductions, including Isaacs dot-product snarks and quantitative $\Delta_3$ robustness bounds for $G_{32}$, the $540{,}672$-candidate reduction for the minimum $18$-state order-determining family on $L(H_{37})$, the canonical completion selection rule for $H_{65}$, the forced-zero and ray-criticality certificates for the four-dimensional Cabello completions, transverse criticality deletion colorings, and historical Kochen--Specker gadget certificates.\par
 \endgroup
 \vspace{2ex}
 \raggedbottom
@@ -6754,9 +6773,9 @@ This also identifies its directed TITS $a_0\to a_9$ with $10\to24$.
  \aftergroup\auto@bib@empty
 }
 \makeatother
-%apsrev4-2.bst 2019-01-14 (MD) hand-edited version of apsrev4-1.bst
+%aipnum4-2.bst 2019-01-14 (MD) hand-edited version of apsrev4-1.bst
 %Control: key (0)
-%Control: author (72) initials jnrlst
+%Control: author (8) initials jnrlst
 %Control: editor formatted (1) identically to author
 %Control: production of article title (-1) disabled
 %Control: page (0) single
@@ -6827,9 +6846,8 @@ This also identifies its directed TITS $a_0\to a_9$ with $10\to24$.
   {\bibinfo  {journal} {Foundations of Physics}\ }\textbf {\bibinfo {volume}
   {26}},\ \bibinfo {pages} {787} (\bibinfo {year} {1996})}\BibitemShut
   {NoStop}%
-\bibitem [{\citenamefont {Cabello}\ \emph {et~al.}(1996)\citenamefont
-  {Cabello}, \citenamefont {Estebaranz},\ and\ \citenamefont
-  {Garc{\'{i}}a-Alcaine}}]{S-cabello-96}%
+\bibitem [{\citenamefont {Cabello}, \citenamefont {Estebaranz},\ and\
+  \citenamefont {Garc{\'{i}}a-Alcaine}(1996)}]{S-cabello-96}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Cabello}}, \bibinfo {author} {\bibfnamefont {J.~M.}\ \bibnamefont
@@ -6854,10 +6872,10 @@ This also identifies its directed TITS $a_0\to a_9$ with $10\to24$.
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
   {Silva}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Ibiapina}},\ }\href {https://doi.org/10.48550/arXiv.1909.01918} {\bibinfo
-  {title} {On orthogonal vector edge coloring}} (\bibinfo {year} {2019}),\
-  \Eprint {https://arxiv.org/abs/1909.01918} {arXiv:1909.01918 [cs.DM]}
-  \BibitemShut {NoStop}%
+  {Ibiapina}},\ }\href {https://doi.org/10.48550/arXiv.1909.01918} {\enquote
+  {\bibinfo {title} {On orthogonal vector edge coloring},}\ } (\bibinfo {year}
+  {2019}),\ \Eprint {https://arxiv.org/abs/1909.01918} {arXiv:1909.01918
+  [cs.DM]} \BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Blanu\v{s}a}(1946)}]{S-blanusa1946problem}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
@@ -6872,9 +6890,8 @@ This also identifies its directed TITS $a_0\to a_9$ with $10\to24$.
   {\bibfield  {journal} {\bibinfo  {journal} {The American Mathematical
   Monthly}\ }\textbf {\bibinfo {volume} {82}},\ \bibinfo {pages} {221}
   (\bibinfo {year} {1975})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Brinkmann}\ \emph {et~al.}(2015)\citenamefont
-  {Brinkmann}, \citenamefont {Preissmann},\ and\ \citenamefont
-  {Sasaki}}]{S-brinkmann2015snarks}%
+\bibitem [{\citenamefont {Brinkmann}, \citenamefont {Preissmann},\ and\
+  \citenamefont {Sasaki}(2015)}]{S-brinkmann2015snarks}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
   {Brinkmann}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
