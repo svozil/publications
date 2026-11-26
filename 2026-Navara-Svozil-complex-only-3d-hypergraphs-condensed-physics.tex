@@ -15,6 +15,12 @@
 ]{hyperref}
 \usepackage{orcidlink}
 
+% Highlight passages newly written or substantially rewritten for optional
+% editing in the authors' own voice.  To remove all blue highlighting before
+% submission, replace `\color{blue}` with nothing (`\newenvironment{handrewrite}{}{}`).
+\newenvironment{handrewrite}{\leavevmode\color{blue}}{}
+\newcommand{\handrewriteinline}[1]{{\color{blue}#1}}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
@@ -67,106 +73,35 @@ Technick\'{a} 2, CZ-166~27 Prague 6, Czech Republic}
 Wiedner Hauptstra{\ss}e 8-10/136, A-1040 Vienna, Austria}
 \email[Corresponding author: ]{karl.svozil@tuwien.ac.at}
 
-\date{27 September 2026}
+\date{\today}
 
 \begin{abstract}
-We exhibit two finite orthogonality hypergraphs that admit faithful orthogonal representations by rays in complex three-dimensional space but admit none in real three-dimensional space. Here faithfulness requires distinct rays and excludes additional orthogonalities. Thus, although each orthogonality diagram is unchanged, its coordinatizability in dimension three depends on whether the scalar field is complex or real. The first hypergraph has 20 vertices and 12 contexts. The second hypergraph adds one vertex and two contexts. Phase-adjusted realification also gives explicit faithful orthogonal representations of both hypergraphs in real six-dimensional space. We discuss the physical meaning in terms of shared measurement outcomes, equivalent pure-state mixtures, and spin-1 polarization, while distinguishing the assumptions retained by larger real descriptions.
+\begin{handrewrite}
+Kochen and Specker realized their theorem on a spin-1 particle by measuring squared spin components along orthogonal triads.  In the Cartesian basis, the outcome states of such measurements are real vectors with zero mean spin.  We ask whether every finite arrangement of three-outcome measurements on a three-level system that quantum mechanics can realize can also be realized in this real way.  The answer is no.  We first prove a combinatorial criterion: if a weighted sum of the completeness relations of the contexts cancels every outcome except two disjoint pairs, one of which lies in no common context, then the hypergraph has no faithful orthogonal representation in $\R^3$.  A 20-vertex, 12-context octagonal hypergraph $\Htwenty$ satisfies this criterion and has an exact faithful representation in $\C^3$; it is less than half the size of the earlier 48-vertex example.  Adding one vertex and two contexts makes both pairs orthogonal, so the criterion no longer applies.  The resulting 21-vertex, 14-context hypergraph $\Htwentyone$ is still representable in $\C^3$ but not in $\R^3$, now by a cyclic closure argument.  In every faithful spin-1 realization of either hypergraph, some outcome state has nonzero mean spin.  Both hypergraphs have faithful real representations in $\R^6$, where the contexts are no longer complete measurements.
+\end{handrewrite}
 \end{abstract}
 
 \maketitle
 
 \section{Introduction}
+\label{sec:intro}
 
-Any single three-outcome projective measurement can be described with real
-vectors.  The question is whether one common choice of coordinates can
-make an entire family of overlapping measurements real.  The octagons
-studied here show that this can fail.  Complex three-dimensional space
-accommodates the family, while real three-dimensional space does not.
-Physically, each vertex denotes a rank-one projector, and each context
-denotes a complete measurement.  A repeated label must identify the same
-test, distinct labels must remain distinct, and both the stated
-orthogonalities and nonorthogonalities must be respected.
+\begin{handrewrite}
+Kochen and Specker realized their theorem on a spin-1 particle by measuring the commuting squared spin components $S_{\mathbf e_1}^2, S_{\mathbf e_2}^2, S_{\mathbf e_3}^2$ along orthogonal triads $\{\mathbf e_1,\mathbf e_2,\mathbf e_3\}\subset\R^3$~\cite{kochen1}.  In the Cartesian basis $\{|x\rangle,|y\rangle,|z\rangle\}$ of a spin-1 system, the state with zero spin component along a real unit direction $\mathbf n$ is the real vector $\mathbf n$ itself, and its mean spin vanishes, $\langle\mathbf S\rangle=\mathbf 0$.  A finite family of squared-spin measurements is therefore a finite family of real orthonormal bases of $\R^3$.  This raises a concrete question.  Can every finite arrangement of three-outcome measurements on a three-level system that quantum mechanics can realize also be realized with squared-spin measurements alone?  Or do some arrangements require complex amplitudes, so that in every faithful realization, whatever basis is used, at least one outcome state has nonzero mean spin?  We show that the second alternative occurs.
 
-Relative phases between components therefore affect which measurement
-arrangements a three-level system can support.  The first octagon also gives this
-distinction a preparation meaning: it forces two different equal mixtures
-of pure states to produce the same mixed state.  We return to this
-interpretation, its spin-1 realization, and the scope of a larger real
-description in Sec.~\ref{sec:physical}.
+To make this question precise, we represent a finite measurement arrangement by a three-uniform \emph{orthogonality hypergraph} $\mathsf H=(V,\mathcal E)$: each vertex $v\in V$ labels an elementary rank-one outcome projector, and each three-element hyperedge $E\in\mathcal E$ (a \emph{context}) specifies three mutually exclusive outcomes forming a complete measurement.  A \emph{faithful orthogonal representation}~\cite{lovasz-79,Portillo-2015} in $\mathbb F^3$ ($\mathbb F=\R$ or $\C$) assigns a nonzero vector $x_v\in\mathbb F^3$ to each vertex so that distinct vertices define distinct rays and two rays are orthogonal \emph{if and only if} they belong to a common context.  In particular, neither ray coincidences nor unlisted orthogonalities are permitted.  This fixed-dimension question differs from the wider debate over real versus complex quantum theory.  If dimension doubling ($\C^n\hookrightarrow\R^{2n}$) is permitted, single-system quantum statistics can be reproduced within a real Hilbert space~\cite{McKague2009SimulatingRealHilbert,Hardy2012LimitedHolism,Aleksandrova2013UniversalQubit}, whereas dimension-independent falsifications of real quantum theory rely on network source independence and tensor-product structure~\cite{renou-2021,Weilenmann2025PartialIndependencePRL} (for operational discrimination tasks, see Ref.~\cite{Bednorz2022OptimalDiscrimination}).  Here we examine a complementary, single-system regime: the Hilbert-space dimension is held fixed at three, each context is required to be a maximal projective measurement, and no entanglement or network assumption enters.
 
-An orthogonality hypergraph records which finite families of rays are required
-to form orthogonal bases.  Its representability may depend on the scalar field,
-even when the ambient dimension is fixed.  Harding and Salinas Schmeis
-constructed a finite orthogonality graph representable over $\C^3$ but not
-over $\R^3$~\cite{harding2025remarksIJTP}.  Counting the two 25-vertex,
-16-context gadgets in their Fig.~2 and Theorem~2.6 gives 48 vertices and
-32 specified triples when the edge joining their centers is completed to
-a triple.  These are counts of their specified diagram; our faithfulness
-condition additionally excludes unlisted orthogonalities.  The related
-Kochen--Specker (KS) completions analyzed by Navara and Svozil have 69 rays
-and 50 contexts~\cite{svozil-2025-MYOCHS}.  The present 20-ray, 12-context
-and 21-ray, 14-context examples isolate the field separation through short
-projector-rigidity and closure arguments, without claiming minimum size.
-Conversion of KS sets into bipartite perfect quantum strategies is a
-separate problem studied by Trandafir and Cabello~\cite{2024-cabello-trandafir0}.
+Harding and Salinas Schmeis constructed a finite orthogonality diagram representable in $\C^3$ but not in $\R^3$~\cite{harding2025remarksIJTP}.  Completed to a three-uniform hypergraph, it has 48 vertices and 32 triples; unlisted orthogonalities are not excluded there.  Related Kochen--Specker (KS) sets built from mutually unbiased bases in $\C^3$ have 69 rays and 50 contexts~\cite{svozil-2025-MYOCHS}.  Here we give a general criterion that forces complex coordinates at fixed dimension, and two faithful examples with 20 vertices and 12 contexts ($\Htwenty$) and 21 vertices and 14 contexts ($\Htwentyone$).  The two examples fail over $\R^3$ for different reasons, and neither argument uses KS uncolorability.
 
-The role of complex scalars in quantum theory involves two questions that
-should not be conflated.  If a change of dimension and an additional complex
-structure are allowed, a complex Hilbert space $\C^n$ can be represented on
-the real space $\R^{2n}$ by separating real and imaginary parts; related
-constructions reproduce broad classes of complex quantum protocols within a
-real formalism~\cite{Hardy2012LimitedHolism,Aleksandrova2013UniversalQubit,
-McKague2009SimulatingRealHilbert}.  Network separations instead impose
-composition and source-independence assumptions, rather than a fixed
-Hilbert-space dimension~\cite{renou-2021,Weilenmann2025PartialIndependencePRL}.
-Other operational comparisons use specified discrimination tasks
-\cite{Bednorz2022OptimalDiscrimination}.  Here the comparison concerns
-single-system projective geometry at fixed dimension; no network or
-tensor-product assumption enters the proofs.
+The criterion (Theorem~\ref{thm:covering-criterion} in Sec.~\ref{sec:prelim}) works as follows.  Suppose a weighted sum of context completeness relations cancels every vertex except two disjoint pairs $\{a_1,a_2\}$ and $\{b_1,b_2\}$, where $a_1$ and $a_2$ lie in no common context.  Then every three-dimensional representation satisfies $P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}$.  Over $\R^3$, the two distinct eigenvalues of this operator fix the pair of rays (Lemma~\ref{lem:real-rigidity}), so the $b$-rays would coincide with the $a$-rays, contradicting faithfulness.  Over $\C^3$, a relative phase leaves room for a second pair.  Section~\ref{sec:h20} shows that, among polygons whose opposite midpoints are joined by inner contexts, the octagon is the smallest that satisfies the criterion.  This gives the 20-vertex hypergraph $\Htwenty$.  A symmetry ansatz then yields exact coordinates in $\C^3$, and we check faithfulness on all 190 pairs of rays.
 
-A phase-adjusted realification method~\cite{svozil-2025-rvc} makes the boundary precise for finite
-orthogonality data.  It preserves and reflects all pairwise orthogonalities in
-$\R^6$, but a three-ray context then spans only half of the ambient real
-space.  Below we apply this construction explicitly to both octagons after
-proving their same-dimension separation.
+The criterion needs $a_1$ and $a_2$ to be nonorthogonal.  Does the separation disappear when both pairs are orthogonal?  In Sec.~\ref{sec:h21} we add one vertex $c$ and two contexts $\{a_1,c,a_2\}$ and $\{b_1,c,b_2\}$, which gives the 21-vertex, 14-context hypergraph $\Htwentyone$.  Now $P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}$ is the projector onto $c^\perp$, which has many real orthogonal bases.  Still, $\Htwentyone$ has no faithful representation in $\R^3$: the closure conditions around the perimeter are incompatible with the inner contexts.  Over $\C^3$, the same symmetry ansatz with orthogonal inner pairs gives a representation in which every unprescribed pair of rays has squared overlap $1/4$ or $1/2$.
 
-We present two further exact finite examples, both with an octagonal incidence
-skeleton.  The 20-vertex hypergraph $\Htwenty$ forces an equality of
-two sums of rank-one projectors.  Complex phases permit two distinct
-nonorthogonal two-ray decompositions of the same positive operator; over the
-reals, the spectral decomposition fixes the rays.  The 21-vertex hypergraph
-$\Htwentyone$ is obtained by completing both inner pairs with a common ray.
-The spectral argument then becomes degenerate, but the perimeter closure
-relations supply a second obstruction to real coordinates.
+Section~\ref{sec:realification} applies phase-adjusted realification~\cite{svozil-2025-rvc} to construct explicit faithful real representations of both $\Htwenty$ and $\Htwentyone$ in $\R^6$, where each specified triple spans only a three-dimensional subspace and is no longer a complete measurement.  Section~\ref{sec:physical} discusses spin-1 polarization, equivalent pure-state mixtures (pseudocontexts~\cite{2026-Navara-Svozil-pseudocontexts}), and what a fixed-dimension test would have to certify.  Section~\ref{sec:discussion} compares the two mechanisms and relates the results to Kochen--Specker contextuality, and Sec.~\ref{sec:conclusion} concludes.
+\end{handrewrite}
 
-Unlike a conventional Kochen--Specker set, neither hypergraph is used through
-an uncolorability argument.  Its role here is instead to enforce exact
-orthogonality incidences and the resulting projector or closure identities;
-no contradiction involving two-valued states is assumed or needed.
-
-The broader setting is quantum contextuality and its experimental and
-information-processing uses, reviewed by Budroni et al.~\cite{Budroni2022KS}.
-Cabello's 33-ray, 14-basis KS set~\cite{Cabello2025SimplestKS} links a compact
-qutrit construction to bipartite perfect strategies.  Our 12- and 14-context
-hypergraphs address a different question: both are colorable, yet their
-faithful rank-one measurement geometry separates $\C^3$ from $\R^3$.
-Their sizes therefore do not improve a KS minimality bound.
-Muller and Giorgetti~\cite{MullerGiorgetti2025Hypergram} show how a
-hypergraph together with an anticommutation graph determines the
-contextuality degree of its admissible Pauli-observable labelings.
-Here the vertices instead denote rays, and the constraints concern
-orthogonality and completeness of three-outcome measurements.  The
-common theme is that finite incidence data constrain quantum
-realizations; the physical question here is which scalar field can
-support those realizations at fixed dimension.
-
-The results established below go beyond merely exhibiting convenient complex
-coordinates.  For each displayed representation we verify all unordered ray
-pairs exactly: the prescribed pairs are orthogonal, every other inner product
-is nonzero, and distinct vertices label distinct rays.  Thus the word
-``faithful'' carries its full graph-theoretic meaning~\cite{lovasz-79,Portillo-2015}.
-
-\section{Orthogonality representations and two algebraic lemmas}
+\section{Orthogonality representations, algebraic lemmas, and a covering criterion}
+\label{sec:prelim}
 
 Throughout, we use the physics convention for the Hermitian inner product,
 which is conjugate-linear in the first argument:
@@ -176,11 +111,13 @@ which is conjugate-linear in the first argument:
 \end{equation}
 
 \begin{definition}
+\label{def:for}
 Let $\mathsf H=(V,\mathcal E)$ be a three-uniform hypergraph, let
 $\mathbb F$ be either $\R$ or $\C$, and let $d\ge3$.
 Hyperedges are unordered three-element subsets of $V$, and no hyperedge
-is repeated.  A \emph{faithful orthogonal representation} of $\mathsf H$ in $\mathbb F^d$ assigns a nonzero
-vector $x_v\in\mathbb F^d$ to every $v\in V$ such that:
+is repeated.  A \emph{faithful orthogonal representation} of $\mathsf H$ in
+$\mathbb F^d$ assigns a nonzero vector $x_v\in\mathbb F^d$ to every $v\in V$
+such that:
 \begin{enumerate}
 \item distinct vertices determine distinct rays; and
 \item $\langle x_u,x_v\rangle=0$ if and only if $u$ and $v$ belong to a
@@ -191,21 +128,23 @@ basis and hence a maximal \emph{context}; for $d>3$ the same specified triple
 need not be maximal.
 \end{definition}
 
-For a nonzero column vector $x$, let $x^\dagger$ denote its conjugate
+For any nonzero column vector $x$, let $x^\dagger$ denote its conjugate
 transpose and write
 \begin{equation}
  P_x=\frac{xx^\dagger}{\langle x,x\rangle}
  \label{eq:projector}
 \end{equation}
-for the rank-one projector onto its ray.  In a three-dimensional
+for the rank-one projector onto its ray $[x]$.  Because $P_x$ is invariant
+under nonzero rescaling of $x$, any ray may be represented by an unnormalized
+nonzero vector without changing its projector.  In a three-dimensional
 representation, a context $\{x,y,z\}$ satisfies
 \begin{equation}
  P_x+P_y+P_z=I_3.
  \label{eq:context-sum}
 \end{equation}
-Consequently, integer linear combinations of three-dimensional context
-equations can force projector identities that hold in every representation
-of the hypergraph in that dimension.
+Consequently, linear combinations of three-dimensional context equations can
+force projector identities that hold in every representation of the hypergraph
+in that dimension.
 
 For $x,y\in\C^3$ define the Hermitian cross product by
 \begin{equation}
@@ -236,9 +175,9 @@ bilinear dot product on $\C^3$, gives
  =(x\mathbin{\cdot}\bar y)(y\mathbin{\cdot}\bar z)
  -(x\mathbin{\cdot}\bar z)(y\mathbin{\cdot}\bar y).
 \]
-Indeed, for arbitrary $a,b\in\C^3$,
-$\langle\bar a,\bar b\rangle=a\mathbin{\cdot}\bar b$; taking
-$a=x\times y$ and $b=y\times z$ therefore identifies the left-hand side
+Indeed, for arbitrary $u,w\in\C^3$,
+$\langle\bar u,\bar w\rangle=u\mathbin{\cdot}\bar w$; taking
+$u=x\times y$ and $w=y\times z$ therefore identifies the left-hand side
 with $\langle x\boxtimes y,y\boxtimes z\rangle$.  The right-hand side
 is the complex conjugate of
 \[
@@ -250,45 +189,128 @@ Their vanishing is therefore equivalent.
 
 \begin{lemma}[Rigidity of two real rays]
 \label{lem:real-rigidity}
-Let $a_1,a_2,b_1,b_2$ be real unit vectors satisfying
+Let $u_1,u_2,w_1,w_2\in\R^3\setminus\{0\}$ be nonzero real vectors satisfying
 \begin{equation}
- P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}.
+ P_{u_1}+P_{u_2}=P_{w_1}+P_{w_2}.
  \label{eq:two-sums}
 \end{equation}
-If $a_1$ and $a_2$ are distinct and nonorthogonal, then
-$\{[b_1],[b_2]\}=\{[a_1],[a_2]\}$ as unordered pairs of rays.
+If $u_1$ and $u_2$ represent distinct, nonorthogonal rays, then
+$\{[w_1],[w_2]\}=\{[u_1],[u_2]\}$ as unordered pairs of rays.
 \end{lemma}
 
 \begin{proof}
-All four vectors lie in the range of the common operator in
-Eq.~\eqref{eq:two-sums}.  Choose signs so that
-$\gamma=\langle a_1,a_2\rangle\in(0,1)$.  The two nonzero eigenvalues
-are $1+\gamma$ and $1-\gamma$, with eigenvectors $a_1+a_2$ and
-$a_1-a_2$, respectively.  Choose signs and order for the $b$-vectors so
-that $\delta=\langle b_1,b_2\rangle\ge0$.  The common operator has rank two,
+Because $P_x$ is invariant under nonzero rescaling, we may normalize all four
+vectors to unit length.  All four vectors lie in the range of the common
+operator in Eq.~\eqref{eq:two-sums}.  Choose signs so that
+$\gamma=\langle u_1,u_2\rangle\in(0,1)$.  The two nonzero eigenvalues
+are $1+\gamma$ and $1-\gamma$, with eigenvectors $u_1+u_2$ and
+$u_1-u_2$, respectively.  Choose signs and order for $w_1,w_2$ so
+that $\delta=\langle w_1,w_2\rangle\ge0$.  The common operator has rank two,
 so $\delta<1$.  Equality of spectra gives
 $\delta=\gamma$.  Since the two eigenvalues are distinct, there are real
 nonzero scalars $\lambda,\mu$ such that
 \[
- b_1+b_2=\lambda(a_1+a_2),\qquad
- b_1-b_2=\mu(a_1-a_2).
+ w_1+w_2=\lambda(u_1+u_2),\qquad
+ w_1-w_2=\mu(u_1-u_2).
 \]
-The unit-norm and inner-product equations give
+Comparing squared norms on both sides yields
 \begin{align*}
  \lambda^2(1+\gamma)+\mu^2(1-\gamma)&=2,\\
  \lambda^2(1+\gamma)-\mu^2(1-\gamma)&=2\gamma.
 \end{align*}
-Hence $\lambda^2=\mu^2=1$.  Solving for $b_1,b_2$ recovers the two
+Hence $\lambda^2=\mu^2=1$.  Solving for $w_1,w_2$ recovers the two
 original rays, possibly with signs and permutation.
 \end{proof}
+
+\begin{handrewrite}
+Lemma~\ref{lem:real-rigidity} fails over $\C^3$.  There the same computation,
+with complex $\lambda$ and $\mu$, gives only $|\lambda|=|\mu|=1$, which leaves
+a free relative phase $\eta=\mu/\lambda$ of unit modulus.  For
+$\eta\notin\{1,-1\}$ the pair $[w_1],[w_2]$ is disjoint from $[u_1],[u_2]$
+and has the same projector sum.  Combining Lemma~\ref{lem:real-rigidity}
+with the completeness relation~\eqref{eq:context-sum} gives a combinatorial
+obstruction to real three-dimensional representations.
+\end{handrewrite}
+
+\begin{theorem}[Balanced covering obstruction over $\R^3$]
+\label{thm:covering-criterion}
+Let $\mathsf H=(V,\mathcal E)$ be a three-uniform hypergraph.  Suppose there
+exist rational weights $c_E\in\mathbb Q$ ($E\in\mathcal E$) and four distinct
+vertices $a_1,a_2,b_1,b_2\in V$, with $a_1$ and $a_2$ belonging to no common
+hyperedge, such that for every vertex $v\in V$,
+\begin{equation}
+ \sum_{\substack{E\in\mathcal E\\ v\in E}} c_E
+ =\delta_{v,a_1}+\delta_{v,a_2}-\delta_{v,b_1}-\delta_{v,b_2}.
+ \label{eq:covering-criterion}
+\end{equation}
+Then $\mathsf H$ admits no faithful orthogonal representation in $\R^3$.
+\end{theorem}
+
+\begin{proof}
+Because every hyperedge has cardinality three, summing
+Eq.~\eqref{eq:covering-criterion} over all $v\in V$ gives
+\[
+ 3\sum_{E\in\mathcal E} c_E
+ =\sum_{v\in V}\sum_{\substack{E\in\mathcal E\\ v\in E}} c_E
+ =1+1-1-1=0,
+\]
+so $\sum_{E\in\mathcal E} c_E=0$ automatically.  Suppose for contradiction
+that $\{x_v\}_{v\in V}\subset\R^3\setminus\{0\}$ is a faithful orthogonal
+representation of $\mathsf H$.  Multiplying the completeness identity
+$\sum_{v\in E} P_{x_v}=I_3$ by $c_E$ and summing over $E\in\mathcal E$ yields
+\begin{align*}
+ P_{x_{a_1}}+P_{x_{a_2}}-P_{x_{b_1}}-P_{x_{b_2}}
+ &=\sum_{v\in V}\!\left(\sum_{\substack{E\in\mathcal E\\ v\in E}} c_E\right)P_{x_v}\\
+ &=\sum_{E\in\mathcal E} c_E\sum_{v\in E} P_{x_v}\\
+ &=\left(\sum_{E\in\mathcal E} c_E\right)I_3=0,
+\end{align*}
+and therefore $P_{x_{a_1}}+P_{x_{a_2}}=P_{x_{b_1}}+P_{x_{b_2}}$.
+By faithfulness, since $a_1$ and $a_2$ are distinct and share no hyperedge,
+the real vectors $x_{a_1}$ and $x_{a_2}$ represent distinct, nonorthogonal
+rays.  Lemma~\ref{lem:real-rigidity} then forces
+$\{[x_{b_1}],[x_{b_2}]\}=\{[x_{a_1}],[x_{a_2}]\}$, contradicting the
+requirement that the four distinct vertices $a_1,a_2,b_1,b_2$ label four
+distinct rays.
+\end{proof}
+
+\begin{handrewrite}
+In the terminology of Ref.~\cite{2026-Navara-Svozil-pseudocontexts},
+Eq.~\eqref{eq:covering-criterion} makes $\{a_1,a_2\}$ and $\{b_1,b_2\}$ a
+pair of size-two \emph{pseudocontexts}: the same weighted sum shows that
+$w(a_1)+w(a_2)=w(b_1)+w(b_2)$ for every weight function $w$ that sums to one
+on each context, in particular for every quantum state and every two-valued
+state.  Theorem~\ref{thm:covering-criterion} shows that such a certificate
+rules out faithful representations in $\R^3$.  It says nothing about $\C^3$,
+where a faithful representation must be exhibited separately.
+\end{handrewrite}
 
 \section{The 20-ray octagon}
 \label{sec:h20}
 
-The vertices of $\Htwenty$ are eight midpoint vertices
+\subsection{Minimal cyclic covering and nonexistence over
+\texorpdfstring{$\R^3$}{R3}}
+
+\begin{handrewrite}
+We look for hypergraphs satisfying Theorem~\ref{thm:covering-criterion}
+within a simple family: a $2k$-gon of perimeter contexts
+$E_j=\{v_{j-1,j},v_j,v_{j,j+1}\}$ ($j\in\mathbb Z_{2k}$), with opposite
+midpoints joined by $k$ inner contexts $D_j=\{v_j,u_j,v_{j+k}\}$, each
+containing one new vertex $u_j$.  Give the perimeter contexts alternating
+weights, $+1$ for odd $j$ and $-1$ for even $j$.  Every corner
+$v_{j,j+1}$ lies in one odd and one even perimeter context, so the corners
+cancel.  An inner context $D_j$ can cancel both $v_j$ and $v_{j+k}$ only if
+they carry the same weight, that is, if $j$ and $j+k$ have the same parity;
+hence $k$ is even.  The vertices $u_j$ then remain, $k/2$ of them with
+weight $+1$ and $k/2$ with weight $-1$.  For $k=2$ (a square) this leaves
+one vertex on each side and forces $P_{u_0}=P_{u_1}$, so the two rays
+coincide over $\R^3$ and over $\C^3$ alike.  The smallest case that leaves two
+vertices on each side is $k=4$, the \emph{octagon}.
+\end{handrewrite}
+
+Accordingly, the vertices of $\Htwenty$ are eight midpoint vertices
 $v_0,\ldots,v_7$, eight corner vertices
 $v_{01},v_{12},\ldots,v_{70}$, and four inner vertices
-$a_1,a_2,b_1,b_2$.  Indices are read modulo eight.  The eight perimeter
+$a_1,a_2,b_1,b_2$, with indices read modulo eight.  The eight perimeter
 contexts and four inner contexts are
 \begin{align}
  E_j&=\{v_{j-1,j},v_j,v_{j,j+1}\}, &&j=0,\ldots,7,
@@ -297,8 +319,9 @@ contexts and four inner contexts are
  D_1&=\{v_1,b_2,v_5\},&D_3&=\{v_3,b_1,v_7\}.
  \label{eq:inner-contexts}
 \end{align}
-The incidence structure is shown in Fig.~\ref{fig:h20}.
-Table~\ref{tab:contexts} lists all contexts of both octagons.
+The incidence structure is shown in Fig.~\ref{fig:h20}, and
+Table~\ref{tab:contexts} lists all contexts of both octagons studied in this
+paper.
 
 \begin{figure*}[t]
 \centering
@@ -392,28 +415,62 @@ $F_b$ & $\{b_1,c,b_2\}$ \\
 \end{tabular}
 \end{table}
 
-\subsection{The covering identity}
-
-Consider the two collections of six contexts
+Partition the twelve contexts of $\Htwenty$ into two complementary
+collections of six contexts:
 \begin{align*}
  \mathcal A&=\{D_0,D_2,E_1,E_3,E_5,E_7\},\\
  \mathcal B&=\{D_1,D_3,E_0,E_2,E_4,E_6\}.
 \end{align*}
-Every midpoint and every corner occurs exactly once in each collection.
-Only the two $a$-vertices occur in $\mathcal A$, and only the two
-$b$-vertices occur in $\mathcal B$.  Summing Eq.~\eqref{eq:context-sum}
-over the two collections and subtracting therefore gives
+Every midpoint and every corner occurs exactly once in $\mathcal A$ and
+exactly once in $\mathcal B$; only $a_1,a_2$ occur in $\mathcal A$, and only
+$b_1,b_2$ occur in $\mathcal B$.  Setting $c_E=+1$ for $E\in\mathcal A$ and
+$c_E=-1$ for $E\in\mathcal B$ therefore satisfies
+Eq.~\eqref{eq:covering-criterion} and forces the covering identity
 \begin{equation}
- P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}.
+ P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}
  \label{eq:covering-identity}
 \end{equation}
-This identity is combinatorial: it holds in every real or complex
-three-dimensional representation of $\Htwenty$.
+in every real or complex three-dimensional representation of $\Htwenty$.
+Because $a_1$ and $a_2$ belong to no common context of $\Htwenty$,
+Theorem~\ref{thm:covering-criterion} yields immediately:
 
-\subsection{An exact faithful representation over
+\begin{corollary}
+\label{cor:h20-real}
+The hypergraph $\Htwenty$ has no faithful orthogonal representation in
+$\R^3$.
+\end{corollary}
+
+\subsection{Construction of an exact faithful representation over
 \texorpdfstring{$\C^3$}{C3}}
 
-Set
+\begin{handrewrite}
+Corollary~\ref{cor:h20-real} would be empty if $\Htwenty$ had no faithful
+representation over $\C^3$ either.  We now construct one and show how the
+coordinates can be derived.  Choose a basis of $\C^3$ in which
+the common rank-two operator $P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}$ is diagonal
+on the $xy$-plane, with nonzero eigenvalues in the ratio $C:1$ for a real
+parameter $0<C<1$.  With $s=\sqrt C$ and $N=1+C$, the phase freedom noted
+after Lemma~\ref{lem:real-rigidity} gives the unnormalized representatives
+$a_{1,2}=(s,\pm1,0)$ and $b_{1,2}=(s,\pm\eta,0)$ for a unit phase
+$\eta\notin\{1,-1\}$.  Write the midpoints as $v_j=(1,s\mu_j,z_j)$.
+Orthogonality to the inner ray of $D_{j\bmod4}$ forces
+$\mu=(-1,\eta,1,-\eta,-1,\eta,1,-\eta)$.  We take $|z_j|=r=\sqrt N$ and
+write $z_j=r\tau_j$ with $|\tau_j|=1$; the antipodal orthogonality
+$\langle v_j,v_{j+4}\rangle=0$ then gives $\tau_{j+4}=-\tau_j$.  Next we
+impose invariance under the unitary $U=\operatorname{diag}(1,-1,-\ii)$, which
+maps $v_j\mapsto v_{j+2}$ when $\tau_{j+2}=-\ii\tau_j$.  It also exchanges
+$a_1\leftrightarrow a_2$ and $b_1\leftrightarrow b_2$, maps $E_j$ to
+$E_{j+2}$, and so rotates the octagon by a quarter turn.  Under this ansatz
+all eight closure relations~\eqref{eq:gram-closure} reduce to one and the
+same complex equation in $C$, $\eta$, and the remaining phase
+$\zeta=\tau_1=x+\ii y$.  Once $x^2+y^2=1$ is used, its real and imaginary
+parts are linear in $x$ and $y$, for any $\eta$.  We take the rational unit
+phase $\eta=(5+12\ii)/13$, which keeps all coefficients rational.  Solving
+the two linear equations for $(x,y)$ and imposing $x^2+y^2=1$ gives a
+quadratic equation for $C$; its smaller root yields the coordinates below.
+\end{handrewrite}
+
+Explicitly, set
 \begin{equation}
  \begin{aligned}
  C&=\frac{49-5\sqrt{69}}{26},&s&=\sqrt C,\\
@@ -439,7 +496,8 @@ Let
  (\tau_0,\ldots,\tau_7)&=(1,\zeta,-\ii,-\ii\zeta,
  -1,-\zeta,\ii,\ii\zeta).
 \end{align*}
-The inner and midpoint rays are represented by
+The inner and midpoint rays are represented by the (unnormalized, complex)
+vectors
 \begin{align}
  a_1&=(s,1,0),&a_2&=(s,-1,0),\nonumber\\
  b_1&=(s,\eta,0),&b_2&=(s,-\eta,0),
@@ -447,7 +505,7 @@ The inner and midpoint rays are represented by
  v_j&=(1,s\mu_j,r\tau_j),&&j=0,\ldots,7.
  \label{eq:h20-midpoints}
 \end{align}
-For $j$ modulo eight, define
+For $j$ modulo eight, define the corner representatives by
 \begin{equation}
  v_{j,j+1}=v_j\boxtimes v_{j+1}.
  \label{eq:h20-corners}
@@ -532,8 +590,9 @@ and $4/5$.  Hence every unprescribed inner product is nonzero and no two
 displayed vectors are proportional.  The representation is faithful.
 \end{proof}
 
-The two inner pairs indeed decompose the same operator.  Since all four
-vectors have squared norm $N$ and $|\eta|=1$,
+As designed, the two complex inner pairs decompose the same rank-two
+operator.  Since all four vectors in Eq.~\eqref{eq:h20-inner-vectors} have
+squared norm $N$ and $|\eta|=1$,
 \begin{equation}
  P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}
  =\frac{2}{N}\operatorname{diag}(C,1,0).
@@ -542,36 +601,28 @@ vectors have squared norm $N$ and $|\eta|=1$,
 Their within-pair inner products are $C-1\ne0$, and the four rays are
 distinct because $\eta\notin\{1,-1\}$.
 
-\subsection{Nonexistence over \texorpdfstring{$\R^3$}{R3}}
-
-\begin{theorem}
-\label{thm:h20-real}
-The hypergraph $\Htwenty$ has no faithful orthogonal representation in
-$\R^3$.
-\end{theorem}
-
-\begin{proof}
-Suppose a faithful real representation existed.  The covering argument
-is independent of the field, so Eq.~\eqref{eq:covering-identity} would
-hold.  Faithfulness implies that $a_1,a_2$ are distinct and
-nonorthogonal, because they do not share a context; the same is true of
-$b_1,b_2$.  Lemma~\ref{lem:real-rigidity} then identifies the unordered
-pair of $b$-rays with the unordered pair of $a$-rays.  This contradicts
-the requirement that four distinct vertices label four distinct rays.
-\end{proof}
-
 \section{The 21-ray orthogonal augmentation}
 \label{sec:h21}
 
-Add one vertex $c$ and two contexts
+\begin{handrewrite}
+Theorem~\ref{thm:covering-criterion} needs $a_1$ and $a_2$ to be
+nonorthogonal, because that keeps the two nonzero eigenvalues of
+$P_{a_1}+P_{a_2}$ distinct.  Does the octagon still separate $\C^3$ from
+$\R^3$ without this?  To test this, we add one vertex $c$ and two contexts
 \begin{equation}
  F_a=\{a_1,c,a_2\},\qquad F_b=\{b_1,c,b_2\}
  \label{eq:added-contexts}
 \end{equation}
-to $\Htwenty$.  The result is the 21-vertex, 14-context hypergraph
-$\Htwentyone$ shown in Fig.~\ref{fig:h21}.  The added contexts force both
-inner pairs to be orthogonal and to have the same one-dimensional
-orthogonal complement.
+to $\Htwenty$, forming the 21-vertex, 14-context hypergraph $\Htwentyone$
+shown in Fig.~\ref{fig:h21}.  The added contexts force both inner pairs to be
+orthogonal bases of the same plane $c^\perp$, so the covering identity
+becomes $P_{a_1}+P_{a_2}=P_{b_1}+P_{b_2}=I_{c^\perp}$, which every pair of
+orthogonal real bases of $c^\perp$ satisfies.  Nevertheless, $\Htwentyone$
+still separates $\C^3$ from $\R^3$.  Over $\C^3$, the ansatz of
+Sec.~\ref{sec:h20} with $C=1$ and $\eta=\ii$ gives a faithful
+representation.  Over $\R^3$, the closure conditions around the perimeter
+are incompatible with the inner contexts.
+\end{handrewrite}
 
 \begin{figure*}[t]
 \centering
@@ -637,7 +688,9 @@ $c$.}
 
 \subsection{Exact coordinates over \texorpdfstring{$\C^3$}{C3}}
 
-Let
+We use the quarter-turn ansatz of Sec.~\ref{sec:h20} with $C=1$ ($s=1$,
+$r=\sqrt2$) and $\eta=\ii$; then $a_1\perp a_2$ and $b_1\perp b_2$, and the
+closure equation is solved by $\zeta=\tau_1=(p+\ii q)/\sqrt2$, where
 \begin{equation}
  p=\frac{\sqrt{14}+\sqrt2}{4},\qquad
  q=\frac{\sqrt{14}-\sqrt2}{4}.
@@ -648,7 +701,7 @@ Then
  p^2+q^2=2,\qquad pq=\frac34,\qquad p-q=\frac{\sqrt2}{2}.
  \label{eq:pq-identities}
 \end{equation}
-Choose
+Choose the unnormalized complex representatives
 \begin{align}
  c&=(0,0,1),\nonumber\\
  a_1&=(1,1,0),&a_2&=(1,-1,0),\nonumber\\
@@ -839,11 +892,11 @@ Eq.~\eqref{eq:master}, and the assumed real representation cannot exist.
 \section{Faithful realification in six dimensions}
 \label{sec:realification}
 
-Theorems~\ref{thm:h20-real} and~\ref{thm:h21-real} keep the ambient
-dimension fixed.  When dimension doubling is allowed, both hypergraphs have
-faithful real representations.  We first recall the finite construction and
-then give explicit phase choices for the present
-coordinates~\cite{svozil-2025-rvc}.
+Corollary~\ref{cor:h20-real} and Theorem~\ref{thm:h21-real} keep the ambient
+dimension fixed at three.  When dimension doubling is allowed, both
+hypergraphs have faithful real representations.  We recall the finite
+construction of Ref.~\cite{svozil-2025-rvc} and give explicit phase choices
+for the present coordinates.
 
 \begin{theorem}[Phase-adjusted realification]
 \label{thm:realification}
@@ -966,160 +1019,177 @@ is the rank-three projector onto that subspace, not $I_6$.  This loss of
 maximality is precisely why the real six-dimensional representations do not
 contradict the two real three-dimensional no-go theorems.
 
-\section{Discussion}
+\section{Physical meaning}
+\label{sec:physical}
 
-The two nonexistence proofs expose different real-complex mechanisms.
-For $\Htwenty$, the context covering forces a rank-two positive operator
-to have two disjoint, nonorthogonal decompositions into two rank-one
-projectors.  Complex relative phases make this possible.  Over the
-reals, the two simple eigenvalues determine the two rays, producing the
-rigidity of Lemma~\ref{lem:real-rigidity}.
+\begin{handrewrite}
+Returning to the spin-1 setting introduced in Sec.~\ref{sec:intro}, consider a
+spin-1 particle in the Cartesian basis $\{|x\rangle,|y\rangle,|z\rangle\}$
+defined by $S_k|k\rangle=0$, in which the spin operators have matrix elements
+$(S_k)_{ab}=-\ii\hbar\,\varepsilon_{kab}$.  For any normalized pure state
+$\psi=\mathbf x+\ii\mathbf y$ ($\mathbf x,\mathbf y\in\R^3$,
+$\|\mathbf x\|^2+\|\mathbf y\|^2=1$), the mean spin dipole vector
+is~\cite{ZiboldEtAl2016SpinNematic}
+\begin{equation}
+ \langle\mathbf S\rangle=2\hbar\,\mathbf x\times\mathbf y.
+ \label{eq:spin-expectation}
+\end{equation}
+Thus $\langle\mathbf S\rangle=\mathbf 0$ holds \emph{if and only if} $\mathbf x$
+and $\mathbf y$ are collinear, that is, precisely when the ray $[\psi]$ admits
+a real representative in the Cartesian basis---equivalently, when it is the
+$m=0$ eigenstate of $\mathbf S\cdot\mathbf n$ along some real unit axis
+$\mathbf n\in\R^3$.  A complete orthonormal basis of such unpolarized
+(spin-nematic) states is exactly the eigenbasis of a Kochen--Specker
+squared-spin measurement $\{S_{\mathbf e_1}^2,S_{\mathbf e_2}^2,S_{\mathbf e_3}^2\}$~\cite{kochen1}.
+Corollary~\ref{cor:h20-real} and Theorem~\ref{thm:h21-real} therefore say
+that neither $\Htwenty$ nor $\Htwentyone$ can be faithfully implemented with
+squared-spin measurements alone.  This holds for every faithful realization,
+not only the ones displayed.  If all outcome states had
+$\langle\mathbf S\rangle=\mathbf 0$, all rays would have real
+representatives in the Cartesian basis, giving a faithful representation in
+$\R^3$.  So at least one outcome state has $\langle\mathbf S\rangle\ne\mathbf 0$.
+For $\Htwenty$ the same argument, applied to the covering
+identity~\eqref{eq:covering-identity} and Lemma~\ref{lem:real-rigidity}, locates
+such a state: at least one of the four inner states $a_1,a_2,b_1,b_2$ has
+nonzero mean spin.
+
+For $\Htwenty$, the covering identity~\eqref{eq:covering-identity} adds a
+direct preparation interpretation.  Preparing either $a_1$ or $a_2$ with
+probability $1/2$ yields the density operator
+$\rho=\tfrac12(P_{a_1}+P_{a_2})$, while preparing either $b_1$ or $b_2$ with
+probability $1/2$ yields $\tfrac12(P_{b_1}+P_{b_2})=\rho$.  Once the
+preparation label is discarded, no subsequent measurement can distinguish the
+two ensembles, even though they consist of four distinct pure states.  In the
+displayed realization~\eqref{eq:h20-inner-vectors}, the mixed state $\rho$,
+which has zero mean spin, is an equal mixture of the two real states $a_1,a_2$
+with $\langle\mathbf S\rangle=\mathbf 0$, and also an equal mixture of the two
+oppositely polarized states $b_1,b_2$ with
+$\langle\mathbf S\rangle_{b_{1,2}}=\pm\frac{24\hbar s}{13N}\hat{\mathbf z}\approx\pm0.77\hbar\,\hat{\mathbf z}$.
+With real states, such a second equal-weight decomposition of a nonorthogonal
+pair is impossible.  On the Bloch sphere of the common two-dimensional
+support, a fair mixture is the midpoint of the chord joining its two pure
+states.  Away from the center, the complex sphere admits a circle's worth of
+chords sharing that midpoint, whereas inside a fixed real-state disk exactly
+one chord has it as midpoint.  Equal weights and a noncentral midpoint are
+essential; unequal weights, or the maximally mixed state at the center, remove
+this uniqueness.
+
+In operational terms, $\{a_1,a_2\}$ and $\{b_1,b_2\}$ are
+\emph{pseudocontexts}~\cite{2026-Navara-Svozil-pseudocontexts}.  Neither pair
+consists of mutually exclusive outcomes of one measurement, yet their summed
+outcome probabilities agree on every state, because of how these tests sit
+inside the twelve surrounding complete measurements.  $\Htwentyone$ shows
+that the need for complex amplitudes goes beyond this preparation freedom.
+Its inner pairs are orthogonal, so a real plane has room for different
+orthogonal bases of $c^\perp$; what fails over $\R^3$ is compatibility with
+the perimeter.
+
+A larger real description remains possible, and comparing constructions
+shows which assumptions carry the separation.  The six-dimensional realification of Sec.~\ref{sec:realification}
+preserves every pairwise orthogonality and nonorthogonality using real rays,
+at the price of rendering each three-ray measurement incomplete.  Conversely,
+the standard real simulation of $\C^3$ on $\R^6$ preserves all probabilities
+and complete three-outcome measurements by replacing each complex ray with a
+two-dimensional real outcome
+subspace~\cite{McKague2009SimulatingRealHilbert,Aleksandrova2013UniversalQubit}.
+An experimental test of real three-dimensional models along these lines
+must therefore certify the dimension $d=3$, the rank-one character of the
+outcomes, and the identity of tests shared between contexts, and it must
+keep the required nonorthogonalities within error bounds.  The exact
+realizations given here are targets for such a test; turning them into
+noise-robust inequalities is an open problem.
+\end{handrewrite}
+
+\section{Discussion}
+\label{sec:discussion}
+
+The two nonexistence proofs expose distinct real-complex mechanisms.
+For $\Htwenty$, the balanced context covering forces a rank-two positive
+operator to admit two disjoint, nonorthogonal decompositions into pairs of
+rank-one projectors.  Complex relative phases permit a one-parameter family
+of such decompositions; over the reals, the two simple eigenvalues fix the
+rays uniquely via Lemma~\ref{lem:real-rigidity} and
+Theorem~\ref{thm:covering-criterion}.
 
 For $\Htwentyone$, both inner pairs are orthogonal and their common
 projector sum is the identity on $c^\perp$.  The eigenvalue argument is
-therefore unavailable: the relevant eigenvalue is degenerate and many
-real orthogonal bases of $c^\perp$ exist.  The obstruction instead comes
+therefore unavailable: the relevant eigenvalue is degenerate and infinitely
+many real orthogonal bases of $c^\perp$ exist.  The obstruction instead comes
 from compatibility with the octagonal perimeter.  The two reduced
 closure equations determine $Y_0$ and $Y_4$, while the inner context
-$D_0$ demands $Y_0Y_4=-1$; together they produce the positive master
+$D_0$ demands $Y_0Y_4=-1$; together they produce the strictly positive master
 expression in Eq.~\eqref{eq:master}.
 
-Both statements are dimension-specific.  Corollary~\ref{cor:r6} realizes the
+Both obstructions are dimension-specific.  Corollary~\ref{cor:r6} realizes the
 same pairwise orthogonality relations faithfully in $\R^6$, but the specified
 triples are no longer complete bases.  Consequently, the three-dimensional
 context equation~\eqref{eq:context-sum} is replaced by a rank-three subspace
-projector.  The complementary covering no longer forces
+projector, the complementary covering no longer forces
 Eq.~\eqref{eq:covering-identity}, and the three-dimensional cross-product
-closure used for $\Htwentyone$ no longer applies.  The comparison therefore
-concerns the scalar field at fixed dimension and fixed context maximality,
-not the possibility of simulating complex coordinates in a larger real
-space.  It is also independent of KS noncolorability: the contradictions use
-orthogonality, completeness of contexts, and field-dependent algebra, not an
-impossibility of assigning two-valued states.
+closure used for $\Htwentyone$ no longer applies.
 
 For $\Htwenty$, exhaustive enumeration yields exactly 26 two-valued
 states, assigning values in $\{0,1\}$ to the vertices with exactly one
 value~1 in each context.  This family is unital, separating, and
 order determining.  Thus the failure of faithful representability in
 $\R^3$ coexists with strong classical state-separation properties:
-the obstruction concerns the scalar field at fixed dimension, rather
-than the existence or separating power of two-valued states.  These
+the obstruction concerns the scalar field at fixed dimension rather
+than the existence or separating power of two-valued states.  (These
 properties alone do not imply that every quantum probability assignment
-belongs to the convex hull of the 26 two-valued states, and hence do not
-by themselves exclude violations of noncontextuality inequalities.
+lies in the convex hull of the 26 two-valued states, and hence do not
+by themselves exclude violations of noncontextuality inequalities.)
 
-For each hypergraph, the least dimension of a faithful real ray
-representation satisfies $4\le d_{\R}\le6$.  We do not determine whether
-$\R^4$ or $\R^5$ suffices.  Thus dimension doubling is a sufficient
-construction, not an established minimum.  Nor do we establish the fewest
-vertices or contexts needed for this kind of separation.  Although the
-$\Htwentyone$ contradiction uses only part of its incidences, deleting
-contexts from the displayed realization can leave additional
-orthogonalities and destroy faithfulness.
+\begin{handrewrite}
+This distinguishes our constructions from Kochen--Specker contextuality
+proper (reviewed in Ref.~\cite{cabello2021contextuality}).  Recent work on
+small qutrit KS sets, such as Cabello's 33-ray, 14-basis set~\cite{Cabello2025}
+and the conversion of KS sets into bipartite perfect quantum
+strategies~\cite{2024-cabello-trandafir0}, concerns uncolorability and
+nonlocal games.  Both $\Htwenty$ and $\Htwentyone$ admit two-valued states,
+so they say nothing about KS minimality.  What they do is separate $\C^3$
+from $\R^3$ faithfully with less than half the vertices of the 48-vertex
+example of Ref.~\cite{harding2025remarksIJTP}.
+\end{handrewrite}
 
 Faithfulness is essential.  Both hypergraphs admit a three-coloring
 in which each specified triple has all three colors; a checked coloring
 is included with the verification code.  Assigning one real Cartesian
-basis ray to each color gives a nonfaithful representation in $\R^3$.
-It respects every specified orthogonality but identifies distinct vertices
-and adds other orthogonalities.  The no-go theorems exclude faithful
-representations, not these collapsed ones.
+basis ray to each color gives a nonfaithful representation in $\R^3$
+that respects every specified orthogonality while identifying distinct
+vertices and creating extra orthogonalities.  The no-go theorems exclude
+faithful representations, not these collapsed ones.
 
-\section{Physical meaning}
-\label{sec:physical}
-
-The covering identity of $\Htwenty$ has a direct preparation meaning.
-Suppose we toss a fair coin and prepare either $a_1$ or $a_2$.  We can
-instead prepare either $b_1$ or $b_2$, again with equal probabilities.
-Once the preparation record is forgotten, both procedures produce the
-same density operator, namely one half of the common projector sum in
-Eq.~\eqref{eq:covering-identity}.  No subsequent measurement on the system
-can distinguish them.  Yet the two pairs contain different pure states.
-Complex amplitudes allow this freedom.  For real pure states, a mixture
-of two distinct, nonorthogonal states determines its equal-weight pair
-uniquely.  The surrounding measurements force precisely the equality
-that exposes this difference.
-
-The geometry is already visible in their common two-dimensional support.
-On the Bloch sphere, a fair mixture is the midpoint of the chord joining
-its two pure states.  Away from the center, the sphere admits a circle's
-worth of chords with that midpoint.  In a fixed real-state disk, exactly
-one chord has it as midpoint.  Equal weights and a noncentral midpoint
-are essential: unequal weights, or the maximally mixed state at the
-center, remove this uniqueness.
-
-The pairs are \emph{pseudocontexts}: their summed test probabilities agree
-for every preparation, although neither pair consists of mutually exclusive
-outcomes of a single measurement~\cite{2026-Navara-Svozil-pseudocontexts}.
-These probabilities refer to separate tests.  Their sum can exceed one and
-is not the probability of a single coarse-grained outcome.  Its equality
-follows from how these tests participate in the surrounding complete
-measurements.  Pseudocontexts thus
-connect different collections of tests through an equality of their
-aggregate statistics and, through equal mixing, connect different
-preparation procedures.
-
-The construction $\Htwentyone$ shows that the need for complex amplitudes
-extends beyond this particular preparation freedom.  Its inner pairs are
-orthogonal, and a real plane readily accommodates different orthogonal
-bases.  The difficulty appears when these bases must also fit the
-measurements around the perimeter.  What fails is the consistency of the
-whole arrangement.  Complex relative phases supply possibilities for
-fitting the measurements together that real vectors cannot supply.
-
-A concrete interpretation is obtained with general projective measurements
-on a physical spin-1 system.  In the Cartesian representation, a normalized
-pure state $\psi=x+\ii y$, with real $x,y$, has spin expectation
-$\langle\mathbf L\rangle=2\hbar\,x\times y$
-\cite{ZiboldEtAl2016SpinNematic}.  This vanishes precisely when the ray has
-a real representative.  Every faithful spin-1 realization of either
-octagon must therefore contain an outcome projector whose associated pure
-state has nonzero spin polarization.  In the displayed $\Htwenty$
-realization, the same mixed state can be prepared either from the two pure
-states $a_1,a_2$ with zero spin expectation or from the two pure states
-$b_1,b_2$ with equal and opposite nonzero spin expectations.  In both
-preparations the mean spin vanishes.
-
-A larger real description remains possible, but what it preserves matters.
-The six-dimensional construction in Sec.~\ref{sec:realification} uses real
-rays and preserves the orthogonality diagram; its three-ray contexts are
-then incomplete.  A different, standard real construction preserves all
-probabilities and complete three-outcome measurements by replacing each
-complex ray with a two-dimensional real outcome subspace
-\cite{McKague2009SimulatingRealHilbert,Aleksandrova2013UniversalQubit}.
-The physical comparison therefore involves both the dimension and what
-counts as an elementary outcome.
-
-The experimental prospect is a finite test of real three-dimensional
-models using preparations and sharp measurements.  Such a test must
-establish the relevant dimension, the rank-one character of the outcomes,
-and the identity of tests shared between contexts.  Distinct tests must
-also be distinguished by their statistics on suitable preparations, and
-the required nonorthogonalities must be retained within error bounds.
-The exact constructions identify a target for that comparison.  Turning
-them into an experimental exclusion requires quantitative bounds on how
-closely a real model can reproduce the measured data.
+For each hypergraph, the least dimension of a faithful real ray
+representation satisfies $4\le d_{\R}\le6$.  We do not determine whether
+$\R^4$ or $\R^5$ suffices; dimension doubling provides a sufficient
+upper bound rather than an established minimum.  Nor do we establish the
+fewest vertices or contexts needed for a faithful $\C^3$-vs-$\R^3$
+separation.  Although the $\Htwentyone$ contradiction uses only a subset of
+its incidences, deleting contexts from the displayed realization can leave
+additional orthogonalities and destroy faithfulness.
 
 \section{Conclusion}
+\label{sec:conclusion}
 
-The hypergraphs $\Htwenty$ and $\Htwentyone$ give two exact finite
-separations between complex and real three-dimensional orthogonality
-representations.  The first is governed by the field dependence of a
-two-projector decomposition; the second survives at the orthogonal limit
-and is governed by cyclic closure.  Explicit algebraic vectors,
-complete nonexistence proofs, and exact pairwise-overlap certificates
-establish both results without numerical or coloring assumptions.  Explicit
-phase-adjusted coordinates give faithful real representations in $\R^6$,
-where the specified triples are incomplete.  This is an upper bound on
-the required real dimension.
-
-
-The physical content is the need for complex relative phases in a common
-description of a finite measurement family.  Pseudocontexts make this
-visible through equivalent preparation procedures; the spin-1 reading
-connects it to polarized outcome states.  Larger real simulations clarify
-which assumptions about dimension and elementary outcomes carry the
-distinction.
+\begin{handrewrite}
+In dimension three, the incidence pattern of a finite family of measurements
+can force complex amplitudes, without entanglement, network assumptions, or
+Kochen--Specker uncolorability.  We proved a covering criterion for
+nonexistence over $\R^3$ (Theorem~\ref{thm:covering-criterion}) and gave two
+faithful octagonal examples.  The 20-vertex, 12-context hypergraph $\Htwenty$
+fails over $\R^3$ because a rank-two operator with distinct eigenvalues fixes
+its decomposition into two real rays.  The 21-vertex, 14-context hypergraph
+$\Htwentyone$ makes the inner pairs orthogonal, so that argument no longer
+applies, and fails over $\R^3$ because of cyclic closure around the
+perimeter.  Exact coordinates, complete nonexistence proofs, and exact
+pairwise-overlap certificates establish both results, and phase-adjusted
+realification gives faithful representations in $\R^6$.  Physically, both
+hypergraphs describe families of three-outcome measurements on a spin-1
+particle that cannot be built from Kochen--Specker squared-spin measurements:
+some outcome state must have nonzero mean spin.  For $\Htwenty$, the displayed
+realization also gives two indistinguishable equal-weight preparations, one
+from states with zero mean spin and one from oppositely polarized states.
+\end{handrewrite}
 
 \appendix
 
@@ -1200,243 +1270,6 @@ No experimental data were generated.  The exact verification code and
 computed pairwise certificates are supplied with the manuscript.
 \end{acknowledgments}
 
-\clearpage
-\begin{thebibliography}{17}%
-\makeatletter
-\providecommand \@ifxundefined [1]{%
- \@ifx{#1\undefined}
-}%
-\providecommand \@ifnum [1]{%
- \ifnum #1\expandafter \@firstoftwo
- \else \expandafter \@secondoftwo
- \fi
-}%
-\providecommand \@ifx [1]{%
- \ifx #1\expandafter \@firstoftwo
- \else \expandafter \@secondoftwo
- \fi
-}%
-\providecommand \natexlab [1]{#1}%
-\providecommand \enquote  [1]{``#1''}%
-\providecommand \bibnamefont  [1]{#1}%
-\providecommand \bibfnamefont [1]{#1}%
-\providecommand \citenamefont [1]{#1}%
-\providecommand \href@noop [0]{\@secondoftwo}%
-\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
-\providecommand \@href[1]{\@@startlink{#1}\@@href}%
-\providecommand \@@href[1]{\endgroup#1\@@endlink}%
-\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
-  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
-\providecommand \@@startlink[1]{}%
-\providecommand \@@endlink[0]{}%
-\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
-\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
-\providecommand \urlprefix  [0]{URL }%
-\providecommand \Eprint [0]{\href }%
-\providecommand \doibase [0]{https://doi.org/}%
-\providecommand \selectlanguage [0]{\@gobble}%
-\providecommand \bibinfo  [0]{\@secondoftwo}%
-\providecommand \bibfield  [0]{\@secondoftwo}%
-\providecommand \translation [1]{[#1]}%
-\providecommand \BibitemOpen [0]{}%
-\providecommand \bibitemStop [0]{}%
-\providecommand \bibitemNoStop [0]{.\EOS\space}%
-\providecommand \EOS [0]{\spacefactor3000\relax}%
-\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
-\let\auto@bib@innerbib\@empty
-\bibitem [{\citenamefont {Harding}\ and\ \citenamefont
-  {Salinas~Schmeis}(2025)}]{harding2025remarksIJTP}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
-  {Harding}}\ and\ \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont
-  {Salinas~Schmeis}},\ }\bibfield  {title} {\bibinfo {title} {Remarks on
-  orthogonality spaces},\ }\href {https://doi.org/10.1007/s10773-025-06062-x}
-  {\bibfield  {journal} {\bibinfo  {journal} {International Journal of
-  Theoretical Physics}\ }\textbf {\bibinfo {volume} {64}},\ \bibinfo {pages}
-  {211} (\bibinfo {year} {2025})},\ \Eprint {https://arxiv.org/abs/2505.13871}
-  {arXiv:2505.13871 [math-ph]} \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Navara}\ and\ \citenamefont
-  {Svozil}(2025)}]{svozil-2025-MYOCHS}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
-  {Navara}}\ and\ \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
-  {Svozil}},\ }\href {https://doi.org/10.48550/arXiv.2509.08636} {\bibinfo
-  {title} {Construction of {K}ochen-{S}pecker sets from mutually unbiased
-  bases}} (\bibinfo {year} {2025}),\ \Eprint {https://arxiv.org/abs/2509.08636}
-  {arXiv:2509.08636 [quant-ph]} \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Trandafir}\ and\ \citenamefont
-  {Cabello}(2025)}]{2024-cabello-trandafir0}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
-  {Trandafir}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Cabello}},\ }\bibfield  {title} {\bibinfo {title} {Optimal conversion of
-  {Kochen--Specker} sets into bipartite perfect quantum strategies},\ }\href
-  {https://doi.org/10.1103/PhysRevA.111.022408} {\bibfield  {journal} {\bibinfo
-   {journal} {Physical Review A}\ }\textbf {\bibinfo {volume} {111}},\ \bibinfo
-  {pages} {022408} (\bibinfo {year} {2025})},\ \Eprint
-  {https://arxiv.org/abs/2410.17470} {arXiv:2410.17470} \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Hardy}\ and\ \citenamefont
-  {Wootters}(2012)}]{Hardy2012LimitedHolism}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {L.}~\bibnamefont
-  {Hardy}}\ and\ \bibinfo {author} {\bibfnamefont {W.~K.}\ \bibnamefont
-  {Wootters}},\ }\bibfield  {title} {\bibinfo {title} {Limited holism and
-  real-vector-space quantum theory},\ }\href
-  {https://doi.org/10.1007/s10701-011-9616-6} {\bibfield  {journal} {\bibinfo
-  {journal} {Foundations of Physics}\ }\textbf {\bibinfo {volume} {42}},\
-  \bibinfo {pages} {454} (\bibinfo {year} {2012})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Aleksandrova}\ \emph {et~al.}(2013)\citenamefont
-  {Aleksandrova}, \citenamefont {Borish},\ and\ \citenamefont
-  {Wootters}}]{Aleksandrova2013UniversalQubit}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Aleksandrova}}, \bibinfo {author} {\bibfnamefont {V.}~\bibnamefont
-  {Borish}},\ and\ \bibinfo {author} {\bibfnamefont {W.~K.}\ \bibnamefont
-  {Wootters}},\ }\bibfield  {title} {\bibinfo {title} {Real-vector-space
-  quantum theory with a universal quantum bit},\ }\href
-  {https://doi.org/10.1103/PhysRevA.87.052106} {\bibfield  {journal} {\bibinfo
-  {journal} {Physical Review A}\ }\textbf {\bibinfo {volume} {87}},\ \bibinfo
-  {pages} {052106} (\bibinfo {year} {2013})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {McKague}\ \emph {et~al.}(2009)\citenamefont
-  {McKague}, \citenamefont {Mosca},\ and\ \citenamefont
-  {Gisin}}]{McKague2009SimulatingRealHilbert}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
-  {McKague}}, \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Mosca}},\
-  and\ \bibinfo {author} {\bibfnamefont {N.}~\bibnamefont {Gisin}},\ }\bibfield
-   {title} {\bibinfo {title} {Simulating quantum systems using real hilbert
-  spaces},\ }\href {https://doi.org/10.1103/PhysRevLett.102.020505} {\bibfield
-  {journal} {\bibinfo  {journal} {Physical Review Letters}\ }\textbf {\bibinfo
-  {volume} {102}},\ \bibinfo {pages} {020505} (\bibinfo {year}
-  {2009})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Renou}\ \emph {et~al.}(2021)\citenamefont {Renou},
-  \citenamefont {Trillo}, \citenamefont {Weilenmann}, \citenamefont {Le},
-  \citenamefont {Tavakoli}, \citenamefont {Gisin}, \citenamefont {Ac\'in},\
-  and\ \citenamefont {Navascu\'es}}]{renou-2021}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.-O.}\ \bibnamefont
-  {Renou}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont {Trillo}},
-  \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Weilenmann}}, \bibinfo
-  {author} {\bibfnamefont {T.~P.}\ \bibnamefont {Le}}, \bibinfo {author}
-  {\bibfnamefont {A.}~\bibnamefont {Tavakoli}}, \bibinfo {author}
-  {\bibfnamefont {N.}~\bibnamefont {Gisin}}, \bibinfo {author} {\bibfnamefont
-  {A.}~\bibnamefont {Ac\'in}},\ and\ \bibinfo {author} {\bibfnamefont
-  {M.}~\bibnamefont {Navascu\'es}},\ }\bibfield  {title} {\bibinfo {title}
-  {Quantum theory based on real numbers can be experimentally falsified},\
-  }\href {https://doi.org/10.1038/s41586-021-04160-4} {\bibfield  {journal}
-  {\bibinfo  {journal} {Nature}\ }\textbf {\bibinfo {volume} {600}},\ \bibinfo
-  {pages} {625} (\bibinfo {year} {2021})},\ \Eprint
-  {https://arxiv.org/abs/2101.10873} {arXiv:2101.10873} \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Weilenmann}\ \emph {et~al.}(2025)\citenamefont
-  {Weilenmann}, \citenamefont {Gisin},\ and\ \citenamefont
-  {Sekatski}}]{Weilenmann2025PartialIndependencePRL}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
-  {Weilenmann}}, \bibinfo {author} {\bibfnamefont {N.}~\bibnamefont {Gisin}},\
-  and\ \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont {Sekatski}},\
-  }\bibfield  {title} {\bibinfo {title} {Partial independence suffices to rule
-  out real quantum theory experimentally},\ }\href
-  {https://doi.org/10.1103/3fv7-p8cs} {\bibfield  {journal} {\bibinfo
-  {journal} {Physical Review Letters}\ }\textbf {\bibinfo {volume} {135}},\
-  \bibinfo {pages} {180201} (\bibinfo {year} {2025})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Bednorz}\ and\ \citenamefont
-  {Batle}(2022)}]{Bednorz2022OptimalDiscrimination}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Bednorz}}\ and\ \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
-  {Batle}},\ }\bibfield  {title} {\bibinfo {title} {Optimal discrimination
-  between real and complex quantum theories},\ }\href
-  {https://doi.org/10.1103/PhysRevA.106.042207} {\bibfield  {journal} {\bibinfo
-   {journal} {Physical Review A}\ }\textbf {\bibinfo {volume} {106}},\ \bibinfo
-  {pages} {042207} (\bibinfo {year} {2022})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Khrennikov}\ and\ \citenamefont
-  {Svozil}(2026)}]{svozil-2025-rvc}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Khrennikov}}\ and\ \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
-  {Svozil}},\ }\bibfield  {title} {\bibinfo {title} {Faithful real embedding of
-  a three-dimensional complex kochen-specker configuration},\ }\href
-  {https://doi.org/10.1103/2pf4-bq7p} {\bibfield  {journal} {\bibinfo
-  {journal} {Physical Review A}\ }\textbf {\bibinfo {volume} {113}},\ \bibinfo
-  {pages} {032206} (\bibinfo {year} {2026})},\ \Eprint
-  {https://arxiv.org/abs/2511.17223} {arXiv:2511.17223} \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Budroni}\ \emph {et~al.}(2022)\citenamefont
-  {Budroni}, \citenamefont {Cabello}, \citenamefont {G{\"u}hne}, \citenamefont
-  {Kleinmann},\ and\ \citenamefont {Larsson}}]{Budroni2022KS}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
-  {Budroni}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Cabello}},
-  \bibinfo {author} {\bibfnamefont {O.}~\bibnamefont {G{\"u}hne}}, \bibinfo
-  {author} {\bibfnamefont {M.}~\bibnamefont {Kleinmann}},\ and\ \bibinfo
-  {author} {\bibfnamefont {J.-{\AA}.}\ \bibnamefont {Larsson}},\ }\bibfield
-  {title} {\bibinfo {title} {{Kochen--Specker} contextuality},\ }\href
-  {https://doi.org/10.1103/RevModPhys.94.045007} {\bibfield  {journal}
-  {\bibinfo  {journal} {Reviews of Modern Physics}\ }\textbf {\bibinfo {volume}
-  {94}},\ \bibinfo {pages} {045007} (\bibinfo {year} {2022})}\BibitemShut
-  {NoStop}%
-\bibitem [{\citenamefont {Cabello}(2025)}]{Cabello2025SimplestKS}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Cabello}},\ }\bibfield  {title} {\bibinfo {title} {Simplest
-  {Kochen--Specker} set},\ }\href {https://doi.org/10.1103/fx9d-488z}
-  {\bibfield  {journal} {\bibinfo  {journal} {Physical Review Letters}\
-  }\textbf {\bibinfo {volume} {135}},\ \bibinfo {pages} {190203} (\bibinfo
-  {year} {2025})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Muller}\ and\ \citenamefont
-  {Giorgetti}(2025)}]{MullerGiorgetti2025Hypergram}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Muller}}\ and\ \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Giorgetti}},\ }\bibfield  {title} {\bibinfo {title} {An abstract structure
-  determines the contextuality degree of observable-based {Kochen--Specker}
-  proofs},\ }\href {https://doi.org/10.1063/5.0245341} {\bibfield  {journal}
-  {\bibinfo  {journal} {Journal of Mathematical Physics}\ }\textbf {\bibinfo
-  {volume} {66}},\ \bibinfo {pages} {082203} (\bibinfo {year}
-  {2025})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Lov\'asz}(1979)}]{lovasz-79}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {L.}~\bibnamefont
-  {Lov\'asz}},\ }\bibfield  {title} {\bibinfo {title} {On the {S}hannon
-  capacity of a graph},\ }\href {https://doi.org/10.1109/TIT.1979.1055985}
-  {\bibfield  {journal} {\bibinfo  {journal} {IEEE Transactions on Information
-  Theory}\ }\textbf {\bibinfo {volume} {25}},\ \bibinfo {pages} {1} (\bibinfo
-  {year} {1979})}\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Sol\'is-Encina}\ and\ \citenamefont
-  {Portillo}(2015)}]{Portillo-2015}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
-  {Sol\'is-Encina}}\ and\ \bibinfo {author} {\bibfnamefont {J.~R.}\
-  \bibnamefont {Portillo}},\ }\href {https://doi.org/10.48550/arXiv.1504.03662}
-  {\bibinfo {title} {Orthogonal representation of graphs}} (\bibinfo {year}
-  {2015}),\ \Eprint {https://arxiv.org/abs/1504.03662} {arXiv:1504.03662}
-  \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Navara}\ and\ \citenamefont
-  {Svozil}(2026)}]{2026-Navara-Svozil-pseudocontexts}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {M.}~\bibnamefont
-  {Navara}}\ and\ \bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
-  {Svozil}},\ }\href {https://doi.org/10.48550/arXiv.2608.18273} {\bibinfo
-  {title} {Pseudocontexts forced by finite context hypergraphs}} (\bibinfo
-  {year} {2026}),\ \Eprint {https://arxiv.org/abs/2608.18273} {arXiv:2608.18273
-  [quant-ph]} \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Zibold}\ \emph {et~al.}(2016)\citenamefont {Zibold},
-  \citenamefont {Corre}, \citenamefont {Frapolli}, \citenamefont {Invernizzi},
-  \citenamefont {Dalibard},\ and\ \citenamefont
-  {Gerbier}}]{ZiboldEtAl2016SpinNematic}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {T.}~\bibnamefont
-  {Zibold}}, \bibinfo {author} {\bibfnamefont {V.}~\bibnamefont {Corre}},
-  \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Frapolli}}, \bibinfo
-  {author} {\bibfnamefont {A.}~\bibnamefont {Invernizzi}}, \bibinfo {author}
-  {\bibfnamefont {J.}~\bibnamefont {Dalibard}},\ and\ \bibinfo {author}
-  {\bibfnamefont {F.}~\bibnamefont {Gerbier}},\ }\bibfield  {title} {\bibinfo
-  {title} {Spin nematic order in antiferromagnetic spinor condensates},\ }\href
-  {https://doi.org/10.1103/PhysRevA.93.023614} {\bibfield  {journal} {\bibinfo
-  {journal} {Physical Review A}\ }\textbf {\bibinfo {volume} {93}},\ \bibinfo
-  {pages} {023614} (\bibinfo {year} {2016})},\ \Eprint
-  {https://arxiv.org/abs/1506.06176} {arXiv:1506.06176 [cond-mat.quant-gas]}
-  \BibitemShut {NoStop}%
-\end{thebibliography}%
-
+\bibliography{svozil,2026-Navara-Svozil-complex-only-3d-hypergraphs-condensed-physics}
 
 \end{document}
